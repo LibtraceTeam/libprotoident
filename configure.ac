@@ -14,12 +14,18 @@ AC_LANG(C++)
 AC_PROG_LIBTOOL
 
 AC_CHECK_LIB([trace], [trace_create_packet],,trace_found=0)
+AC_CHECK_LIB([flowmanager], [lfm_match_packet_to_flow],,lfm_found=0)
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])
 
-AC_CONFIG_FILES([Makefile lib/Makefile])
+AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile 
+		tools/find_unknown/Makefile])
 
 if test "$trace_found" = 0; then
 	AC_MSG_ERROR(Required library libtrace not found; use LDFLAGS to specify library location)
+fi
+
+if test "$lfm_found" = 0; then
+	AC_MSG_ERROR(Required library libflowmanager not found; use LDFLAGS to specify library location)
 fi
 
 AC_SUBST([ADD_LIBS])
