@@ -3,6 +3,29 @@
 #include "proto_common.h"
 #include "proto_tcp.h"
 
+inline bool match_smtp(lpi_data_t *data) {
+	
+
+	if (!match_str_either(data, "220 ") && !match_str_either(data, "220-"))
+		return false;
+	
+	if (match_str_either(data, "EHLO")) return true;
+	if (match_str_either(data, "ehlo")) return true;
+	if (match_str_either(data, "HELO")) return true;
+	if (match_str_either(data, "helo")) return true;
+	if (match_str_either(data, "NOOP")) return true;
+	if (match_str_either(data, "XXXX")) return true;
+
+	if (match_str_either(data, "QUIT") && data->server_port == 25)
+		return true;
+	if (match_str_either(data, "quit") && data->server_port == 25)
+		return true;
+
+	return false;
+}
+
+
+
 inline bool match_ftp_data(lpi_data_t *data) {
 
         /* FTP data tends to be a one-way exchange so we shouldn't see
@@ -291,6 +314,19 @@ inline bool match_smtp_scan(lpi_data_t *data) {
         return false;
 }
 
+/* Rules adapted from l7-filter */
+inline bool match_telnet(lpi_data_t *data) {
+	if (match_chars_either(data, 0xff, 0xfb, ANY, 0xff))
+		return true; 
+	if (match_chars_either(data, 0xff, 0xfc, ANY, 0xff))
+		return true; 
+	if (match_chars_either(data, 0xff, 0xfd, ANY, 0xff))
+		return true; 
+	if (match_chars_either(data, 0xff, 0xfe, ANY, 0xff))
+		return true; 
+	return false;
+}
+
 inline bool match_ssl(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
@@ -519,16 +555,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_SMTPREJECT;
 
         /*  SMTP Commands */
-        if (match_str_both(proto_d, "220 ", "EHLO")) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "ehlo")) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "HELO")) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "helo")) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "NOOP")) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "XXXX")) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "QUIT") &&
-                        proto_d->server_port == 25) return LPI_PROTO_SMTP;
-        if (match_str_both(proto_d, "220 ", "quit") &&
-                        proto_d->server_port == 25) return LPI_PROTO_SMTP;
+        if (match_smtp(proto_d)) return LPI_PROTO_SMTP;
 
         if (match_smtp_scan(proto_d)) return LPI_PROTO_SMTP_SCAN;
 
@@ -549,6 +576,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_BITTORRENT;
 
         if (match_str_either(proto_d, "@RSY")) return LPI_PROTO_RSYNC;
+
+	/* Pando P2P protocol */
+	if (match_str_both(proto_d, "\x0ePan", "\x0ePan"))
+		return LPI_PROTO_PANDO;
 
         /* Newsfeeds */
         if (match_str_either(proto_d, "mode")) return LPI_PROTO_NNTP;
@@ -585,11 +616,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_str_either(proto_d, "USR ")) return LPI_PROTO_MSN;
         if (match_str_either(proto_d, "VER ")) return LPI_PROTO_MSN;
 
-        /* Telnet opens with ff fb 03 ff and ff fd 03 ff */
-        if (match_str_either(proto_d, "\xff\xfb\x03\xff"))
-                return LPI_PROTO_TELNET;
-        if (match_str_either(proto_d, "\xff\xfd\x03\xff"))
-                return LPI_PROTO_TELNET;
+	if (match_telnet(proto_d)) return LPI_PROTO_TELNET;
 
         /* Yahoo messenger starts with YMSG */
         if (match_str_either(proto_d, "YMSG")) return LPI_PROTO_YAHOO;
@@ -670,6 +697,13 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
         /* RFB */
         if (match_str_either(proto_d, "RFB ")) return LPI_PROTO_RFB;
+
+	/* Flash player stuff - cross-domain policy etc */
+	if (match_str_either(proto_d, "<cro") && 
+			(match_str_either(proto_d, "<msg") || 
+			match_str_either(proto_d, "<pol"))) {
+		return LPI_PROTO_FLASH;
+	}
 
 
         /* KMS */

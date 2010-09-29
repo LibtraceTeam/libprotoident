@@ -75,6 +75,8 @@ typedef enum {
         LPI_PROTO_RSYNC,
         LPI_PROTO_NOTES_RPC,   /* Lotus Notes RPC (Domino) */
         LPI_PROTO_AZUREUS,     /* Azureus Extension */
+	LPI_PROTO_PANDO,	/* Pando P2P protocol */
+	LPI_PROTO_FLASH,	/* Flash Player specific behaviour */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

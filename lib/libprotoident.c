@@ -1,4 +1,4 @@
-
+#include <stdio.h>
 #include <assert.h>
 #include <libtrace.h>
 #include "libprotoident.h"
@@ -79,15 +79,15 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	if (psize <= 0)
 		return 0;
 	
-	four_bytes = (*(uint32_t *)payload);
+	four_bytes = ntohl((*(uint32_t *)payload));
 	
-	if (rem < 4) {
-		four_bytes = four_bytes >> (8 * (4 - rem));		
-		four_bytes = four_bytes << (8 * (4 - rem));		
+	if (psize < 4) {
+		four_bytes = four_bytes >> (8 * (4 - psize));		
+		four_bytes = four_bytes << (8 * (4 - psize));		
 	}
 
 	assert(data->payload[dir] == 0);
-	data->payload[dir] = four_bytes;
+	data->payload[dir] = htonl(four_bytes);
 	data->payload_len[dir] = psize;
 
 	return 1;
@@ -262,6 +262,10 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "Lotus Notes RPC";
                 case LPI_PROTO_AZUREUS:
                         return "Azureus";
+		case LPI_PROTO_PANDO:
+			return "Pando";
+		case LPI_PROTO_FLASH:
+			return "Flash Player";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
