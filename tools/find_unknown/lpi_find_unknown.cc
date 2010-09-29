@@ -20,8 +20,9 @@
 #include <libprotoident.h>
 
 bool only_dir0 = false;
-bool only_dir1 = true;
+bool only_dir1 = false;
 
+bool require_both = false;
 
 /* This data structure is used to demonstrate how to use the 'extension' 
  * pointer to store custom data for a flow */
@@ -43,6 +44,29 @@ void init_counter_flow(Flow *f, uint8_t dir) {
 	f->extension = unk;
 }
 
+void dump_payload(lpi_data_t lpi, uint8_t dir) {
+
+	int i;
+	uint8_t *pl = (uint8_t *)(&(lpi.payload[dir]));
+	uint32_t len = lpi.payload_len[dir];
+
+
+	printf("%08x ", ntohl(lpi.payload[dir]));
+	
+	for (i = 0; i < 4; i++) {
+		
+		if (*pl >= 32 && *pl < 126) {
+			printf("%c", *pl);
+		} else {
+			printf(".");
+		}
+		pl ++;
+	}
+
+	printf(" ");
+
+}
+
 void display_unknown(Flow *f, UnknownFlow *unk) {
 
         char ip[50];
@@ -53,18 +77,28 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
 		return;
 	if (only_dir1 && unk->init_dir == 0)
 		return;
+	if (require_both) {
+		if (unk->lpi.payload_len[0] == 0 || 
+				unk->lpi.payload_len[1] == 0) {
+			return;
+		}
+	}
 
 
         in.s_addr = f->id.get_server_ip();
         snprintf(ip, 1000, "%s", inet_ntoa(in));
 
         in.s_addr = f->id.get_client_ip();
-        snprintf(str, 1000, "%s %s %u %u %u %u    ", ip, inet_ntoa(in),
+        snprintf(str, 1000, "%s %s %u %u %u %u", ip, inet_ntoa(in),
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_id_num(), f->id.get_protocol());
 
-	printf("%s %08x,%08x\n", str, ntohl(unk->lpi.payload[0]),
-			ntohl(unk->lpi.payload[1]));	
+	printf("%s ", str);
+
+	dump_payload(unk->lpi, 0);
+	dump_payload(unk->lpi, 1);
+	printf("\n");
+
 
 }
 
@@ -126,6 +160,9 @@ void per_packet(libtrace_packet_t *packet) {
 	 */
 	dir = trace_get_direction(packet);
 
+	if (dir > 1)
+		return;
+
         /* Ignore packets where the IP addresses are the same - something is
          * probably screwy and it's REALLY hard to determine direction */
         if (ip->ip_src.s_addr == ip->ip_dst.s_addr)
@@ -142,20 +179,26 @@ void per_packet(libtrace_packet_t *packet) {
         if (f == NULL)
                 return;
 
+        tcp = trace_get_tcp(packet);
 	/* If the returned flow is new, you will probably want to allocate and
 	 * initialise any custom data that you intend to track for the flow */
-        if (is_new)
+        if (is_new) {
                 init_counter_flow(f, dir);
+        	unk = (UnknownFlow *)f->extension;
+	} else {
+        	unk = (UnknownFlow *)f->extension;
+		if (tcp && tcp->syn && !tcp->ack)
+			unk->init_dir = dir;
+	}
+
 	
 	/* Cast the extension pointer to match the custom data type */	
-        unk = (UnknownFlow *)f->extension;
 	lpi_update_data(packet, &unk->lpi, dir);
 
         /* Update TCP state for TCP flows. The TCP state determines how long
 	 * the flow can be idle before being expired by libflowmanager. For
 	 * instance, flows for which we have only seen a SYN will expire much
 	 * quicker than a TCP connection that has completed the handshake */
-        tcp = trace_get_tcp(packet);
         ts = trace_get_seconds(packet);
         if (tcp) {
                 lfm_check_tcp_flags(f, tcp, dir, ts);
@@ -174,18 +217,44 @@ int main(int argc, char *argv[]) {
 
         libtrace_t *trace;
         libtrace_packet_t *packet;
+	libtrace_filter_t *filter = NULL;
 
         bool opt_true = true;
         bool opt_false = false;
 
-        int i;
+        int i, opt;
         double ts;
+	char *filterstring = NULL;
+	int dir;
 
         packet = trace_create_packet();
         if (packet == NULL) {
                 perror("Creating libtrace packet");
                 return -1;
         }
+
+	while ((opt = getopt(argc, argv, "bd:f:")) != EOF) {
+                switch (opt) {
+			case 'b':
+				require_both = true;
+				break;
+                        case 'd':
+				dir = atoi(optarg);
+				if (dir == 0)
+					only_dir0 = true;
+				if (dir == 1)
+					only_dir1 = true;
+				break;
+			case 'f':
+                                filterstring = optarg;
+                                break;
+                }
+        }
+
+        if (filterstring != NULL) {
+                filter = trace_create_filter(filterstring);
+        }
+
 
 	/* This tells libflowmanager to ignore any flows where an RFC1918
 	 * private IP address is involved */
@@ -204,8 +273,6 @@ int main(int argc, char *argv[]) {
 	if (lfm_set_config_option(LFM_CONFIG_SHORT_UDP, &opt_false) == 0)
 		return -1;
 
-        optind = 1;
-
         for (i = optind; i < argc; i++) {
 
                 fprintf(stderr, "%s\n", argv[i]);
@@ -222,6 +289,12 @@ int main(int argc, char *argv[]) {
                         trace_perror(trace, "Opening trace file");
                         trace_destroy(trace);
                         continue;
+                }
+
+                if (filter && trace_config(trace, TRACE_OPTION_FILTER, filter) == -1) {
+                        trace_perror(trace, "Configuring filter");
+                        trace_destroy(trace);
+                        return -1;
                 }
 
                 if (trace_start(trace) == -1) {
