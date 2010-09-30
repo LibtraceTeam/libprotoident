@@ -20,34 +20,15 @@ int lpi_init_data(lpi_data_t *data) {
 int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 	char *payload = NULL;
-	libtrace_ip_t *ipv4 = NULL;
-	libtrace_ip6_t *ipv6 = NULL;
-	int32_t psize = 0;
-	uint32_t ip_len = 0;
+	uint32_t psize = 0;
 	uint32_t rem = 0;
 	uint8_t proto = 0;
-	void *l3;
-	uint16_t ethertype;
 	void *transport;
 	uint32_t four_bytes;
 	
 	if (data->payload_len[dir] != 0)
 		return 0;
 	
-	l3 = trace_get_layer3(packet, &ethertype, &rem);
-	if (l3 == NULL || rem == 0)
-		return 0;
-
-	if (ethertype == TRACE_ETHERTYPE_IP) {
-		ipv4 = (libtrace_ip_t *)l3;
-		ip_len = ntohs(ipv4->ip_len) - (4 * ipv4->ip_hl);
-	} else if (ethertype == TRACE_ETHERTYPE_IPV6) {
-		ipv6 = (libtrace_ip6_t *)l3;
-		ip_len = ntohs(ipv6->plen);
-	} else {
-		return 0;
-	}
-
 	transport = trace_get_transport(packet, &proto, &rem);
 	if (transport == NULL || rem == 0)
 		return 0;		
@@ -64,15 +45,15 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		libtrace_tcp_t *tcp = (libtrace_tcp_t *)transport;
 		if (tcp->rst)
 			return 0;
-		psize = ip_len - (4 * tcp->doff);
 		payload = (char *)trace_get_payload_from_tcp(tcp, &rem);
 	}
 
 	if (proto == 17) {
 		libtrace_udp_t *udp = (libtrace_udp_t *)transport;
-		psize = ip_len - sizeof(libtrace_udp_t);
 		payload = (char *)trace_get_payload_from_udp(udp, &rem);
 	}
+
+	psize = trace_get_payload_length(packet);
 
 	if (payload == NULL)
 		return 0;
@@ -96,38 +77,33 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 lpi_protocol_t lpi_guess_protocol(lpi_data_t *data) {
 
-	if (data->payload_len[0] == 0 && data->payload_len[1] == 0) {
-		return LPI_PROTO_NO_PAYLOAD;
-	}
-
-	if (data->trans_proto == TRACE_IPPROTO_TCP) {
-		return guess_tcp_protocol(data);
-	}
-
-	if (data->trans_proto == TRACE_IPPROTO_UDP) {
-		return guess_udp_protocol(data);
-	}
-
-	if (data->trans_proto == TRACE_IPPROTO_ICMP) {
-		return LPI_PROTO_ICMP;
+	switch(data->trans_proto) {
+		case TRACE_IPPROTO_ICMP:
+			return LPI_PROTO_ICMP;
+		case TRACE_IPPROTO_TCP:
+			return guess_tcp_protocol(data);
+		case TRACE_IPPROTO_UDP:
+			return guess_udp_protocol(data);
+		default:
+			return LPI_PROTO_UNSUPPORTED;
 	}
 
 	return LPI_PROTO_UNSUPPORTED;
-
 }
+	
 
 const char *lpi_print(lpi_protocol_t proto) {
 	switch(proto) {
 		case LPI_PROTO_INVALID:
 			return "Invalid";
 		case LPI_PROTO_UNKNOWN:
-			return "Unknown TCP";
+			return "Unknown_TCP";
 		case LPI_PROTO_UDP:
-			return "Unknown UDP";
+			return "Unknown_UDP";
 		case LPI_PROTO_NO_PAYLOAD:
-			return "No Payload";
+			return "No_Payload";
 		case LPI_PROTO_UNSUPPORTED:
-			return "Transport unsupported";
+			return "Unsupported";
 		case LPI_PROTO_ICMP:
 			return "ICMP";
 
@@ -171,7 +147,7 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_RTSP:
                         return "RTSP";
                 case LPI_PROTO_ID:
-                        return "ID Protocol";
+                        return "ID_Protocol";
                 case LPI_PROTO_YAHOO:
                         return "Yahoo";
                 case LPI_PROTO_ICQ:
@@ -185,17 +161,17 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_HTTP_IMAGE:
                         return "WebImage";
                 case LPI_PROTO_HTTP_MS:
-                        return "Microsoft HTTP";
+                        return "Microsoft_HTTP";
                 case LPI_PROTO_TDS:
                         return "TDS";
                  case LPI_PROTO_RPC_SCAN:
-                        return "RPC Exploit";
+                        return "RPC_Exploit";
                 case LPI_PROTO_SMB:
                         return "SMB";
                 case LPI_PROTO_WARCRAFT3:
                         return "Warcraft3";
                 case LPI_PROTO_ETRUST:
-                        return "eTrust Update";
+                        return "eTrust_Update";
                 case LPI_PROTO_FTP_CONTROL:
                         return "FTP_Control";
                 case LPI_PROTO_FTP_DATA:
@@ -205,7 +181,7 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_ARES:
                         return "Ares";
                 case LPI_PROTO_AR:
-                        return "ar Archive";
+                        return "ar_Archive";
                 case LPI_PROTO_BULK:
                         return "BulkOneWay";
                 case LPI_PROTO_NNTP:
@@ -213,19 +189,19 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_NAPSTER:
                         return "Napster";
                 case LPI_PROTO_BNCS:
-                        return "Battle.net Chat";
+                        return "Battle.net_Chat";
                 case LPI_PROTO_RFB:
                         return "RFB";
                 case LPI_PROTO_YAHOO_WEBCAM:
-                        return "Yahoo Webcam";
+                        return "Yahoo_Webcam";
                 case LPI_PROTO_ICA:
                         return "CitrixICA";
                 case LPI_PROTO_NETBIOS:
-                        return "Netbios Session";
+                        return "Netbios_Session";
                 case LPI_PROTO_KMS:
                         return "KMS";
                 case LPI_PROTO_MS_DS:
-                        return "Microsoft DS";
+                        return "Microsoft_DS";
                 case LPI_PROTO_SIP:
                         return "SIP";
                 case LPI_PROTO_MZINGA:
@@ -237,41 +213,41 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_GOKUCHAT:
                         return "GokuChat";
                 case LPI_PROTO_DXP:
-                        return "Silverplatter DXP";
+                        return "Silverplatter_DXP";
                 case LPI_PROTO_HAMACHI:
                         return "Hamachi";
                 case LPI_PROTO_BLIZZARD:
                         return "Blizzard";
                 case LPI_PROTO_MSNV:
-                        return "MSN Voice";
+                        return "MSN_Voice";
                 case LPI_PROTO_BITEXT:
-                        return "BitTorrent Extension";
+                        return "BitTorrent_Extension";
                 case LPI_PROTO_MITGLIEDER:
-                        return "Mitglieder Trojan";
+                        return "Mitglieder_Trojan";
                 case LPI_PROTO_TOR:
                         return "TOR";
                 case LPI_PROTO_MYSQL:
                         return "MySQL";
                 case LPI_PROTO_HTTP_TUNNEL:
-                        return "HTTP Tunnel";
+                        return "HTTP_Tunnel";
                 case LPI_PROTO_SMTP_SCAN:
-                        return "SMTP Scan";
+                        return "SMTP_Scan";
                 case LPI_PROTO_RSYNC:
                         return "Rsync";
                 case LPI_PROTO_NOTES_RPC:
-                        return "Lotus Notes RPC";
+                        return "Lotus_Notes_RPC";
                 case LPI_PROTO_AZUREUS:
                         return "Azureus";
 		case LPI_PROTO_PANDO:
 			return "Pando";
 		case LPI_PROTO_FLASH:
-			return "Flash Player";
+			return "Flash_Player";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
                         return "SIP";
                 case LPI_PROTO_UDP_BTDHT:
-                        return "BitTorrent UDP";
+                        return "BitTorrent_UDP";
                 case LPI_PROTO_UDP_GNUTELLA:
                         return "Gnutella";
                 case LPI_PROTO_UDP_DNS:
@@ -283,7 +259,7 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_STEAM:
                         return "Steam";
                 case LPI_PROTO_UDP_STEAM_FRIENDS:
-                        return "Steam Friends";
+                        return "Steam_Friends";
                 case LPI_PROTO_UDP_WIN_MESSAGE:
                         return "WindowsMessenger";
                 case LPI_PROTO_UDP_GAMESPY:
@@ -295,9 +271,9 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_RTP:
                         return "RTP";
                 case LPI_PROTO_UDP_MSN_VIDEO:
-                        return "MSN Video";
+                        return "MSN_Video";
                 case LPI_PROTO_UDP_COD:
-                        return "Call of Duty";
+                        return "Call_of_Duty";
                 case LPI_PROTO_UDP_NTP:
                         return "NTP";
 

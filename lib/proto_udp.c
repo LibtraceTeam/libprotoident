@@ -159,6 +159,10 @@ inline bool match_msn_video(lpi_data_t *data) {
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
+	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
+		return LPI_PROTO_NO_PAYLOAD;
+
+
         if (match_chars_either(proto_d, 'S', 'I', 'P', ANY))
                 return LPI_PROTO_UDP_SIP;
 

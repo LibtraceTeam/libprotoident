@@ -512,7 +512,12 @@ inline bool match_invalid(lpi_data_t *data) {
 
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
-        /* DirectConnect */
+        
+	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
+		return LPI_PROTO_NO_PAYLOAD;
+	
+	
+	/* DirectConnect */
         /* $MyN seemed best to check for - might have to check for $max and
          * $Sup as well */
         /* NOTE: Some people seem to use DC to connect to port 80 and get
