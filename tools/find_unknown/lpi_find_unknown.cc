@@ -28,6 +28,9 @@ bool require_both = false;
  * pointer to store custom data for a flow */
 typedef struct unknown {
 	uint8_t init_dir;
+	uint64_t in_bytes;
+	uint64_t out_bytes;
+	double start_ts;
 	lpi_data_t lpi;
 } UnknownFlow;
 
@@ -35,11 +38,14 @@ typedef struct unknown {
  * UnknownFlow structure and ensures that the extension pointer points at
  * it.
  */
-void init_counter_flow(Flow *f, uint8_t dir) {
+void init_unknown_flow(Flow *f, uint8_t dir, double ts) {
 	UnknownFlow *unk = NULL;
 
 	unk = (UnknownFlow *)malloc(sizeof(UnknownFlow));
 	unk->init_dir = dir;
+	unk->in_bytes = 0;
+	unk->out_bytes = 0;
+	unk->start_ts = ts;
 	lpi_init_data(&unk->lpi);
 	f->extension = unk;
 }
@@ -89,9 +95,10 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
         snprintf(ip, 1000, "%s", inet_ntoa(in));
 
         in.s_addr = f->id.get_client_ip();
-        snprintf(str, 1000, "%s %s %u %u %u %u", ip, inet_ntoa(in),
+        snprintf(str, 1000, "%s %s %u %u %u %.3f %lu %lu", ip, inet_ntoa(in),
                         f->id.get_server_port(), f->id.get_client_port(),
-                        f->id.get_id_num(), f->id.get_protocol());
+                        f->id.get_protocol(), unk->start_ts,
+			unk->out_bytes, unk->in_bytes);
 
 	printf("%s ", str);
 
@@ -108,7 +115,7 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
  * want the stats for all the still-active flows). Otherwise, only flows
  * that have been idle for longer than their expiry timeout will be expired.
  */
-void expire_counter_flows(double ts, bool exp_flag) {
+void expire_unknown_flows(double ts, bool exp_flag) {
         Flow *expired;
 	lpi_protocol_t proto;
 
@@ -180,10 +187,11 @@ void per_packet(libtrace_packet_t *packet) {
                 return;
 
         tcp = trace_get_tcp(packet);
+        ts = trace_get_seconds(packet);
 	/* If the returned flow is new, you will probably want to allocate and
 	 * initialise any custom data that you intend to track for the flow */
         if (is_new) {
-                init_counter_flow(f, dir);
+                init_unknown_flow(f, dir, ts);
         	unk = (UnknownFlow *)f->extension;
 	} else {
         	unk = (UnknownFlow *)f->extension;
@@ -191,7 +199,12 @@ void per_packet(libtrace_packet_t *packet) {
 			unk->init_dir = dir;
 	}
 
-	
+	if (dir == 0)
+		unk->out_bytes += trace_get_payload_length(packet);
+	else
+		unk->in_bytes += trace_get_payload_length(packet);
+
+
 	/* Cast the extension pointer to match the custom data type */	
 	lpi_update_data(packet, &unk->lpi, dir);
 
@@ -199,7 +212,6 @@ void per_packet(libtrace_packet_t *packet) {
 	 * the flow can be idle before being expired by libflowmanager. For
 	 * instance, flows for which we have only seen a SYN will expire much
 	 * quicker than a TCP connection that has completed the handshake */
-        ts = trace_get_seconds(packet);
         if (tcp) {
                 lfm_check_tcp_flags(f, tcp, dir, ts);
         }
@@ -208,7 +220,7 @@ void per_packet(libtrace_packet_t *packet) {
         lfm_update_flow_expiry_timeout(f, ts);
 
 	/* Expire all suitably idle flows */
-        expire_counter_flows(ts, false);
+        expire_unknown_flows(ts, false);
 
 }
 
@@ -319,7 +331,7 @@ int main(int argc, char *argv[]) {
         }
 
         trace_destroy_packet(packet);
-        expire_counter_flows(ts, true);
+        expire_unknown_flows(ts, true);
 
         return 0;
 
