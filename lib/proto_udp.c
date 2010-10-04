@@ -91,6 +91,7 @@ inline bool match_cod(lpi_data_t *data) {
 
 inline bool match_ntp(lpi_data_t *data) {
 
+
         /* Look for NTPv3 
          *
          * 0x1b in the first byte = v3 client
@@ -128,6 +129,41 @@ inline bool match_ntp(lpi_data_t *data) {
 
         if (MATCH(data->payload[1], 0x23, ANY, ANY, ANY) &&
                 (MATCH(data->payload[0], 0x24, ANY, ANY, ANY) ||
+                data->payload_len[0] == 0) &&
+                data->payload_len[1] == 48) {
+
+                return true;
+        }
+
+	/* NTPv1
+	 */
+        if (MATCH(data->payload[0], 0x0b, ANY, ANY, ANY) &&
+                (MATCH(data->payload[1], 0x0c, ANY, ANY, ANY) ||
+                data->payload_len[1] == 0) &&
+                data->payload_len[0] == 48) {
+
+                return true;
+        }
+
+        if (MATCH(data->payload[1], 0x0b, ANY, ANY, ANY) &&
+                (MATCH(data->payload[0], 0x0c, ANY, ANY, ANY) ||
+                data->payload_len[0] == 0) &&
+                data->payload_len[1] == 48) {
+
+                return true;
+        }
+
+	/* NTPv2 */
+        if (MATCH(data->payload[0], 0x13, ANY, ANY, ANY) &&
+                (MATCH(data->payload[1], 0x14, ANY, ANY, ANY) ||
+                data->payload_len[1] == 0) &&
+                data->payload_len[0] == 48) {
+
+                return true;
+        }
+
+        if (MATCH(data->payload[1], 0x13, ANY, ANY, ANY) &&
+                (MATCH(data->payload[0], 0x14, ANY, ANY, ANY) ||
                 data->payload_len[0] == 0) &&
                 data->payload_len[1] == 48) {
 
@@ -213,6 +249,10 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
         if (match_emule(proto_d))
                 return LPI_PROTO_UDP_EMULE;
+
+	/* XXX Starcraft seems to set the first four bytes of every packet to 00 00 00 00,
+	 * but we probably need something else to identify it properly */
+
         return LPI_PROTO_UDP;
 }
 
