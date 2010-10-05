@@ -77,6 +77,7 @@ typedef enum {
         LPI_PROTO_AZUREUS,     /* Azureus Extension */
 	LPI_PROTO_PANDO,	/* Pando P2P protocol */
 	LPI_PROTO_FLASH,	/* Flash Player specific behaviour */
+	LPI_PROTO_STEAM,	/* Steam TCP download, i.e. downloading games */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

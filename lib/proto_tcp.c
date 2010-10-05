@@ -3,7 +3,7 @@
 #include "proto_common.h"
 #include "proto_tcp.h"
 
-inline bool match_smtp(lpi_data_t *data) {
+static inline bool match_smtp(lpi_data_t *data) {
 	
 
 	if (!match_str_either(data, "220 ") && !match_str_either(data, "220-"))
@@ -24,9 +24,17 @@ inline bool match_smtp(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_steam(lpi_data_t *data) {
 
+	if (match_str_either(data, "\x00\x00\x00\x07") &&
+			match_str_either(data, "\x01\x00\x00\x00") &&
+			data->server_port == 27030) {
+		return true;
+	}
+	return false;
+}
 
-inline bool match_ftp_data(lpi_data_t *data) {
+static inline bool match_ftp_data(lpi_data_t *data) {
 
         /* FTP data tends to be a one-way exchange so we shouldn't see
          * payload in both directions */
@@ -82,7 +90,7 @@ inline bool match_dns(lpi_data_t *data) {
         return true;
 }
 
-inline bool match_bitextend(lpi_data_t *data) {
+static inline bool match_bitextend(lpi_data_t *data) {
 
         if (match_str_both(data, "\x0\x0\x0\xd", "\x0\x0\x0\x1"))
                 return true;
@@ -123,7 +131,7 @@ inline bool match_bitextend(lpi_data_t *data) {
 
 }
 
-inline bool match_blizzard(lpi_data_t *data) {
+static inline bool match_blizzard(lpi_data_t *data) {
 
         if (match_str_both(data, "\x10\xdf\x22\x00", "\x10\x00\x00\x00"))
                 return true;
@@ -138,7 +146,7 @@ inline bool match_blizzard(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_xunlei(lpi_data_t *data) {
+static inline bool match_xunlei(lpi_data_t *data) {
 
         /*
         if (match_str_both(data, "\x3c\x00\x00\x00", "\x3c\x00\x00\x00"))
@@ -155,7 +163,7 @@ inline bool match_xunlei(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_smb(lpi_data_t *data) {
+static inline bool match_smb(lpi_data_t *data) {
 
         /* SMB is often prepended with a NetBIOS session service header.
          * It's easiest for us to treat it as a four byte length field (it
@@ -169,7 +177,7 @@ inline bool match_smb(lpi_data_t *data) {
 
 }
 
-inline bool match_hamachi(lpi_data_t *data) {
+static inline bool match_hamachi(lpi_data_t *data) {
 
         /* All Hamachi messages that I've seen begin with a 4 byte length
          * field. Other protocols also do this, so I also check for the
@@ -189,7 +197,7 @@ inline bool match_hamachi(lpi_data_t *data) {
 }
 
 
-inline bool match_azureus(lpi_data_t *data) {
+static inline bool match_azureus(lpi_data_t *data) {
 
         /* Azureus begins all messages with a 4 byte length field. 
          * Unfortunately, it is not uncommon for other protocols to do the 
@@ -209,7 +217,7 @@ inline bool match_azureus(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_netbios(lpi_data_t *data) {
+static inline bool match_netbios(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
 
@@ -266,7 +274,7 @@ inline bool match_emule(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_rdp(lpi_data_t *data) {
+static inline bool match_rdp(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
 
@@ -292,7 +300,7 @@ inline bool match_rdp(lpi_data_t *data) {
 
 }
 
-inline bool match_http_tunnel(lpi_data_t *data) {
+static inline bool match_http_tunnel(lpi_data_t *data) {
 
         if (match_str_both(data, "CONN", "HTTP")) return true;
 
@@ -305,7 +313,7 @@ inline bool match_http_tunnel(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_smtp_scan(lpi_data_t *data) {
+static inline bool match_smtp_scan(lpi_data_t *data) {
 
         if (MATCHSTR(data->payload[0], "220 ") && data->payload_len[1] == 0)
                 return true;
@@ -315,7 +323,7 @@ inline bool match_smtp_scan(lpi_data_t *data) {
 }
 
 /* Rules adapted from l7-filter */
-inline bool match_telnet(lpi_data_t *data) {
+static inline bool match_telnet(lpi_data_t *data) {
 	if (match_chars_either(data, 0xff, 0xfb, ANY, 0xff))
 		return true; 
 	if (match_chars_either(data, 0xff, 0xfc, ANY, 0xff))
@@ -327,7 +335,7 @@ inline bool match_telnet(lpi_data_t *data) {
 	return false;
 }
 
-inline bool match_ssl(lpi_data_t *data) {
+static inline bool match_ssl(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
 
@@ -348,6 +356,17 @@ inline bool match_ssl(lpi_data_t *data) {
         if (MATCH(data->payload[1], 0x16, 0x03, 0x01, ANY) &&
                         MATCH(data->payload[0], 0x16, 0x03, 0x01, 0x00))
                 return true;
+        
+	/* Seems we can sometimes skip the full handshake and start on the data
+	 * right away (as indicated by 0x17) - for now, I've only done this for TLS */
+	if (MATCH(data->payload[0], 0x16, 0x03, 0x01, ANY) &&
+                        MATCH(data->payload[1], 0x17, 0x03, 0x01, 0x00))
+                return true;
+
+        if (MATCH(data->payload[1], 0x16, 0x03, 0x01, ANY) &&
+                        MATCH(data->payload[0], 0x17, 0x03, 0x01, 0x00))
+                return true;
+
 
         /* SSLv2 handshake - the ANY byte in the 0x80 payload is actually the
          * length of the payload - 2. */
@@ -390,7 +409,7 @@ inline bool match_ssl(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_mysql(lpi_data_t *data) {
+static inline bool match_mysql(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
 
@@ -424,7 +443,7 @@ inline bool match_mysql(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_tds(lpi_data_t *data) {
+static inline bool match_tds(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
 
@@ -464,7 +483,7 @@ inline bool match_tds(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_notes_rpc(lpi_data_t *data) {
+static inline bool match_notes_rpc(lpi_data_t *data) {
 
         /* Notes RPC is a proprietary protocol and I haven't been able to
          * find anything to confirm or disprove any of this. 
@@ -485,7 +504,7 @@ inline bool match_notes_rpc(lpi_data_t *data) {
 
 }
 
-inline bool match_invalid(lpi_data_t *data) {
+static inline bool match_invalid(lpi_data_t *data) {
 
         /* I'm using invalid as a category for flows where both halves of
          * the connection are clearly speaking different protocols,
@@ -670,6 +689,9 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_YAHOO_WEBCAM;
         if (match_chars_either(proto_d, 0x0d, 0x00, 0x05, 0x00))
                 return LPI_PROTO_YAHOO_WEBCAM;
+
+	/* Steam TCP download */
+	if (match_steam(proto_d)) return LPI_PROTO_STEAM;
 
         /* ID Protocol */
         /* TODO: Starts with only digits - request matches the response  */

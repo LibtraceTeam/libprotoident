@@ -3,7 +3,7 @@
 #include "proto_common.h"
 #include "proto_udp.h"
 
-inline bool match_gamespy(lpi_data_t *data) {
+static inline bool match_gamespy(lpi_data_t *data) {
 
         if (match_str_either(data, "\\sta"))
                 return true;
@@ -27,7 +27,7 @@ inline bool match_gamespy(lpi_data_t *data) {
 
 }
 
-inline bool match_steam(lpi_data_t *data) {
+static inline bool match_steam(lpi_data_t *data) {
 
         /* Master Server Queries begin with 31 ff 30 2e
          *
@@ -62,7 +62,7 @@ inline bool match_steam(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_cod(lpi_data_t *data) {
+static inline bool match_cod(lpi_data_t *data) {
 
         /* Presumably these are Server Info queries, except unlike the
          * Source engine above, these are only 15 bytes long */
@@ -89,7 +89,7 @@ inline bool match_cod(lpi_data_t *data) {
         return false;
 }
 
-inline bool match_ntp(lpi_data_t *data) {
+static inline bool match_ntp(lpi_data_t *data) {
 
 
         /* Look for NTPv3 
@@ -174,7 +174,7 @@ inline bool match_ntp(lpi_data_t *data) {
 }
 
 
-inline bool match_msn_video(lpi_data_t *data) {
+static inline bool match_msn_video(lpi_data_t *data) {
 
         /* The authorization messages use a code of 0x48, followed by 3
          * bytes of zero. The packet contains no non-header payload, so the

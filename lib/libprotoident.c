@@ -242,6 +242,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Pando";
 		case LPI_PROTO_FLASH:
 			return "Flash_Player";
+		case LPI_PROTO_STEAM:
+			return "Steam_TCP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -257,7 +259,7 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_QUAKEWORLD:
                         return "QuakeWorld";
                 case LPI_PROTO_UDP_STEAM:
-                        return "Steam";
+                        return "Steam_UDP";
                 case LPI_PROTO_UDP_STEAM_FRIENDS:
                         return "Steam_Friends";
                 case LPI_PROTO_UDP_WIN_MESSAGE:
