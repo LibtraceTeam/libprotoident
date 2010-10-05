@@ -5,8 +5,14 @@
 
 static inline bool match_smtp(lpi_data_t *data) {
 	
-
-	if (!match_str_either(data, "220 ") && !match_str_either(data, "220-"))
+	if (data->payload_len[0] == 1) {
+		if (!MATCH(data->payload[0], '2', 0x00, 0x00, 0x00))
+			return false;
+	} else if (data->payload_len[1] == 1) {
+		if (!MATCH(data->payload[1], '2', 0x00, 0x00, 0x00))
+			return false;
+	}
+	else if (!match_str_either(data, "220 ") && !match_str_either(data, "220-"))
 		return false;
 	
 	if (match_str_either(data, "EHLO")) return true;
@@ -335,76 +341,79 @@ static inline bool match_telnet(lpi_data_t *data) {
 	return false;
 }
 
+/* 16 03 00 X is an SSLv3 handshake */
+static inline bool match_ssl3_handshake(uint32_t payload, uint32_t len) {
+
+	if (len == 1 && MATCH(payload, 0x16, 0x00, 0x00, 0x00))
+		return true;
+	if (MATCH(payload, 0x16, 0x03, 0x00, ANY))
+		return true;
+	return false;
+}
+
+/* 16 03 01 X is an TLS handshake */
+static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
+
+	if (len == 1 && MATCH(payload, 0x16, 0x00, 0x00, 0x00))
+		return true;
+	if (MATCH(payload, 0x16, 0x03, 0x01, ANY))
+		return true;
+	return false;
+}
+
+/* SSLv2 handshake - the ANY byte in the 0x80 payload is actually the length of the payload - 2. */
+static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
+        uint32_t stated_len = 0;
+        
+	if (!MATCH(payload, 0x80, ANY, 0x01, 0x03)) 
+		return false;
+        stated_len = (ntohl(payload) & 0xff0000) >> 16;
+        if (stated_len == len - 2)
+        	return true;
+	return false;
+}
+
+static inline bool match_tls_content(uint32_t payload, uint32_t len) {
+	if (MATCH(payload, 0x17, 0x03, 0x01, ANY))
+		return true;
+	return false;
+}
+
 static inline bool match_ssl(lpi_data_t *data) {
 
-        uint32_t stated_len = 0;
 
-        /* 16 03 00 00 then 16 03 00 X is an SSLv3 handshake */
-        if (MATCH(data->payload[0], 0x16, 0x03, 0x00, ANY) &&
-                        MATCH(data->payload[1], 0x16, 0x03, 0x00, 0x00))
-                return true;
+	if (match_ssl3_handshake(data->payload[0], data->payload_len[0]) &&
+			match_ssl3_handshake(data->payload[1], data->payload_len[1]))
+		return true;
 
-        if (MATCH(data->payload[1], 0x16, 0x03, 0x00, ANY) &&
-                        MATCH(data->payload[0], 0x16, 0x03, 0x00, 0x00))
-                return true;
-
-        /* 16 03 01 00 then 16 03 01 X is TLS - XXX worth a separate class? */
-        if (MATCH(data->payload[0], 0x16, 0x03, 0x01, ANY) &&
-                        MATCH(data->payload[1], 0x16, 0x03, 0x01, 0x00))
-                return true;
-
-        if (MATCH(data->payload[1], 0x16, 0x03, 0x01, ANY) &&
-                        MATCH(data->payload[0], 0x16, 0x03, 0x01, 0x00))
-                return true;
-        
+	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
+			match_tls_handshake(data->payload[1], data->payload_len[1]))
+		return true;
+	
 	/* Seems we can sometimes skip the full handshake and start on the data
 	 * right away (as indicated by 0x17) - for now, I've only done this for TLS */
-	if (MATCH(data->payload[0], 0x16, 0x03, 0x01, ANY) &&
-                        MATCH(data->payload[1], 0x17, 0x03, 0x01, 0x00))
-                return true;
+	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
+			match_tls_content(data->payload[1], data->payload_len[1]))
+		return true;
+	if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
+			match_tls_content(data->payload[0], data->payload_len[0]))
+		return true;
 
-        if (MATCH(data->payload[1], 0x16, 0x03, 0x01, ANY) &&
-                        MATCH(data->payload[0], 0x17, 0x03, 0x01, 0x00))
-                return true;
 
+	if ((match_tls_handshake(data->payload[0], data->payload_len[0]) ||
+			match_ssl3_handshake(data->payload[0], data->payload_len[0])) &&
+			match_ssl2_handshake(data->payload[1], data->payload_len[1]))
+		return true;
+	
+	if ((match_tls_handshake(data->payload[1], data->payload_len[1]) ||
+			match_ssl3_handshake(data->payload[1], data->payload_len[1])) &&
+			match_ssl2_handshake(data->payload[0], data->payload_len[0]))
+		return true;
 
-        /* SSLv2 handshake - the ANY byte in the 0x80 payload is actually the
-         * length of the payload - 2. */
-        if ((MATCH(data->payload[0], 0x16, 0x03, 0x00, ANY) ||
-                        MATCH(data->payload[0], 0x16, 0x03, 0x01, ANY)) &&
-                        MATCH(data->payload[1], 0x80, ANY, 0x01, 0x03)) {
-
-                stated_len = (ntohl(data->payload[1]) & 0xff0000) >> 16;
-                if (stated_len == data->payload_len[1] - 2)
-                        return true;
-
-        }
-
-        if ((MATCH(data->payload[1], 0x16, 0x03, 0x00, ANY) ||
-                        MATCH(data->payload[1], 0x16, 0x03, 0x01, ANY)) &&
-                        MATCH(data->payload[0], 0x80, ANY, 0x01, 0x03)) {
-
-                stated_len = (ntohl(data->payload[0]) & 0xff0000) >> 16;
-                if (stated_len == data->payload_len[0] - 2)
-                        return true;
-
-        }
-        /* Check for unidirectional SSLv2 handshake - i.e. no response */
-        if (data->payload_len[0] == 0 &&
-                        MATCH(data->payload[1], 0x80, ANY, 0x01, 0x03)) {
-                stated_len = (ntohl(data->payload[1]) & 0xff0000) >> 16;
-                if (stated_len == data->payload_len[1] - 2)
-                        return true;
-
-        }
-
-        if (data->payload_len[1] == 0 &&
-                        MATCH(data->payload[0], 0x80, ANY, 0x01, 0x03)) {
-                stated_len = (ntohl(data->payload[0]) & 0xff0000) >> 16;
-                if (stated_len == data->payload_len[0] - 2)
-                        return true;
-
-        }
+	if (data->payload_len[0] == 0 && match_ssl2_handshake(data->payload[1], data->payload_len[1]))
+		return true;
+	if (data->payload_len[1] == 0 && match_ssl2_handshake(data->payload[0], data->payload_len[0]))
+		return true;
 
         return false;
 }
@@ -532,7 +541,7 @@ static inline bool match_invalid(lpi_data_t *data) {
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
         
-	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
+	if (proto_d->payload_len[0] < 4 && proto_d->payload_len[1] < 4)
 		return LPI_PROTO_NO_PAYLOAD;
 	
 	

@@ -195,7 +195,7 @@ static inline bool match_msn_video(lpi_data_t *data) {
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
-	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
+	if (proto_d->payload_len[0] < 4 && proto_d->payload_len[1] < 4)
 		return LPI_PROTO_NO_PAYLOAD;
 
 
