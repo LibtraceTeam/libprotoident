@@ -78,6 +78,8 @@ typedef enum {
 	LPI_PROTO_PANDO,	/* Pando P2P protocol */
 	LPI_PROTO_FLASH,	/* Flash Player specific behaviour */
 	LPI_PROTO_STEAM,	/* Steam TCP download, i.e. downloading games */
+	LPI_PROTO_TRACKMANIA, 	/* Trackmania control protocol */
+	LPI_PROTO_CONQUER,	/* Conquer Online game */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -97,7 +99,9 @@ typedef enum {
         LPI_PROTO_UDP_MSN_VIDEO,
         LPI_PROTO_UDP_COD,     /* Call of Duty game protocol */
         LPI_PROTO_UDP_NTP,
-
+	LPI_PROTO_UDP_MP2P,	/* MP2P protocol (Piolet, Manolito etc.) */
+	LPI_PROTO_UDP_SPAMFIGHTER,	/* SpamFighter */
+	LPI_PROTO_UDP_TRACEROUTE,
 
 	LPI_PROTO_ICMP,
 

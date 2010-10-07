@@ -27,6 +27,38 @@ static inline bool match_gamespy(lpi_data_t *data) {
 
 }
 
+static inline bool match_mp2p(lpi_data_t *data) {
+	/* I'm still a touch uncertain about this one - almost all the 
+	 * examples appear on port 41170 (which is the MP2P port), but the
+	 * first four bytes are supposed to be a checksum. In theory, this
+	 * should differ a lot more than it does, which is where my 
+	 * uncertainty comes from. 
+	 *
+	 * It is possible that they reworked the protocol, or the checksum is
+	 * poorly calculated, I guess.
+	 */
+
+	/* At least one of the endpoints needs to be on the known port */
+	if (data->server_port != 41170 && data->client_port != 41170)
+		return false;
+
+	/* This particular message is one way only */
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;	
+
+	if (match_chars_either(data, 0x3d, 0x4a, 0xd9, ANY))
+		return true;
+	if (match_chars_either(data, 0x3e, 0x4a, 0xd9, ANY))
+		return true;
+	if (match_chars_either(data, 0x3d, 0x4b, 0xd9, ANY))
+		return true;
+	if (match_chars_either(data, 0x3e, 0x4b, 0xd9, ANY))
+		return true;
+
+	return false;
+	
+}		
+
 static inline bool match_steam(lpi_data_t *data) {
 
         /* Master Server Queries begin with 31 ff 30 2e
@@ -87,6 +119,17 @@ static inline bool match_cod(lpi_data_t *data) {
         }
 
         return false;
+}
+
+static inline bool match_traceroute(lpi_data_t *data) {
+
+	/* The iVMG people put payload in their traceroute packets that
+	 * we can easily identify */
+
+	if (match_str_either(data, "iVMG"))
+		return true;
+	return false;
+
 }
 
 static inline bool match_ntp(lpi_data_t *data) {
@@ -211,6 +254,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
         if (match_chars_either(proto_d, 0x02, 0x01, 0x06, 0x00))
                 return LPI_PROTO_UDP_DHCP;
 
+	if (match_traceroute(proto_d)) return LPI_PROTO_UDP_TRACEROUTE;
+
         if (match_steam(proto_d)) return LPI_PROTO_UDP_STEAM;
 
         if (match_cod(proto_d)) return LPI_PROTO_UDP_COD;
@@ -228,10 +273,21 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
         if (match_str_both(proto_d, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
                 return LPI_PROTO_XUNLEI;
+	if (match_str_either(proto_d, "\x32\x00\x00\x00") && 	
+			(proto_d->payload_len[0] == 0 || 
+			proto_d->payload_len[1] == 0))
+		return LPI_PROTO_XUNLEI;
 
+	if (match_mp2p(proto_d)) return LPI_PROTO_UDP_MP2P;
 
         if (match_str_either(proto_d, "VS01"))
                 return LPI_PROTO_UDP_STEAM_FRIENDS;
+
+	if (match_str_either(proto_d, "DISC")) 
+		return LPI_PROTO_UDP_SPAMFIGHTER;
+	if (match_str_either(proto_d, "SCP\x03")) 
+		return LPI_PROTO_UDP_SPAMFIGHTER;
+
 
         if (match_str_either(proto_d, "EYE1"))
                 return LPI_PROTO_UDP_EYE;

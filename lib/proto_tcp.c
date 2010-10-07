@@ -40,6 +40,29 @@ static inline bool match_steam(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_conquer_online(lpi_data_t *data) {
+
+	if (data->payload_len[0] == 5 && data->payload_len[1] == 4 &&
+			MATCH(data->payload[0], 'R', 'E', 'A', 'D'))
+		return true;
+	if (data->payload_len[1] == 5 && data->payload_len[0] == 4 &&
+			MATCH(data->payload[1], 'R', 'E', 'A', 'D'))
+		return true;
+	
+	if (data->payload_len[0] == 4 && (MATCH(data->payload[0], '5', '0', ANY, ANY) ||
+			MATCH(data->payload[0], '5', '1', ANY, ANY)) &&
+			MATCH(data->payload[1], 'U', 'P', 'D', 'A'))
+		return true;
+
+	if (data->payload_len[1] == 4 && (MATCH(data->payload[1], '5', '0', ANY, ANY) ||
+			MATCH(data->payload[1], '5', '1', ANY, ANY)) &&
+			MATCH(data->payload[0], 'U', 'P', 'D', 'A'))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_ftp_data(lpi_data_t *data) {
 
         /* FTP data tends to be a one-way exchange so we shouldn't see
@@ -538,6 +561,24 @@ static inline bool match_invalid(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_trackmania(lpi_data_t *data) {
+
+	if (data->server_port != 3450 && data->client_port != 3450)
+		return false;
+	
+	if (!match_str_both(data, "\x23\x00\x00\x00", "\x13\x00\x00\x00"))
+		return false;
+	
+        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+                return false;
+
+        if (!match_payload_length(data->payload[1], data->payload_len[1]))
+                return false;
+
+	return true;
+
+}
+
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
         
@@ -611,7 +652,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_str_either(proto_d, "@RSY")) return LPI_PROTO_RSYNC;
 
 	/* Pando P2P protocol */
-	if (match_str_both(proto_d, "\x0ePan", "\x0ePan"))
+	if (match_str_either(proto_d, "\x0ePan"))
 		return LPI_PROTO_PANDO;
 
         /* Newsfeeds */
@@ -665,6 +706,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
         /* Azureus Extension */
         if (match_azureus(proto_d)) return LPI_PROTO_AZUREUS;
+
+	if (match_trackmania(proto_d)) return LPI_PROTO_TRACKMANIA;
 
         /* SMB */
         if (match_smb(proto_d)) return LPI_PROTO_SMB;
@@ -809,7 +852,9 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 (proto_d->payload_len[0] == 4 || proto_d->payload_len[1] == 4))
                 return LPI_PROTO_TOR;
 
-        /* Unknown protocol that seems to put the packet length in the first
+	if (match_conquer_online(proto_d)) return LPI_PROTO_CONQUER;
+	
+	/* Unknown protocol that seems to put the packet length in the first
          * octet - XXX Figure out what this is! */
         //if (match_length_proto(proto_d)) return LPI_PROTO_LENGTH;
 

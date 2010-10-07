@@ -244,6 +244,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Flash_Player";
 		case LPI_PROTO_STEAM:
 			return "Steam_TCP";
+		case LPI_PROTO_TRACKMANIA:
+			return "Trackmania";
+		case LPI_PROTO_CONQUER:
+			return "ConquerOnline";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -278,6 +282,12 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "Call_of_Duty";
                 case LPI_PROTO_UDP_NTP:
                         return "NTP";
+		case LPI_PROTO_UDP_MP2P:
+			return "MP2P_UDP";
+		case LPI_PROTO_UDP_SPAMFIGHTER:
+			return "SpamFighter";
+		case LPI_PROTO_UDP_TRACEROUTE:
+			return "Traceroute_UDP";
 
                 default:
                 {
