@@ -59,6 +59,22 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	
 }		
 
+/*
+ * This covers Windows messenger spam over UDP 
+ *
+ * Ref: http://www.mynetwatchman.com/kb/security/articles/popupspam/netsend.htm
+ */
+static inline bool match_messenger_spam(lpi_data_t *data) {
+
+	/* The recipient does not reply */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+
+	if (match_chars_either(data, 0x04, 0x00, ANY, 0x00))
+		return true;
+	return false;
+}
+
 static inline bool match_steam(lpi_data_t *data) {
 
         /* Master Server Queries begin with 31 ff 30 2e
@@ -129,6 +145,28 @@ static inline bool match_traceroute(lpi_data_t *data) {
 	if (match_str_either(data, "iVMG"))
 		return true;
 	return false;
+
+}
+
+static inline bool match_halflife(lpi_data_t *data) {
+
+	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff))
+		return false;
+	if (!MATCH(data->payload[1], 0xff, 0xff, 0xff, 0xff))
+		return false;
+
+	if (data->payload_len[0] == 20 || data->payload_len[1] == 20)
+		return true;
+
+	/*
+	if (data->server_port != 27005 && data->client_port != 27005)
+		return false;
+	if (data->server_port != 27015 && data->client_port != 27015)
+		return false;
+	*/
+
+	return false;
+
 
 }
 
@@ -292,9 +330,17 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
         if (match_str_either(proto_d, "EYE1"))
                 return LPI_PROTO_UDP_EYE;
 
+	if (match_messenger_spam(proto_d))
+		return LPI_PROTO_UDP_WINMESSAGE;
+
         if (match_chars_either(proto_d, 0x80, 0x80, ANY, ANY) &&
                         match_str_either(proto_d, "\x00\x01\x00\x08"))
                 return LPI_PROTO_UDP_RTP;
+
+	if (match_chars_either(proto_d, 0x40, 0x00, 0x00, 0x00))
+		return LPI_PROTO_UDP_SECONDLIFE;
+
+	if (match_halflife(proto_d)) return LPI_PROTO_UDP_HL;
 
         if (match_msn_video(proto_d)) return LPI_PROTO_UDP_MSN_VIDEO;
 

@@ -33,7 +33,6 @@ typedef enum {
         LPI_PROTO_YAHOO,
         LPI_PROTO_ICQ,
         LPI_PROTO_TELNET,
-        LPI_PROTO_RTMP,
         LPI_PROTO_RDP,         /* Windows remote desktop protocol */
         LPI_PROTO_HTTP_IMAGE,  /* Perry's porn check */
         LPI_PROTO_HTTP_MS,     /* Microsoft Exchange extensions to HTTP */
@@ -80,6 +79,8 @@ typedef enum {
 	LPI_PROTO_STEAM,	/* Steam TCP download, i.e. downloading games */
 	LPI_PROTO_TRACKMANIA, 	/* Trackmania control protocol */
 	LPI_PROTO_CONQUER,	/* Conquer Online game */
+	LPI_PROTO_TCP_BULK,	/* Bulk TCP file downloads */
+	LPI_PROTO_RTMP,		/* Adobe RTMP */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -102,6 +103,9 @@ typedef enum {
 	LPI_PROTO_UDP_MP2P,	/* MP2P protocol (Piolet, Manolito etc.) */
 	LPI_PROTO_UDP_SPAMFIGHTER,	/* SpamFighter */
 	LPI_PROTO_UDP_TRACEROUTE,
+	LPI_PROTO_UDP_SECONDLIFE,
+	LPI_PROTO_UDP_HL,	/* Halflife */
+	LPI_PROTO_UDP_WINMESSAGE, 	/* Windows messenger spam via UDP */
 
 	LPI_PROTO_ICMP,
 

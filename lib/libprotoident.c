@@ -248,6 +248,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Trackmania";
 		case LPI_PROTO_CONQUER:
 			return "ConquerOnline";
+		case LPI_PROTO_TCP_BULK:
+			return "Bulk_TCP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -288,6 +290,12 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SpamFighter";
 		case LPI_PROTO_UDP_TRACEROUTE:
 			return "Traceroute_UDP";
+		case LPI_PROTO_UDP_SECONDLIFE:
+			return "SecondLife";
+		case LPI_PROTO_UDP_HL:
+			return "HalfLife";
+		case LPI_PROTO_UDP_WINMESSAGE:
+			return "Messenger_UDP";
 
                 default:
                 {

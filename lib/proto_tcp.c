@@ -40,6 +40,18 @@ static inline bool match_steam(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_rtmp(lpi_data_t *data) {
+
+	if (MATCH(data->payload[0], 0x03, ANY, ANY, ANY) &&
+			MATCH(data->payload[1], 0x03, ANY, ANY, ANY)) {
+
+		return true;
+	}
+	
+	return false;
+
+}
+
 static inline bool match_conquer_online(lpi_data_t *data) {
 
 	if (data->payload_len[0] == 5 && data->payload_len[1] == 4 &&
@@ -578,6 +590,30 @@ static inline bool match_trackmania(lpi_data_t *data) {
 	return true;
 
 }
+	
+/* Bulk download covers files being downloaded through a separate channel,
+ * like FTP data. We identify these by observing file type identifiers at the
+ * start of the packet. This is not a protocol in itself - we cannot identify
+ * the protocol, but we don't want to count this as "unknown" either.
+ */
+static inline bool match_bulk_download(lpi_data_t *data) {	
+
+	/* For now, we also have a rule that there can only be traffic one
+	 * way, as all the protocol control is over another connection */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+
+	/* RIFF is a meta-format for storing AVI and WAV files */
+	if (match_str_either(data, "RIFF"))
+		return true;
+
+	/* MZ is a .exe file */
+	if (match_chars_either(data, 'M', 'Z', ANY, 0x00))
+		return true;
+
+	return false;
+}
+	
 
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
@@ -654,6 +690,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	/* Pando P2P protocol */
 	if (match_str_either(proto_d, "\x0ePan"))
 		return LPI_PROTO_PANDO;
+
+	if (match_bulk_download(proto_d)) return LPI_PROTO_TCP_BULK;
 
         /* Newsfeeds */
         if (match_str_either(proto_d, "mode")) return LPI_PROTO_NNTP;
@@ -863,6 +901,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_tds(proto_d)) return LPI_PROTO_TDS;
 
         if (match_notes_rpc(proto_d)) return LPI_PROTO_NOTES_RPC;
+
+	if (match_rtmp(proto_d)) return LPI_PROTO_RTMP;
 
         /* eMule */
         if (match_emule(proto_d)) return LPI_PROTO_EMULE;
