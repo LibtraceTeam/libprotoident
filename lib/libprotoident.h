@@ -106,6 +106,7 @@ typedef enum {
 	LPI_PROTO_UDP_SECONDLIFE,
 	LPI_PROTO_UDP_HL,	/* Halflife */
 	LPI_PROTO_UDP_WINMESSAGE, 	/* Windows messenger spam via UDP */
+	LPI_PROTO_UDP_XLSP,	/* XLSP - Xbox Live */
 
 	LPI_PROTO_ICMP,
 

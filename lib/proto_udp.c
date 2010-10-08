@@ -170,6 +170,25 @@ static inline bool match_halflife(lpi_data_t *data) {
 
 }
 
+/* XXX Not 100% sure on this because there is little documentation, but I
+ * think this is pretty close */
+static inline bool match_xlsp(lpi_data_t *data) {
+
+	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
+		return false;
+	
+	if (data->payload_len[0] == 122 && data->payload_len[1] == 156)
+		return true;
+	
+	if (data->payload_len[1] == 122 && data->payload_len[0] == 156)
+		return true;
+	
+
+	/* Could also check for port 3074 if we're having false positive
+	 * problems */
+	return false;
+}
+
 static inline bool match_ntp(lpi_data_t *data) {
 
 
@@ -339,6 +358,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_chars_either(proto_d, 0x40, 0x00, 0x00, 0x00))
 		return LPI_PROTO_UDP_SECONDLIFE;
+
+	if (match_xlsp(proto_d)) return LPI_PROTO_UDP_XLSP;
 
 	if (match_halflife(proto_d)) return LPI_PROTO_UDP_HL;
 

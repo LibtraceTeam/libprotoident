@@ -296,6 +296,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "HalfLife";
 		case LPI_PROTO_UDP_WINMESSAGE:
 			return "Messenger_UDP";
+		case LPI_PROTO_UDP_XLSP:
+			return "XboxLive_UDP";
 
                 default:
                 {
