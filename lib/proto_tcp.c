@@ -611,6 +611,18 @@ static inline bool match_bulk_download(lpi_data_t *data) {
 	if (match_chars_either(data, 'M', 'Z', ANY, 0x00))
 		return true;
 
+	/* Ogg files */
+	if (match_str_either(data, "OggS"))
+		return true;
+	
+	/* ZIP files */
+	if (match_chars_either(data, 'P', 'K', 0x03, 0x04))
+		return true;
+
+	/* MPEG files */
+	if (match_chars_either(data, 0x00, 0x00, 0x01, 0xba))
+		return true;
+
 	return false;
 }
 	
@@ -861,6 +873,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_GOKUCHAT;
         if (match_str_both(proto_d, "ok:w", "baut"))
                 return LPI_PROTO_GOKUCHAT;
+
+	if (match_str_either(proto_d, "PUSH")) return LPI_PROTO_TIP;
 
         /* DXP */
         if (match_chars_either(proto_d, 0xb0, 0x04, 0x15, 0x00))

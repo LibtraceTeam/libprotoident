@@ -14,6 +14,8 @@ int lpi_init_data(lpi_data_t *data) {
 	data->trans_proto = 0;
 	data->payload_len[0] = 0;
 	data->payload_len[1] = 0;
+	data->ips[0] = 0;
+	data->ips[1] = 0;
 
 }
 
@@ -25,10 +27,23 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	uint8_t proto = 0;
 	void *transport;
 	uint32_t four_bytes;
-	
+	libtrace_ip_t *ip = NULL;
+
 	if (data->payload_len[dir] != 0)
 		return 0;
 	
+	ip = trace_get_ip(packet);
+	
+	if (ip != NULL && data->ips[0] == 0) {
+		if (dir == 0) {
+			data->ips[0] = ip->ip_src.s_addr;
+			data->ips[1] = ip->ip_dst.s_addr;
+		} else {
+			data->ips[1] = ip->ip_src.s_addr;
+			data->ips[0] = ip->ip_dst.s_addr;
+		}
+	}
+
 	transport = trace_get_transport(packet, &proto, &rem);
 	if (transport == NULL || rem == 0)
 		return 0;		
@@ -250,6 +265,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "ConquerOnline";
 		case LPI_PROTO_TCP_BULK:
 			return "Bulk_TCP";
+		case LPI_PROTO_TIP:
+			return "TIP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -294,10 +311,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SecondLife";
 		case LPI_PROTO_UDP_HL:
 			return "HalfLife";
-		case LPI_PROTO_UDP_WINMESSAGE:
-			return "Messenger_UDP";
 		case LPI_PROTO_UDP_XLSP:
 			return "XboxLive_UDP";
+		case LPI_PROTO_UDP_DEMONWARE:
+			return "Demonware";
 
                 default:
                 {

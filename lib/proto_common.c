@@ -50,3 +50,30 @@ inline bool match_payload_length(uint32_t payload, uint32_t payload_len) {
         return false;
 }
 
+inline bool match_ip_address_both(lpi_data_t *data) {
+
+	uint8_t matches = 0;
+
+	if (data->ips[0] == 0 || data->ips[0] == 0)
+		return false;
+	
+	if (data->payload_len[0] == 0)
+		matches += 1;
+	else if (data->payload[0] == data->ips[0])
+		matches += 1;
+	else if (data->payload[0] == data->ips[1])
+		matches += 1;
+		
+	if (data->payload_len[1] == 0)
+		matches += 1;
+	else if (data->payload[1] == data->ips[0])
+		matches += 1;
+	else if (data->payload[1] == data->ips[1])
+		matches += 1;
+	 
+	if (matches == 2)
+		return true;
+	else
+		return false;
+	
+}

@@ -81,6 +81,7 @@ typedef enum {
 	LPI_PROTO_CONQUER,	/* Conquer Online game */
 	LPI_PROTO_TCP_BULK,	/* Bulk TCP file downloads */
 	LPI_PROTO_RTMP,		/* Adobe RTMP */
+	LPI_PROTO_TIP,		/* Transaction Internet Protocol */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -105,8 +106,8 @@ typedef enum {
 	LPI_PROTO_UDP_TRACEROUTE,
 	LPI_PROTO_UDP_SECONDLIFE,
 	LPI_PROTO_UDP_HL,	/* Halflife */
-	LPI_PROTO_UDP_WINMESSAGE, 	/* Windows messenger spam via UDP */
 	LPI_PROTO_UDP_XLSP,	/* XLSP - Xbox Live */
+	LPI_PROTO_UDP_DEMONWARE,	/* Company that does game networking */
 
 	LPI_PROTO_ICMP,
 
@@ -123,6 +124,7 @@ typedef struct lpi {
 	uint16_t client_port;
 	uint8_t trans_proto;
 	uint32_t payload_len[2];
+	uint32_t ips[2];
 } lpi_data_t;
 
 int lpi_init_data(lpi_data_t *data);

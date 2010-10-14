@@ -42,10 +42,6 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	if (data->server_port != 41170 && data->client_port != 41170)
 		return false;
 
-	/* This particular message is one way only */
-	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
-		return false;	
-
 	if (match_chars_either(data, 0x3d, 0x4a, 0xd9, ANY))
 		return true;
 	if (match_chars_either(data, 0x3e, 0x4a, 0xd9, ANY))
@@ -73,6 +69,43 @@ static inline bool match_messenger_spam(lpi_data_t *data) {
 	if (match_chars_either(data, 0x04, 0x00, ANY, 0x00))
 		return true;
 	return false;
+}
+
+/* http://wiki.limewire.org/index.php?title=Out_of_Band_System */
+static inline bool match_gnutella_oob(lpi_data_t *data) {
+
+	if (!match_ip_address_both(data))
+		return false;
+	
+	/* Payload size seems to be either 32 or 33 bytes */
+	if (data->payload_len[0] == 32 || data->payload_len[1] == 32)
+		return true;
+	if (data->payload_len[0] == 33 || data->payload_len[1] == 33)
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_gnutella(lpi_data_t *data) {
+
+	/* According to http://www.symantec.com/connect/articles/identifying-p2p-users-using-traffic-analysis, Limewire and BearShare (which are based on
+	 * Gnutella) will send lots of 23 byte UDP packets when a file transfer
+	 * begins */
+
+	/* This occurs one-way only */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+
+	/* The UDP communication begins with all zeroes */
+	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
+		return false;
+	
+	if (data->payload_len[0] == 23 || data->payload_len[1] == 23)
+		return true;
+	
+	return false;
+
 }
 
 static inline bool match_steam(lpi_data_t *data) {
@@ -183,10 +216,48 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	if (data->payload_len[1] == 122 && data->payload_len[0] == 156)
 		return true;
 	
+	if (data->payload_len[0] == 82 && data->payload_len[1] == 122)
+		return true;
+	
+	if (data->payload_len[1] == 122 && data->payload_len[0] == 82)
+		return true;
 
+	if (data->payload_len[0] == 82 && data->payload_len[1] == 0)
+		return true;
+	
+	if (data->payload_len[1] == 0 && data->payload_len[0] == 82)
+		return true;
+	
+	if (data->payload_len[0] == 156 && data->payload_len[1] == 0)
+		return true;
+	
+	if (data->payload_len[1] == 0 && data->payload_len[0] == 156)
+		return true;
 	/* Could also check for port 3074 if we're having false positive
 	 * problems */
 	return false;
+}
+
+static inline bool match_demonware(lpi_data_t *data) {
+
+	/* Demonware bandwidth testing involves sending a series of 1024
+	 * byte packets to a known server - each packet has an incrementing
+	 * seqno, starting from zero */
+	
+	/* The recipient does not reply */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+
+	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
+		return false;
+
+	if (data->payload_len[0] == 1024 || data->payload_len[1] == 1024)
+		return true;
+
+	/* Could also check for port 3075 if needed */
+
+	return false;
+
 }
 
 static inline bool match_ntp(lpi_data_t *data) {
@@ -324,9 +395,10 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
         if (match_chars_either(proto_d, 'G', 'N', 'D', ANY))
                 return LPI_PROTO_UDP_GNUTELLA;
-
-        if (match_chars_either(proto_d, 0x04, 0x00, 'x', 0x00))
-                return LPI_PROTO_UDP_WIN_MESSAGE;
+	if (match_gnutella_oob(proto_d))
+                return LPI_PROTO_UDP_GNUTELLA;
+	if (match_gnutella(proto_d))
+		return LPI_PROTO_UDP_GNUTELLA;
 
         if (match_str_both(proto_d, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
                 return LPI_PROTO_XUNLEI;
@@ -350,7 +422,7 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
                 return LPI_PROTO_UDP_EYE;
 
 	if (match_messenger_spam(proto_d))
-		return LPI_PROTO_UDP_WINMESSAGE;
+		return LPI_PROTO_UDP_WIN_MESSAGE;
 
         if (match_chars_either(proto_d, 0x80, 0x80, ANY, ANY) &&
                         match_str_either(proto_d, "\x00\x01\x00\x08"))
@@ -360,6 +432,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_SECONDLIFE;
 
 	if (match_xlsp(proto_d)) return LPI_PROTO_UDP_XLSP;
+
+	if (match_demonware(proto_d)) return LPI_PROTO_UDP_DEMONWARE;
 
 	if (match_halflife(proto_d)) return LPI_PROTO_UDP_HL;
 

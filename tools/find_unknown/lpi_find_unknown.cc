@@ -158,6 +158,9 @@ void per_packet(libtrace_packet_t *packet) {
         if (l3_type != 0x0800) return;
         if (ip == NULL) return;
 
+	/* Expire all suitably idle flows */
+        ts = trace_get_seconds(packet);
+        expire_unknown_flows(ts, false);
 
 	/* Many trace formats do not support direction tagging (e.g. PCAP), so
 	 * using trace_get_direction() is not an ideal approach. The one we
@@ -183,11 +186,11 @@ void per_packet(libtrace_packet_t *packet) {
 
 	/* Libflowmanager did not like something about that packet - best to
 	 * just ignore it and carry on */
-        if (f == NULL)
+        if (f == NULL) {
                 return;
+	}
 
         tcp = trace_get_tcp(packet);
-        ts = trace_get_seconds(packet);
 	/* If the returned flow is new, you will probably want to allocate and
 	 * initialise any custom data that you intend to track for the flow */
         if (is_new) {
@@ -219,8 +222,6 @@ void per_packet(libtrace_packet_t *packet) {
         /* Tell libflowmanager to update the expiry time for this flow */
         lfm_update_flow_expiry_timeout(f, ts);
 
-	/* Expire all suitably idle flows */
-        expire_unknown_flows(ts, false);
 
 }
 
