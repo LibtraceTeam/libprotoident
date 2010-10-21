@@ -267,6 +267,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Bulk_TCP";
 		case LPI_PROTO_TIP:
 			return "TIP";
+		case LPI_PROTO_P2P_HTTP:
+			return "HTTP_P2P";
+		case LPI_PROTO_HARVEYS:
+			return "Harveys";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -315,6 +319,14 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "XboxLive_UDP";
 		case LPI_PROTO_UDP_DEMONWARE:
 			return "Demonware";
+		case LPI_PROTO_UDP_IMESH:
+			return "iMesh";
+		case LPI_PROTO_UDP_OPASERV:
+			return "Opaserv";
+		case LPI_PROTO_UDP_STUN:
+			return "STUN";
+		case LPI_PROTO_UDP_SQLEXP:
+			return "SQLExp";
 
                 default:
                 {

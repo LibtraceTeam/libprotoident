@@ -4,6 +4,16 @@
 #include "proto_tcp.h"
 
 static inline bool match_smtp(lpi_data_t *data) {
+
+
+	/* Match 421 reply codes */	
+	if (data->payload_len[0] == 0 &&
+			MATCH(data->payload[1], '4', '2', '1', ' '))
+		return true;
+	if (data->payload_len[1] == 0 &&
+			MATCH(data->payload[0], '4', '2', '1', ' '))
+		return true;
+	
 	
 	if (data->payload_len[0] == 1) {
 		if (!MATCH(data->payload[0], '2', 0x00, 0x00, 0x00))
@@ -623,9 +633,77 @@ static inline bool match_bulk_download(lpi_data_t *data) {
 	if (match_chars_either(data, 0x00, 0x00, 0x01, 0xba))
 		return true;
 
+	/* RAR files */
+	if (match_str_either(data, "Rar!"))
+		return true;
+
 	return false;
 }
 	
+static inline bool match_http_request(lpi_data_t *data) {
+
+        /* HTTP requests */
+
+        if (match_str_either(data, "GET ")) {
+		
+		/* Must be on a known HTTP port - designed to filter 
+		 * out P2P protos that use HTTP.
+		 *
+		 * XXX If this doesn't work well, get rid of it!
+		*/
+		if (data->server_port == 80 || data->client_port == 80)
+			return true;
+		if (data->server_port == 8080 || data->client_port == 8080)
+			return true;
+	}
+        if (match_str_either(data, "POST")) return true;
+        if (match_str_either(data, "HEAD")) return true;
+        if (match_str_either(data, "PUT ")) return true;
+
+	return false;
+
+}
+
+static inline bool match_http_response(lpi_data_t *data) {
+        if (match_str_either(data, "HTTP")) {
+		
+		/* Must be on a known HTTP port - designed to filter 
+		 * out P2P protos that use HTTP.
+		 *
+		 * XXX If this doesn't work well, get rid of it!
+		*/
+		if (data->server_port == 80 || data->client_port == 80)
+			return true;
+		if (data->server_port == 8080 || data->client_port == 8080)
+			return true;
+	}
+	
+	return false;
+
+	
+}
+
+/* Trying to match stuff like KaZaA and Gnutella transfers that base their
+ * communications on HTTP */
+static inline bool match_p2p_http(lpi_data_t *data) {
+
+	if (!match_str_both(data, "GET ", "HTTP"))
+		return false;
+
+	/* Must not be on a known HTTP port
+	 *
+	 * XXX I know that people will still try to use port 80 for their
+	 * warezing, but we want to at least try and get the most obvious 
+	 * HTTP-based P2P
+	 */	
+	if (data->server_port == 80 || data->client_port == 80)
+		return false;
+	if (data->server_port == 8080 || data->client_port == 8080)
+		return false;
+
+	return true;
+
+}
 
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
@@ -654,13 +732,11 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_http_tunnel(proto_d)) return LPI_PROTO_HTTP_TUNNEL;
 
         /* HTTP response */
-        if (match_str_either(proto_d, "HTTP")) return LPI_PROTO_HTTP;
-        /* HTTP requests */
-        if (match_str_either(proto_d, "GET ")) return LPI_PROTO_HTTP;
-        if (match_str_either(proto_d, "POST")) return LPI_PROTO_HTTP;
-        if (match_str_either(proto_d, "HEAD")) return LPI_PROTO_HTTP;
-        if (match_str_either(proto_d, "PUT ")) return LPI_PROTO_HTTP;
-        //if (match_str_either(proto_d, "OPTI")) return LPI_PROTO_HTTP;
+	if (match_http_response(proto_d)) return LPI_PROTO_HTTP;
+	if (match_http_request(proto_d)) return LPI_PROTO_HTTP;
+
+	if (match_p2p_http(proto_d)) return LPI_PROTO_P2P_HTTP;
+
         if (match_str_either(proto_d, "auth")) return LPI_PROTO_HTTP;
         /* Microsoft extensions to HTTP */
         if (match_str_either(proto_d, "SEAR")) return LPI_PROTO_HTTP_MS;
@@ -689,6 +765,11 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         /* POP3 */
         if (match_chars_either(proto_d, '+','O','K',ANY))
                 return LPI_PROTO_POP3;
+
+	/* Harveys - a seemingly custom protocol used by Harveys Real
+	 * Estate to transfer photos. Common in ISP C traces */
+	if (match_str_both(proto_d, "77;T", "47;T"))
+		return LPI_PROTO_HARVEYS;
 
         /* IMAP seems to start with "* OK" */
         if (match_str_either(proto_d, "* OK")) return LPI_PROTO_IMAP;

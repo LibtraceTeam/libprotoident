@@ -28,15 +28,6 @@ static inline bool match_gamespy(lpi_data_t *data) {
 }
 
 static inline bool match_mp2p(lpi_data_t *data) {
-	/* I'm still a touch uncertain about this one - almost all the 
-	 * examples appear on port 41170 (which is the MP2P port), but the
-	 * first four bytes are supposed to be a checksum. In theory, this
-	 * should differ a lot more than it does, which is where my 
-	 * uncertainty comes from. 
-	 *
-	 * It is possible that they reworked the protocol, or the checksum is
-	 * poorly calculated, I guess.
-	 */
 
 	/* At least one of the endpoints needs to be on the known port */
 	if (data->server_port != 41170 && data->client_port != 41170)
@@ -54,6 +45,19 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	return false;
 	
 }		
+
+static inline bool match_sql_worm(lpi_data_t *data) {
+
+	/* The recipient does not reply (with any luck!) */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+
+	if (match_chars_either(data, 0x04, 0x01, 0x01, 0x01))
+		return true;
+
+	return false;
+
+}
 
 /*
  * This covers Windows messenger spam over UDP 
@@ -181,6 +185,25 @@ static inline bool match_traceroute(lpi_data_t *data) {
 
 }
 
+/* XXX Not really sure on this one - based on the code from OpenDPI but I
+ * can't find any documentation that confirms this */
+static inline bool match_imesh(lpi_data_t *data) {
+
+	/* The recipient does not reply */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+	
+	/* All packets are 36 bytes */
+	if (data->payload_len[0] != 36 && data->payload_len[1] != 36)
+		return false;
+		
+	if (match_chars_either(data, 0x02, 0x00, 0x00, 0x00))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_halflife(lpi_data_t *data) {
 
 	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff))
@@ -203,6 +226,73 @@ static inline bool match_halflife(lpi_data_t *data) {
 
 }
 
+static inline bool match_other_btudp(lpi_data_t *data) {
+
+	/* I have not been able to figure out exactly what this stuff
+	 * is, but I'm pretty confident it is somehow related to a
+	 * BitTorrent implementation or two */
+
+	/* The recipient does not reply */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+	
+	if (!(match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00")))
+		return false;
+
+	if (data->payload_len[0] == 14 || data->payload_len[0] == 18)
+		return true;
+	if (data->payload_len[1] == 14 || data->payload_len[1] == 18)
+		return true;
+
+	return false;	
+
+}
+
+static inline bool match_vuze_dht_reply(lpi_data_t *data) {
+
+	/* Each reply action is an odd number */
+		
+	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x01))
+		return true;
+	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x03))
+		return true;
+	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x05))
+		return true;
+	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x07))
+		return true;
+
+	return false;
+	
+
+}
+
+static inline bool match_vuze_dht(lpi_data_t *data) {
+
+	/* We can only match replies, because the requests all begin with
+	 * a random connection ID. However, the connection ID must have
+	 * the MSB set to 1, which will help a bit! */
+
+	/* Let's make sure we have a reply first! */
+	if (!match_vuze_dht_reply(data))
+		return false;
+
+	/* If there is no data in the opposite direction, it must be some
+	 * kind of delayed or unsolicited reply (?) */
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+		return true;
+	
+	/* Otherwise, make sure the other end has an MSB set to 1 */
+	if ((data->payload[0] & 0x80000000) == 0x80000000)
+		return true;
+	if ((data->payload[1] & 0x80000000) == 0x80000000)
+		return true;
+	
+	return false;	
+	
+
+
+}
+
 /* XXX Not 100% sure on this because there is little documentation, but I
  * think this is pretty close */
 static inline bool match_xlsp(lpi_data_t *data) {
@@ -210,6 +300,11 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
 		return false;
 	
+	/* Enforce port 3074 being involved, to reduce false positive rate for
+	 * one-way transactions */
+	if (data->server_port != 3074 && data->client_port != 3074)
+		return false;
+
 	if (data->payload_len[0] == 122 && data->payload_len[1] == 156)
 		return true;
 	
@@ -233,8 +328,13 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	
 	if (data->payload_len[1] == 0 && data->payload_len[0] == 156)
 		return true;
-	/* Could also check for port 3074 if we're having false positive
-	 * problems */
+	
+	if (data->payload_len[0] == 122 && data->payload_len[1] == 0)
+		return true;
+	
+	if (data->payload_len[1] == 0 && data->payload_len[0] == 122)
+		return true;
+
 	return false;
 }
 
@@ -344,6 +444,23 @@ static inline bool match_ntp(lpi_data_t *data) {
         return false;
 }
 
+/* Matches the Opaserv worm that attacks UDP port 137
+ * Ref: http://www.usenix.org/events/osdi04/tech/full_papers/singh/singh_html/
+ */
+static inline bool match_opaserv(lpi_data_t *data) {
+
+	/* The recipient does not reply (usually) */
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+	
+	if (data->server_port != 137 && data->client_port != 137)
+		return false;
+
+	if (match_chars_either(data, 0x01, 0x00, 0x00, 0x10))
+		return true;
+
+	return false;
+}
 
 static inline bool match_msn_video(lpi_data_t *data) {
 
@@ -364,17 +481,51 @@ static inline bool match_msn_video(lpi_data_t *data) {
         return true;
 }
 
+static inline bool match_stun(lpi_data_t *data) {
+
+	if (!match_chars_either(data, 0x01, 0x01, 0x00, 0x24))
+		return false;
+
+	/* Bytes 3 and 4 are the Message Length - the STUN header */
+	
+	if (match_payload_length(data->payload[0] & 0x0000ffff, data->payload_len[0] - 20) || 
+			match_payload_length(data->payload[1] & 0x0000ffff, data->payload_len[1] -20))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_sip(lpi_data_t *data) {
+
+        if (match_chars_either(data, 'S', 'I', 'P', ANY))
+		return true;
+	
+	if (match_str_either(data, "OPTI") && 
+			(data->payload_len[0] == 0 || 
+			data->payload_len[1] == 0))
+		return true;
+
+	return false;
+	
+
+
+}
+
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (proto_d->payload_len[0] < 4 && proto_d->payload_len[1] < 4)
 		return LPI_PROTO_NO_PAYLOAD;
 
 
-        if (match_chars_either(proto_d, 'S', 'I', 'P', ANY))
+        if (match_sip(proto_d))
                 return LPI_PROTO_UDP_SIP;
 
+	/* XXX May want to separate Vuze DHT from the other DHT at some point */
         if (match_chars_either(proto_d, 'd', '1', ':', ANY))
                 return LPI_PROTO_UDP_BTDHT;
+	if (match_vuze_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
+
 
         if (match_chars_either(proto_d, 0x01, 0x01, 0x06, 0x00))
                 return LPI_PROTO_UDP_DHCP;
@@ -387,6 +538,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
         if (match_steam(proto_d)) return LPI_PROTO_UDP_STEAM;
 
         if (match_cod(proto_d)) return LPI_PROTO_UDP_COD;
+
+	if (match_stun(proto_d)) return LPI_PROTO_UDP_STUN;
 
         /*
         if (match_str_both(proto_d, "\xff\xff\xff\xff", "\xff\xff\xff\xff"))
@@ -406,6 +559,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 			(proto_d->payload_len[0] == 0 || 
 			proto_d->payload_len[1] == 0))
 		return LPI_PROTO_XUNLEI;
+
+	if (match_opaserv(proto_d)) return LPI_PROTO_UDP_OPASERV;
 
 	if (match_mp2p(proto_d)) return LPI_PROTO_UDP_MP2P;
 
@@ -431,6 +586,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_chars_either(proto_d, 0x40, 0x00, 0x00, 0x00))
 		return LPI_PROTO_UDP_SECONDLIFE;
 
+	if (match_sql_worm(proto_d)) return LPI_PROTO_UDP_SQLEXP;
+
 	if (match_xlsp(proto_d)) return LPI_PROTO_UDP_XLSP;
 
 	if (match_demonware(proto_d)) return LPI_PROTO_UDP_DEMONWARE;
@@ -441,7 +598,13 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
         if (match_ntp(proto_d)) return LPI_PROTO_UDP_NTP;
 
-        if (match_dns(proto_d))
+	if (match_imesh(proto_d)) return LPI_PROTO_UDP_IMESH;
+
+	/* Not sure what exactly this is, but I'm pretty sure it is related to
+	 * BitTorrent */
+	if (match_other_btudp(proto_d)) return LPI_PROTO_UDP_BTDHT;
+        
+	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
 
         if (match_emule(proto_d))

@@ -82,6 +82,8 @@ typedef enum {
 	LPI_PROTO_TCP_BULK,	/* Bulk TCP file downloads */
 	LPI_PROTO_RTMP,		/* Adobe RTMP */
 	LPI_PROTO_TIP,		/* Transaction Internet Protocol */
+	LPI_PROTO_P2P_HTTP,	/* P2P over HTTP, a la KaZaA and Gnutella */
+	LPI_PROTO_HARVEYS,	/* Photo transfers for Harveys Real Estate */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -108,6 +110,10 @@ typedef enum {
 	LPI_PROTO_UDP_HL,	/* Halflife */
 	LPI_PROTO_UDP_XLSP,	/* XLSP - Xbox Live */
 	LPI_PROTO_UDP_DEMONWARE,	/* Company that does game networking */
+	LPI_PROTO_UDP_IMESH,	/* iMesh */
+	LPI_PROTO_UDP_OPASERV,	/* Opaserv worm */
+	LPI_PROTO_UDP_STUN,	/* STUN NAT traversal */
+	LPI_PROTO_UDP_SQLEXP,	/* MS SQL Server worm, called SQLExp */
 
 	LPI_PROTO_ICMP,
 
