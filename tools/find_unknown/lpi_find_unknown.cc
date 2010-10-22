@@ -69,6 +69,8 @@ void dump_payload(lpi_data_t lpi, uint8_t dir) {
 		pl ++;
 	}
 
+	printf(" %u", lpi.payload_len[dir]);
+	
 	printf(" ");
 
 }

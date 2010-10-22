@@ -928,6 +928,14 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_dns(proto_d))
                 return LPI_PROTO_DNS;
 
+	/* Shoutcast client requests */
+	if (match_str_both(proto_d, "GET ", "ICY "))
+		return LPI_PROTO_SHOUTCAST;
+	/* Incoming source connections - other direction sends a plain-text
+	 * password */
+	if (match_chars_either(proto_d, 'O', 'K', '2', 0x0d))
+		return LPI_PROTO_SHOUTCAST;
+
         /* SIP */
         if (match_str_both(proto_d, "SIP/", "REGI"))
                 return LPI_PROTO_SIP;

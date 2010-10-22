@@ -271,6 +271,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "HTTP_P2P";
 		case LPI_PROTO_HARVEYS:
 			return "Harveys";
+		case LPI_PROTO_SHOUTCAST:
+			return "Shoutcast";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -327,6 +329,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "STUN";
 		case LPI_PROTO_UDP_SQLEXP:
 			return "SQLExp";
+		case LPI_PROTO_UDP_MSN_CACHE:
+			return "MSN_Cache";
 
                 default:
                 {

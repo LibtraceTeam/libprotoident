@@ -97,17 +97,40 @@ static inline bool match_gnutella(lpi_data_t *data) {
 	 * Gnutella) will send lots of 23 byte UDP packets when a file transfer
 	 * begins */
 
-	/* This occurs one-way only */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-
 	/* The UDP communication begins with all zeroes */
 	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
 		return false;
 	
-	if (data->payload_len[0] == 23 || data->payload_len[1] == 23)
+	/* First packet is 23 bytes, but there can also be no packet in one
+	 * direction */
+
+	if (data->payload_len[0] != 0 && data->payload_len[0] != 23)
+		return false;
+	if (data->payload_len[1] != 0 && data->payload_len[1] != 23)
+		return false;
+
+	return true;
+
+}
+
+/* http://xbtt.sourceforge.net/udp_tracker_protocol.html */
+static inline bool match_xbt_tracker(lpi_data_t *data) {
+
+	if (data->payload_len[0] != 0 && data->payload_len[0] != 16)
+		return false;
+	if (data->payload_len[1] != 0 && data->payload_len[1] != 16)
+		return false;
+
+	if (!match_chars_either(data, 0x00, 0x00, 0x04, 0x17))
+		return false;
+
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
 		return true;
 	
+	if (data->payload_len[0] == 16 && data->payload_len[1] == 16 &&
+			match_chars_either(data, 0x00, 0x00, 0x00, 0x00))
+		return true;
+
 	return false;
 
 }
@@ -299,12 +322,12 @@ static inline bool match_xlsp(lpi_data_t *data) {
 
 	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
 		return false;
-	
+
 	/* Enforce port 3074 being involved, to reduce false positive rate for
 	 * one-way transactions */
 	if (data->server_port != 3074 && data->client_port != 3074)
 		return false;
-
+	
 	if (data->payload_len[0] == 122 && data->payload_len[1] == 156)
 		return true;
 	
@@ -320,21 +343,21 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	if (data->payload_len[0] == 82 && data->payload_len[1] == 0)
 		return true;
 	
-	if (data->payload_len[1] == 0 && data->payload_len[0] == 82)
+	if (data->payload_len[0] == 0 && data->payload_len[1] == 82)
 		return true;
 	
 	if (data->payload_len[0] == 156 && data->payload_len[1] == 0)
 		return true;
 	
-	if (data->payload_len[1] == 0 && data->payload_len[0] == 156)
+	if (data->payload_len[0] == 0 && data->payload_len[1] == 156)
 		return true;
 	
 	if (data->payload_len[0] == 122 && data->payload_len[1] == 0)
 		return true;
 	
-	if (data->payload_len[1] == 0 && data->payload_len[0] == 122)
+	if (data->payload_len[0] == 0 && data->payload_len[1] == 122)
 		return true;
-
+	
 	return false;
 }
 
@@ -481,15 +504,33 @@ static inline bool match_msn_video(lpi_data_t *data) {
         return true;
 }
 
+static inline bool match_msn_cache(lpi_data_t *data) {
+
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;
+
+	/* These packets seem to be 20 bytes */
+	if (data->payload_len[0] != 20 && data->payload_len[1] != 20)
+		return false;
+
+	if (match_chars_either(data, 0x02, 0x04, 0x00, 0x00))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_stun(lpi_data_t *data) {
 
 	if (!match_chars_either(data, 0x01, 0x01, 0x00, 0x24))
 		return false;
 
-	/* Bytes 3 and 4 are the Message Length - the STUN header */
+	/* Bytes 3 and 4 are the Message Length - the STUN header 
+	 *
+	 * XXX Byte ordering is a cock! */
 	
-	if (match_payload_length(data->payload[0] & 0x0000ffff, data->payload_len[0] - 20) || 
-			match_payload_length(data->payload[1] & 0x0000ffff, data->payload_len[1] -20))
+	if (match_payload_length(data->payload[0] & 0xffff0000, data->payload_len[0] - 20) || 
+			match_payload_length(data->payload[1] & 0xffff0000, data->payload_len[1] -20))
 		return true;
 
 	return false;
@@ -508,9 +549,65 @@ static inline bool match_sip(lpi_data_t *data) {
 
 	return false;
 	
+}
 
+static inline bool is_emule_udp(uint32_t payload, uint32_t len) {
+	
+	/* Mainly looking at Kad stuff here - Kad packets start with 0xe4
+	 * for uncompressed and 0xe5 for compressed data */
+
+	/* There's also a packet that begins with c5 - emule Extensions */
+
+	/* Compressed stuff seems to always begin the same */
+	if (MATCH(payload, 0xe5, 0x43, ANY, ANY))
+		return true;
+
+	/* Have only observed this particular extension packet so far */
+	if (MATCH(payload, 0xc5, 0x94, ANY, ANY))
+		return true;
+	
+	/* There are a few different codes used by 0xe4 packets - but they
+	 * all seem to have the same length */
+	if (MATCH(payload, 0xe4, 0x52, ANY, ANY) && len == 36)
+		return true;
+	if (MATCH(payload, 0xe4, 0x21, ANY, ANY) && len == 35)
+		return true;
+	if (MATCH(payload, 0xe4, 0x11, ANY, ANY) && len == 38)
+		return true;
+	if (MATCH(payload, 0xe4, 0x20, ANY, ANY) && len == 35)
+		return true;
+	if (MATCH(payload, 0xe4, 0x10, ANY, ANY) && len == 27)
+		return true;
+	if (MATCH(payload, 0xe4, 0x29, ANY, ANY) && (len == 69 || len == 119))
+		return true;
+	if (MATCH(payload, 0xe4, 0x28, ANY, ANY) && (len == 69 || len == 119))
+		return true;
+	
+	return false;	
 
 }
+
+static inline bool match_emule_udp(lpi_data_t *data) {
+
+
+	if (data->payload_len[0] == 0 && 
+			is_emule_udp(data->payload[1], data->payload_len[1])) {
+		return true;
+	}
+
+	if (data->payload_len[1] == 0 && 
+			is_emule_udp(data->payload[0], data->payload_len[0])) {
+		return true;
+	}
+
+	if (is_emule_udp(data->payload[0], data->payload_len[0]) &&
+			is_emule_udp(data->payload[1], data->payload[1]))
+		return true;
+
+	return false;
+
+}
+
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
@@ -525,6 +622,7 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
         if (match_chars_either(proto_d, 'd', '1', ':', ANY))
                 return LPI_PROTO_UDP_BTDHT;
 	if (match_vuze_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
+	if (match_xbt_tracker(proto_d)) return LPI_PROTO_UDP_BTDHT;
 
 
         if (match_chars_either(proto_d, 0x01, 0x01, 0x06, 0x00))
@@ -596,6 +694,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
         if (match_msn_video(proto_d)) return LPI_PROTO_UDP_MSN_VIDEO;
 
+	if (match_msn_cache(proto_d)) return LPI_PROTO_UDP_MSN_CACHE;
+
         if (match_ntp(proto_d)) return LPI_PROTO_UDP_NTP;
 
 	if (match_imesh(proto_d)) return LPI_PROTO_UDP_IMESH;
@@ -607,7 +707,9 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
 
-        if (match_emule(proto_d))
+        if (match_emule_udp(proto_d))
+		return LPI_PROTO_UDP_EMULE;
+	if (match_emule(proto_d))
                 return LPI_PROTO_UDP_EMULE;
 
 	/* XXX Starcraft seems to set the first four bytes of every packet to 00 00 00 00,
