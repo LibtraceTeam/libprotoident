@@ -197,6 +197,26 @@ static inline bool match_blizzard(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_http_badport(lpi_data_t *data) {
+
+	/* For some reason, some clients send GET messages to servers on
+	 * port 443, which unsurprisingly do not respond. I'm putting this
+	 * in a separate category to avoid mixing it in with legitimate
+	 * HTTP traffic */
+
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;
+
+	if (!match_str_either(data, "GET "))
+		return false;
+
+	if (data->server_port == 443 || data->client_port == 443)
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_xunlei(lpi_data_t *data) {
 
         /*
@@ -600,6 +620,44 @@ static inline bool match_trackmania(lpi_data_t *data) {
 	return true;
 
 }
+
+static inline bool match_file_header(uint32_t payload) {
+
+	/* RIFF is a meta-format for storing AVI and WAV files */
+	if (MATCHSTR(payload, "RIFF"))
+		return true;
+
+	/* MZ is a .exe file */
+	if (MATCH(payload, 'M', 'Z', ANY, 0x00))
+		return true;
+
+	/* Ogg files */
+	if (MATCHSTR(payload, "OggS"))
+		return true;
+	
+	/* ZIP files */
+	if (MATCH(payload, 'P', 'K', 0x03, 0x04))
+		return true;
+
+	/* MPEG files */
+	if (MATCH(payload, 0x00, 0x00, 0x01, 0xba))
+		return true;
+
+	/* RAR files */
+	if (MATCHSTR(payload, "Rar!"))
+		return true;
+	
+	/* EBML */
+	if (MATCH(payload, 0x1a, 0x45, 0xdf, 0xa3))
+		return true;
+
+	/* JPG */
+	if (MATCH(payload, 0xff, 0xd8, ANY, ANY))
+		return true;
+
+	return false;
+
+}
 	
 /* Bulk download covers files being downloaded through a separate channel,
  * like FTP data. We identify these by observing file type identifiers at the
@@ -613,31 +671,34 @@ static inline bool match_bulk_download(lpi_data_t *data) {
 	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
 		return false;
 
-	/* RIFF is a meta-format for storing AVI and WAV files */
-	if (match_str_either(data, "RIFF"))
-		return true;
-
-	/* MZ is a .exe file */
-	if (match_chars_either(data, 'M', 'Z', ANY, 0x00))
-		return true;
-
-	/* Ogg files */
-	if (match_str_either(data, "OggS"))
-		return true;
-	
-	/* ZIP files */
-	if (match_chars_either(data, 'P', 'K', 0x03, 0x04))
-		return true;
-
-	/* MPEG files */
-	if (match_chars_either(data, 0x00, 0x00, 0x01, 0xba))
-		return true;
-
-	/* RAR files */
-	if (match_str_either(data, "Rar!"))
+	if (match_file_header(data->payload[0]) || 
+			match_file_header(data->payload[1]))
 		return true;
 
 	return false;
+}
+
+static inline bool match_postgresql(lpi_data_t *data) {
+
+	/* Client start up messages start with a 4 byte length */
+	/* Server auth requests start with 'R', followed by 4 bytes of length
+	 *
+	 * All auth requests tend to be quite small */
+
+	if (match_payload_length(ntohl(data->payload[0]), data->payload_len[0]))
+	{
+		if (MATCH(data->payload[1], 0x52, 0x00, 0x00, 0x00))
+			return true;
+	}
+	
+	if (match_payload_length(ntohl(data->payload[1]), data->payload_len[1]))
+	{
+		if (MATCH(data->payload[0], 0x52, 0x00, 0x00, 0x00))
+			return true;
+	}
+
+	return false;
+
 }
 	
 static inline bool match_http_request(lpi_data_t *data) {
@@ -687,7 +748,7 @@ static inline bool match_http_response(lpi_data_t *data) {
  * communications on HTTP */
 static inline bool match_p2p_http(lpi_data_t *data) {
 
-	if (!match_str_both(data, "GET ", "HTTP"))
+	if (match_str_either(data, "HTTP"))
 		return false;
 
 	/* Must not be on a known HTTP port
@@ -736,6 +797,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_http_request(proto_d)) return LPI_PROTO_HTTP;
 
 	if (match_p2p_http(proto_d)) return LPI_PROTO_P2P_HTTP;
+	if (match_http_badport(proto_d)) return LPI_PROTO_HTTP_BADPORT;
 
         if (match_str_either(proto_d, "auth")) return LPI_PROTO_HTTP;
         /* Microsoft extensions to HTTP */
@@ -1000,6 +1062,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         //if (match_length_proto(proto_d)) return LPI_PROTO_LENGTH;
 
         if (match_mysql(proto_d)) return LPI_PROTO_MYSQL;
+
+	if (match_postgresql(proto_d)) return LPI_PROTO_POSTGRESQL;
 
         if (match_tds(proto_d)) return LPI_PROTO_TDS;
 

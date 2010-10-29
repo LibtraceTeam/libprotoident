@@ -273,6 +273,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Harveys";
 		case LPI_PROTO_SHOUTCAST:
 			return "Shoutcast";
+		case LPI_PROTO_HTTP_BADPORT:
+			return "HTTP_443";
+		case LPI_PROTO_POSTGRESQL:
+			return "Postgresql";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -280,7 +284,7 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_BTDHT:
                         return "BitTorrent_UDP";
                 case LPI_PROTO_UDP_GNUTELLA:
-                        return "Gnutella";
+                        return "Gnutella_UDP";
                 case LPI_PROTO_UDP_DNS:
                         return "DNS";
                 case LPI_PROTO_UDP_DHCP:
@@ -296,7 +300,7 @@ const char *lpi_print(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_GAMESPY:
                         return "Gamespy";
                 case LPI_PROTO_UDP_EMULE:
-                        return "eMule";
+                        return "eMule_UDP";
                 case LPI_PROTO_UDP_EYE:
                         return "AllSeeingEye";
                 case LPI_PROTO_UDP_RTP:
@@ -331,6 +335,22 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SQLExp";
 		case LPI_PROTO_UDP_MSN_CACHE:
 			return "MSN_Cache";
+		case LPI_PROTO_UDP_DIABLO2:
+			return "Diablo2";
+		case LPI_PROTO_UDP_IPV6:
+			return "UDP_IPv6";
+		case LPI_PROTO_UDP_ORBIT:
+			return "Orbit_UDP";
+		case LPI_PROTO_UDP_TEREDO:
+			return "Teredo";
+		case LPI_PROTO_UDP_KADEMLIA:
+			return "Kademlia";
+		case LPI_PROTO_UDP_PANDO:
+			return "Pando_UDP";
+		case LPI_PROTO_UDP_ESP:
+			return "ESP_UDP";
+		case LPI_PROTO_UDP_PSN:
+			return "PSN";
 
                 default:
                 {

@@ -85,6 +85,8 @@ typedef enum {
 	LPI_PROTO_P2P_HTTP,	/* P2P over HTTP, a la KaZaA and Gnutella */
 	LPI_PROTO_HARVEYS,	/* Photo transfers for Harveys Real Estate */
 	LPI_PROTO_SHOUTCAST,
+	LPI_PROTO_HTTP_BADPORT,	/* HTTP over port 443, leading to failure */
+	LPI_PROTO_POSTGRESQL,	/* Postgresql protocol */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -116,6 +118,14 @@ typedef enum {
 	LPI_PROTO_UDP_STUN,	/* STUN NAT traversal */
 	LPI_PROTO_UDP_SQLEXP,	/* MS SQL Server worm, called SQLExp */
 	LPI_PROTO_UDP_MSN_CACHE, /* MSN cache callback protocol */
+	LPI_PROTO_UDP_DIABLO2,	/* Diablo 2 game protocol */
+	LPI_PROTO_UDP_IPV6,	/* IPv6 tunnelled directly over UDP */
+	LPI_PROTO_UDP_ORBIT,	/* Orbit downloader */
+	LPI_PROTO_UDP_TEREDO,
+	LPI_PROTO_UDP_KADEMLIA,	/* Unknown flavour of kademlia */
+	LPI_PROTO_UDP_PANDO,	/* Pando DHT and Peer Exchange */
+	LPI_PROTO_UDP_ESP,	/* ESP/IPSec encapsulated in UDP */
+	LPI_PROTO_UDP_PSN,	/* Playstation Network */
 
 	LPI_PROTO_ICMP,
 
