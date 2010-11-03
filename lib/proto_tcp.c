@@ -130,9 +130,45 @@ static inline bool match_ftp_data(lpi_data_t *data) {
         return false;
 }
 
+static bool dns_req(uint32_t payload) {
+
+	/* The flags / rcode on requests are usually all zero.
+	 *
+	 * Exceptions: CB and RD may be set 
+	 *
+	 * Remember BYTE ORDER!
+	 */
+
+	if ((payload & 0xffff0000) == 0x00000000)
+		return true;
+	if ((payload & 0xffff0000) == 0x10000000)
+		return true;
+	if ((payload & 0xffff0000) == 0x00010000)
+		return true;
+
+	return false;
+
+}
+
 inline bool match_dns(lpi_data_t *data) {
 
-        if ((data->payload[0] & 0x0079ffff) != (data->payload[1] & 0x0079ffff))
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+
+		/* No response, so we have a bit of a hard time - however,
+		 * most requests have a pretty standard set of flags.
+		 *
+		 * We'll also use the port here to help out */
+		if (data->server_port != 53 && data->client_port != 53)
+			return false;
+		if (data->payload_len[0] > 12 && dns_req(data->payload[0]))
+			return true;
+		if (data->payload_len[1] > 12 && dns_req(data->payload[1]))
+			return true;
+
+		return false;
+	}
+
+        if ((data->payload[0] & 0x0078ffff) != (data->payload[1] & 0x0078ffff))
                 return false;
 
         if ((data->payload[0] & 0x00800000) == (data->payload[1] & 0x00800000))
@@ -180,6 +216,57 @@ static inline bool match_bitextend(lpi_data_t *data) {
 
         return false;
 
+}
+
+static inline bool match_message4u(lpi_data_t *data) {
+	if (match_str_either(data, "m4ul"))
+		return true;
+	return false;
+}
+
+static inline bool match_wow_request(uint32_t payload, uint32_t len) {
+
+	if (!MATCH(payload, 0x00, 0x08, ANY, 0x00))
+		return false;
+
+	payload = ntohl(payload);
+
+	/* 3rd and 4th bytes are the size of the packet, minus the four
+	 * byte header */
+	if (htons(payload & 0xffff) == len - 4)
+		return true;
+
+	return false;
+}
+
+static inline bool match_wow_response(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	
+	if (len != 119)
+		return false;
+	
+	if (!MATCH(payload, 0x00, 0x00, 0x00, ANY))
+		return false;
+	
+	return true;
+
+}
+
+static inline bool match_wow(lpi_data_t *data) {
+
+	if (match_wow_request(data->payload[0], data->payload_len[0])) {
+		if (match_wow_response(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_wow_request(data->payload[1], data->payload_len[1])) {
+		if (match_wow_response(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
 }
 
 static inline bool match_blizzard(lpi_data_t *data) {
@@ -737,6 +824,13 @@ static inline bool match_http_response(lpi_data_t *data) {
 			return true;
 		if (data->server_port == 8080 || data->client_port == 8080)
 			return true;
+		if (data->server_port == 8081 || data->client_port == 8081)
+			return true;
+
+		/* If port 443 responds, we want it to be counted as genuine
+		 * HTTP, rather than a bad port scenario */
+		if (data->server_port == 443 || data->client_port == 443)
+			return true;
 	}
 	
 	return false;
@@ -748,7 +842,7 @@ static inline bool match_http_response(lpi_data_t *data) {
  * communications on HTTP */
 static inline bool match_p2p_http(lpi_data_t *data) {
 
-	if (match_str_either(data, "HTTP"))
+	if (!match_str_either(data, "HTTP"))
 		return false;
 
 	/* Must not be on a known HTTP port
@@ -1043,6 +1137,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         /* Mitglieder Trojan - often used to relay spam over SMTP */
         if (match_chars_either(proto_d, 0x04, 0x01, 0x00, 0x19))
                 return LPI_PROTO_MITGLIEDER;
+
+	if (match_message4u(proto_d)) return LPI_PROTO_M4U;
+
+	if (match_wow(proto_d)) return LPI_PROTO_WOW;
 
         /* Xunlei */
         if (match_xunlei(proto_d)) return LPI_PROTO_XUNLEI;

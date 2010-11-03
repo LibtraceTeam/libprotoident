@@ -277,6 +277,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "HTTP_443";
 		case LPI_PROTO_POSTGRESQL:
 			return "Postgresql";
+		case LPI_PROTO_WOW:
+			return "WorldOfWarcraft";
+		case LPI_PROTO_M4U:
+			return "Message4U";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -351,6 +355,18 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "ESP_UDP";
 		case LPI_PROTO_UDP_PSN:
 			return "PSN";
+		case LPI_PROTO_UDP_REAL:
+			return "RealPlayer";
+		case LPI_PROTO_UDP_GNUTELLA2:
+			return "Gnutella2_UDP";
+		case LPI_PROTO_UDP_PYZOR:
+			return "Pyzor_UDP";
+		case LPI_PROTO_UDP_SKYPE:
+			return "Skype_UDP";
+		case LPI_PROTO_UDP_ISAKMP:
+			return "ISAKMP";
+		case LPI_PROTO_UDP_SNMP:
+			return "SNMP";
 
                 default:
                 {

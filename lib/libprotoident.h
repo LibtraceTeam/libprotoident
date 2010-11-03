@@ -87,6 +87,8 @@ typedef enum {
 	LPI_PROTO_SHOUTCAST,
 	LPI_PROTO_HTTP_BADPORT,	/* HTTP over port 443, leading to failure */
 	LPI_PROTO_POSTGRESQL,	/* Postgresql protocol */
+	LPI_PROTO_WOW,		/* World of Warcraft */
+	LPI_PROTO_M4U,		/* Message4U (Aus SMS service) */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -126,6 +128,12 @@ typedef enum {
 	LPI_PROTO_UDP_PANDO,	/* Pando DHT and Peer Exchange */
 	LPI_PROTO_UDP_ESP,	/* ESP/IPSec encapsulated in UDP */
 	LPI_PROTO_UDP_PSN,	/* Playstation Network */
+	LPI_PROTO_UDP_REAL,	/* RDT - the Real Data Transport protocol */
+	LPI_PROTO_UDP_GNUTELLA2, /* Gnutella2 */
+	LPI_PROTO_UDP_PYZOR,	/* Python implementation of Razor */
+	LPI_PROTO_UDP_SKYPE,
+	LPI_PROTO_UDP_ISAKMP,	/* ref: RFC 2408 */
+	LPI_PROTO_UDP_SNMP,
 
 	LPI_PROTO_ICMP,
 

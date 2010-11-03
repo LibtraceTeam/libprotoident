@@ -46,6 +46,7 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	
 }		
 
+
 static inline bool match_rtp(lpi_data_t *data) {
         if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
                         match_str_either(data, "\x00\x01\x00\x08"))
@@ -57,6 +58,26 @@ static inline bool match_rtp(lpi_data_t *data) {
 
 	return false;
 
+}
+
+static inline bool match_rdt(lpi_data_t *data) {
+
+	/* The Real Data Transport is not explicitly documented in full,
+	 * but these packets seem to resemble those examples we have been able
+	 * to find.
+	 *
+	 * https://protocol.helixcommunity.org/2005/devdocs/RDT_Feature_Level_30.txt
+	 */
+
+	if (!match_str_both(data, "\x00\xff\x03\x00", "\x00\xff\x04\x49"))
+		return false;
+
+	if (data->payload_len[0] == 3 && data->payload_len[1] == 11)
+		return true;
+	if (data->payload_len[1] == 3 && data->payload_len[0] == 11)
+		return true;
+
+	return false;
 }
 
 static inline bool match_esp_encap(lpi_data_t *data) {
@@ -73,6 +94,21 @@ static inline bool match_esp_encap(lpi_data_t *data) {
 		return true;
 	return false;
 
+}
+
+static inline bool match_isakmp(lpi_data_t *data) {
+
+	/* Rule out anything not on UDP port 500 */
+	if (data->server_port != 500 && data->client_port != 500)
+		return false;
+
+	/* First four bytes are the cookie for the initiator, so should match 
+	 * in both directions */
+
+	if (data->payload[0] != data->payload[1])
+		return false;
+
+	return true;
 }
 
 static inline bool match_orbit(lpi_data_t *data) {
@@ -148,23 +184,127 @@ static inline bool match_gnutella_oob(lpi_data_t *data) {
 
 static inline bool match_gnutella(lpi_data_t *data) {
 
-	/* According to http://www.symantec.com/connect/articles/identifying-p2p-users-using-traffic-analysis, Limewire and BearShare (which are based on
-	 * Gnutella) will send lots of 23 byte UDP packets when a file transfer
-	 * begins */
 
-	/* The UDP communication begins with all zeroes */
-	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
+	/* All Gnutella UDP communications begin with a random 16 byte
+	 * message ID - the request and the response must have the same
+	 * message ID */
+
+	/* OK, for now I'm going to just work with two-way exchanges, because
+	 * one-way is going to be pretty unreliable :( */
+
+	/* One exception! Unanswered PINGs */
+	if (data->payload_len[0] == 23 && data->payload_len[1] == 0)
+		return true;
+	if (data->payload_len[1] == 23 && data->payload_len[0] == 0)
+		return true;
+
+	if (data->payload_len[1] == 0 || data->payload_len[0] == 0)
 		return false;
+
+	/* If there is payload in both directions, the message IDs must match */
+	if (data->payload[0] != data->payload[1])
+		return false;
+
+
+	/* All of these payload combinations are based purely on transactions
+	 * observed on UDP port 6346 (a known Gnutella port) - sadly, there's
+	 * no genuinely good documentation on the typical size of Gnutella
+	 * UDP requests */
 	
-	/* First packet is 23 bytes, but there can also be no packet in one
-	 * direction */
+	/* PING */
+	if (data->payload_len[0] == 23 && data->payload_len[1] < 100)
+		return true;
+	if (data->payload_len[1] == 23 && data->payload_len[0] < 100)
+		return true;
+	
+	/* 727 byte packets are matched with 81 or 86 byte packets */
+	if (data->payload_len[0] == 727 && (data->payload_len[1] == 81 ||
+			data->payload_len[1] == 86))
+		return true;
+	if (data->payload_len[1] == 727 && (data->payload_len[0] == 81 ||
+			data->payload_len[0] == 86))
+		return true;
 
-	if (data->payload_len[0] != 0 && data->payload_len[0] != 23)
-		return false;
-	if (data->payload_len[1] != 0 && data->payload_len[1] != 23)
-		return false;
+	/* 72 and 61 byte packets seem to go together */
+	if (data->payload_len[0] == 72 && data->payload_len[1] == 61)
+		return true;
+	if (data->payload_len[1] == 72 && data->payload_len[0] == 61)
+		return true;
 
-	return true;
+	/* 55 and 47 */
+	if (data->payload_len[0] == 55 && data->payload_len[1] == 47)
+		return true;
+	if (data->payload_len[1] == 55 && data->payload_len[0] == 47)
+		return true;
+
+	/* 38 and 96 */
+	if (data->payload_len[0] == 38 && data->payload_len[1] == 96)
+		return true;
+	if (data->payload_len[1] == 38 && data->payload_len[0] == 96)
+		return true;
+
+	/* 67 and (81 or 86) */
+	if (data->payload_len[0] == 67 && (data->payload_len[1] == 81 ||
+			data->payload_len[1] == 86))
+		return true;
+	if (data->payload_len[1] == 67 && (data->payload_len[0] == 81 ||
+			data->payload_len[0] == 86))
+		return true;
+
+
+	/* Responses to 35 byte requests range between 136 and 180 bytes */
+	if (data->payload_len[0] == 35 && (data->payload_len[1] <= 180 &&
+			data->payload_len[1] >= 136))
+		return true;
+	if (data->payload_len[1] == 35 && (data->payload_len[0] <= 180 &&
+			data->payload_len[0] >= 136))
+		return true;
+
+	/* 29 byte requests seem to be met with 80-100 byte responses */
+	if (data->payload_len[0] == 29 && (data->payload_len[1] <= 100 &&
+			data->payload_len[1] >= 80))
+		return true;
+	if (data->payload_len[1] == 29 && (data->payload_len[0] <= 100 &&
+			data->payload_len[0] >= 80))
+		return true;
+
+	/* 31 byte requests seem to be met with 139-170 byte responses */
+	if (data->payload_len[0] == 31 && (data->payload_len[1] <= 170 &&
+			data->payload_len[1] >= 139))
+		return true;
+	if (data->payload_len[1] == 31 && (data->payload_len[0] <= 170 &&
+			data->payload_len[0] >= 139))
+		return true;
+
+	/* 34 byte requests seem to be met with 138-165 byte responses */
+	if (data->payload_len[0] == 34 && (data->payload_len[1] <= 165 &&
+			data->payload_len[1] >= 138))
+		return true;
+	if (data->payload_len[1] == 34 && (data->payload_len[0] <= 165 &&
+			data->payload_len[0] >= 138))
+		return true;
+	
+	/* 86 byte requests seem to be met with 100-225 byte responses */
+	if (data->payload_len[0] == 86 && (data->payload_len[1] <= 225 &&
+			data->payload_len[1] >= 100))
+		return true;
+	if (data->payload_len[1] == 86 && (data->payload_len[0] <= 225 &&
+			data->payload_len[0] >= 100))
+		return true;
+
+	/* The response to 73 bytes tends to vary in size */
+	if (data->payload_len[0] == 73)
+		return true;
+	if (data->payload_len[1] == 73)
+		return true;
+
+	/* The response to 96 bytes tends to vary in size */
+	if (data->payload_len[0] == 96)
+		return true;
+	if (data->payload_len[1] == 96)
+		return true;
+	return false;	
+	
 
 }
 
@@ -341,36 +481,87 @@ static inline bool match_vuze_dht_reply(lpi_data_t *data) {
 	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x07))
 		return true;
 
+	/* Except for this one, which is an error message */
+	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x08))
+		return true;
+
 	return false;
 	
 
 }
 
+static inline bool match_vuze_dht_request(uint32_t payload) {
+
+	/* Requests begin with an 8 byte conn ID, which always has the MSB
+	 * set */
+
+	if ((ntohl(payload) & 0x80000000) == 0x80000000)
+		return true;
+	return false;	
+
+}
+
+static inline bool match_vuze_request_len(uint32_t len) {
+
+	/* Common request lengths observed thus far */
+
+	/* Request header is 42 bytes */
+	if (len == 42)
+		return true;
+
+	if (len == 63 || len == 65 || len == 71)
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_vuze_dht(lpi_data_t *data) {
 
-	/* We can only match replies, because the requests all begin with
-	 * a random connection ID. However, the connection ID must have
-	 * the MSB set to 1, which will help a bit! */
-
-	/* Let's make sure we have a reply first! */
-	if (!match_vuze_dht_reply(data))
+	/* The reply is our best indicator, as it begins with the four-byte
+	 * ACTION */
+	
+	if (match_vuze_dht_reply(data)) {
+		/* If there is no data in the opposite direction, it must be 
+		 * some kind of delayed or unsolicited reply (?) */
+		if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+			return true;
+		if (match_vuze_dht_request(data->payload[0]))
+			return true;
+		if (match_vuze_dht_request(data->payload[1]))
+			return true;
+		
 		return false;
+	}
+	
+	/* Check for unanswered requests - these are much harder to match,
+	 * because they are simply a random conn id. We can only hope to match
+	 * on common packet sizes and the MSB being set 
+	 *
+	 * XXX This could lead to a few false positives, so be careful */
+	if (data->payload_len[0] == 0) {
+		if (!match_vuze_request_len(data->payload_len[1]))
+			return false;
+		if (match_vuze_dht_request(data->payload[1]))
+			return true;
+	}
 
-	/* If there is no data in the opposite direction, it must be some
-	 * kind of delayed or unsolicited reply (?) */
-	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
-		return true;
-	
-	/* Otherwise, make sure the other end has an MSB set to 1 */
-	if ((data->payload[0] & 0x80000000) == 0x80000000)
-		return true;
-	if ((data->payload[1] & 0x80000000) == 0x80000000)
-		return true;
-	
+	if (data->payload_len[1] == 0) {
+		if (!match_vuze_request_len(data->payload_len[0]))
+			return false;
+		if (match_vuze_dht_request(data->payload[0]))
+			return true;
+	}
 	return false;	
 	
 
 
+}
+
+static inline bool match_pyzor(lpi_data_t *data) {
+	if (match_str_both(data, "User", "Code"))
+		return true;
+	return false;
 }
 
 /* I *think* this is PSN game traffic - it typically appears on UDP port 3658
@@ -397,17 +588,27 @@ static inline bool match_psn(lpi_data_t *data) {
 
 static inline bool match_xlsp_payload(uint32_t payload, uint32_t len) {
 
-	if (!MATCH(payload, 0x00, 0x00, 0x00, 0x00))
-		return false;
-	
-	if (len == 122)
-		return true;
-	if (len == 156)
-		return true;
-	if (len == 82)
-		return true;
-	if (len == 0)
-		return true;
+	/* This is almost all based on observing traffic on port 3074. Not
+	 * very scientific, but seems more or less right */
+
+	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00)) {
+		if (len == 122)
+			return true;
+		if (len == 156)
+			return true;
+		if (len == 82)
+			return true;
+		if (len == 0)
+			return true;
+	}
+
+	if (len == 24) {
+		if (MATCH(payload, 0x0d, ANY, ANY, ANY))
+			return true;
+		if (MATCH(payload, 0x80, ANY, ANY, ANY))
+			return true;
+
+	}
 
 	return false;
 
@@ -422,6 +623,38 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	if (data->server_port != 3074 && data->client_port != 3074)
 		return false;
 
+
+	/* Commonly observed request/response pattern */
+	if (match_chars_either(data, 0x0d, 0x02, 0x00, ANY)) {
+		if (data->payload_len[0] == 0 && data->payload_len[1] == 29)
+			return true;
+		if (data->payload_len[1] == 0 && data->payload_len[0] == 29)
+			return true;
+		if (data->payload_len[0] != 29 || data->payload_len[1] != 29)
+			return false;
+		if (match_chars_either(data, 0x0c, 0x02, 0x00, ANY))
+			return true;
+		return false;
+	}
+
+	/* Unlike other combos, 1336 and 287 (or rarely 286) only go with
+	 * each other */
+	if (match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00")) {
+		if (data->payload_len[0] == 1336) {
+			if (data->payload_len[1] == 287)
+				return true;
+			if (data->payload_len[1] == 286)
+				return true;
+		}
+		if (data->payload_len[1] == 1336) {
+			if (data->payload_len[0] == 287)
+				return true;
+			if (data->payload_len[0] == 286)
+				return true;
+		}
+	}
+
+	
 	if (!match_xlsp_payload(data->payload[0], data->payload_len[0]))
 		return false;
 	if (!match_xlsp_payload(data->payload[1], data->payload_len[1]))
@@ -430,6 +663,8 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	return true;
 
 }
+
+
 
 static inline bool match_demonware(lpi_data_t *data) {
 
@@ -453,88 +688,125 @@ static inline bool match_demonware(lpi_data_t *data) {
 
 }
 
+static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
+
+	uint8_t first;
+	uint8_t version;
+	uint8_t mode;
+
+	if (len != 48 && len != 68)
+		return false;
+
+	first = (uint8_t) (payload);
+
+	version = (first & 0x38) >> 3;
+	mode = (first & 0x07);
+
+	if (version > 4 || version == 0)
+		return false;
+	if (mode != 1 && mode != 3)
+		return false;
+
+	return true;
+
+}
+
+static inline bool match_ntp_response(uint32_t payload, uint32_t len) {
+
+	uint8_t first;
+	uint8_t version;
+	uint8_t mode;
+
+	/* Server may not have replied */
+	if (len == 0)
+		return true;
+
+	first = (uint8_t) (payload);
+
+	version = (first & 0x38) >> 3;
+	mode = (first & 0x07);
+
+	if (version > 4 || version == 0)
+		return false;
+	if (mode != 4 && mode != 2 && mode != 1)
+		return false;
+	
+	return true;
+}
+
 static inline bool match_ntp(lpi_data_t *data) {
 
+	/* Force NTP to be on port 123 */
 
-        /* Look for NTPv3 
-         *
-         * 0x1b in the first byte = v3 client
-         * 0x1c in the first byte = v3 server
-         * Both initial packets should be 48 bytes long, but of course the
-         * server response may be missing */
-        if (MATCH(data->payload[0], 0x1b, ANY, ANY, ANY) &&
-                (MATCH(data->payload[1], 0x1c, ANY, ANY, ANY) ||
-                data->payload_len[1] == 0) &&
-                data->payload_len[0] == 48) {
+	if (data->server_port != 123 && data->client_port != 123)
+		return false;
 
-                return true;
-        }
+	if (match_ntp_request(data->payload[0], data->payload_len[0])) {
+		if (match_ntp_response(data->payload[1], data->payload_len[1]))
+			return true;
+	}
 
-        if (MATCH(data->payload[1], 0x1b, ANY, ANY, ANY) &&
-                (MATCH(data->payload[0], 0x1c, ANY, ANY, ANY) ||
-                data->payload_len[0] == 0) &&
-                data->payload_len[1] == 48) {
+	if (match_ntp_request(data->payload[1], data->payload_len[1])) {
+		if (match_ntp_response(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
-                return true;
-        }
+	return false;
+}
 
-        /* NTPv4 
-         *
-         * This time the first byte for the client is 0x23.
-         * The server should response with 0x24. 
-         * Packet size should remain the same */
-        if (MATCH(data->payload[0], 0x23, ANY, ANY, ANY) &&
-                (MATCH(data->payload[1], 0x24, ANY, ANY, ANY) ||
-                data->payload_len[1] == 0) &&
-                data->payload_len[0] == 48) {
+static inline bool match_snmp_payload(uint32_t payload, uint32_t len) {
+	
+	/* SNMP is BER encoded, which is an ass to decode */
+	uint8_t snmplen = 0;
+	uint8_t *byte;
+	int i;
 
-                return true;
-        }
+	/* Must be a SEQUENCE */
+	if (!MATCH(payload, 0x30, ANY, ANY, ANY))
+		return false;
 
-        if (MATCH(data->payload[1], 0x23, ANY, ANY, ANY) &&
-                (MATCH(data->payload[0], 0x24, ANY, ANY, ANY) ||
-                data->payload_len[0] == 0) &&
-                data->payload_len[1] == 48) {
+	byte = ((uint8_t *)&payload) + 1;
+	
+	if (*byte< 0x80) {
+		snmplen = *byte;
 
-                return true;
-        }
+		if (!MATCH(payload, 0x30, ANY, 0x02, 0x01))
+			return false;
+		if (len - 2 != snmplen)
+			return false;
+		return true;
+	} 
+	
+	if (*byte == 0x81) {
+		snmplen = *(byte + 1);
+		
+		if (!MATCH(payload, 0x30, 0x81, ANY, 0x02))
+			return false;
+		if (len - 3 != snmplen)
+			return false;
+		return true;
+	}
 
-	/* NTPv1
-	 */
-        if (MATCH(data->payload[0], 0x0b, ANY, ANY, ANY) &&
-                (MATCH(data->payload[1], 0x0c, ANY, ANY, ANY) ||
-                data->payload_len[1] == 0) &&
-                data->payload_len[0] == 48) {
+	if (*byte == 0x82) {
+		uint16_t longlen = *((uint16_t *)(byte + 1));
+		
+		if (len - 4 != longlen)
+			return false;
+		return true;
+	}
 
-                return true;
-        }
+	return false;
 
-        if (MATCH(data->payload[1], 0x0b, ANY, ANY, ANY) &&
-                (MATCH(data->payload[0], 0x0c, ANY, ANY, ANY) ||
-                data->payload_len[0] == 0) &&
-                data->payload_len[1] == 48) {
+}
 
-                return true;
-        }
+static inline bool match_snmp(lpi_data_t *data) {
+	
+	if (!match_snmp_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_snmp_payload(data->payload[1], data->payload_len[1]))	
+		return false;
 
-	/* NTPv2 */
-        if (MATCH(data->payload[0], 0x13, ANY, ANY, ANY) &&
-                (MATCH(data->payload[1], 0x14, ANY, ANY, ANY) ||
-                data->payload_len[1] == 0) &&
-                data->payload_len[0] == 48) {
-
-                return true;
-        }
-
-        if (MATCH(data->payload[1], 0x13, ANY, ANY, ANY) &&
-                (MATCH(data->payload[0], 0x14, ANY, ANY, ANY) ||
-                data->payload_len[0] == 0) &&
-                data->payload_len[1] == 48) {
-
-                return true;
-        }
-
-        return false;
+	return true;
 }
 
 /* Matches the Opaserv worm that attacks UDP port 137
@@ -607,9 +879,41 @@ static inline bool match_msn_cache(lpi_data_t *data) {
 
 	if (match_chars_either(data, 0x02, 0x04, 0x00, 0x00))
 		return true;
+	if (match_chars_either(data, 0x02, 0x01, 0x41, 0x31))
+		return true;
+
 
 	return false;
 
+}
+
+static inline bool match_skype(lpi_data_t *data) {
+
+	/* The third byte is always 0x02 in Skype UDP traffic - if we have
+	 * payload in both directions we can probably match on that alone */
+
+	if (data->payload_len[0] > 0 && data->payload_len[1] > 0) {
+		if ((data->payload[0] & 0x00ff0000) != 0x00020000)
+			return false;
+		if ((data->payload[1] & 0x00ff0000) != 0x00020000)
+			return false;
+		return true;
+	}
+
+	/* Probes with no responses are trickier - likelihood of a random
+	 * packet having 0x02 as the third byte is not small, so we'll try
+	 * and filter on packet size too */
+
+	if (data->payload_len[0] >= 28 && data->payload_len[0] <= 130 ) {
+		if ((data->payload[0] & 0x00ff0000) == 0x00020000)
+			return true;
+	}
+	if (data->payload_len[1] >= 28 && data->payload_len[1] <= 130 ) {
+		if ((data->payload[1] & 0x00ff0000) == 0x00020000)
+			return true;
+	}
+
+	return false;
 }
 
 static bool match_stun_payload(uint32_t payload, uint32_t len) {
@@ -794,9 +1098,9 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 		return true;
 
 	/* emule extensions */
-	if (MATCH(payload, 0xc5, 0x90, ANY, ANY) && (len < 100))
+	if (MATCH(payload, 0xc5, 0x90, ANY, ANY) && (len == 18))
 		return true;
-	if (MATCH(payload, 0xc5, 0x91, ANY, ANY) && (len == 6 || len == 16))
+	if (MATCH(payload, 0xc5, 0x91, ANY, ANY) && (len == 4))
 		return true;
 	if (MATCH(payload, 0xc5, 0x92, ANY, ANY) && (len == 2))
 		return true;
@@ -926,6 +1230,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	/* XXX May want to separate Vuze DHT from the other DHT at some point */
         if (match_chars_either(proto_d, 'd', '1', ':', ANY))
                 return LPI_PROTO_UDP_BTDHT;
+        if (match_chars_either(proto_d, 'd', '1', ANY, ':'))
+                return LPI_PROTO_UDP_BTDHT;
 	if (match_vuze_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
 	if (match_xbt_tracker(proto_d)) return LPI_PROTO_UDP_BTDHT;
 
@@ -950,11 +1256,9 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
         */
 
         if (match_chars_either(proto_d, 'G', 'N', 'D', ANY))
-                return LPI_PROTO_UDP_GNUTELLA;
+                return LPI_PROTO_UDP_GNUTELLA2;
 	if (match_gnutella_oob(proto_d))
                 return LPI_PROTO_UDP_GNUTELLA;
-	if (match_gnutella(proto_d))
-		return LPI_PROTO_UDP_GNUTELLA;
 
         if (match_str_both(proto_d, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
                 return LPI_PROTO_XUNLEI;
@@ -974,6 +1278,7 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_SPAMFIGHTER;
 	if (match_str_either(proto_d, "SCP\x03")) 
 		return LPI_PROTO_UDP_SPAMFIGHTER;
+	if (match_pyzor(proto_d)) return LPI_PROTO_UDP_PYZOR;
 
 
         if (match_str_either(proto_d, "EYE1"))
@@ -1014,6 +1319,12 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_psn(proto_d)) return LPI_PROTO_UDP_PSN;
 
+	if (match_rdt(proto_d)) return LPI_PROTO_UDP_REAL;
+
+	if (match_isakmp(proto_d)) return LPI_PROTO_UDP_ISAKMP;
+
+	if (match_snmp(proto_d)) return LPI_PROTO_UDP_SNMP;
+
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
 	 * BitTorrent */
 	if (match_other_btudp(proto_d)) return LPI_PROTO_UDP_BTDHT;
@@ -1032,7 +1343,16 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_emule(proto_d))
                 return LPI_PROTO_UDP_EMULE;
 
+	/* This is a bit dodgy too, so keep it near the end */
+	if (match_skype(proto_d))
+		return LPI_PROTO_UDP_SKYPE;
+
+	/* This matches only on payload size in some instances, so needs to be
+	 * near the end */	
+	if (match_gnutella(proto_d))
+		return LPI_PROTO_UDP_GNUTELLA;
 	if (match_esp_encap(proto_d)) return LPI_PROTO_UDP_ESP;
+
 
 	/* XXX Starcraft seems to set the first four bytes of every packet to 00 00 00 00,
 	 * but we probably need something else to identify it properly */
