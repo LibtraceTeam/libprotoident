@@ -6,15 +6,22 @@
 static inline bool match_smtp(lpi_data_t *data) {
 
 
-	/* Match 421 reply codes */	
-	if (data->payload_len[0] == 0 &&
-			MATCH(data->payload[1], '4', '2', '1', ' '))
-		return true;
-	if (data->payload_len[1] == 0 &&
-			MATCH(data->payload[0], '4', '2', '1', ' '))
-		return true;
-	
-	
+	/* Match all the random error codes */	
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (match_str_either(data, "421 "))
+			return true;
+		if (match_str_either(data, "451 "))
+			return true;
+		if (match_str_either(data, "452 "))
+			return true;
+		if (match_str_either(data, "420 "))
+			return true;
+		if (match_str_either(data, "571 "))
+			return true;
+	}
+
+
+	/* Match the server banner code */
 	if (data->payload_len[0] == 1) {
 		if (!MATCH(data->payload[0], '2', 0x00, 0x00, 0x00))
 			return false;
@@ -37,6 +44,13 @@ static inline bool match_smtp(lpi_data_t *data) {
 	if (match_str_either(data, "quit") && data->server_port == 25)
 		return true;
 
+	return false;
+}
+
+static inline bool match_rbls(lpi_data_t *data) {
+
+	if (match_str_either(data, "rbls"))
+		return true;
 	return false;
 }
 
@@ -304,6 +318,58 @@ static inline bool match_http_badport(lpi_data_t *data) {
 
 }
 
+static inline bool match_telecomkey(lpi_data_t *data) {
+
+	/* Custom protocol used in transactions to telecomkey.com
+	 *
+	 * Not idea what it is, exactly.
+	 */
+
+	if (MATCH(data->payload[0], 0x30, 0x30, 0x30, 0x30) &&
+			data->payload_len[0] == 8)
+		return true;
+	if (MATCH(data->payload[1], 0x30, 0x30, 0x30, 0x30) &&
+			data->payload_len[1] == 8)
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_openvpn_handshake(uint32_t payload, uint32_t len) {
+
+	uint16_t pktlen = ntohs((uint16_t)payload);
+
+	/* First two bytes are the length of the packet (not including the
+	 * length) */
+	if (pktlen + 2 != len)
+		return false;
+	
+	/* Handshake packets have opcodes of either 7 or 8 and key IDs of 
+	 * zero, so the third byte is either 0x38 or 0x40 */
+
+	/* Ref: http://tinyurl.com/37tt3xe */
+
+	if (MATCH(payload, ANY, ANY, 0x38, ANY))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x40, ANY))
+		return true;
+
+
+	return false;
+
+}
+
+static inline bool match_openvpn(lpi_data_t *data) {
+
+	if (!match_openvpn_handshake(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_openvpn_handshake(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+}
+
 static inline bool match_xunlei(lpi_data_t *data) {
 
         /*
@@ -496,6 +562,8 @@ static inline bool match_telnet(lpi_data_t *data) {
 /* 16 03 00 X is an SSLv3 handshake */
 static inline bool match_ssl3_handshake(uint32_t payload, uint32_t len) {
 
+	if (len == 0)
+		return true;
 	if (len == 1 && MATCH(payload, 0x16, 0x00, 0x00, 0x00))
 		return true;
 	if (MATCH(payload, 0x16, 0x03, 0x00, ANY))
@@ -506,6 +574,8 @@ static inline bool match_ssl3_handshake(uint32_t payload, uint32_t len) {
 /* 16 03 01 X is an TLS handshake */
 static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
 
+	if (len == 0)
+		return true;
 	if (len == 1 && MATCH(payload, 0x16, 0x00, 0x00, 0x00))
 		return true;
 	if (MATCH(payload, 0x16, 0x03, 0x01, ANY))
@@ -542,6 +612,13 @@ static inline bool match_ssl(lpi_data_t *data) {
 			match_tls_handshake(data->payload[1], data->payload_len[1]))
 		return true;
 	
+	if (match_ssl3_handshake(data->payload[0], data->payload_len[0]) &&
+			match_tls_handshake(data->payload[1], data->payload_len[1]))
+		return true;
+
+	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
+			match_ssl3_handshake(data->payload[1], data->payload_len[1]))
+		return true;
 	/* Seems we can sometimes skip the full handshake and start on the data
 	 * right away (as indicated by 0x17) - for now, I've only done this for TLS */
 	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
@@ -1004,8 +1081,12 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
         /* SSL starts with 16 03, but if on port 443 it's HTTPS */
         if (match_ssl(proto_d)) {
-                if (proto_d->server_port == 443)
+                if (proto_d->server_port == 443 ||
+				proto_d->client_port == 443)
                         return LPI_PROTO_HTTPS;
+		else if (proto_d->server_port == 993 || 
+				proto_d->client_port == 993)
+			return LPI_PROTO_IMAPS;
                 else
                         return LPI_PROTO_SSL;
         }
@@ -1142,6 +1223,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_wow(proto_d)) return LPI_PROTO_WOW;
 
+	if (match_rbls(proto_d)) return LPI_PROTO_RBLS;
+
         /* Xunlei */
         if (match_xunlei(proto_d)) return LPI_PROTO_XUNLEI;
 
@@ -1154,6 +1237,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_TOR;
 
 	if (match_conquer_online(proto_d)) return LPI_PROTO_CONQUER;
+
+	if (match_openvpn(proto_d)) return LPI_PROTO_OPENVPN;
+
+	if (match_telecomkey(proto_d)) return LPI_PROTO_TELECOMKEY;
 	
 	/* Unknown protocol that seems to put the packet length in the first
          * octet - XXX Figure out what this is! */

@@ -89,6 +89,10 @@ typedef enum {
 	LPI_PROTO_POSTGRESQL,	/* Postgresql protocol */
 	LPI_PROTO_WOW,		/* World of Warcraft */
 	LPI_PROTO_M4U,		/* Message4U (Aus SMS service) */
+	LPI_PROTO_RBLS,		/* Realtime Block List updates */
+	LPI_PROTO_OPENVPN,
+	LPI_PROTO_TELECOMKEY,	/* Proto used to talk to telecomkey.com */
+	LPI_PROTO_IMAPS,	/* IMAP over SSL */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -134,6 +138,7 @@ typedef enum {
 	LPI_PROTO_UDP_SKYPE,
 	LPI_PROTO_UDP_ISAKMP,	/* ref: RFC 2408 */
 	LPI_PROTO_UDP_SNMP,
+	LPI_PROTO_UDP_BACKWEB,	/* BackWeb Polite Protocol */
 
 	LPI_PROTO_ICMP,
 

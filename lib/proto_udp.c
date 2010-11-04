@@ -16,11 +16,14 @@ static inline bool match_gamespy(lpi_data_t *data) {
         if (match_str_either(data, "\\bas"))
                 return true;
 
+	/* Gamespy request begins with 0xfe 0xfd FOO BAR. The response begins
+	 * with FOO BAR, where FOO and BAR are specific bytes */
+
         if (MATCH(data->payload[0], 0xfe, 0xfd, ANY, ANY) &&
-                ((data->payload[0] << 16) == (data->payload[1] & 0xffff0000)))
+                ((data->payload[1] << 16) == (data->payload[0] & 0xffff0000)))
                 return true;
         if (MATCH(data->payload[1], 0xfe, 0xfd, ANY, ANY) &&
-                ((data->payload[1] << 16) == (data->payload[0] & 0xffff0000)))
+                ((data->payload[0] << 16) == (data->payload[1] & 0xffff0000)))
                 return true;
 
         return false;
@@ -40,6 +43,8 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	if (match_chars_either(data, 0x3d, 0x4b, 0xd9, ANY))
 		return true;
 	if (match_chars_either(data, 0x3e, 0x4b, 0xd9, ANY))
+		return true;
+	if (match_chars_either(data, ANY, 0x4b, 0xd9, 0x65))
 		return true;
 
 	return false;
@@ -92,6 +97,13 @@ static inline bool match_esp_encap(lpi_data_t *data) {
 
 	if (data->server_port == 4500 && data->client_port == 4500)
 		return true;
+	
+	/* If only one port is 4500, check for the Non-ESP marker */
+	if (data->server_port == 4500 || data->client_port == 4500) {
+		if (data->payload[0] == 0 && data->payload[1] == 0)
+			return true;
+	}
+
 	return false;
 
 }
@@ -111,6 +123,23 @@ static inline bool match_isakmp(lpi_data_t *data) {
 	return true;
 }
 
+static inline bool match_orbit_payload(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (MATCH(payload, 0xaa, 0x20, 0x04, 0x04) && len == 36)
+		return true;
+	if (MATCH(payload, 0xaa, 0x10, ANY, ANY) && len == 27)
+		return true;
+	if (MATCH(payload, 0xaa, 0x18, ANY, ANY) && len == 27)
+		return true;
+	if (MATCH(payload, 0xab, 0x08, 0x78, 0xda))
+		return true;
+
+
+}
+
 static inline bool match_orbit(lpi_data_t *data) {
 
 	/* There's no nice spec for the Orbit UDP protocol, so I'm just
@@ -119,22 +148,12 @@ static inline bool match_orbit(lpi_data_t *data) {
 	if (data->server_port != 20129 && data->client_port != 20129)
 		return false;
 
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+	if (!match_orbit_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_orbit_payload(data->payload[1], data->payload_len[1]))
 		return false;
 
-	if (MATCH(data->payload[0], 0xaa, 0x20, 0x04, 0x04)) {
-		if (data->payload_len[0] == 36)
-			return true;
-		return false;
-	}
-	
-	if (MATCH(data->payload[1], 0xaa, 0x20, 0x04, 0x04)) {
-		if (data->payload_len[1] == 36)
-			return true;
-		return false;
-	}
-
-	return false;	
+	return true;	
 }
 
 static inline bool match_sql_worm(lpi_data_t *data) {
@@ -290,6 +309,14 @@ static inline bool match_gnutella(lpi_data_t *data) {
 		return true;
 	if (data->payload_len[1] == 86 && (data->payload_len[0] <= 225 &&
 			data->payload_len[0] >= 100))
+		return true;
+
+	/* 193 matches 108 or 111 */
+	if (data->payload_len[0] == 193 && (data->payload_len[1] == 108 ||
+			data->payload_len[1] == 111))
+		return true;
+	if (data->payload_len[1] == 193 && (data->payload_len[0] == 108 ||
+			data->payload_len[0] == 111))
 		return true;
 
 	/* The response to 73 bytes tends to vary in size */
@@ -1020,6 +1047,18 @@ static inline bool match_sip(lpi_data_t *data) {
 	
 }
 
+static inline bool match_backweb(lpi_data_t *data) {
+
+	if (data->server_port != 370 && data->client_port != 370)
+		return false;
+
+	if (match_chars_either(data, 0x21, 0x24, 0x00, ANY))
+		return true;
+
+	return false;
+
+}
+
 /* This seems to be a Pando thing - I've found libtorrent handshakes within
  * full payload captures of these packets that refer to Pando peer exchange.
  *
@@ -1235,6 +1274,7 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_vuze_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
 	if (match_xbt_tracker(proto_d)) return LPI_PROTO_UDP_BTDHT;
 
+	if (match_gamespy(proto_d)) return LPI_PROTO_UDP_GAMESPY;
 
         if (match_chars_either(proto_d, 0x01, 0x01, 0x06, 0x00))
                 return LPI_PROTO_UDP_DHCP;
@@ -1324,6 +1364,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_isakmp(proto_d)) return LPI_PROTO_UDP_ISAKMP;
 
 	if (match_snmp(proto_d)) return LPI_PROTO_UDP_SNMP;
+
+	if (match_backweb(proto_d)) return LPI_PROTO_UDP_BACKWEB;
 
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
 	 * BitTorrent */

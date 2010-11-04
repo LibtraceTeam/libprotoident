@@ -281,6 +281,14 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "WorldOfWarcraft";
 		case LPI_PROTO_M4U:
 			return "Message4U";
+		case LPI_PROTO_RBLS:
+			return "RBL";
+		case LPI_PROTO_OPENVPN:
+			return "OpenVPN";
+		case LPI_PROTO_TELECOMKEY:
+			return "TelecomKey";
+		case LPI_PROTO_IMAPS:
+			return "IMAPS";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -367,6 +375,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "ISAKMP";
 		case LPI_PROTO_UDP_SNMP:
 			return "SNMP";
+		case LPI_PROTO_UDP_BACKWEB:
+			return "BackWeb";
 
                 default:
                 {
