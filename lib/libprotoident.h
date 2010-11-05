@@ -93,6 +93,7 @@ typedef enum {
 	LPI_PROTO_OPENVPN,
 	LPI_PROTO_TELECOMKEY,	/* Proto used to talk to telecomkey.com */
 	LPI_PROTO_IMAPS,	/* IMAP over SSL */
+	LPI_PROTO_MSNC,		/* MSN Client Protocol */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -139,6 +140,7 @@ typedef enum {
 	LPI_PROTO_UDP_ISAKMP,	/* ref: RFC 2408 */
 	LPI_PROTO_UDP_SNMP,
 	LPI_PROTO_UDP_BACKWEB,	/* BackWeb Polite Protocol */
+	LPI_PROTO_UDP_STARCRAFT,
 
 	LPI_PROTO_ICMP,
 

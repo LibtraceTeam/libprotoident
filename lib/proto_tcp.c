@@ -647,6 +647,18 @@ static inline bool match_ssl(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_msnc_transfer(lpi_data_t *data) {
+
+	if (!(data->payload_len[0] == 4 && data->payload_len[1] == 4))
+		return false;
+	
+	if (match_str_both(data, "\x30\x00\x00\x00", "\x04\x00\x00\x00"))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_mysql(lpi_data_t *data) {
 
         uint32_t stated_len = 0;
@@ -775,10 +787,12 @@ static inline bool match_trackmania(lpi_data_t *data) {
 	if (!match_str_both(data, "\x23\x00\x00\x00", "\x13\x00\x00\x00"))
 		return false;
 	
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (!match_payload_length(ntohl(data->payload[0]), 
+			data->payload_len[0]))
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
+        if (!match_payload_length(ntohl(data->payload[1]), 
+			data->payload_len[1]))
                 return false;
 
 	return true;
@@ -1241,6 +1255,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_openvpn(proto_d)) return LPI_PROTO_OPENVPN;
 
 	if (match_telecomkey(proto_d)) return LPI_PROTO_TELECOMKEY;
+
+	if (match_msnc_transfer(proto_d)) return LPI_PROTO_MSNC;
 	
 	/* Unknown protocol that seems to put the packet length in the first
          * octet - XXX Figure out what this is! */

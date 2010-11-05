@@ -1011,26 +1011,56 @@ static inline bool match_teredo(lpi_data_t *data) {
 
 }
 
+static inline bool match_diablo2_message(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (MATCH(payload, 0x03, 0x00, 0x00, 0x00) && len == 8)
+		return true;
+	if (MATCH(payload, 0x05, 0x00, 0x00, 0x00) && len == 8)
+		return true;
+	if (MATCH(payload, 0x09, 0x00, 0x00, 0x00) && len == 12)
+		return true;
+
+	return false;
+}
+
 static inline bool match_diablo2(lpi_data_t *data) {
 
 	if (data->server_port != 6112 && data->client_port != 6112)
 		return false;
 	
-	if (data->payload_len[0] != 0 && data->payload_len[0] != 8)
+	if (!match_diablo2_message(data->payload[0], data->payload_len[0]))
 		return false;
-	if (data->payload_len[1] != 0 && data->payload_len[1] != 8)
+	if (!match_diablo2_message(data->payload[1], data->payload_len[1]))
 		return false;
-
-	if (data->payload_len[0] == 8) {
-		if (!MATCH(data->payload[0], 0x03, 0x00, 0x00, 0x00))
-			return false;
-	}
-	if (data->payload_len[1] == 8) {
-		if (!MATCH(data->payload[1], 0x03, 0x00, 0x00, 0x00))
-			return false;
-	}
 
 	return true;
+}
+
+static inline bool match_sc_message(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 16)
+		return true;
+	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 17)
+		return true;
+
+	return false;
+}
+
+static inline bool match_starcraft(lpi_data_t *data) {
+
+	if (data->server_port != 6112 && data->client_port != 6112)
+		return false;
+
+	if (!match_sc_message(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_sc_message(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+
 }
 
 static inline bool match_sip(lpi_data_t *data) {
@@ -1370,6 +1400,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
 	 * BitTorrent */
 	if (match_other_btudp(proto_d)) return LPI_PROTO_UDP_BTDHT;
+       
+       	if (match_starcraft(proto_d)) return LPI_PROTO_UDP_STARCRAFT;
         
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
@@ -1395,9 +1427,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_GNUTELLA;
 	if (match_esp_encap(proto_d)) return LPI_PROTO_UDP_ESP;
 
-
-	/* XXX Starcraft seems to set the first four bytes of every packet to 00 00 00 00,
-	 * but we probably need something else to identify it properly */
 
         return LPI_PROTO_UDP;
 }

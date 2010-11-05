@@ -289,6 +289,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "TelecomKey";
 		case LPI_PROTO_IMAPS:
 			return "IMAPS";
+		case LPI_PROTO_MSNC:
+			return "MSNC";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -377,6 +379,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SNMP";
 		case LPI_PROTO_UDP_BACKWEB:
 			return "BackWeb";
+		case LPI_PROTO_UDP_STARCRAFT:
+			return "Starcraft";
 
                 default:
                 {
