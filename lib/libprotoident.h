@@ -94,6 +94,8 @@ typedef enum {
 	LPI_PROTO_TELECOMKEY,	/* Proto used to talk to telecomkey.com */
 	LPI_PROTO_IMAPS,	/* IMAP over SSL */
 	LPI_PROTO_MSNC,		/* MSN Client Protocol */
+	LPI_PROTO_YAHOO_ERROR,	/* Yahoo method of dealing with HTTP errors */
+	LPI_PROTO_IMESH,	/* iMesh */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -141,6 +143,9 @@ typedef enum {
 	LPI_PROTO_UDP_SNMP,
 	LPI_PROTO_UDP_BACKWEB,	/* BackWeb Polite Protocol */
 	LPI_PROTO_UDP_STARCRAFT,
+	LPI_PROTO_UDP_XFIRE_P2P, /* Xfire P2P protocol */
+	LPI_PROTO_UDP_THQ,	/* Protocol used by THQ games */
+	LPI_PROTO_UDP_NEWERTH,	/* Heroes of Newerth */
 
 	LPI_PROTO_ICMP,
 

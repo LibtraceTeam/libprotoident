@@ -291,6 +291,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "IMAPS";
 		case LPI_PROTO_MSNC:
 			return "MSNC";
+		case LPI_PROTO_YAHOO_ERROR:
+			return "YahooError";
+		case LPI_PROTO_IMESH:
+			return "iMesh_TCP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -340,7 +344,7 @@ const char *lpi_print(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_DEMONWARE:
 			return "Demonware";
 		case LPI_PROTO_UDP_IMESH:
-			return "iMesh";
+			return "iMesh_UDP";
 		case LPI_PROTO_UDP_OPASERV:
 			return "Opaserv";
 		case LPI_PROTO_UDP_STUN:
@@ -381,12 +385,13 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "BackWeb";
 		case LPI_PROTO_UDP_STARCRAFT:
 			return "Starcraft";
+		case LPI_PROTO_UDP_XFIRE_P2P:
+			return "Xfire_P2P";
+		case LPI_PROTO_UDP_THQ:
+			return "THQ";
+		case LPI_PROTO_UDP_NEWERTH:
+			return "HeroesOfNewerth";
 
-                default:
-                {
-                        printf("%d\n",(int)proto);
-                        assert(0);
-                }
         }
 }
 

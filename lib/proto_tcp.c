@@ -232,6 +232,32 @@ static inline bool match_bitextend(lpi_data_t *data) {
 
 }
 
+static inline bool match_imesh_payload(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	
+	if (len == 2 && MATCH(payload, 0x06, 0x00, 0x00, 0x00))
+		return true;
+	if (len == 10 && MATCH(payload, 0x06, 0x00, 0x04, 0x00))
+		return true;
+	if (len == 12 && MATCH(payload, 0x06, 0x00, 0x06, 0x00))
+		return true;
+	return false;
+	
+}
+
+static inline bool match_imesh(lpi_data_t *data) {
+	
+	/* Credit for this rule goes to opendpi - so if they're wrong then
+	 * we're wrong! */
+
+	if (!match_imesh_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_imesh_payload(data->payload[1], data->payload_len[1]))
+		return false;
+	return true;
+}
+
 static inline bool match_message4u(lpi_data_t *data) {
 	if (match_str_either(data, "m4ul"))
 		return true;
@@ -314,6 +340,25 @@ static inline bool match_http_badport(lpi_data_t *data) {
 	if (data->server_port == 443 || data->client_port == 443)
 		return true;
 
+	return false;
+
+}
+
+static inline bool match_yahoo_error(lpi_data_t *data) {
+
+	/* Yahoo seems to respond to HTTP errors in a really odd way - it
+	 * opens up a new connection and just sends raw HTML with the
+	 * error message in it. Not sure how they expect that to work, though.
+	 */
+
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;
+	
+	/* The html isn't entirely valid either - they start with <HEAD>
+	 * rather than <HTML>...
+	 */
+	if (match_str_either(data, "<HEA"))
+		return true;
 	return false;
 
 }
@@ -833,6 +878,10 @@ static inline bool match_file_header(uint32_t payload) {
 	if (MATCH(payload, 0xff, 0xd8, ANY, ANY))
 		return true;
 
+	/* I'm also going to include PHP scripts in here */
+	if (MATCH(payload, 0x3c, 0x3f, 0x70, 0x68))
+		return true;
+
 	return false;
 
 }
@@ -863,13 +912,13 @@ static inline bool match_postgresql(lpi_data_t *data) {
 	 *
 	 * All auth requests tend to be quite small */
 
-	if (match_payload_length(ntohl(data->payload[0]), data->payload_len[0]))
+	if (match_payload_length(data->payload[0], data->payload_len[0]))
 	{
 		if (MATCH(data->payload[1], 0x52, 0x00, 0x00, 0x00))
 			return true;
 	}
 	
-	if (match_payload_length(ntohl(data->payload[1]), data->payload_len[1]))
+	if (match_payload_length(data->payload[1], data->payload_len[1]))
 	{
 		if (MATCH(data->payload[0], 0x52, 0x00, 0x00, 0x00))
 			return true;
@@ -1271,6 +1320,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_notes_rpc(proto_d)) return LPI_PROTO_NOTES_RPC;
 
 	if (match_rtmp(proto_d)) return LPI_PROTO_RTMP;
+
+	if (match_yahoo_error(proto_d)) return LPI_PROTO_YAHOO_ERROR;
+
+	if (match_imesh(proto_d)) return LPI_PROTO_IMESH;
 
         /* eMule */
         if (match_emule(proto_d)) return LPI_PROTO_EMULE;

@@ -392,31 +392,30 @@ static inline bool match_steam(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_cod_payload(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (!MATCH(payload, 0xff, 0xff, 0xff, 0xff))
+		return false;
+	return false;
+
+}
+
 static inline bool match_cod(lpi_data_t *data) {
 
-        /* Presumably these are Server Info queries, except unlike the
-         * Source engine above, these are only 15 bytes long */
+	/* Use port 28960 to distinguish these, as 0xffffffff is a pretty
+	 * common pattern */
 
-        /* XXX: Port 28960 can be used as a distinguishing feature if we
-         * start getting false positives */
+	if (data->server_port != 28960 && data->client_port != 28960)
+		return false;
 
-        if (MATCHSTR(data->payload[0], "\xff\xff\xff\xff") &&
-                data->payload_len[0] == 15 &&
-                (MATCHSTR(data->payload[1], "\xff\xff\xff\xff") ||
-                data->payload_len[1] == 0)) {
+	if (!match_cod_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_cod_payload(data->payload[1], data->payload_len[1]))
+		return false;
 
-                return true;
-        }
-
-        if (MATCHSTR(data->payload[1], "\xff\xff\xff\xff") &&
-                data->payload_len[1] == 15 &&
-                (MATCHSTR(data->payload[0], "\xff\xff\xff\xff") ||
-                data->payload_len[0] == 0)) {
-
-                return true;
-        }
-
-        return false;
+	return true;
 }
 
 static inline bool match_traceroute(lpi_data_t *data) {
@@ -585,9 +584,22 @@ static inline bool match_vuze_dht(lpi_data_t *data) {
 
 }
 
+static inline bool match_xfire_p2p(lpi_data_t *data) {
+
+	if (match_str_both(data, "SC01", "CK01"))
+		return true;
+	return false;
+
+}
+
 static inline bool match_pyzor(lpi_data_t *data) {
 	if (match_str_both(data, "User", "Code"))
 		return true;
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (match_str_either(data, "User"))
+			return true;
+	}
+
 	return false;
 }
 
@@ -625,6 +637,10 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len) {
 			return true;
 		if (len == 82)
 			return true;
+		if (len == 43)
+			return true;
+		if (len == 75)
+			return true;
 		if (len == 0)
 			return true;
 	}
@@ -637,6 +653,16 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len) {
 
 	}
 
+	if (len == 29) {
+		if (MATCH(payload, 0x0c, 0x02, 0x00, ANY))
+			return true;
+		if (MATCH(payload, 0x0b, 0x02, 0x00, ANY))
+			return true;
+		if (MATCH(payload, 0x0e, 0x02, 0x00, ANY))
+			return true;
+	}
+
+
 	return false;
 
 }
@@ -647,8 +673,10 @@ static inline bool match_xlsp(lpi_data_t *data) {
 
 	/* Enforce port 3074 being involved, to reduce false positive rate for
 	 * one-way transactions */
-	if (data->server_port != 3074 && data->client_port != 3074)
-		return false;
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (data->server_port != 3074 && data->client_port != 3074)
+			return false;
+	}
 
 
 	/* Commonly observed request/response pattern */
@@ -1009,6 +1037,47 @@ static inline bool match_teredo(lpi_data_t *data) {
 
 	return true;
 
+}
+
+static inline bool match_newerth_payload(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (MATCH(payload, 0x00, 0x00, 0x01, 0x66))
+		return true;
+	if (MATCH(payload, 0x00, 0x00, 0x01, 0xca) && len == 6)
+		return true;
+	return false;
+}
+
+static inline bool match_heroes_newerth(lpi_data_t *data) {
+
+	if (!match_newerth_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_newerth_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+
+}
+
+static inline bool match_thq(lpi_data_t *data) {
+
+	/* I *suspect* this is the protocol used by RTS games released by
+	 * THQ - haven't been able to confirm for sure, though
+	 *
+	 * Most traffic is on port 6112, which is used by Blizzard and THQ
+	 * games, but we already have rules for most Blizzard stuff */
+
+	/* The ANY byte also matches the packet length - 17, if we need 
+	 * further matching rules */
+	if (data->payload_len[0] != 0 &&
+			!MATCH(data->payload[0], 'Q', 'N', 'A', ANY))
+		return false;
+	if (data->payload_len[1] != 0 &&
+			!MATCH(data->payload[1], 'Q', 'N', 'A', ANY))
+		return false;
+
+	return true;
 }
 
 static inline bool match_diablo2_message(uint32_t payload, uint32_t len) {
@@ -1396,6 +1465,12 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_snmp(proto_d)) return LPI_PROTO_UDP_SNMP;
 
 	if (match_backweb(proto_d)) return LPI_PROTO_UDP_BACKWEB;
+
+	if (match_thq(proto_d)) return LPI_PROTO_UDP_THQ;
+
+	if (match_xfire_p2p(proto_d)) return LPI_PROTO_UDP_XFIRE_P2P;
+
+	if (match_heroes_newerth(proto_d)) return LPI_PROTO_UDP_NEWERTH;
 
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
 	 * BitTorrent */
