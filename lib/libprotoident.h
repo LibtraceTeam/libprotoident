@@ -158,6 +158,7 @@ typedef enum {
 
 typedef struct lpi {
 	uint32_t payload[2];
+	uint32_t seqno[2];
 	uint16_t server_port;
 	uint16_t client_port;
 	uint8_t trans_proto;

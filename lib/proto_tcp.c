@@ -885,20 +885,46 @@ static inline bool match_file_header(uint32_t payload) {
 	return false;
 
 }
+
+static inline bool match_bulk_response(uint32_t payload, uint32_t len) {
+
+	/* Most FTP-style transactions result in no packets being sent back
+	 * to server (aside from ACKs) */
+
+	if (len == 0)
+		return true;
+	
+	/* However, there is at least one FTP client that sends some sort of
+	 * sequence number back to the server - maybe allowing for resumption
+	 * of paused transfers? 
+	 *
+	 * XXX This seems to be related to completely failing to implement the
+	 * FTP protocol correctly. There is usually a flow preceding these
+	 * flows that sends commands like "get" and "dir" to the server, 
+	 * which are not actually part of the FTP protocol. Instead, these
+	 * are often commands typed into FTP CLI clients that are converted
+	 * into the appropriate FTP commands. No idea what software is doing
+	 * this, but it is essentially emulating FTP so I'll keep it in here
+	 * for now.
+	 * */
+
+	if (len == 4 && MATCH(payload, 0x00, 0x00, 0x02, 0x00))
+		return true;
+	return false;
+	
+}
 	
 /* Bulk download covers files being downloaded through a separate channel,
  * like FTP data. We identify these by observing file type identifiers at the
- * start of the packet. This is not a protocol in itself - we cannot identify
- * the protocol, but we don't want to count this as "unknown" either.
+ * start of the packet. This is not a protocol in itself, but it's almost 
+ * certainly FTP.
  */
 static inline bool match_bulk_download(lpi_data_t *data) {	
 
-	/* For now, we also have a rule that there can only be traffic one
-	 * way, as all the protocol control is over another connection */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-
-	if (match_file_header(data->payload[0]) || 
+	if (match_bulk_response(data->payload[1], data->payload_len[1]) &&
+			match_file_header(data->payload[0]))
+		return true;
+	if (match_bulk_response(data->payload[0], data->payload_len[0]) &&
 			match_file_header(data->payload[1]))
 		return true;
 
@@ -912,13 +938,13 @@ static inline bool match_postgresql(lpi_data_t *data) {
 	 *
 	 * All auth requests tend to be quite small */
 
-	if (match_payload_length(data->payload[0], data->payload_len[0]))
+	if (ntohl(data->payload[0]) == data->payload_len[0])
 	{
 		if (MATCH(data->payload[1], 0x52, 0x00, 0x00, 0x00))
 			return true;
 	}
 	
-	if (match_payload_length(data->payload[1], data->payload_len[1]))
+	if (ntohl(data->payload[1]) == data->payload_len[1])
 	{
 		if (MATCH(data->payload[0], 0x52, 0x00, 0x00, 0x00))
 			return true;
@@ -1080,7 +1106,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_str_either(proto_d, "\x0ePan"))
 		return LPI_PROTO_PANDO;
 
-	if (match_bulk_download(proto_d)) return LPI_PROTO_TCP_BULK;
+	if (match_bulk_download(proto_d)) return LPI_PROTO_FTP_DATA;
 
         /* Newsfeeds */
         if (match_str_either(proto_d, "mode")) return LPI_PROTO_NNTP;

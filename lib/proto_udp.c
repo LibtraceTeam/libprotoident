@@ -220,6 +220,14 @@ static inline bool match_gnutella(lpi_data_t *data) {
 	if (data->payload_len[1] == 0 || data->payload_len[0] == 0)
 		return false;
 
+	/* There seem to be some message types that do weird stuff with the
+	 * GUID - I suspect they are Limewire extensions. */
+
+	if (data->payload_len[0] == 23 && data->payload_len[1] == 23) {
+		if (match_chars_either(data, 0x00, 0x00, 0x00, 0x00))
+			return true;
+	}
+
 	/* If there is payload in both directions, the message IDs must match */
 	if (data->payload[0] != data->payload[1])
 		return false;
@@ -244,11 +252,24 @@ static inline bool match_gnutella(lpi_data_t *data) {
 			data->payload_len[0] == 86))
 		return true;
 
-	/* 72 and 61 byte packets seem to go together */
-	if (data->payload_len[0] == 72 && data->payload_len[1] == 61)
-		return true;
-	if (data->payload_len[1] == 72 && data->payload_len[0] == 61)
-		return true;
+	/* 72 and (61 or 81 or 86) byte packets seem to go together */
+	if (data->payload_len[0] == 72) {
+		if (data->payload_len[1] == 61)
+			return true;
+		if (data->payload_len[1] == 81)
+			return true;
+		if (data->payload_len[1] == 86)
+			return true;
+	}
+
+	if (data->payload_len[1] == 72) {
+		if (data->payload_len[0] == 61)
+			return true;
+		if (data->payload_len[0] == 81)
+			return true;
+		if (data->payload_len[0] == 86)
+			return true;
+	}
 
 	/* 55 and 47 */
 	if (data->payload_len[0] == 55 && data->payload_len[1] == 47)
@@ -279,22 +300,36 @@ static inline bool match_gnutella(lpi_data_t *data) {
 			data->payload_len[0] >= 136))
 		return true;
 
-	/* 29 byte requests seem to be met with 80-100 byte responses */
-	if (data->payload_len[0] == 29 && (data->payload_len[1] <= 100 &&
-			data->payload_len[1] >= 80))
-		return true;
-	if (data->payload_len[1] == 29 && (data->payload_len[0] <= 100 &&
-			data->payload_len[0] >= 80))
-		return true;
+	/* 29 byte requests seem to be met with 80-100 byte responses OR
+	 * a 46 byte response */
+	if (data->payload_len[0] == 29) {
+		if (data->payload_len[1] <= 100 && data->payload_len[1] >= 80)
+			return true;
+		if (data->payload_len[1] == 46)
+			return true;
+	}
+	if (data->payload_len[1] == 29) {
+		if (data->payload_len[0] <= 100 && data->payload_len[0] >= 80)
+			return true;
+		if (data->payload_len[0] == 46)
+			return true;
+	}
 
-	/* 31 byte requests seem to be met with 139-170 byte responses */
-	if (data->payload_len[0] == 31 && (data->payload_len[1] <= 170 &&
-			data->payload_len[1] >= 139))
-		return true;
-	if (data->payload_len[1] == 31 && (data->payload_len[0] <= 170 &&
-			data->payload_len[0] >= 139))
-		return true;
-
+	/* 31 byte requests seem to be met with 139-170 byte responses OR
+	 * a 65 byte response */
+	if (data->payload_len[0] == 31) {
+		if (data->payload_len[1] <= 170 && data->payload_len[1] >= 139)
+			return true;
+		if (data->payload_len[1] == 65)
+			return true;
+	}
+	if (data->payload_len[1] == 31) {
+		if (data->payload_len[0] <= 170 && data->payload_len[0] >= 139)
+			return true;
+		if (data->payload_len[0] == 65)
+			return true;
+	}
+	
 	/* 34 byte requests seem to be met with 138-165 byte responses */
 	if (data->payload_len[0] == 34 && (data->payload_len[1] <= 165 &&
 			data->payload_len[1] >= 138))
@@ -310,6 +345,20 @@ static inline bool match_gnutella(lpi_data_t *data) {
 	if (data->payload_len[1] == 86 && (data->payload_len[0] <= 225 &&
 			data->payload_len[0] >= 100))
 		return true;
+
+	/* 28 gets between 75 and 90 OR between 135 and 180 */
+	if (data->payload_len[0] == 28) {
+		if (data->payload_len[1] >= 75 && data->payload_len[1] <= 90)
+			return true;
+		if (data->payload_len[1] >= 135 && data->payload_len[1] <= 180)
+			return true;
+	}
+	if (data->payload_len[1] == 28) {
+		if (data->payload_len[0] >= 75 && data->payload_len[0] <= 90)
+			return true;
+		if (data->payload_len[0] >= 135 && data->payload_len[0] <= 180)
+			return true;
+	}
 
 	/* 193 matches 108 or 111 */
 	if (data->payload_len[0] == 193 && (data->payload_len[1] == 108 ||
@@ -398,7 +447,7 @@ static inline bool match_cod_payload(uint32_t payload, uint32_t len) {
 		return true;
 	if (!MATCH(payload, 0xff, 0xff, 0xff, 0xff))
 		return false;
-	return false;
+	return true;
 
 }
 
@@ -1210,6 +1259,9 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 	
 	if (MATCH(payload, 0xe4, 0x50, ANY, ANY) && len == 4)
 		return true;	
+
+	if (MATCH(payload, 0xe4, 0x52, ANY, ANY) && len == 36)
+		return true;
 	
 	if (MATCH(payload, 0xe4, 0x29, ANY, ANY)) {
 		if (len == 119 || len == 69 || len == 294) 
@@ -1236,10 +1288,12 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 		return true;
 
 	/* emule extensions */
-	if (MATCH(payload, 0xc5, 0x90, ANY, ANY) && (len == 18))
+	if (MATCH(payload, 0xc5, 0x90, ANY, ANY)) {
 		return true;
-	if (MATCH(payload, 0xc5, 0x91, ANY, ANY) && (len == 4))
+	}
+	if (MATCH(payload, 0xc5, 0x91, ANY, ANY)) {
 		return true;
+	}
 	if (MATCH(payload, 0xc5, 0x92, ANY, ANY) && (len == 2))
 		return true;
 	if (MATCH(payload, 0xc5, 0x93, ANY, ANY) && (len == 2))

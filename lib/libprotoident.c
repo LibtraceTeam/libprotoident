@@ -5,10 +5,26 @@
 #include "proto_tcp.h"
 #include "proto_udp.h"
 
+static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
+
+        if (seq_a == seq_b) return 0;
+
+
+        if (seq_a > seq_b)
+                return (int)(seq_a - seq_b);
+        else
+                /* WRAPPING */
+                return (int)(UINT32_MAX - ((seq_b - seq_a) - 1));
+
+}
+
+
 int lpi_init_data(lpi_data_t *data) {
 
 	data->payload[0] = 0;
 	data->payload[1] = 0;
+	data->seqno[0] = 0;
+	data->seqno[1] = 0;
 	data->server_port = 0;
 	data->client_port = 0;
 	data->trans_proto = 0;
@@ -28,9 +44,24 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	void *transport;
 	uint32_t four_bytes;
 	libtrace_ip_t *ip = NULL;
+	libtrace_tcp_t *tcp = NULL;
+	uint32_t seq = 0;
 
-	if (data->payload_len[dir] != 0)
-		return 0;
+	tcp = trace_get_tcp(packet);
+
+	/* Attempt to deal with reordered TCP segments */
+	if (tcp) {
+		seq = ntohl(tcp->seq);
+
+		if (data->payload_len[dir] != 0 && seq_cmp(seq, 
+				data->seqno[dir]) > 0)
+			return 0;
+		data->seqno[dir] = seq;
+	} else {
+
+		if (data->payload_len[dir] != 0)
+			return 0;
+	}
 	
 	ip = trace_get_ip(packet);
 	
@@ -57,7 +88,6 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		data->trans_proto = proto;
 	
 	if (proto == 6) {
-		libtrace_tcp_t *tcp = (libtrace_tcp_t *)transport;
 		if (tcp->rst)
 			return 0;
 		payload = (char *)trace_get_payload_from_tcp(tcp, &rem);
@@ -82,7 +112,6 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		four_bytes = four_bytes << (8 * (4 - psize));		
 	}
 
-	assert(data->payload[dir] == 0);
 	data->payload[dir] = htonl(four_bytes);
 	data->payload_len[dir] = psize;
 
