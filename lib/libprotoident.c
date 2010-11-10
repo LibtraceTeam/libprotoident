@@ -88,6 +88,8 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		data->trans_proto = proto;
 	
 	if (proto == 6) {
+		if (!tcp)
+			return 0;
 		if (tcp->rst)
 			return 0;
 		payload = (char *)trace_get_payload_from_tcp(tcp, &rem);

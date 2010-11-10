@@ -271,6 +271,12 @@ static inline bool match_gnutella(lpi_data_t *data) {
 			return true;
 	}
 
+	/* 81 and 544 */
+	if (data->payload_len[0] == 81 && data->payload_len[1] == 544)
+		return true;
+	if (data->payload_len[1] == 81 && data->payload_len[0] == 544)
+		return true;
+
 	/* 55 and 47 */
 	if (data->payload_len[0] == 55 && data->payload_len[1] == 47)
 		return true;
@@ -315,21 +321,6 @@ static inline bool match_gnutella(lpi_data_t *data) {
 			return true;
 	}
 
-	/* 31 byte requests seem to be met with 139-170 byte responses OR
-	 * a 65 byte response */
-	if (data->payload_len[0] == 31) {
-		if (data->payload_len[1] <= 170 && data->payload_len[1] >= 139)
-			return true;
-		if (data->payload_len[1] == 65)
-			return true;
-	}
-	if (data->payload_len[1] == 31) {
-		if (data->payload_len[0] <= 170 && data->payload_len[0] >= 139)
-			return true;
-		if (data->payload_len[0] == 65)
-			return true;
-	}
-	
 	/* 34 byte requests seem to be met with 138-165 byte responses */
 	if (data->payload_len[0] == 34 && (data->payload_len[1] <= 165 &&
 			data->payload_len[1] >= 138))
@@ -345,20 +336,6 @@ static inline bool match_gnutella(lpi_data_t *data) {
 	if (data->payload_len[1] == 86 && (data->payload_len[0] <= 225 &&
 			data->payload_len[0] >= 100))
 		return true;
-
-	/* 28 gets between 75 and 90 OR between 135 and 180 */
-	if (data->payload_len[0] == 28) {
-		if (data->payload_len[1] >= 75 && data->payload_len[1] <= 90)
-			return true;
-		if (data->payload_len[1] >= 135 && data->payload_len[1] <= 180)
-			return true;
-	}
-	if (data->payload_len[1] == 28) {
-		if (data->payload_len[0] >= 75 && data->payload_len[0] <= 90)
-			return true;
-		if (data->payload_len[0] >= 135 && data->payload_len[0] <= 180)
-			return true;
-	}
 
 	/* 193 matches 108 or 111 */
 	if (data->payload_len[0] == 193 && (data->payload_len[1] == 108 ||
@@ -379,6 +356,20 @@ static inline bool match_gnutella(lpi_data_t *data) {
 		return true;
 	if (data->payload_len[1] == 96)
 		return true;
+	
+	/* The response to 28 bytes tends to vary in size, but is less than 
+	 * 200 */
+	if (data->payload_len[0] == 28 && data->payload_len[1] < 200)
+		return true;
+	if (data->payload_len[1] == 28 && data->payload_len[0] < 200)
+		return true;
+	
+	/* Same for 31 bytes */
+	if (data->payload_len[0] == 31 && data->payload_len[1] < 200)
+		return true;
+	if (data->payload_len[1] == 31 && data->payload_len[0] < 200)
+		return true;
+	
 	return false;	
 	
 
@@ -632,6 +623,28 @@ static inline bool match_vuze_dht(lpi_data_t *data) {
 
 
 }
+
+static inline bool match_unknown_dht(lpi_data_t *data) {
+
+	/* I don't know exactly what BT clients do this, but there are often
+	 * DHT queries and responses present in flows that match this rule,
+	 * so we're going to go with some form of Bittorrent */
+
+	if (data->payload[0] == 0 || data->payload[1] == 0)
+		return false;
+	
+	/* Both initial packets are 33 bytes and have the exact same 
+	 * payload */
+	if (data->payload_len[0] != 33 || data->payload_len[1] != 33)
+		return false;
+
+	if (data->payload[0] != data->payload[1])
+		return false;
+
+	return true;
+
+}
+
 
 static inline bool match_xfire_p2p(lpi_data_t *data) {
 
@@ -1527,8 +1540,9 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_heroes_newerth(proto_d)) return LPI_PROTO_UDP_NEWERTH;
 
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
-	 * BitTorrent */
+	 * BitTorrent - XXX name these functions better! */
 	if (match_other_btudp(proto_d)) return LPI_PROTO_UDP_BTDHT;
+	if (match_unknown_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
        
        	if (match_starcraft(proto_d)) return LPI_PROTO_UDP_STARCRAFT;
         
