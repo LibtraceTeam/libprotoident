@@ -40,6 +40,8 @@ typedef enum {
 	LPI_CATEGORY_NOPAYLOAD,
 	LPI_CATEGORY_UNSUPPORTED,
 	LPI_CATEGORY_UNKNOWN,
+	LPI_CATEGORY_NO_CATEGORY,	/* Protocol has not been placed into a
+					   category yet */
 	LPI_CATEGORY_LAST
 } lpi_category_t;
 
@@ -48,8 +50,6 @@ typedef enum {
         /* TCP Protocols */
         LPI_PROTO_HTTP,
         LPI_PROTO_SMTP,
-        LPI_PROTO_SMTPSPAM,
-        LPI_PROTO_SMTPREJECT,
         LPI_PROTO_BITTORRENT,
         LPI_PROTO_IRC,
         LPI_PROTO_NCSOFT,      /* NCSoft proprietary protocol */
@@ -70,7 +70,6 @@ typedef enum {
         LPI_PROTO_ICQ,
         LPI_PROTO_TELNET,
         LPI_PROTO_RDP,         /* Windows remote desktop protocol */
-        LPI_PROTO_HTTP_IMAGE,  /* Perry's porn check */
         LPI_PROTO_HTTP_MS,     /* Microsoft Exchange extensions to HTTP */
         LPI_PROTO_TDS,         /* MS SQL Server protocol */
         LPI_PROTO_RPC_SCAN,    /* Port 135 exploit attempt */
@@ -106,7 +105,6 @@ typedef enum {
         LPI_PROTO_TOR,         /* TOR (The Onion Router) */
         LPI_PROTO_MYSQL,
         LPI_PROTO_HTTP_TUNNEL, /* Tunnelling via HTTP */
-        LPI_PROTO_SMTP_SCAN,   /* SMTP Flow where the client sends no data */
         LPI_PROTO_RSYNC,
         LPI_PROTO_NOTES_RPC,   /* Lotus Notes RPC (Domino) */
         LPI_PROTO_AZUREUS,     /* Azureus Extension */
@@ -196,6 +194,7 @@ typedef enum {
 typedef struct lpi {
 	uint32_t payload[2];
 	uint32_t seqno[2];
+	uint32_t observed[2];
 	uint16_t server_port;
 	uint16_t client_port;
 	uint8_t trans_proto;

@@ -8,9 +8,15 @@ static inline bool match_smtp(lpi_data_t *data) {
 
 	/* Match all the random error codes */	
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (match_str_either(data, "220 "))
+			return true;
+		if (match_str_either(data, "450 "))
+			return true;
 		if (match_str_either(data, "421 "))
 			return true;
 		if (match_str_either(data, "451 "))
+			return true;
+		if (match_str_either(data, "451-"))
 			return true;
 		if (match_str_either(data, "452 "))
 			return true;
@@ -582,15 +588,6 @@ static inline bool match_http_tunnel(lpi_data_t *data) {
         return false;
 }
 
-static inline bool match_smtp_scan(lpi_data_t *data) {
-
-        if (MATCHSTR(data->payload[0], "220 ") && data->payload_len[1] == 0)
-                return true;
-        if (MATCHSTR(data->payload[1], "220 ") && data->payload_len[0] == 0)
-                return true;
-        return false;
-}
-
 /* Rules adapted from l7-filter */
 static inline bool match_telnet(lpi_data_t *data) {
 	if (match_chars_either(data, 0xff, 0xfb, ANY, 0xff))
@@ -1066,18 +1063,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_str_either(proto_d, "PROP")) return LPI_PROTO_HTTP_MS;
 
         /* SMTP */
-        /*  55x reject codes */
-        if (match_chars_either(proto_d, '5','5',ANY,' '))
-                return LPI_PROTO_SMTPREJECT;
-        if (match_chars_either(proto_d, '5','5',ANY,'-'))
-                return LPI_PROTO_SMTPREJECT;
-        if (match_chars_either(proto_d, '4','5','0',' '))
-                return LPI_PROTO_SMTPREJECT;
-
-        /*  SMTP Commands */
         if (match_smtp(proto_d)) return LPI_PROTO_SMTP;
-
-        if (match_smtp_scan(proto_d)) return LPI_PROTO_SMTP_SCAN;
 
         /* SSH */
         if (match_str_either(proto_d, "SSH-")) return LPI_PROTO_SSH;

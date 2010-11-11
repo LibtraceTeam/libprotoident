@@ -25,6 +25,8 @@ int lpi_init_data(lpi_data_t *data) {
 	data->payload[1] = 0;
 	data->seqno[0] = 0;
 	data->seqno[1] = 0;
+	data->observed[0] = 0;
+	data->observed[1] = 0;
 	data->server_port = 0;
 	data->client_port = 0;
 	data->trans_proto = 0;
@@ -48,7 +50,18 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	uint32_t seq = 0;
 
 	tcp = trace_get_tcp(packet);
+	psize = trace_get_payload_length(packet);
+	if (psize <= 0)
+		return 0;
 
+	/* Don't bother if we've observed 32k of data - the first packet must
+	 * surely been within that. This helps us avoid issues with sequence
+	 * number wrapping when doing the reordering check below */
+	if (data->observed[dir] > 32 * 1024)
+		return 0;
+	
+	data->observed[dir] += psize;
+	
 	/* Attempt to deal with reordered TCP segments */
 	if (tcp) {
 		seq = ntohl(tcp->seq);
@@ -100,11 +113,8 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		payload = (char *)trace_get_payload_from_udp(udp, &rem);
 	}
 
-	psize = trace_get_payload_length(packet);
 
 	if (payload == NULL)
-		return 0;
-	if (psize <= 0)
 		return 0;
 	
 	four_bytes = ntohl((*(uint32_t *)payload));
@@ -156,18 +166,14 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 
 		case LPI_PROTO_HTTP:
 		case LPI_PROTO_HTTPS:
-                case LPI_PROTO_HTTP_IMAGE:
                 case LPI_PROTO_HTTP_MS:
 		case LPI_PROTO_HTTP_BADPORT:
 			return LPI_CATEGORY_WEB;
 
 		case LPI_PROTO_SMTP:
-		case LPI_PROTO_SMTPSPAM:
-		case LPI_PROTO_SMTPREJECT:
 		case LPI_PROTO_POP3:
 		case LPI_PROTO_IMAP:
 		case LPI_PROTO_IMAPS:
-                case LPI_PROTO_SMTP_SCAN:
 			return LPI_CATEGORY_MAIL;
 
 		case LPI_PROTO_SSL:
@@ -242,7 +248,6 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_MYSQL:
 			return LPI_CATEGORY_DATABASES;
 	
-		case LPI_PROTO_DC:
                 case LPI_PROTO_SMB:
                 case LPI_PROTO_FTP_CONTROL:
 		case LPI_PROTO_FTP_DATA:
@@ -268,6 +273,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_IMESH:
 		case LPI_PROTO_UDP_MP2P:
 		case LPI_PROTO_UDP_XFIRE_P2P:
+		case LPI_PROTO_DC:
 			return LPI_CATEGORY_P2P;
 		
 		case LPI_PROTO_NCSOFT:
@@ -333,7 +339,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_TIP:
 			return LPI_CATEGORY_ECOMMERCE;
 	}
-	return LPI_CATEGORY_UNSUPPORTED;
+	return LPI_CATEGORY_NO_CATEGORY;
 }
 
 const char *lpi_print_category(lpi_category_t category) {
@@ -393,6 +399,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Unknown";
 		case LPI_CATEGORY_UNSUPPORTED:
 			return "Unsupported";
+		case LPI_CATEGORY_NO_CATEGORY:
+			return "Uncategorised";
 	}
 
 	return "Invalid_Category";
@@ -420,10 +428,6 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "HTTP";
 		case LPI_PROTO_SMTP:
 			return "SMTP";
-		case LPI_PROTO_SMTPSPAM:
-			return "SpamSMTP";
-		case LPI_PROTO_SMTPREJECT:
-			return "RejectedSMTP";
 		case LPI_PROTO_DC:
 			return "DirectConnect";
 		case LPI_PROTO_BITTORRENT:
@@ -466,8 +470,6 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "RTMP";
                 case LPI_PROTO_RDP:
                         return "RDP";
-                case LPI_PROTO_HTTP_IMAGE:
-                        return "WebImage";
                 case LPI_PROTO_HTTP_MS:
                         return "Microsoft_HTTP";
                 case LPI_PROTO_TDS:
@@ -538,8 +540,6 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "MySQL";
                 case LPI_PROTO_HTTP_TUNNEL:
                         return "HTTP_Tunnel";
-                case LPI_PROTO_SMTP_SCAN:
-                        return "SMTP_Scan";
                 case LPI_PROTO_RSYNC:
                         return "Rsync";
                 case LPI_PROTO_NOTES_RPC:
