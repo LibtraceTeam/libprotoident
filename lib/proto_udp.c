@@ -1208,6 +1208,20 @@ static inline bool match_sip(lpi_data_t *data) {
 	
 }
 
+static inline bool match_linkproof(lpi_data_t *data) {
+
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;
+
+	if (!match_str_either(data, "link"))
+		return false;
+
+	if (data->payload_len[0] == 50 || data->payload_len[1] == 50)
+		return true;
+	
+	return false;
+}
+
 static inline bool match_backweb(lpi_data_t *data) {
 
 	if (data->server_port != 370 && data->client_port != 370)
@@ -1535,9 +1549,13 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_thq(proto_d)) return LPI_PROTO_UDP_THQ;
 
+	if (match_linkproof(proto_d)) return LPI_PROTO_UDP_LINKPROOF;
+
 	if (match_xfire_p2p(proto_d)) return LPI_PROTO_UDP_XFIRE_P2P;
 
 	if (match_heroes_newerth(proto_d)) return LPI_PROTO_UDP_NEWERTH;
+
+	if (match_str_either(proto_d, " VRV")) return LPI_PROTO_UDP_WORM_22105;
 
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
 	 * BitTorrent - XXX name these functions better! */

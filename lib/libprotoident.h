@@ -7,6 +7,42 @@
 extern "C" {
 #endif
 
+/* Protocol categories - most l7 protocols fall into a broader category that
+ * describes what they are used for, e.g. P2P, Web, Mail etc.
+ */
+typedef enum {
+	LPI_CATEGORY_WEB,
+	LPI_CATEGORY_CHAT,
+	LPI_CATEGORY_MAIL,
+	LPI_CATEGORY_P2P,
+	LPI_CATEGORY_P2P_STRUCTURE,	/* Maintenance of P2P networks */
+	LPI_CATEGORY_SECURITY,
+	LPI_CATEGORY_ECOMMERCE,
+	LPI_CATEGORY_GAMING,
+	LPI_CATEGORY_ENCRYPT,		/* Encrypted traffic that is not
+					   clearly part of another category */
+	LPI_CATEGORY_MONITORING,	/* Network measurement / monitoring */
+	LPI_CATEGORY_NEWS,
+	LPI_CATEGORY_MALWARE,
+	LPI_CATEGORY_ANTIVIRUS,
+	LPI_CATEGORY_ANTISPAM,
+	LPI_CATEGORY_VOIP,
+	LPI_CATEGORY_TUNNELLING,	/* Tunnelling protocols */
+	LPI_CATEGORY_NAT,		/* NAT traversal protocols */
+	LPI_CATEGORY_STREAMING,
+	LPI_CATEGORY_SERVICES,		/* Basic services, e.g. DNS, NTP */
+	LPI_CATEGORY_DATABASES,
+	LPI_CATEGORY_FILES,
+	LPI_CATEGORY_REMOTE,		/* Remote access, e.g. SSH, telnet */
+	LPI_CATEGORY_TELCO,		/* Telco services aside from VOIP, e.g
+					   SMS protocols */
+	LPI_CATEGORY_ICMP,
+	LPI_CATEGORY_NOPAYLOAD,
+	LPI_CATEGORY_UNSUPPORTED,
+	LPI_CATEGORY_UNKNOWN,
+	LPI_CATEGORY_LAST
+} lpi_category_t;
+
 
 typedef enum {
         /* TCP Protocols */
@@ -79,7 +115,6 @@ typedef enum {
 	LPI_PROTO_STEAM,	/* Steam TCP download, i.e. downloading games */
 	LPI_PROTO_TRACKMANIA, 	/* Trackmania control protocol */
 	LPI_PROTO_CONQUER,	/* Conquer Online game */
-	LPI_PROTO_TCP_BULK,	/* Bulk TCP file downloads */
 	LPI_PROTO_RTMP,		/* Adobe RTMP */
 	LPI_PROTO_TIP,		/* Transaction Internet Protocol */
 	LPI_PROTO_P2P_HTTP,	/* P2P over HTTP, a la KaZaA and Gnutella */
@@ -146,6 +181,8 @@ typedef enum {
 	LPI_PROTO_UDP_XFIRE_P2P, /* Xfire P2P protocol */
 	LPI_PROTO_UDP_THQ,	/* Protocol used by THQ games */
 	LPI_PROTO_UDP_NEWERTH,	/* Heroes of Newerth */
+	LPI_PROTO_UDP_LINKPROOF,	/* Linkproof device packets */
+	LPI_PROTO_UDP_WORM_22105,	/* Chinese worm that uses port 22105 */
 
 	LPI_PROTO_ICMP,
 
@@ -169,6 +206,8 @@ typedef struct lpi {
 int lpi_init_data(lpi_data_t *data);
 int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir);
 const char *lpi_print(lpi_protocol_t proto);
+lpi_category_t lpi_categorise(lpi_protocol_t proto);
+const char *lpi_print_category(lpi_category_t category);
 lpi_protocol_t lpi_guess_protocol(lpi_data_t *data);
 #ifdef __cplusplus 
 }

@@ -137,6 +137,268 @@ lpi_protocol_t lpi_guess_protocol(lpi_data_t *data) {
 	return LPI_PROTO_UNSUPPORTED;
 }
 	
+lpi_category_t lpi_categorise(lpi_protocol_t proto) {
+
+	switch(proto) {
+		case LPI_PROTO_INVALID:
+		case LPI_PROTO_UNSUPPORTED:
+			return LPI_CATEGORY_UNSUPPORTED;
+		
+		case LPI_PROTO_UNKNOWN:
+		case LPI_PROTO_UDP:
+			return LPI_CATEGORY_UNKNOWN;
+		
+		case LPI_PROTO_NO_PAYLOAD:
+			return LPI_CATEGORY_NOPAYLOAD;
+
+		case LPI_PROTO_ICMP:
+			return LPI_CATEGORY_ICMP;
+
+		case LPI_PROTO_HTTP:
+		case LPI_PROTO_HTTPS:
+                case LPI_PROTO_HTTP_IMAGE:
+                case LPI_PROTO_HTTP_MS:
+		case LPI_PROTO_HTTP_BADPORT:
+			return LPI_CATEGORY_WEB;
+
+		case LPI_PROTO_SMTP:
+		case LPI_PROTO_SMTPSPAM:
+		case LPI_PROTO_SMTPREJECT:
+		case LPI_PROTO_POP3:
+		case LPI_PROTO_IMAP:
+		case LPI_PROTO_IMAPS:
+                case LPI_PROTO_SMTP_SCAN:
+			return LPI_CATEGORY_MAIL;
+
+		case LPI_PROTO_SSL:
+			return LPI_CATEGORY_ENCRYPT;
+		
+		case LPI_PROTO_UDP_ISAKMP:
+                case LPI_PROTO_KMS:
+			return LPI_CATEGORY_SECURITY;
+		
+		case LPI_PROTO_UDP_TRACEROUTE:
+		case LPI_PROTO_UDP_SNMP:
+		case LPI_PROTO_UDP_LINKPROOF:
+               		return LPI_CATEGORY_MONITORING;
+
+                case LPI_PROTO_RPC_SCAN:
+		case LPI_PROTO_UDP_OPASERV:
+		case LPI_PROTO_UDP_WORM_22105:
+		case LPI_PROTO_UDP_SQLEXP:
+                case LPI_PROTO_MITGLIEDER:
+                case LPI_PROTO_UDP_WIN_MESSAGE:
+	      		return LPI_CATEGORY_MALWARE;
+	
+		case LPI_PROTO_ETRUST:
+		case LPI_PROTO_UDP_BACKWEB:
+			return LPI_CATEGORY_ANTIVIRUS;
+
+		case LPI_PROTO_NNTP:
+                        return LPI_CATEGORY_NEWS;
+
+                case LPI_PROTO_SIP:
+                case LPI_PROTO_UDP_SIP:
+                case LPI_PROTO_UDP_RTP:
+		case LPI_PROTO_UDP_SKYPE:
+                        return LPI_CATEGORY_VOIP;
+                
+		case LPI_PROTO_HAMACHI:
+                case LPI_PROTO_TOR:
+                case LPI_PROTO_HTTP_TUNNEL:
+		case LPI_PROTO_OPENVPN:
+		case LPI_PROTO_UDP_IPV6:
+		case LPI_PROTO_UDP_ESP:
+		case LPI_PROTO_UDP_TEREDO:
+			return LPI_CATEGORY_TUNNELLING;
+
+		case LPI_PROTO_UDP_PYZOR:
+		case LPI_PROTO_RAZOR:
+		case LPI_PROTO_RBLS:
+		case LPI_PROTO_UDP_SPAMFIGHTER:
+			return LPI_CATEGORY_ANTISPAM;
+		
+		case LPI_PROTO_UDP_STUN:
+			return LPI_CATEGORY_NAT;
+		
+                case LPI_PROTO_RTSP:
+		case LPI_PROTO_RTMP:
+		case LPI_PROTO_FLASH:
+		case LPI_PROTO_SHOUTCAST:
+		case LPI_PROTO_UDP_REAL:
+			return LPI_CATEGORY_STREAMING;	
+		
+		case LPI_PROTO_DNS:
+                case LPI_PROTO_ID:
+                case LPI_PROTO_NETBIOS:
+                case LPI_PROTO_UDP_DNS:
+                case LPI_PROTO_UDP_DHCP:
+                case LPI_PROTO_UDP_NTP:
+			return LPI_CATEGORY_SERVICES;	
+                
+		case LPI_PROTO_TDS:
+		case LPI_PROTO_POSTGRESQL:
+                case LPI_PROTO_DXP:
+                case LPI_PROTO_MYSQL:
+			return LPI_CATEGORY_DATABASES;
+	
+		case LPI_PROTO_DC:
+                case LPI_PROTO_SMB:
+                case LPI_PROTO_FTP_CONTROL:
+		case LPI_PROTO_FTP_DATA:
+                case LPI_PROTO_AR:
+                case LPI_PROTO_MS_DS:
+                case LPI_PROTO_RSYNC:
+		case LPI_PROTO_HARVEYS:
+		case LPI_PROTO_UDP_ORBIT:
+		case LPI_PROTO_MSNC:
+                case LPI_PROTO_TCP_XML:
+			return LPI_CATEGORY_FILES;
+
+		case LPI_PROTO_BITTORRENT:
+		case LPI_PROTO_EMULE:
+		case LPI_PROTO_GNUTELLA:
+                case LPI_PROTO_ARES:
+                case LPI_PROTO_NAPSTER:
+                case LPI_PROTO_XUNLEI:
+                case LPI_PROTO_BITEXT:
+                case LPI_PROTO_AZUREUS:
+		case LPI_PROTO_PANDO:
+		case LPI_PROTO_P2P_HTTP:
+		case LPI_PROTO_IMESH:
+		case LPI_PROTO_UDP_MP2P:
+		case LPI_PROTO_UDP_XFIRE_P2P:
+			return LPI_CATEGORY_P2P;
+		
+		case LPI_PROTO_NCSOFT:
+                case LPI_PROTO_WARCRAFT3:
+                case LPI_PROTO_BNCS:
+                case LPI_PROTO_EYE:
+                case LPI_PROTO_BLIZZARD:
+		case LPI_PROTO_STEAM:
+		case LPI_PROTO_TRACKMANIA:
+		case LPI_PROTO_CONQUER:
+		case LPI_PROTO_WOW:
+		case LPI_PROTO_UDP_QUAKEWORLD:
+                case LPI_PROTO_UDP_STEAM:
+                case LPI_PROTO_UDP_STEAM_FRIENDS:
+                case LPI_PROTO_UDP_GAMESPY:
+                case LPI_PROTO_UDP_EYE:
+                case LPI_PROTO_UDP_COD:
+		case LPI_PROTO_UDP_SECONDLIFE:
+		case LPI_PROTO_UDP_HL:
+		case LPI_PROTO_UDP_XLSP:
+		case LPI_PROTO_UDP_DEMONWARE:
+		case LPI_PROTO_UDP_DIABLO2:
+		case LPI_PROTO_UDP_PSN:
+		case LPI_PROTO_UDP_STARCRAFT:
+		case LPI_PROTO_UDP_THQ:
+		case LPI_PROTO_UDP_NEWERTH:
+			return LPI_CATEGORY_GAMING;
+
+		case LPI_PROTO_IRC:
+		case LPI_PROTO_MSN:
+                case LPI_PROTO_YAHOO:
+                case LPI_PROTO_ICQ:
+                case LPI_PROTO_YAHOO_WEBCAM:
+                case LPI_PROTO_GOKUCHAT:
+                case LPI_PROTO_MSNV:
+		case LPI_PROTO_YAHOO_ERROR:
+                case LPI_PROTO_UDP_MSN_VIDEO:
+		case LPI_PROTO_UDP_MSN_CACHE:
+                case LPI_PROTO_MZINGA:
+			return LPI_CATEGORY_CHAT;
+
+		case LPI_PROTO_SSH:
+                case LPI_PROTO_TELNET:
+                case LPI_PROTO_RFB:
+                case LPI_PROTO_RDP:
+                case LPI_PROTO_ICA:
+                case LPI_PROTO_NOTES_RPC:
+			return LPI_CATEGORY_REMOTE;
+		
+                case LPI_PROTO_UDP_BTDHT:
+                case LPI_PROTO_UDP_GNUTELLA:
+                case LPI_PROTO_UDP_EMULE:
+		case LPI_PROTO_UDP_IMESH:
+		case LPI_PROTO_UDP_KADEMLIA:
+		case LPI_PROTO_UDP_PANDO:
+		case LPI_PROTO_UDP_GNUTELLA2:
+			return LPI_CATEGORY_P2P_STRUCTURE;
+                
+		case LPI_PROTO_TELECOMKEY:
+		case LPI_PROTO_M4U:
+			return LPI_CATEGORY_TELCO;
+
+		case LPI_PROTO_TIP:
+			return LPI_CATEGORY_ECOMMERCE;
+	}
+	return LPI_CATEGORY_UNSUPPORTED;
+}
+
+const char *lpi_print_category(lpi_category_t category) {
+
+	switch(category) {
+		case LPI_CATEGORY_WEB:
+			return "Web";
+		case LPI_CATEGORY_MAIL:
+			return "Mail";
+		case LPI_CATEGORY_CHAT:
+			return "Chat";
+		case LPI_CATEGORY_P2P:
+			return "P2P";
+		case LPI_CATEGORY_P2P_STRUCTURE:
+			return "P2P_Structure";
+		case LPI_CATEGORY_SECURITY:
+			return "Security";
+		case LPI_CATEGORY_ECOMMERCE:
+			return "ECommerce";
+		case LPI_CATEGORY_GAMING:
+			return "Gaming";
+		case LPI_CATEGORY_ENCRYPT:
+			return "Encryption";
+		case LPI_CATEGORY_MONITORING:
+			return "Measurement";
+		case LPI_CATEGORY_NEWS:
+			return "News";
+		case LPI_CATEGORY_MALWARE:
+			return "Malware";
+		case LPI_CATEGORY_ANTIVIRUS:
+			return "Antivirus";
+		case LPI_CATEGORY_ANTISPAM:
+			return "Antispam";
+		case LPI_CATEGORY_VOIP:
+			return "VOIP";
+		case LPI_CATEGORY_TUNNELLING:
+			return "Tunnelling";
+		case LPI_CATEGORY_NAT:
+			return "NAT_Traversal";
+		case LPI_CATEGORY_STREAMING:
+			return "Streaming";
+		case LPI_CATEGORY_SERVICES:
+			return "Services";
+		case LPI_CATEGORY_DATABASES:
+			return "Databases";
+		case LPI_CATEGORY_FILES:
+			return "File_Transfer";
+		case LPI_CATEGORY_REMOTE:
+			return "Remote_Access";
+		case LPI_CATEGORY_TELCO:
+			return "Telco_Services";
+		case LPI_CATEGORY_ICMP:
+			return "ICMP";
+		case LPI_CATEGORY_NOPAYLOAD:
+			return "No_Payload";
+		case LPI_CATEGORY_UNKNOWN:
+			return "Unknown";
+		case LPI_CATEGORY_UNSUPPORTED:
+			return "Unsupported";
+	}
+
+	return "Invalid_Category";
+
+}
+			
 
 const char *lpi_print(lpi_protocol_t proto) {
 	switch(proto) {
@@ -183,7 +445,7 @@ const char *lpi_print(lpi_protocol_t proto) {
 		case LPI_PROTO_HTTPS:
 			return "HTTPS";
 		case LPI_PROTO_SSL:
-			return "SSL";
+			return "SSL/TLS";
 		case LPI_PROTO_MSN:
 			return "MSN";
 		case LPI_PROTO_DNS:
@@ -294,8 +556,6 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Trackmania";
 		case LPI_PROTO_CONQUER:
 			return "ConquerOnline";
-		case LPI_PROTO_TCP_BULK:
-			return "Bulk_TCP";
 		case LPI_PROTO_TIP:
 			return "TIP";
 		case LPI_PROTO_P2P_HTTP:
@@ -329,7 +589,7 @@ const char *lpi_print(lpi_protocol_t proto) {
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
-                        return "SIP";
+                        return "SIP_UDP";
                 case LPI_PROTO_UDP_BTDHT:
                         return "BitTorrent_UDP";
                 case LPI_PROTO_UDP_GNUTELLA:
@@ -422,7 +682,13 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "THQ";
 		case LPI_PROTO_UDP_NEWERTH:
 			return "HeroesOfNewerth";
+		case LPI_PROTO_UDP_LINKPROOF:
+			return "Linkproof";
+		case LPI_PROTO_UDP_WORM_22105:
+			return "Worm_22105";
 
         }
+
+	return "Invalid_Protocol";
 }
 

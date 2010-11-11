@@ -1137,7 +1137,14 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_FTP_CONTROL;
         if (match_str_both(proto_d, "USER", "220-"))
                 return LPI_PROTO_FTP_CONTROL;
-
+        if (match_str_both(proto_d, "QUIT", "220 "))
+                return LPI_PROTO_FTP_CONTROL;
+        if (match_str_both(proto_d, "QUIT", "220-"))
+                return LPI_PROTO_FTP_CONTROL;
+	if (match_str_either(proto_d, "QUIT") && (proto_d->payload_len[0] == 0
+			|| proto_d->payload_len[1] == 0))
+                return LPI_PROTO_FTP_CONTROL;
+		
         /* MSN typically starts with ANS USR or VER */
         if (match_str_either(proto_d, "ANS ")) return LPI_PROTO_MSN;
         if (match_str_either(proto_d, "USR ")) return LPI_PROTO_MSN;
