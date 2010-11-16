@@ -24,7 +24,20 @@ static inline bool match_smtp(lpi_data_t *data) {
 			return true;
 		if (match_str_either(data, "571 "))
 			return true;
+		if (match_str_either(data, "553 "))
+			return true;
+		if (match_str_either(data, "554 "))
+			return true;
+		if (match_str_either(data, "554-"))
+			return true;
+		if (match_str_either(data, "476 "))
+			return true;
 	}
+
+	if (match_str_either(data, "QUIT") && data->server_port == 25)
+		return true;
+	if (match_str_either(data, "quit") && data->server_port == 25)
+		return true;
 
 
 	/* Match the server banner code */
@@ -44,11 +57,6 @@ static inline bool match_smtp(lpi_data_t *data) {
 	if (match_str_either(data, "helo")) return true;
 	if (match_str_either(data, "NOOP")) return true;
 	if (match_str_either(data, "XXXX")) return true;
-
-	if (match_str_either(data, "QUIT") && data->server_port == 25)
-		return true;
-	if (match_str_either(data, "quit") && data->server_port == 25)
-		return true;
 
 	return false;
 }
@@ -148,6 +156,29 @@ static inline bool match_ftp_data(lpi_data_t *data) {
                 return true;
 
         return false;
+}
+
+static bool match_dns_zone_transfer(lpi_data_t *data) {
+
+	uint16_t length;
+
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+		return false;
+
+	if (data->server_port != 53 && data->client_port != 53)
+		return false;
+	
+	length = *((uint16_t *)&data->payload[0]);
+
+	if (ntohs(length) != data->payload_len[0] - 2)
+		return false;
+
+	length = *((uint16_t *)&data->payload[1]);
+
+	if (ntohs(length) != data->payload_len[1] - 2)
+		return false;
+
+	return true;
 }
 
 static bool dns_req(uint32_t payload) {
@@ -1246,6 +1277,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         /* DNS */
         if (match_dns(proto_d))
                 return LPI_PROTO_DNS;
+	if (match_dns_zone_transfer(proto_d))
+		return LPI_PROTO_DNS;
 
 	/* Shoutcast client requests */
 	if (match_str_both(proto_d, "GET ", "ICY "))

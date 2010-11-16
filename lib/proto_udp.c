@@ -1290,6 +1290,12 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0xe4, 0x52, ANY, ANY) && len == 36)
 		return true;
 	
+	if (MATCH(payload, 0xe4, 0x40, ANY, ANY) && len == 48)
+		return true;
+	
+	if (MATCH(payload, 0xe4, 0x48, ANY, ANY) && len == 19)
+		return true;
+
 	if (MATCH(payload, 0xe4, 0x29, ANY, ANY)) {
 		if (len == 119 || len == 69 || len == 294) 
 			return true;
