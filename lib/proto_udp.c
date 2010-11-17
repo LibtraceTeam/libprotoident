@@ -65,6 +65,47 @@ static inline bool match_rtp(lpi_data_t *data) {
 
 }
 
+static inline bool match_qq(lpi_data_t *data) {
+
+	if (!match_str_both(data, "\x02\x01\x00\x00", "\x02\x01\x00\x00"))
+		return false;
+
+	if (data->payload_len[0] == 75 && data->payload_len[1] == 43)
+		return true;
+	
+	if (data->payload_len[1] == 75 && data->payload_len[0] == 43)
+		return true;
+
+	return false;
+}
+
+static inline bool match_eso_payload(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (len == 40 && MATCH(payload, 0x00, ANY, ANY, ANY))
+		return true;
+	if (len == 10 && MATCH(payload, 0x07, 0xa9, 0x00, 0x00))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_eso(lpi_data_t *data) {
+
+	/* I'm pretty sure this is Ensemble game traffic, as it is the
+	 * only thing I can find matching the port 2300 that it commonly
+	 * occurs on. No game docs available, though :( */
+
+	if (!match_eso_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_eso_payload(data->payload[1], data->payload_len[1]))
+		return false;
+	return true;
+
+}
+
 static inline bool match_rdt(lpi_data_t *data) {
 
 	/* The Real Data Transport is not explicitly documented in full,
@@ -81,6 +122,56 @@ static inline bool match_rdt(lpi_data_t *data) {
 		return true;
 	if (data->payload_len[1] == 3 && data->payload_len[0] == 11)
 		return true;
+
+	return false;
+}
+
+static inline bool match_slp_req(uint32_t payload, uint32_t len) {
+
+	/* According to RFC 2608, the 3rd and 4th bytes should be the 
+	 * length (including the SLP header). This doesn't appear to be the
+	 * case with any of the port 427 traffic I've seen, so either I'm
+	 * wrong or people fail at following RFCs */
+	
+	if (MATCH(payload, 0x02, 0x01, 0x00, 0x00) && len == 49) {
+		return true;
+	}
+
+	return false;
+
+}
+
+static inline bool match_slp_resp(uint32_t payload, uint32_t len) {
+
+	/* I haven't actually observed any responses yet, so just going
+	 * on what the spec says :/ */
+	
+	if (len == 0)
+		return true;
+
+	if (MATCH(payload, 0x02, 0x02, ANY, ANY)) {
+		return true;
+	}
+
+	return false;
+}
+
+static inline bool match_slp(lpi_data_t *data) {
+
+	if (data->server_port != 427 && data->client_port != 427)
+		return false;
+
+	if (match_slp_req(data->payload[0], data->payload_len[0])) {
+		if (match_slp_resp(data->payload[1], data->payload_len[1]))
+			return true;
+		return false;
+	}
+
+	if (match_slp_req(data->payload[1], data->payload_len[1])) {
+		if (match_slp_resp(data->payload[0], data->payload_len[0]))
+			return true;
+		return false;
+	}
 
 	return false;
 }
@@ -751,6 +842,9 @@ static inline bool match_xlsp(lpi_data_t *data) {
 			return false;
 		if (match_chars_either(data, 0x0c, 0x02, 0x00, ANY))
 			return true;
+		if (MATCH(data->payload[0], 0x0d, 0x02, 0x00, ANY) && 
+				MATCH(data->payload[1], 0x0d, 0x02, 0x00, ANY))
+			return true;
 		return false;
 	}
 
@@ -1255,6 +1349,35 @@ static inline bool match_pando_udp(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_mystery_emule(lpi_data_t *data) {
+
+	/* These particular patterns occur frequently on port 4672, making
+	 * me think they're some sort of emule traffic but there is no
+	 * obvious documentation. The payloads appear to be random, which
+	 * is unlike all other emule traffic. The flows tend to consist of
+	 * only one or two packets in each direction.
+	 */
+
+	if (data->payload_len[0] == 44 && data->payload_len[1] >= 38 &&
+			data->payload_len[1] <= 50)
+		return true;
+	if (data->payload_len[1] == 44 && data->payload_len[0] >= 38 &&
+			data->payload_len[0] <= 50)
+		return true;
+	
+	if (data->payload_len[0] == 51 && (data->payload_len[1] == 135 ||
+			data->payload_len[1] == 85 || 
+			data->payload_len[1] == 310))
+		return true;
+	if (data->payload_len[1] == 51 && (data->payload_len[0] == 135 ||
+			data->payload_len[0] == 85 || 
+			data->payload_len[0] == 310))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_kad(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0xe4, 0x21, ANY, ANY) && len == 35) 
@@ -1569,6 +1692,12 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_unknown_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
        
        	if (match_starcraft(proto_d)) return LPI_PROTO_UDP_STARCRAFT;
+
+	if (match_qq(proto_d)) return LPI_PROTO_UDP_QQ;
+
+	if (match_slp(proto_d)) return LPI_PROTO_UDP_SLP;
+
+	if (match_eso(proto_d)) return LPI_PROTO_UDP_ESO;
         
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
@@ -1593,6 +1722,9 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_gnutella(proto_d))
 		return LPI_PROTO_UDP_GNUTELLA;
 	if (match_esp_encap(proto_d)) return LPI_PROTO_UDP_ESP;
+
+	if (match_mystery_emule(proto_d))
+		return LPI_PROTO_UDP_EMULE_MYSTERY;
 
 
         return LPI_PROTO_UDP;

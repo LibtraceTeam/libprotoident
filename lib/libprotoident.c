@@ -240,6 +240,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_DNS:
                 case LPI_PROTO_UDP_DHCP:
                 case LPI_PROTO_UDP_NTP:
+		case LPI_PROTO_UDP_SLP:
 			return LPI_CATEGORY_SERVICES;	
                 
 		case LPI_PROTO_TDS:
@@ -299,6 +300,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_PSN:
 		case LPI_PROTO_UDP_STARCRAFT:
 		case LPI_PROTO_UDP_THQ:
+		case LPI_PROTO_UDP_ESO:
 		case LPI_PROTO_UDP_NEWERTH:
 			return LPI_CATEGORY_GAMING;
 
@@ -313,6 +315,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_MSN_VIDEO:
 		case LPI_PROTO_UDP_MSN_CACHE:
                 case LPI_PROTO_MZINGA:
+		case LPI_PROTO_UDP_QQ:
 			return LPI_CATEGORY_CHAT;
 
 		case LPI_PROTO_SSH:
@@ -330,6 +333,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_KADEMLIA:
 		case LPI_PROTO_UDP_PANDO:
 		case LPI_PROTO_UDP_GNUTELLA2:
+		case LPI_PROTO_UDP_EMULE_MYSTERY:
 			return LPI_CATEGORY_P2P_STRUCTURE;
                 
 		case LPI_PROTO_TELECOMKEY:
@@ -686,6 +690,14 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Linkproof";
 		case LPI_PROTO_UDP_WORM_22105:
 			return "Worm_22105";
+		case LPI_PROTO_UDP_EMULE_MYSTERY:
+			return "eMule_UDP_Mystery";
+		case LPI_PROTO_UDP_QQ:
+			return "QQ";
+		case LPI_PROTO_UDP_SLP:
+			return "SLP";
+		case LPI_PROTO_UDP_ESO:
+			return "Ensemble";
 
         }
 

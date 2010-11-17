@@ -129,7 +129,6 @@ void expire_unknown_flows(double ts, bool exp_flag) {
 		proto = lpi_guess_protocol(&unk->lpi);
 		if (proto == LPI_PROTO_UNKNOWN || proto == LPI_PROTO_UDP)
 			display_unknown(expired, unk);
-		
 
 		/* Don't forget to free our custom data structure */
                 free(unk);
