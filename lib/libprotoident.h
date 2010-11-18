@@ -129,6 +129,7 @@ typedef enum {
 	LPI_PROTO_MSNC,		/* MSN Client Protocol */
 	LPI_PROTO_YAHOO_ERROR,	/* Yahoo method of dealing with HTTP errors */
 	LPI_PROTO_IMESH,	/* iMesh */
+	LPI_PROTO_PPTP,		/* MS Tunnelling protocol */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -185,6 +186,7 @@ typedef enum {
 	LPI_PROTO_UDP_QQ,		/* Tencent QQ */
 	LPI_PROTO_UDP_SLP,	/* Service Location Protocol, RFC 2608 */
 	LPI_PROTO_UDP_ESO,	/* Games using Ensemble Studios Online */
+	LPI_PROTO_UDP_SSDP,
 
 	LPI_PROTO_ICMP,
 

@@ -875,7 +875,13 @@ static inline bool match_xlsp(lpi_data_t *data) {
 
 }
 
+static inline bool match_ssdp(lpi_data_t *data) {
 
+	if (match_str_either(data, "M-SE"))
+		return true;
+	return false;
+
+}
 
 static inline bool match_demonware(lpi_data_t *data) {
 
@@ -1001,7 +1007,7 @@ static inline bool match_snmp_payload(uint32_t payload, uint32_t len) {
 	if (*byte == 0x82) {
 		uint16_t longlen = *((uint16_t *)(byte + 1));
 		
-		if (len - 4 != longlen)
+		if (len - 4 != ntohs(longlen))
 			return false;
 		return true;
 	}
@@ -1681,6 +1687,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_linkproof(proto_d)) return LPI_PROTO_UDP_LINKPROOF;
 
 	if (match_xfire_p2p(proto_d)) return LPI_PROTO_UDP_XFIRE_P2P;
+
+	if (match_ssdp(proto_d)) return LPI_PROTO_UDP_SSDP;
 
 	if (match_heroes_newerth(proto_d)) return LPI_PROTO_UDP_NEWERTH;
 

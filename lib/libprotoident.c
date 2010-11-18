@@ -216,6 +216,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_IPV6:
 		case LPI_PROTO_UDP_ESP:
 		case LPI_PROTO_UDP_TEREDO:
+		case LPI_PROTO_PPTP:
 			return LPI_CATEGORY_TUNNELLING;
 
 		case LPI_PROTO_UDP_PYZOR:
@@ -241,6 +242,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_DHCP:
                 case LPI_PROTO_UDP_NTP:
 		case LPI_PROTO_UDP_SLP:
+		case LPI_PROTO_UDP_SSDP:
 			return LPI_CATEGORY_SERVICES;	
                 
 		case LPI_PROTO_TDS:
@@ -590,6 +592,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "YahooError";
 		case LPI_PROTO_IMESH:
 			return "iMesh_TCP";
+		case LPI_PROTO_PPTP:
+			return "PPTP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -698,6 +702,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SLP";
 		case LPI_PROTO_UDP_ESO:
 			return "Ensemble";
+		case LPI_PROTO_UDP_SSDP:
+			return "SSDP";
 
         }
 

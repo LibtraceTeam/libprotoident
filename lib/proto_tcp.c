@@ -34,9 +34,11 @@ static inline bool match_smtp(lpi_data_t *data) {
 			return true;
 	}
 
-	if (match_str_either(data, "QUIT") && data->server_port == 25)
+	if (match_str_either(data, "QUIT") && (data->server_port == 25 || 
+			data->client_port == 25))
 		return true;
-	if (match_str_either(data, "quit") && data->server_port == 25)
+	if (match_str_either(data, "quit") && (data->server_port == 25 ||
+			data->client_port == 25))
 		return true;
 
 
@@ -415,6 +417,28 @@ static inline bool match_telecomkey(lpi_data_t *data) {
 		return true;
 
 	return false;
+
+}
+
+static inline bool match_pptp_payload(uint32_t payload, uint32_t len) {
+
+	if (len != 156)
+		return false;
+
+	if (!MATCH(payload, 0x00, 0x9c, 0x00, 0x01))
+		return false;
+
+	return true;
+
+}
+
+static inline bool match_pptp(lpi_data_t *data) {
+
+	if (!match_pptp_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_pptp_payload(data->payload[1], data->payload_len[1]))
+		return false;
+	return true;
 
 }
 
@@ -1354,6 +1378,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_conquer_online(proto_d)) return LPI_PROTO_CONQUER;
 
 	if (match_openvpn(proto_d)) return LPI_PROTO_OPENVPN;
+
+	if (match_pptp(proto_d)) return LPI_PROTO_PPTP;
 
 	if (match_telecomkey(proto_d)) return LPI_PROTO_TELECOMKEY;
 
