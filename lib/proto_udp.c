@@ -65,6 +65,7 @@ static inline bool match_rtp(lpi_data_t *data) {
 
 }
 
+
 static inline bool match_qq(lpi_data_t *data) {
 
 	if (!match_str_both(data, "\x02\x01\x00\x00", "\x02\x01\x00\x00"))
@@ -1386,6 +1387,20 @@ static inline bool match_mystery_emule(lpi_data_t *data) {
 
 static inline bool match_kad(uint32_t payload, uint32_t len) {
 
+	/* Many of these can be tracked back to
+	 * http://easymule.googlecode.com/svn/trunk/src/WorkLayer/opcodes.h
+	 *
+	 * XXX Some of these are request/response pairs that we may need to
+	 * match together if we start getting false positives 
+	 */
+
+
+	/* Bootstrap request and response */
+	if (MATCH(payload, 0xe4, 0x01, 0x00, 0x00) && len == 2) 
+		return true;
+	if (MATCH(payload, 0xe4, 0x09, ANY, ANY) && len == 523)
+		return true;
+
 	if (MATCH(payload, 0xe4, 0x21, ANY, ANY) && len == 35) 
 		return true;
 	if (MATCH(payload, 0xe4, 0x4b, ANY, ANY) && len == 19) 
@@ -1571,6 +1586,112 @@ static inline bool match_kademlia_udp(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_mys_fe_payload(uint32_t payload, uint32_t len) {
+
+	uint16_t length;
+	uint8_t *ptr;
+
+	/* This appears to have a 3 byte header. First byte is always 0xfe.
+	 * Second and third bytes are the length (minus the 3 byte header).
+	 */
+
+	if (!MATCH(payload, 0xfe, ANY, ANY, ANY))
+		return false;
+
+	ptr = ((uint8_t *)&payload) + 1;
+	length = (*((uint16_t *)ptr));
+
+	if (length = len - 3)
+		return true;
+	
+	return false;
+
+}
+
+static inline bool match_mystery_fe(lpi_data_t *data) {
+
+	/* Again, not entirely sure what protocol this is, but we've come up
+	 * with a good rule for it. 
+	 *
+	 * Every packet begins with a 3 byte header - 0xfe followed by a
+	 * length field
+	 */
+
+	if (!match_mys_fe_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_mys_fe_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+}
+
+static inline bool match_mystery_02_36(lpi_data_t *data) {
+
+	/* Another mystery protocol :/
+	 *
+	 * Characterised by 36 byte datagrams in both directions, always
+	 * beginning with 02 00 XX 00.
+	 *
+	 * Later packets also begin with 02 and have 00 in the fourth byte.
+	 * Packet size varies.
+	 */
+	
+	if (MATCH(data->payload[0], 0x02, 0x00, ANY, ANY) &&
+			data->payload_len[0] == 36) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCH(data->payload[1], 0x02, 0x00, ANY, ANY) && 
+				data->payload_len[1] == 36)
+			return true;
+	}
+
+	if (MATCH(data->payload[1], 0x02, 0x00, ANY, ANY) &&
+			data->payload_len[1] == 36) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], 0x02, 0x00, ANY, ANY) && 
+				data->payload_len[0] == 36)
+			return true;
+	}
+
+	return false;
+
+}
+
+static inline bool match_mystery_0d(lpi_data_t *data) {
+
+	/* This protocol has driven me nuts for weeks. It's pretty easy to
+	 * match - one direction sends a single byte datagram containing 0x0d,
+	 * the other responds with a 25 byte packet beginning with 0x0a. The
+	 * next three bytes of the response appear to be some sort of flow id
+	 * that is repeated in all subsequent packets > 1 byte.
+	 *
+	 * Other codes used during the exchange are 0x0b, 0x15 and 0x1e.
+	 *
+	 * However, there appears to be no info on the Internet about what this
+	 * protocol is. Random ports are always used for both ends, so no help
+	 * there.
+	 *
+	 * TODO Figure out what the hell this is and give it a better name
+	 * than "mystery_0d" !
+	 */
+
+	if (data->payload_len[0]==1 && MATCH(data->payload[0], 0x0d, 0, 0, 0)) {
+		if (data->payload_len[1] == 25 && 
+				MATCH(data->payload[1], 0x0a, ANY, ANY, ANY))
+			return true;
+	}
+
+	if (data->payload_len[1]==1 && MATCH(data->payload[1], 0x0d, 0, 0, 0)) {
+		if (data->payload_len[0] == 25 && 
+				MATCH(data->payload[0], 0x0a, ANY, ANY, ANY))
+			return true;
+	}
+	
+	return false;
+
+
+}
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
@@ -1733,6 +1854,13 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_mystery_emule(proto_d))
 		return LPI_PROTO_UDP_EMULE_MYSTERY;
+
+	if (match_mystery_0d(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_0D;
+	if (match_mystery_02_36(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_02_36;
+	if (match_mystery_fe(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_FE;
 
 
         return LPI_PROTO_UDP;

@@ -3,6 +3,36 @@
 #include "proto_common.h"
 #include "proto_tcp.h"
 
+static inline bool match_smtp_banner(uint32_t payload, uint32_t len) {
+
+	/* Stupid servers that only send the banner one or two bytes at
+	 * a time! */
+
+	if (len == 1) {
+		if (MATCH(payload, '2', 0x00, 0x00, 0x00))
+			return true;
+		return false;
+	}
+	if (len == 2) {
+		if (MATCH(payload, '2', '2', 0x00, 0x00))
+			return true;
+		return false;
+	}
+	if (len == 3) {
+		if (MATCH(payload, '2', '2', '0', 0x00))
+			return true;
+		return false;
+	}
+	
+	if (MATCH(payload, '2', '2', '0', ' '))
+		return true;
+
+	if (MATCH(payload, '2', '2', '0', '-'))
+		return true;
+
+	return false;
+}
+
 static inline bool match_smtp(lpi_data_t *data) {
 
 
@@ -43,14 +73,10 @@ static inline bool match_smtp(lpi_data_t *data) {
 
 
 	/* Match the server banner code */
-	if (data->payload_len[0] == 1) {
-		if (!MATCH(data->payload[0], '2', 0x00, 0x00, 0x00))
-			return false;
-	} else if (data->payload_len[1] == 1) {
-		if (!MATCH(data->payload[1], '2', 0x00, 0x00, 0x00))
-			return false;
-	}
-	else if (!match_str_either(data, "220 ") && !match_str_either(data, "220-"))
+
+	if (!match_smtp_banner(data->payload[0], data->payload_len[0]) &&
+			!match_smtp_banner(data->payload[1], 
+				data->payload_len[1]))
 		return false;
 	
 	if (match_str_either(data, "EHLO")) return true;

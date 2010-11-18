@@ -182,11 +182,16 @@ typedef enum {
 	LPI_PROTO_UDP_NEWERTH,	/* Heroes of Newerth */
 	LPI_PROTO_UDP_LINKPROOF,	/* Linkproof device packets */
 	LPI_PROTO_UDP_WORM_22105,	/* Chinese worm that uses port 22105 */
-	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */
 	LPI_PROTO_UDP_QQ,		/* Tencent QQ */
 	LPI_PROTO_UDP_SLP,	/* Service Location Protocol, RFC 2608 */
 	LPI_PROTO_UDP_ESO,	/* Games using Ensemble Studios Online */
 	LPI_PROTO_UDP_SSDP,
+
+	/* Patterns that we can match, but do not know the protocol */
+	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */
+	LPI_PROTO_UDP_MYSTERY_0D,	
+	LPI_PROTO_UDP_MYSTERY_02_36,
+	LPI_PROTO_UDP_MYSTERY_FE,
 
 	LPI_PROTO_ICMP,
 

@@ -694,8 +694,6 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Linkproof";
 		case LPI_PROTO_UDP_WORM_22105:
 			return "Worm_22105";
-		case LPI_PROTO_UDP_EMULE_MYSTERY:
-			return "eMule_UDP_Mystery";
 		case LPI_PROTO_UDP_QQ:
 			return "QQ";
 		case LPI_PROTO_UDP_SLP:
@@ -704,6 +702,17 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Ensemble";
 		case LPI_PROTO_UDP_SSDP:
 			return "SSDP";
+
+		
+		
+		case LPI_PROTO_UDP_EMULE_MYSTERY:
+			return "eMule_UDP_Mystery";
+		case LPI_PROTO_UDP_MYSTERY_0D:
+			return "Mystery_0D";
+		case LPI_PROTO_UDP_MYSTERY_02_36:
+			return "Mystery_02_36";
+		case LPI_PROTO_UDP_MYSTERY_FE:
+			return "Mystery_FE";
 
         }
 
