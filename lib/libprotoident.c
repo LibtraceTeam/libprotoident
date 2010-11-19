@@ -713,7 +713,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Mystery_02_36";
 		case LPI_PROTO_UDP_MYSTERY_FE:
 			return "Mystery_FE";
-
+		case LPI_PROTO_UDP_MYSTERY_99:
+			return "Mystery_99";
         }
 
 	return "Invalid_Protocol";

@@ -33,6 +33,36 @@ static inline bool match_smtp_banner(uint32_t payload, uint32_t len) {
 	return false;
 }
 
+static inline bool match_smtp_command(uint32_t payload, uint32_t len) {
+
+	if (MATCHSTR(payload, "EHLO"))
+		return true;
+	if (MATCHSTR(payload, "ehlo"))
+		return true;
+	if (MATCHSTR(payload, "HELO"))
+		return true;
+	if (MATCHSTR(payload, "helo"))
+		return true;
+	if (MATCHSTR(payload, "NOOP"))
+		return true;
+	if (MATCHSTR(payload, "XXXX"))
+		return true;
+
+	/* Turns out there are idiots who send their ehlos one byte at a 
+	 * time :/ */
+	if (MATCH(payload, 'e', 0x00, 0x00, 0x00) && len == 1)
+		return true;
+	if (MATCH(payload, 'E', 0x00, 0x00, 0x00) && len == 1)
+		return true;
+	if (MATCH(payload, 'h', 0x00, 0x00, 0x00) && len == 1)
+		return true;
+	if (MATCH(payload, 'H', 0x00, 0x00, 0x00) && len == 1)
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_smtp(lpi_data_t *data) {
 
 
@@ -74,17 +104,15 @@ static inline bool match_smtp(lpi_data_t *data) {
 
 	/* Match the server banner code */
 
-	if (!match_smtp_banner(data->payload[0], data->payload_len[0]) &&
-			!match_smtp_banner(data->payload[1], 
-				data->payload_len[1]))
-		return false;
-	
-	if (match_str_either(data, "EHLO")) return true;
-	if (match_str_either(data, "ehlo")) return true;
-	if (match_str_either(data, "HELO")) return true;
-	if (match_str_either(data, "helo")) return true;
-	if (match_str_either(data, "NOOP")) return true;
-	if (match_str_either(data, "XXXX")) return true;
+	if (match_smtp_banner(data->payload[0], data->payload_len[0])) {
+		if (match_smtp_command(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_smtp_banner(data->payload[1], data->payload_len[1])) {
+		if (match_smtp_command(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
 	return false;
 }
@@ -899,6 +927,10 @@ static inline bool match_invalid(lpi_data_t *data) {
         if (match_str_both(data, "220 ", "CONN"))
                 return true;
 
+	/* Trying to send HTTP commands to FTP or SMTP servers */
+	if (match_str_both(data, "220 ", "GET "))
+		return true;
+
         return false;
 }
 
@@ -958,6 +990,50 @@ static inline bool match_file_header(uint32_t payload) {
 
 	/* I'm also going to include PHP scripts in here */
 	if (MATCH(payload, 0x3c, 0x3f, 0x70, 0x68))
+		return true;
+
+	/* Unix scripts */
+	if (MATCH(payload, 0x23, 0x21, 0x2f, 0x62))
+		return true;
+
+	/* PDFs */
+	if (MATCHSTR(payload, "%PDF"))
+		return true;
+	
+	/* PNG */
+	if (MATCH(payload, 0x89, 'P', 'N', 'G'))
+		return true;
+
+	/* HTML */
+	if (MATCHSTR(payload, "<htm"))
+		return true;
+
+	/* 7zip */
+	if (MATCH(payload, 0x37, 0x7a, 0xbc, 0xaf))
+		return true;
+
+	/* gzip  - may need to replace last two bytes with ANY */
+	if (MATCH(payload, 0x1f, 0x8b, 0x08, 0x00))
+		return true;
+
+	/* XML */
+	if (MATCHSTR(payload, "<!DO"))
+		return true;
+
+	/* FLAC */
+	if (MATCHSTR(payload, "fLaC"))
+		return true;
+
+	/* MP3 */
+	if (MATCH(payload, 'I', 'D', '3', 0x03))
+		return true;
+
+	/* RPM */
+	if (MATCH(payload, 0xed, 0xab, 0xee, 0xdb))
+		return true;
+
+	/* Wz Patch */
+	if (MATCHSTR(payload, "WzPa"))
 		return true;
 
 	return false;
@@ -1030,6 +1106,63 @@ static inline bool match_postgresql(lpi_data_t *data) {
 
 	return false;
 
+}
+
+static inline bool match_ftp_command(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	/* There are lots of valid FTP commands, but let's just limit this
+	 * to ones we've observed for now */
+
+	if (MATCHSTR(payload, "USER"))
+		return true;
+	if (MATCHSTR(payload, "QUIT"))
+		return true;
+	if (MATCHSTR(payload, "FEAT"))
+		return true;
+	if (MATCHSTR(payload, "HELP"))
+		return true;
+	if (MATCHSTR(payload, "user"))
+		return true;
+
+	/* This is invalid syntax, but clients using HOST seem to revert to
+	 * sane FTP commands once the server reports a syntax error */
+	if (MATCHSTR(payload, "HOST"))
+		return true;
+
+
+}
+
+static inline bool match_ftp_reply_code(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	
+	if (MATCHSTR(payload, "220 "))
+		 return true;
+	if (MATCHSTR(payload, "220-"))
+		 return true;
+	return false;
+}
+
+
+static inline bool match_ftp_control(lpi_data_t *data) {
+
+	if (data->server_port == 25 || data->client_port == 25)
+		return false;
+
+	if (match_ftp_reply_code(data->payload[0], data->payload_len[0])) {
+		if (match_ftp_command(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_ftp_reply_code(data->payload[1], data->payload_len[1])) {
+		if (match_ftp_command(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
 }
 	
 static inline bool match_http_request(lpi_data_t *data) {
@@ -1199,18 +1332,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
         /* FTP */
         if (match_ftp_data(proto_d)) return LPI_PROTO_FTP_DATA;
-        if (match_str_either(proto_d, "FEAT")) return LPI_PROTO_FTP_CONTROL;
-        if (match_str_both(proto_d, "USER", "220 "))
-                return LPI_PROTO_FTP_CONTROL;
-        if (match_str_both(proto_d, "USER", "220-"))
-                return LPI_PROTO_FTP_CONTROL;
-        if (match_str_both(proto_d, "QUIT", "220 "))
-                return LPI_PROTO_FTP_CONTROL;
-        if (match_str_both(proto_d, "QUIT", "220-"))
-                return LPI_PROTO_FTP_CONTROL;
-	if (match_str_either(proto_d, "QUIT") && (proto_d->payload_len[0] == 0
-			|| proto_d->payload_len[1] == 0))
-                return LPI_PROTO_FTP_CONTROL;
+        if (match_ftp_control(proto_d)) return LPI_PROTO_FTP_CONTROL;
 		
         /* MSN typically starts with ANS USR or VER */
         if (match_str_either(proto_d, "ANS ")) return LPI_PROTO_MSN;

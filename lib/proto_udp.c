@@ -626,21 +626,21 @@ static inline bool match_other_btudp(lpi_data_t *data) {
 
 }
 
-static inline bool match_vuze_dht_reply(lpi_data_t *data) {
+static inline bool match_vuze_dht_reply(uint32_t data, uint32_t len) {
 
 	/* Each reply action is an odd number */
 		
-	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x01))
+	if (MATCH(data, 0x00, 0x00, 0x04, 0x01))
 		return true;
-	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x03))
+	if (MATCH(data, 0x00, 0x00, 0x04, 0x03))
 		return true;
-	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x05))
+	if (MATCH(data, 0x00, 0x00, 0x04, 0x05))
 		return true;
-	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x07))
+	if (MATCH(data, 0x00, 0x00, 0x04, 0x07))
 		return true;
 
 	/* Except for this one, which is an error message */
-	if (match_chars_either(data, 0x00, 0x00, 0x04, 0x08))
+	if (MATCH(data, 0x00, 0x00, 0x04, 0x08))
 		return true;
 
 	return false;
@@ -648,68 +648,106 @@ static inline bool match_vuze_dht_reply(lpi_data_t *data) {
 
 }
 
-static inline bool match_vuze_dht_request(uint32_t payload) {
+static inline bool match_vuze_dht_request(uint32_t payload, uint32_t len,
+		bool check_msb) {
 
-	/* Requests begin with an 8 byte conn ID, which always has the MSB
-	 * set */
+
+	/* Some implementations don't choose an appropriate MSB or get the
+	 * byte ordering wrong, so we only force an MSB check when we're
+	 * examining requests that get no response.
+	 *
+	 * However, we only need to check the payload length in the event
+	 * of a unidirectional flow */
+		
+	if (check_msb) {
+
+		if (!(ntohl(payload) & 0x80000000) == 0x80000000)
+			return false;
+		if (len == 42)
+			return true;
+
+		if (len == 63 || len == 65 || len == 71)
+			return true;
+
+		return false;
+	}
 
 	if ((ntohl(payload) & 0x80000000) == 0x80000000)
 		return true;
-	return false;	
-
-}
-
-static inline bool match_vuze_request_len(uint32_t len) {
-
-	/* Common request lengths observed thus far */
-
-	/* Request header is 42 bytes */
-	if (len == 42)
-		return true;
-
-	if (len == 63 || len == 65 || len == 71)
-		return true;
-
 	return false;
 
 }
 
 static inline bool match_vuze_dht(lpi_data_t *data) {
 
-	/* The reply is our best indicator, as it begins with the four-byte
-	 * ACTION */
-	
-	if (match_vuze_dht_reply(data)) {
-		/* If there is no data in the opposite direction, it must be 
-		 * some kind of delayed or unsolicited reply (?) */
-		if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+	/* OK, gotta rework this one as this protocol is a bit messed up in 
+	 * the implementation.
+	 *
+	 * Normally, we have a request which contains a random number in
+	 * the first four bytes. However, the MSB of that number must be
+	 * set to one.
+	 *
+	 * The reply begins with a four byte action which is easy to identify.
+	 *
+	 * However, we also get replies in both directions (which is a bit
+	 * odd). I'm also seeing requests where the MSB is not set, which is
+	 * a definite violation.
+	 *
+	 * However, I think we want to count these - they are clearly attempts
+	 * to use this protocol so classing them as unknown doesn't seem
+	 * right.
+	 */
+
+	if (match_vuze_dht_reply(data->payload[0], data->payload_len[0])) {
+
+		if (data->payload_len[1] == 0)
 			return true;
-		if (match_vuze_dht_request(data->payload[0]))
+
+		if (match_vuze_dht_request(data->payload[1], 
+				data->payload_len[1], false))
 			return true;
-		if (match_vuze_dht_request(data->payload[1]))
+
+		/* Check for replies in both directions */
+		if (match_vuze_dht_reply(data->payload[1],
+				data->payload_len[1]))
+			return true;
+
+	}
+
+	if (match_vuze_dht_reply(data->payload[1], data->payload_len[1])) {
+
+		if (data->payload_len[0] == 0)
+			return true;
+
+		if (match_vuze_dht_request(data->payload[0], 
+				data->payload_len[0], false))
 			return true;
 		
-		return false;
+		/* Check for replies in both directions */
+		if (match_vuze_dht_reply(data->payload[0],
+				data->payload_len[0]))
+			return true;
+
 	}
-	
+
 	/* Check for unanswered requests - these are much harder to match,
 	 * because they are simply a random conn id. We can only hope to match
 	 * on common packet sizes and the MSB being set 
 	 *
 	 * XXX This could lead to a few false positives, so be careful */
-	if (data->payload_len[0] == 0) {
-		if (!match_vuze_request_len(data->payload_len[1]))
-			return false;
-		if (match_vuze_dht_request(data->payload[1]))
+
+	if (data->payload[0] == 0) {
+		if (match_vuze_dht_request(data->payload[1], 
+				data->payload_len[1], true))
 			return true;
 	}
 
-	if (data->payload_len[1] == 0) {
-		if (!match_vuze_request_len(data->payload_len[0]))
-			return false;
-		if (match_vuze_dht_request(data->payload[0]))
+	if (data->payload[1] == 0) {
+		if (match_vuze_dht_request(data->payload[0], 
+				data->payload_len[0], true))
 			return true;
 	}
+
 	return false;	
 	
 
@@ -1105,7 +1143,10 @@ static inline bool match_msn_cache(lpi_data_t *data) {
 
 }
 
-static inline bool match_skype(lpi_data_t *data) {
+static inline bool match_skype_rule1(lpi_data_t *data) {
+
+	/* This is one method for matching skype traffic - turns out there
+	 * are other forms as well... */
 
 	/* The third byte is always 0x02 in Skype UDP traffic - if we have
 	 * payload in both directions we can probably match on that alone */
@@ -1130,6 +1171,70 @@ static inline bool match_skype(lpi_data_t *data) {
 		if ((data->payload[1] & 0x00ff0000) == 0x00020000)
 			return true;
 	}
+
+	return false;
+}
+
+static inline bool match_skype_U1(uint32_t payload, uint32_t len) {
+
+	if (len < 18 || len > 27)
+		return false;
+	if ((payload & 0x00ff0000) == 0x00020000)
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_skype_U2(uint32_t payload, uint32_t len) {
+
+	if (len != 11)
+		return false;
+	if ((payload & 0x000f0000) == 0x00050000)
+		return true;
+	if ((payload & 0x000f0000) == 0x00070000)
+		return true;
+	return false;
+}
+
+static inline bool match_skype_rule2(lpi_data_t *data) {
+
+	/* What we're looking for here is a initiating message (called U1)
+	 * matched with a response (called U2).
+	 *
+	 * The first two bytes of U1 and U2 must match.
+	 *
+	 * The third byte of U1 is always 0x02 (as with rule 1)
+	 * 
+	 * The lower four bits of the third byte of U2 is always either 0x05
+	 * or 0x07
+	 *
+	 * The length of U2 is always 11 bytes.
+	 *
+	 * The length of U1 is always between 18 and 27 bytes.
+	 */
+
+	if ((data->payload[0] & 0x0000ffff) != (data->payload[1] & 0x0000ffff))
+		return false;
+
+	if (match_skype_U1(data->payload[0], data->payload_len[0])) {
+		if (match_skype_U2(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_skype_U1(data->payload[1], data->payload_len[1])) {
+		if (match_skype_U2(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_skype(lpi_data_t *data) {
+	if (match_skype_rule1(data))
+		return true;
+	if (match_skype_rule2(data))
+		return true;
 
 	return false;
 }
@@ -1394,19 +1499,28 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 	 * match together if we start getting false positives 
 	 */
 
+	
+	/* Bootstrap version 2 request and response */
+	if (MATCH(payload, 0xe4, 0x00, 0x00, 0x00) && len == 27) 
+		return true;
+	if (MATCH(payload, 0xe4, 0x08, ANY, ANY) && len == 529)
+		return true;
 
-	/* Bootstrap request and response */
-	if (MATCH(payload, 0xe4, 0x01, 0x00, 0x00) && len == 2) 
+	/* Bootstrap version 2 request and response */
+	if (MATCH(payload, 0xe4, 0x01, 0x00, 0x00) && (
+			len == 2 || len == 18)) 
 		return true;
 	if (MATCH(payload, 0xe4, 0x09, ANY, ANY) && len == 523)
 		return true;
+
 
 	if (MATCH(payload, 0xe4, 0x21, ANY, ANY) && len == 35) 
 		return true;
 	if (MATCH(payload, 0xe4, 0x4b, ANY, ANY) && len == 19) 
 		return true;
 	if (MATCH(payload, 0xe4, 0x11, ANY, ANY)) {
-		if (len == 22 || len == 38 || len == 28) 
+		if (len == 22 || len == 38 || len == 28 || len == 36 ||
+				len == 34) 
 			return true;
 	}
 
@@ -1693,6 +1807,31 @@ static inline bool match_mystery_0d(lpi_data_t *data) {
 
 }
 
+static inline bool match_mystery_99(lpi_data_t *data) {
+
+	/* Another mystery protocol - this one is possibly something to do
+	 * with bittorrent, as I've seen it on port 6881 from time to time */
+
+	/* Both payloads must match */
+	if (data->payload[0] != data->payload[1])
+		return false;
+	
+	/* One of the payloads is 99 bytes, the other is between 168 and 173
+	 * bytes */
+
+	if (data->payload_len[0] == 99) {
+		if (data->payload_len[1] >= 168 && data->payload_len[1] <= 173)
+			return true;
+	}
+
+	if (data->payload_len[1] == 99) {
+		if (data->payload_len[0] >= 168 && data->payload_len[0] <= 173)
+			return true;
+	}
+
+	return false;
+}
+
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (proto_d->payload_len[0] < 4 && proto_d->payload_len[1] < 4)
@@ -1861,6 +2000,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_MYSTERY_02_36;
 	if (match_mystery_fe(proto_d))
 		return LPI_PROTO_UDP_MYSTERY_FE;
+	if (match_mystery_99(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_99;
 
 
         return LPI_PROTO_UDP;
