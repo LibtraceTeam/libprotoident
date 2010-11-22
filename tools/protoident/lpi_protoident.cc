@@ -1,6 +1,6 @@
-/* Example program using libflowmanager to count flows in a trace file. 
- * Demonstrates how the libflowmanager API should be used to perform flow-based
- * measurements.
+/*
+ * Simple program that uses libprotoident to identify the protocol of all flows
+ * in a trace file.
  *
  * Author: Shane Alcock
  */
@@ -24,30 +24,28 @@ bool only_dir1 = false;
 
 bool require_both = false;
 
-/* This data structure is used to demonstrate how to use the 'extension' 
- * pointer to store custom data for a flow */
-typedef struct unknown {
+typedef struct ident {
 	uint8_t init_dir;
 	uint64_t in_bytes;
 	uint64_t out_bytes;
 	double start_ts;
 	lpi_data_t lpi;
-} UnknownFlow;
+} IdentFlow;
 
 /* Initialises the custom data for the given flow. Allocates memory for a
- * UnknownFlow structure and ensures that the extension pointer points at
+ * IdentFlow structure and ensures that the extension pointer points at
  * it.
  */
-void init_unknown_flow(Flow *f, uint8_t dir, double ts) {
-	UnknownFlow *unk = NULL;
+void init_ident_flow(Flow *f, uint8_t dir, double ts) {
+	IdentFlow *ident = NULL;
 
-	unk = (UnknownFlow *)malloc(sizeof(UnknownFlow));
-	unk->init_dir = dir;
-	unk->in_bytes = 0;
-	unk->out_bytes = 0;
-	unk->start_ts = ts;
-	lpi_init_data(&unk->lpi);
-	f->extension = unk;
+	ident = (IdentFlow *)malloc(sizeof(IdentFlow));
+	ident->init_dir = dir;
+	ident->in_bytes = 0;
+	ident->out_bytes = 0;
+	ident->start_ts = ts;
+	lpi_init_data(&ident->lpi);
+	f->extension = ident;
 }
 
 void dump_payload(lpi_data_t lpi, uint8_t dir) {
@@ -75,37 +73,40 @@ void dump_payload(lpi_data_t lpi, uint8_t dir) {
 
 }
 
-void display_unknown(Flow *f, UnknownFlow *unk) {
+void display_ident(Flow *f, IdentFlow *ident) {
 
         char ip[50];
         char str[1000];
         struct in_addr in;
+	lpi_protocol_t proto;
 
-	if (only_dir0 && unk->init_dir == 1)
+	if (only_dir0 && ident->init_dir == 1)
 		return;
-	if (only_dir1 && unk->init_dir == 0)
+	if (only_dir1 && ident->init_dir == 0)
 		return;
 	if (require_both) {
-		if (unk->lpi.payload_len[0] == 0 || 
-				unk->lpi.payload_len[1] == 0) {
+		if (ident->lpi.payload_len[0] == 0 || 
+				ident->lpi.payload_len[1] == 0) {
 			return;
 		}
 	}
 
+	proto = lpi_guess_protocol(&ident->lpi);
 
         in.s_addr = f->id.get_server_ip();
         snprintf(ip, 1000, "%s", inet_ntoa(in));
 
         in.s_addr = f->id.get_client_ip();
-        snprintf(str, 1000, "%s %s %u %u %u %.3f %lu %lu", ip, inet_ntoa(in),
+        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %lu %lu", 
+			lpi_print(proto), ip, inet_ntoa(in),
                         f->id.get_server_port(), f->id.get_client_port(),
-                        f->id.get_protocol(), unk->start_ts,
-			unk->out_bytes, unk->in_bytes);
+                        f->id.get_protocol(), ident->start_ts,
+			ident->out_bytes, ident->in_bytes);
 
 	printf("%s ", str);
 
-	dump_payload(unk->lpi, 0);
-	dump_payload(unk->lpi, 1);
+	dump_payload(ident->lpi, 0);
+	dump_payload(ident->lpi, 1);
 	printf("\n");
 
 
@@ -117,21 +118,18 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
  * want the stats for all the still-active flows). Otherwise, only flows
  * that have been idle for longer than their expiry timeout will be expired.
  */
-void expire_unknown_flows(double ts, bool exp_flag) {
+void expire_ident_flows(double ts, bool exp_flag) {
         Flow *expired;
-	lpi_protocol_t proto;
 
         /* Loop until libflowmanager has no more expired flows available */
 	while ((expired = lfm_expire_next_flow(ts, exp_flag)) != NULL) {
 
-                UnknownFlow *unk = (UnknownFlow *)expired->extension;
+                IdentFlow *ident = (IdentFlow *)expired->extension;
 		
-		proto = lpi_guess_protocol(&unk->lpi);
-		if (proto == LPI_PROTO_UNKNOWN || proto == LPI_PROTO_UDP)
-			display_unknown(expired, unk);
+		display_ident(expired, ident);
 
 		/* Don't forget to free our custom data structure */
-                free(unk);
+                free(ident);
 
 		/* VERY IMPORTANT: delete the Flow structure itself, even
 		 * though we did not directly allocate the memory ourselves */
@@ -143,7 +141,7 @@ void expire_unknown_flows(double ts, bool exp_flag) {
 void per_packet(libtrace_packet_t *packet) {
 
         Flow *f;
-        UnknownFlow *unk = NULL;
+        IdentFlow *ident = NULL;
         uint8_t dir;
         bool is_new = false;
 
@@ -161,7 +159,7 @@ void per_packet(libtrace_packet_t *packet) {
 
 	/* Expire all suitably idle flows */
         ts = trace_get_seconds(packet);
-        expire_unknown_flows(ts, false);
+        expire_ident_flows(ts, false);
 
 	/* Many trace formats do not support direction tagging (e.g. PCAP), so
 	 * using trace_get_direction() is not an ideal approach. The one we
@@ -195,22 +193,22 @@ void per_packet(libtrace_packet_t *packet) {
 	/* If the returned flow is new, you will probably want to allocate and
 	 * initialise any custom data that you intend to track for the flow */
         if (is_new) {
-                init_unknown_flow(f, dir, ts);
-        	unk = (UnknownFlow *)f->extension;
+                init_ident_flow(f, dir, ts);
+        	ident = (IdentFlow *)f->extension;
 	} else {
-        	unk = (UnknownFlow *)f->extension;
+        	ident = (IdentFlow *)f->extension;
 		if (tcp && tcp->syn && !tcp->ack)
-			unk->init_dir = dir;
+			ident->init_dir = dir;
 	}
 
 	if (dir == 0)
-		unk->out_bytes += trace_get_payload_length(packet);
+		ident->out_bytes += trace_get_payload_length(packet);
 	else
-		unk->in_bytes += trace_get_payload_length(packet);
+		ident->in_bytes += trace_get_payload_length(packet);
 
 
 	/* Cast the extension pointer to match the custom data type */	
-	lpi_update_data(packet, &unk->lpi, dir);
+	lpi_update_data(packet, &ident->lpi, dir);
 
         /* Update TCP state for TCP flows. The TCP state determines how long
 	 * the flow can be idle before being expired by libflowmanager. For
@@ -333,7 +331,7 @@ int main(int argc, char *argv[]) {
         }
 
         trace_destroy_packet(packet);
-        expire_unknown_flows(ts, true);
+        expire_ident_flows(ts, true);
 
         return 0;
 

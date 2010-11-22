@@ -1,1 +1,1 @@
-SUBDIRS=find_unknown
+SUBDIRS=find_unknown protoident

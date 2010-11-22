@@ -18,7 +18,7 @@ AC_CHECK_LIB([flowmanager], [lfm_match_packet_to_flow],,lfm_found=0)
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])
 
 AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile 
-		tools/find_unknown/Makefile])
+		tools/find_unknown/Makefile tools/protoident/Makefile])
 
 if test "$trace_found" = 0; then
 	AC_MSG_ERROR(Required library libtrace not found; use LDFLAGS to specify library location)
