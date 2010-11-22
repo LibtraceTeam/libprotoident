@@ -698,16 +698,35 @@ static inline bool match_http_tunnel(lpi_data_t *data) {
 }
 
 /* Rules adapted from l7-filter */
-static inline bool match_telnet(lpi_data_t *data) {
-	if (match_chars_either(data, 0xff, 0xfb, ANY, 0xff))
+static inline bool match_telnet_pattern(uint32_t payload) {
+
+	/* Sadly we cannot use a simple MATCH, because we're looking for
+	 * two 0xff characters, which happens to be the same value as ANY.
+	 */
+
+	if ((payload & 0xff0000ff) != (0xff0000ff))
+		return false;
+	
+	if (MATCH(payload, ANY, 0xfb, ANY, ANY))
 		return true; 
-	if (match_chars_either(data, 0xff, 0xfc, ANY, 0xff))
+	if (MATCH(payload, ANY, 0xfc, ANY, ANY))
 		return true; 
-	if (match_chars_either(data, 0xff, 0xfd, ANY, 0xff))
+	if (MATCH(payload, ANY, 0xfd, ANY, ANY))
 		return true; 
-	if (match_chars_either(data, 0xff, 0xfe, ANY, 0xff))
+	if (MATCH(payload, ANY, 0xfe, ANY, ANY))
 		return true; 
+
 	return false;
+}
+
+static inline bool match_telnet(lpi_data_t *data) {
+	
+	if (match_telnet_pattern(data->payload[0]))
+		return true;
+	if (match_telnet_pattern(data->payload[1]))
+		return true;
+	return false;
+	
 }
 
 /* 16 03 00 X is an SSLv3 handshake */
@@ -931,6 +950,14 @@ static inline bool match_invalid(lpi_data_t *data) {
 	if (match_str_both(data, "220 ", "GET "))
 		return true;
 
+	/* People trying to do Bittorrent to an actual HTTP server, rather than
+	 * someone peering on port 80 */
+
+	if (match_str_either(data, "HTTP") && 
+			match_chars_either(data, 0x13, 'B', 'i', 't'))
+		return true;
+	
+
         return false;
 }
 
@@ -950,6 +977,31 @@ static inline bool match_trackmania(lpi_data_t *data) {
 			data->payload_len[1]))
                 return false;
 
+	return true;
+
+}
+
+static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	
+	if (MATCH(payload, 0x13, 'B', 'i', 't'))
+		return true;
+	
+	if (len == 2 && MATCH(payload, 0x13, 'B', 'i', 0x00))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_bittorrent(lpi_data_t *data) {
+
+	if (!match_bittorrent_header(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_bittorrent_header(data->payload[1], data->payload_len[1]))
+		return false;
 	return true;
 
 }
@@ -1131,6 +1183,7 @@ static inline bool match_ftp_command(uint32_t payload, uint32_t len) {
 	if (MATCHSTR(payload, "HOST"))
 		return true;
 
+	return false;
 
 }
 
@@ -1165,62 +1218,70 @@ static inline bool match_ftp_control(lpi_data_t *data) {
 	return false;
 }
 	
-static inline bool match_http_request(lpi_data_t *data) {
+static inline bool match_http_request(uint32_t payload, uint32_t len) {
 
-        /* HTTP requests */
+        /* HTTP requests - some of these are MS-specific extensions */
+	if (len == 0)
+		return true;
 
-        if (match_str_either(data, "GET ")) {
+        if (MATCHSTR(payload, "GET ")) return true; 
 		
-		/* Must be on a known HTTP port - designed to filter 
-		 * out P2P protos that use HTTP.
-		 *
-		 * XXX If this doesn't work well, get rid of it!
-		*/
-		if (data->server_port == 80 || data->client_port == 80)
-			return true;
-		if (data->server_port == 8080 || data->client_port == 8080)
-			return true;
-	}
-        if (match_str_either(data, "POST")) return true;
-        if (match_str_either(data, "HEAD")) return true;
-        if (match_str_either(data, "PUT ")) return true;
+        if (MATCHSTR(payload, "POST")) return true;
+        if (MATCHSTR(payload, "HEAD")) return true;
+        if (MATCHSTR(payload, "PUT ")) return true;
+        if (MATCHSTR(payload, "DELE")) return true;
+        if (MATCHSTR(payload, "OPTI")) return true;
+        if (MATCHSTR(payload, "PROP")) return true;
+        if (MATCHSTR(payload, "MKCO")) return true;
+        if (MATCHSTR(payload, "LOCK")) return true;
+        if (MATCHSTR(payload, "POLL")) return true;
+        if (MATCHSTR(payload, "SEAR")) return true;
+	if (MATCHSTR(payload, "auth")) return true;
 
 	return false;
 
 }
 
-static inline bool match_http_response(lpi_data_t *data) {
-        if (match_str_either(data, "HTTP")) {
-		
-		/* Must be on a known HTTP port - designed to filter 
-		 * out P2P protos that use HTTP.
-		 *
-		 * XXX If this doesn't work well, get rid of it!
-		*/
-		if (data->server_port == 80 || data->client_port == 80)
-			return true;
-		if (data->server_port == 8080 || data->client_port == 8080)
-			return true;
-		if (data->server_port == 8081 || data->client_port == 8081)
-			return true;
-
-		/* If port 443 responds, we want it to be counted as genuine
-		 * HTTP, rather than a bad port scenario */
-		if (data->server_port == 443 || data->client_port == 443)
-			return true;
+static inline bool match_http_response(uint32_t payload, uint32_t len) {
+	
+	if (len == 0)
+		return true;
+        if (MATCHSTR(payload, "HTTP")) {
+		return true;	
 	}
 	
 	return false;
 
 	
+}
+
+static inline bool valid_http_port(lpi_data_t *data) {
+	/* Must be on a known HTTP port - designed to filter 
+	 * out P2P protos that use HTTP.
+	 *
+	 * XXX If this doesn't work well, get rid of it!
+	*/
+	if (data->server_port == 80 || data->client_port == 80)
+		return true;
+	if (data->server_port == 8080 || data->client_port == 8080)
+		return true;
+	if (data->server_port == 8081 || data->client_port == 8081)
+		return true;
+
+	/* If port 443 responds, we want it to be counted as genuine
+	 * HTTP, rather than a bad port scenario */
+	if (data->server_port == 443 || data->client_port == 443) {
+		if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+			return true;
+	}
+
+	return false;
+
 }
 
 /* Trying to match stuff like KaZaA and Gnutella transfers that base their
  * communications on HTTP */
 static inline bool match_p2p_http(lpi_data_t *data) {
-
-	if (!match_str_either(data, "HTTP"))
-		return false;
 
 	/* Must not be on a known HTTP port
 	 *
@@ -1228,12 +1289,37 @@ static inline bool match_p2p_http(lpi_data_t *data) {
 	 * warezing, but we want to at least try and get the most obvious 
 	 * HTTP-based P2P
 	 */	
-	if (data->server_port == 80 || data->client_port == 80)
-		return false;
-	if (data->server_port == 8080 || data->client_port == 8080)
+	if (valid_http_port(data))
 		return false;
 
-	return true;
+	if (match_str_both(data, "GET ", "HTTP"))
+		return true;
+	
+	return false;
+
+}
+
+
+static inline bool match_http(lpi_data_t *data) {
+
+	if (!valid_http_port(data))
+		return false;
+
+	if (match_http_request(data->payload[0], data->payload_len[0])) {
+		if (match_http_response(data->payload[1], data->payload_len[1]))
+			return true;
+		if (match_http_request(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_http_request(data->payload[1], data->payload_len[1])) {
+		if (match_http_response(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+	
+
+	return false;
+		
 
 }
 
@@ -1262,19 +1348,15 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
         /* Tunnelling over HTTP */
         if (match_http_tunnel(proto_d)) return LPI_PROTO_HTTP_TUNNEL;
+	
+	/* Shoutcast client requests */
+	if (match_str_both(proto_d, "GET ", "ICY "))
+		return LPI_PROTO_SHOUTCAST;
 
         /* HTTP response */
-	if (match_http_response(proto_d)) return LPI_PROTO_HTTP;
-	if (match_http_request(proto_d)) return LPI_PROTO_HTTP;
-
+	if (match_http(proto_d)) return LPI_PROTO_HTTP;
 	if (match_p2p_http(proto_d)) return LPI_PROTO_P2P_HTTP;
 	if (match_http_badport(proto_d)) return LPI_PROTO_HTTP_BADPORT;
-
-        if (match_str_either(proto_d, "auth")) return LPI_PROTO_HTTP;
-        /* Microsoft extensions to HTTP */
-        if (match_str_either(proto_d, "SEAR")) return LPI_PROTO_HTTP_MS;
-        if (match_str_either(proto_d, "POLL")) return LPI_PROTO_HTTP_MS;
-        if (match_str_either(proto_d, "PROP")) return LPI_PROTO_HTTP_MS;
 
         /* SMTP */
         if (match_smtp(proto_d)) return LPI_PROTO_SMTP;
@@ -1297,8 +1379,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_str_either(proto_d, "* OK")) return LPI_PROTO_IMAP;
 
         /* Bittorrent is 0x13 B i t */
-        if (match_str_either(proto_d, "\x13""Bit"))
-                return LPI_PROTO_BITTORRENT;
+        if (match_bittorrent(proto_d)) return LPI_PROTO_BITTORRENT;
 
         if (match_str_either(proto_d, "@RSY")) return LPI_PROTO_RSYNC;
 
@@ -1452,9 +1533,6 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_dns_zone_transfer(proto_d))
 		return LPI_PROTO_DNS;
 
-	/* Shoutcast client requests */
-	if (match_str_both(proto_d, "GET ", "ICY "))
-		return LPI_PROTO_SHOUTCAST;
 	/* Incoming source connections - other direction sends a plain-text
 	 * password */
 	if (match_chars_either(proto_d, 'O', 'K', '2', 0x0d))
@@ -1471,9 +1549,6 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         /* Raw XML */
         if (match_str_either(proto_d, "<?xm")) return LPI_PROTO_TCP_XML;
         if (match_str_either(proto_d, "<iq ")) return LPI_PROTO_TCP_XML;
-
-        /* POP3 */
-        if (match_str_either(proto_d, "USER")) return LPI_PROTO_POP3;
 
         /* Mzinga */
         if (match_str_either(proto_d, "PCHA")) return LPI_PROTO_MZINGA;

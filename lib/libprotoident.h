@@ -70,7 +70,6 @@ typedef enum {
         LPI_PROTO_ICQ,
         LPI_PROTO_TELNET,
         LPI_PROTO_RDP,         /* Windows remote desktop protocol */
-        LPI_PROTO_HTTP_MS,     /* Microsoft Exchange extensions to HTTP */
         LPI_PROTO_TDS,         /* MS SQL Server protocol */
         LPI_PROTO_RPC_SCAN,    /* Port 135 exploit attempt */
         LPI_PROTO_SMB,         /* Server Message Block protocol e.g. samba */
@@ -81,7 +80,6 @@ typedef enum {
         LPI_PROTO_EYE,         /* Yahoo Game Server Browser */
         LPI_PROTO_ARES,        /* Ares peer-to-peer protocol */
         LPI_PROTO_AR,          /* ar archives, usually Debian .deb files */
-        LPI_PROTO_BULK,        /* Bulk one-way transfers e.g. passive FTP */
         LPI_PROTO_NNTP,        /* Newsfeeds */
         LPI_PROTO_NAPSTER,
         LPI_PROTO_BNCS,        /* Battle.net Chat Server */

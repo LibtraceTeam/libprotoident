@@ -51,8 +51,6 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 	tcp = trace_get_tcp(packet);
 	psize = trace_get_payload_length(packet);
-	if (psize <= 0)
-		return 0;
 
 	/* Don't bother if we've observed 32k of data - the first packet must
 	 * surely been within that. This helps us avoid issues with sequence
@@ -116,7 +114,9 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 	if (payload == NULL)
 		return 0;
-	
+	if (psize <= 0)
+		return 0;
+
 	four_bytes = ntohl((*(uint32_t *)payload));
 	
 	if (psize < 4) {
@@ -166,7 +166,6 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 
 		case LPI_PROTO_HTTP:
 		case LPI_PROTO_HTTPS:
-                case LPI_PROTO_HTTP_MS:
 		case LPI_PROTO_HTTP_BADPORT:
 			return LPI_CATEGORY_WEB;
 
@@ -476,8 +475,6 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "RTMP";
                 case LPI_PROTO_RDP:
                         return "RDP";
-                case LPI_PROTO_HTTP_MS:
-                        return "Microsoft_HTTP";
                 case LPI_PROTO_TDS:
                         return "TDS";
                  case LPI_PROTO_RPC_SCAN:
@@ -498,8 +495,6 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "Ares";
                 case LPI_PROTO_AR:
                         return "ar_Archive";
-                case LPI_PROTO_BULK:
-                        return "BulkOneWay";
                 case LPI_PROTO_NNTP:
                         return "NNTP";
                 case LPI_PROTO_NAPSTER:
