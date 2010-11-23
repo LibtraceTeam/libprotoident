@@ -128,6 +128,8 @@ typedef enum {
 	LPI_PROTO_YAHOO_ERROR,	/* Yahoo method of dealing with HTTP errors */
 	LPI_PROTO_IMESH,	/* iMesh */
 	LPI_PROTO_PPTP,		/* MS Tunnelling protocol */
+	LPI_PROTO_AFP,		/* Apple Filing Protocol */
+	LPI_PROTO_PDBOX,	/* Korean P2P TV protocol */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -184,6 +186,7 @@ typedef enum {
 	LPI_PROTO_UDP_SLP,	/* Service Location Protocol, RFC 2608 */
 	LPI_PROTO_UDP_ESO,	/* Games using Ensemble Studios Online */
 	LPI_PROTO_UDP_SSDP,
+	LPI_PROTO_UDP_NETBIOS,	/* Netbios lookup */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */

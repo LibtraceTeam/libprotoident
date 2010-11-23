@@ -242,6 +242,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_NTP:
 		case LPI_PROTO_UDP_SLP:
 		case LPI_PROTO_UDP_SSDP:
+		case LPI_PROTO_UDP_NETBIOS:	
 			return LPI_CATEGORY_SERVICES;	
                 
 		case LPI_PROTO_TDS:
@@ -260,6 +261,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_ORBIT:
 		case LPI_PROTO_MSNC:
                 case LPI_PROTO_TCP_XML:
+		case LPI_PROTO_AFP:
 			return LPI_CATEGORY_FILES;
 
 		case LPI_PROTO_BITTORRENT:
@@ -276,6 +278,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_MP2P:
 		case LPI_PROTO_UDP_XFIRE_P2P:
 		case LPI_PROTO_DC:
+		case LPI_PROTO_PDBOX:
 			return LPI_CATEGORY_P2P;
 		
 		case LPI_PROTO_NCSOFT:
@@ -589,6 +592,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "iMesh_TCP";
 		case LPI_PROTO_PPTP:
 			return "PPTP";
+		case LPI_PROTO_AFP:
+			return "AFP";
+		case LPI_PROTO_PDBOX:
+			return "PDBOX";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -697,6 +704,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Ensemble";
 		case LPI_PROTO_UDP_SSDP:
 			return "SSDP";
+		case LPI_PROTO_UDP_NETBIOS:
+			return "Netbios_UDP";
 
 		
 		

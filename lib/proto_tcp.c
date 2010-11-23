@@ -124,6 +124,13 @@ static inline bool match_rbls(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_pdbox(lpi_data_t *data) {
+
+	if (match_str_both(data, "0127", "0326"))
+		return true;
+	return false;
+}
+
 static inline bool match_steam(lpi_data_t *data) {
 
 	if (match_str_either(data, "\x00\x00\x00\x07") &&
@@ -135,6 +142,9 @@ static inline bool match_steam(lpi_data_t *data) {
 }
 
 static inline bool match_rtmp(lpi_data_t *data) {
+
+	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
+		return false;
 
 	if (MATCH(data->payload[0], 0x03, ANY, ANY, ANY) &&
 			MATCH(data->payload[1], 0x03, ANY, ANY, ANY)) {
@@ -547,6 +557,15 @@ static inline bool match_xunlei(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_afp(lpi_data_t *data) {
+
+	/* Looking for a DSI header - command 4 is OpenSession */
+	if (match_str_both(data, "\x00\x04\x00\x01", "\x01\x04\x00\x01"))
+		return true;
+	return false;
+
+}
+
 static inline bool match_smb(lpi_data_t *data) {
 
         /* SMB is often prepended with a NetBIOS session service header.
@@ -557,7 +576,15 @@ static inline bool match_smb(lpi_data_t *data) {
          * More details at http://lists.samba.org/archive/samba-technical/2003-January/026283.html
          */
 
-        return false;
+	if (data->server_port != 445 && data->client_port != 445)
+		return false;
+
+	if (!match_payload_length(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_payload_length(data->payload[1], data->payload_len[1]))
+		return false;
+
+        return true;
 
 }
 
@@ -626,7 +653,11 @@ inline bool match_emule(lpi_data_t *data) {
         /* (I noticed that most emule(probably) flows began with "e3 xx 00 00" 
          * or "c5 xx 00 00", perhaps is worth looking into... Although I 
          * couldn't find anything about emule packets) */
-        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
+        
+	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
+		return false;
+	
+	if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
             MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00))
                 return true;
 
@@ -851,6 +882,10 @@ static inline bool match_mysql(lpi_data_t *data) {
         if (MATCH(data->payload[1], ANY, ANY, ANY, 0x00) &&
                         MATCH(data->payload[0], ANY, ANY, ANY, 0x01))
                 return true;
+
+	/* Need to enforce some sort of port checking here */
+	if (data->server_port != 3306 && data->client_port != 3306)
+		return false;
 
         if (MATCH(data->payload[0], ANY, ANY, ANY, 0x00) &&
                 data->payload_len[1] == 0)
@@ -1326,7 +1361,7 @@ static inline bool match_http(lpi_data_t *data) {
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
         
-	if (proto_d->payload_len[0] < 4 && proto_d->payload_len[1] < 4)
+	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
 		return LPI_PROTO_NO_PAYLOAD;
 	
 	
@@ -1435,7 +1470,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
                 return LPI_PROTO_NCSOFT;
 
         /* Azureus Extension */
-        if (match_azureus(proto_d)) return LPI_PROTO_AZUREUS;
+        //if (match_azureus(proto_d)) return LPI_PROTO_AZUREUS;
 
 	if (match_trackmania(proto_d)) return LPI_PROTO_TRACKMANIA;
 
@@ -1607,6 +1642,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_telecomkey(proto_d)) return LPI_PROTO_TELECOMKEY;
 
 	if (match_msnc_transfer(proto_d)) return LPI_PROTO_MSNC;
+
+	if (match_afp(proto_d)) return LPI_PROTO_AFP;
+
+	if (match_pdbox(proto_d)) return LPI_PROTO_PDBOX;
 	
 	/* Unknown protocol that seems to put the packet length in the first
          * octet - XXX Figure out what this is! */

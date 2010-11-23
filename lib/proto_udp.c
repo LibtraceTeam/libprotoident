@@ -51,6 +51,37 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	
 }		
 
+static inline bool match_netbios_req(uint32_t payload, uint32_t len) {
+
+	if (!MATCH(payload, 0x80, 0xb0, 0x00, 0x00))
+		return false;
+	if (len == 50)
+		return true;
+	if (len == 20)
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_netbios(lpi_data_t *data) {
+
+	/* Haven't yet seen an actual response to Netbios lookups */
+
+	if (match_netbios_req(data->payload[0], data->payload_len[0])) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	if (match_netbios_req(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	return false;
+
+}
+
 
 static inline bool match_rtp(lpi_data_t *data) {
         if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
@@ -224,6 +255,8 @@ static inline bool match_isakmp(lpi_data_t *data) {
 
 	if (data->payload[0] != data->payload[1])
 		return false;
+	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
+		return false;
 
 	return true;
 }
@@ -283,6 +316,8 @@ static inline bool match_messenger_spam(lpi_data_t *data) {
 
 	/* The recipient does not reply */
 	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
+		return false;
+	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
 		return false;
 
 	if (match_chars_either(data, 0x04, 0x00, ANY, 0x00))
@@ -671,13 +706,19 @@ static inline bool match_vuze_dht_request(uint32_t payload, uint32_t len,
 	 *
 	 * However, we only need to check the payload length in the event
 	 * of a unidirectional flow */
+	
+	if (len < 4)
+		return false;
 		
 	if (check_msb) {
 
-		if (!(ntohl(payload) & 0x80000000) == 0x80000000)
+
+
+		if ((ntohl(payload) & 0x80000000) != 0x80000000)
 			return false;
-		if (len == 42)
+		if (len == 42) {
 			return true;
+		}
 
 		if (len == 63 || len == 65 || len == 71)
 			return true;
@@ -1119,6 +1160,9 @@ static inline bool match_msn_video(lpi_data_t *data) {
 
 static inline bool match_ipv6(lpi_data_t *data) {
 
+	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
+		return false;
+	
 	if (match_str_both(data, "\x60\x00\x00\x00", "\x60\x00\x00\x00")) {
 		return true;
 	}
@@ -1602,6 +1646,9 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCH(payload, 0xc5, 0x93, ANY, ANY) && (len == 2))
 		return true;
+	if (MATCH(payload, 0xc5, 0x94, ANY, ANY) && (len == 42)) {
+		return true;
+	}
 
 	/* 0xe3 covers conventional emule messages */
 	if (MATCH(payload, 0xe3, 0x9a, ANY, ANY))
@@ -1617,6 +1664,8 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 	}
 	
 	if (MATCH(payload, 0xe3, 0x92, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0xe3, 0x94, ANY, ANY))
 		return true;
 	if (MATCH(payload, 0xe3, 0x98, ANY, ANY))
 		return true;
@@ -1847,7 +1896,7 @@ static inline bool match_mystery_99(lpi_data_t *data) {
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
-	if (proto_d->payload_len[0] < 4 && proto_d->payload_len[1] < 4)
+	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
 		return LPI_PROTO_NO_PAYLOAD;
 
 
@@ -1859,8 +1908,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
                 return LPI_PROTO_UDP_BTDHT;
         if (match_chars_either(proto_d, 'd', '1', ANY, ':'))
                 return LPI_PROTO_UDP_BTDHT;
-	if (match_vuze_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
-	if (match_xbt_tracker(proto_d)) return LPI_PROTO_UDP_BTDHT;
 
 	if (match_gamespy(proto_d)) return LPI_PROTO_UDP_GAMESPY;
 
@@ -1970,7 +2017,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
 	 * BitTorrent - XXX name these functions better! */
 	if (match_other_btudp(proto_d)) return LPI_PROTO_UDP_BTDHT;
-	if (match_unknown_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
        
        	if (match_starcraft(proto_d)) return LPI_PROTO_UDP_STARCRAFT;
 
@@ -1979,6 +2025,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_slp(proto_d)) return LPI_PROTO_UDP_SLP;
 
 	if (match_eso(proto_d)) return LPI_PROTO_UDP_ESO;
+
+	if (match_netbios(proto_d)) return LPI_PROTO_UDP_NETBIOS;
         
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
@@ -1993,6 +2041,10 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_EMULE;
 	if (match_emule(proto_d))
                 return LPI_PROTO_UDP_EMULE;
+	
+	if (match_vuze_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
+	if (match_xbt_tracker(proto_d)) return LPI_PROTO_UDP_BTDHT;
+	if (match_unknown_dht(proto_d)) return LPI_PROTO_UDP_BTDHT;
 
 	/* This is a bit dodgy too, so keep it near the end */
 	if (match_skype(proto_d))
