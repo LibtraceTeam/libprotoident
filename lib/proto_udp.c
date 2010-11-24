@@ -46,6 +46,8 @@ static inline bool match_mp2p(lpi_data_t *data) {
 		return true;
 	if (match_chars_either(data, ANY, 0x4b, 0xd9, 0x65))
 		return true;
+	if (match_chars_either(data, ANY, 0x4a, 0xd9, 0x65))
+		return true;
 
 	return false;
 	
@@ -82,6 +84,39 @@ static inline bool match_netbios(lpi_data_t *data) {
 
 }
 
+static inline bool match_quake(lpi_data_t *data) {
+
+	/* Trying to match Quake engine games - typically use port 27960 */
+
+	if (!match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff"))
+		return false;
+	if (data->payload_len[0] == 16) {
+		if (data->payload_len[1] == 53 || data->payload_len[1] == 52)
+			return true;
+	}
+	if (data->payload_len[1] == 16) {
+		if (data->payload_len[0] == 53 || data->payload_len[0] == 52)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_gta4(lpi_data_t *data) {
+
+	if (match_str_both(data, "\xfd\xfc\x1e\x66", "\xfd\xfc\x1e\x66"))
+		return true;
+
+	if (match_str_either(data, "\xfd\xfc\x1e\x66")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	return false;
+
+}
 
 static inline bool match_rtp(lpi_data_t *data) {
         if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
@@ -109,18 +144,44 @@ static inline bool match_rtp(lpi_data_t *data) {
 
 }
 
+static inline bool match_checkpoint_rdp(lpi_data_t *data) {
+
+	/* We only see this on port 259, so I'm pretty sure that this is
+	 * the Checkpoint proprietary RDP protocol (not to be confused with
+	 * Remote Desktop Protocol or the RDP transport protocol).
+	 *
+	 * Begins with a four byte magic number */
+
+	if (match_str_both(data, "\xf0\x01\xcc\xcc", "\xf0\x01\xcc\xcc"))
+		return true;
+	if (match_str_either(data, "\xf0\x01\xcc\xcc")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	return false;	
+
+}
 
 static inline bool match_qq(lpi_data_t *data) {
 
-	if (!match_str_both(data, "\x02\x01\x00\x00", "\x02\x01\x00\x00"))
-		return false;
-
-	if (data->payload_len[0] == 75 && data->payload_len[1] == 43)
-		return true;
+	if (match_str_both(data, "\x02\x01\x00\x00", "\x02\x01\x00\x00")) {
+		if (data->payload_len[0] == 75 && data->payload_len[1] == 43)
+			return true;
 	
-	if (data->payload_len[1] == 75 && data->payload_len[0] == 43)
-		return true;
+		if (data->payload_len[1] == 75 && data->payload_len[0] == 43)
+			return true;
+	}
 
+	if (match_str_both(data, "\x02\x02\x00\x00", "\x02\x02\x00\x00")) {
+		if (data->payload_len[0] == 83 && data->payload_len[1] == 43)
+			return true;
+	
+		if (data->payload_len[1] == 83 && data->payload_len[0] == 43)
+			return true;
+	}
 	return false;
 }
 
@@ -584,18 +645,36 @@ static inline bool match_cod_payload(uint32_t payload, uint32_t len) {
 
 static inline bool match_cod(lpi_data_t *data) {
 
-	/* Use port 28960 to distinguish these, as 0xffffffff is a pretty
-	 * common pattern */
-
-	if (data->server_port != 28960 && data->client_port != 28960)
-		return false;
-
 	if (!match_cod_payload(data->payload[0], data->payload_len[0]))
 		return false;
 	if (!match_cod_payload(data->payload[1], data->payload_len[1]))
 		return false;
 
-	return true;
+	/* One packet is always 14 or 15 bytes, the other is usually much 
+	 * larger */
+	if (data->payload_len[0] == 14 || data->payload_len[0] == 15) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] > 100)
+			return true;
+	}
+
+	if (data->payload_len[0] == 14 || data->payload_len[1] == 15) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[0] > 100)
+			return true;
+	}
+
+	/* Other packet size combos */
+	if (data->payload_len[0] == 17 && data->payload_len[1] == 41)
+		return true;
+	if (data->payload_len[0] == 18 && data->payload_len[1] == 42)
+		return true;
+	if (data->payload_len[0] == 19 && data->payload_len[1] == 43)
+		return true;
+
+	return false;
 }
 
 static inline bool match_traceroute(lpi_data_t *data) {
@@ -638,6 +717,12 @@ static inline bool match_halflife(lpi_data_t *data) {
 	if (data->payload_len[0] == 20 || data->payload_len[1] == 20)
 		return true;
 	if (data->payload_len[1] == 9 || data->payload_len[0] == 9)
+		return true;
+	if (data->payload_len[0] == 65 && (data->payload_len[1] > 500 &&
+			data->payload_len[1] < 600))
+		return true;
+	if (data->payload_len[1] == 65 && (data->payload_len[0] > 500 &&
+			data->payload_len[0] < 600))
 		return true;
 
 	/*
@@ -829,6 +914,28 @@ static inline bool match_unknown_dht(lpi_data_t *data) {
 
 }
 
+static inline bool match_ventrilo(lpi_data_t *data) {
+
+	/* We see this on port 6100, so I'm assuming it is the UDP
+	 * Ventrilo protocol. No real documentation of it to confirm,
+	 * though */
+
+	if (!(match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00")))
+		return false;
+	
+	if (data->payload_len[0] == 108 && data->payload_len[1] == 132)
+		return true;
+	if (data->payload_len[1] == 108 && data->payload_len[0] == 132)
+		return true;
+	if (data->payload_len[0] == 52 && data->payload_len[1] == 196)
+		return true;
+	if (data->payload_len[1] == 52 && data->payload_len[0] == 196)
+		return true;
+
+	return false;
+
+}
+
 
 static inline bool match_xfire_p2p(lpi_data_t *data) {
 
@@ -840,6 +947,8 @@ static inline bool match_xfire_p2p(lpi_data_t *data) {
 
 static inline bool match_pyzor(lpi_data_t *data) {
 	if (match_str_both(data, "User", "Code"))
+		return true;
+	if (match_str_both(data, "User", "Thre"))
 		return true;
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
 		if (match_str_either(data, "User"))
@@ -882,6 +991,8 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len) {
 		if (len == 156)
 			return true;
 		if (len == 82)
+			return true;
+		if (len == 83)
 			return true;
 		if (len == 43)
 			return true;
@@ -958,6 +1069,13 @@ static inline bool match_xlsp(lpi_data_t *data) {
 		}
 	}
 
+
+	if (match_chars_either(data, 0xff, 0xff, 0xff, 0xff)) {
+		if (data->payload_len[0] == 14 && data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] == 14 && data->payload_len[0] == 0)
+			return true;
+	}
 	
 	if (!match_xlsp_payload(data->payload[0], data->payload_len[0]))
 		return false;
@@ -1921,14 +2039,7 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
         if (match_steam(proto_d)) return LPI_PROTO_UDP_STEAM;
 
-        if (match_cod(proto_d)) return LPI_PROTO_UDP_COD;
-
 	if (match_stun(proto_d)) return LPI_PROTO_UDP_STUN;
-
-        /*
-        if (match_str_both(proto_d, "\xff\xff\xff\xff", "\xff\xff\xff\xff"))
-                return LPI_PROTO_UDP_QUAKEWORLD;
-        */
 
         if (match_chars_either(proto_d, 'G', 'N', 'D', ANY))
                 return LPI_PROTO_UDP_GNUTELLA2;
@@ -2027,7 +2138,18 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_eso(proto_d)) return LPI_PROTO_UDP_ESO;
 
 	if (match_netbios(proto_d)) return LPI_PROTO_UDP_NETBIOS;
+
+	if (match_gta4(proto_d)) return LPI_PROTO_UDP_GTA4;
+
+	if (match_checkpoint_rdp(proto_d)) return LPI_PROTO_UDP_CP_RDP;        
+
+	if (match_ventrilo(proto_d)) return LPI_PROTO_UDP_VENTRILO;
         
+	/* Make sure this comes after XLSP */
+	if (match_cod(proto_d)) return LPI_PROTO_UDP_COD;
+
+	if (match_quake(proto_d)) return LPI_PROTO_UDP_QUAKE;
+
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
 

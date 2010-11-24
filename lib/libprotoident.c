@@ -180,6 +180,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		
 		case LPI_PROTO_UDP_ISAKMP:
                 case LPI_PROTO_KMS:
+		case LPI_PROTO_UDP_CP_RDP:
 			return LPI_CATEGORY_SECURITY;
 		
 		case LPI_PROTO_UDP_TRACEROUTE:
@@ -206,6 +207,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_SIP:
                 case LPI_PROTO_UDP_RTP:
 		case LPI_PROTO_UDP_SKYPE:
+		case LPI_PROTO_UDP_VENTRILO:
                         return LPI_CATEGORY_VOIP;
                 
 		case LPI_PROTO_HAMACHI:
@@ -290,7 +292,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_TRACKMANIA:
 		case LPI_PROTO_CONQUER:
 		case LPI_PROTO_WOW:
-		case LPI_PROTO_UDP_QUAKEWORLD:
+		case LPI_PROTO_UDP_QUAKE:
                 case LPI_PROTO_UDP_STEAM:
                 case LPI_PROTO_UDP_STEAM_FRIENDS:
                 case LPI_PROTO_UDP_GAMESPY:
@@ -306,6 +308,8 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_THQ:
 		case LPI_PROTO_UDP_ESO:
 		case LPI_PROTO_UDP_NEWERTH:
+		case LPI_PROTO_UDP_GTA4:
+		case LPI_PROTO_EA_GAMES:
 			return LPI_CATEGORY_GAMING;
 
 		case LPI_PROTO_IRC:
@@ -596,6 +600,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "AFP";
 		case LPI_PROTO_PDBOX:
 			return "PDBOX";
+		case LPI_PROTO_EA_GAMES:
+			return "EA_Games";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -608,8 +614,8 @@ const char *lpi_print(lpi_protocol_t proto) {
                         return "DNS";
                 case LPI_PROTO_UDP_DHCP:
                         return "DHCP";
-                case LPI_PROTO_UDP_QUAKEWORLD:
-                        return "QuakeWorld";
+                case LPI_PROTO_UDP_QUAKE:
+                        return "Quake";
                 case LPI_PROTO_UDP_STEAM:
                         return "Steam_UDP";
                 case LPI_PROTO_UDP_STEAM_FRIENDS:
@@ -706,6 +712,12 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SSDP";
 		case LPI_PROTO_UDP_NETBIOS:
 			return "Netbios_UDP";
+		case LPI_PROTO_UDP_GTA4:
+			return "GTA4";
+		case LPI_PROTO_UDP_CP_RDP:
+			return "Checkpoint_RDP";
+		case LPI_PROTO_UDP_VENTRILO:
+			return "Ventrilo_UDP";
 
 		
 		

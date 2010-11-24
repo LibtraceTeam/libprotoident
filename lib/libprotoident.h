@@ -130,6 +130,7 @@ typedef enum {
 	LPI_PROTO_PPTP,		/* MS Tunnelling protocol */
 	LPI_PROTO_AFP,		/* Apple Filing Protocol */
 	LPI_PROTO_PDBOX,	/* Korean P2P TV protocol */
+	LPI_PROTO_EA_GAMES,	/* EA Games protocol */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -138,7 +139,7 @@ typedef enum {
         LPI_PROTO_UDP_GNUTELLA,
         LPI_PROTO_UDP_DNS,
         LPI_PROTO_UDP_DHCP,
-        LPI_PROTO_UDP_QUAKEWORLD,
+        LPI_PROTO_UDP_QUAKE,
         LPI_PROTO_UDP_STEAM,
         LPI_PROTO_UDP_STEAM_FRIENDS,
         LPI_PROTO_UDP_WIN_MESSAGE,
@@ -187,6 +188,9 @@ typedef enum {
 	LPI_PROTO_UDP_ESO,	/* Games using Ensemble Studios Online */
 	LPI_PROTO_UDP_SSDP,
 	LPI_PROTO_UDP_NETBIOS,	/* Netbios lookup */
+	LPI_PROTO_UDP_GTA4,	/* Grand Theft Auto 4 game protocol */
+	LPI_PROTO_UDP_CP_RDP,	/* Checkpoint RDP */
+	LPI_PROTO_UDP_VENTRILO,	/* Ventrilo VoiceChat */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */

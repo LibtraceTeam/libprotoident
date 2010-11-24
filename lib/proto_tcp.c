@@ -72,7 +72,11 @@ static inline bool match_smtp(lpi_data_t *data) {
 			return true;
 		if (match_str_either(data, "450 "))
 			return true;
+		if (match_str_either(data, "550 "))
+			return true;
 		if (match_str_either(data, "421 "))
+			return true;
+		if (match_str_either(data, "421-"))
 			return true;
 		if (match_str_either(data, "451 "))
 			return true;
@@ -729,13 +733,17 @@ static inline bool match_http_tunnel(lpi_data_t *data) {
 }
 
 /* Rules adapted from l7-filter */
-static inline bool match_telnet_pattern(uint32_t payload) {
+static inline bool match_telnet_pattern(uint32_t payload, uint32_t len) {
 
 	/* Sadly we cannot use a simple MATCH, because we're looking for
 	 * two 0xff characters, which happens to be the same value as ANY.
 	 */
 
-	if ((payload & 0xff0000ff) != (0xff0000ff))
+	if (len >= 4 && ((payload & 0xff0000ff) != (0xff0000ff)))
+		return false;
+	else if (len == 3 && ((payload & 0xff000000) != (0xff000000)))
+		return false;
+	else
 		return false;
 	
 	if (MATCH(payload, ANY, 0xfb, ANY, ANY))
@@ -752,9 +760,9 @@ static inline bool match_telnet_pattern(uint32_t payload) {
 
 static inline bool match_telnet(lpi_data_t *data) {
 	
-	if (match_telnet_pattern(data->payload[0]))
+	if (match_telnet_pattern(data->payload[0], data->payload_len[0]))
 		return true;
-	if (match_telnet_pattern(data->payload[1]))
+	if (match_telnet_pattern(data->payload[1], data->payload_len[1]))
 		return true;
 	return false;
 	
@@ -828,6 +836,16 @@ static inline bool match_ssl(lpi_data_t *data) {
 	if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
 			match_tls_content(data->payload[0], data->payload_len[0]))
 		return true;
+
+	/* Some HTTPS servers respond with unencrypted content, presumably
+	 * when somebody invalid attempts a connection */
+	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
+			MATCHSTR(data->payload[1], "<!DO"))
+		return true;
+	if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
+			MATCHSTR(data->payload[0], "<!DO"))
+		return true;
+
 
 
 	if ((match_tls_handshake(data->payload[0], data->payload_len[0]) ||
@@ -1016,6 +1034,39 @@ static inline bool match_trackmania(lpi_data_t *data) {
 
 }
 
+static inline bool match_ea_games(lpi_data_t *data) {
+
+	/* Not sure exactly what game this is, but the server matches the
+	 * EA IP range and the default port is 9946 */
+
+	if (match_str_both(data, "&lgr", "&lgr"))
+		return true;
+
+	if (match_str_either(data, "&lgr")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	return false;
+
+}
+
+static inline bool match_yahoo_msg(lpi_data_t *data) {
+
+        /* Yahoo messenger starts with YMSG */
+        if (match_str_either(data, "YMSG")) return true;
+
+        /* Some flows start with YAHO - I'm going to go with my gut instinct */
+        if (match_str_either(data, "YAHO")) return true;
+
+	/* Some versions appear to use <Yms as the beginning */
+	if (match_str_either(data, "<Yms")) return true;
+
+	return false;
+}
+
 static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
@@ -1073,6 +1124,10 @@ static inline bool match_file_header(uint32_t payload) {
 
 	/* JPG */
 	if (MATCH(payload, 0xff, 0xd8, ANY, ANY))
+		return true;
+
+	/* GIF */
+	if (MATCHSTR(payload, "GIF8"))
 		return true;
 
 	/* I'm also going to include PHP scripts in here */
@@ -1268,11 +1323,17 @@ static inline bool match_http_request(uint32_t payload, uint32_t len) {
         if (MATCHSTR(payload, "OPTI")) return true;
         if (MATCHSTR(payload, "PROP")) return true;
         if (MATCHSTR(payload, "MKCO")) return true;
-        if (MATCHSTR(payload, "LOCK")) return true;
         if (MATCHSTR(payload, "POLL")) return true;
         if (MATCHSTR(payload, "SEAR")) return true;
 	if (MATCHSTR(payload, "auth")) return true;
 
+	/* SVN? */
+	if (MATCHSTR(payload, "REPO")) return true;
+
+	/* These are somehow related to idisk.mac.com */
+        if (MATCHSTR(payload, "LOCK")) return true;
+        if (MATCHSTR(payload, "UNLO")) return true;
+	
 	return false;
 
 }
@@ -1329,6 +1390,11 @@ static inline bool match_p2p_http(lpi_data_t *data) {
 
 	if (match_str_both(data, "GET ", "HTTP"))
 		return true;
+
+	if (match_str_either(data, "GET ")) {
+		if (data->payload_len[0] == 0 || data->payload_len[1])
+			return true;
+	}
 	
 	return false;
 
@@ -1337,8 +1403,14 @@ static inline bool match_p2p_http(lpi_data_t *data) {
 
 static inline bool match_http(lpi_data_t *data) {
 
-	if (!valid_http_port(data))
-		return false;
+
+	/* Need to rule out protocols using HTTP-style commands to do 
+	 * exchanges. These protocols primarily use GET, rather than other
+	 * HTTP requests */
+	if (!valid_http_port(data)) {
+		if (match_str_either(data, "GET "))
+			return false;
+	}
 
 	if (match_http_request(data->payload[0], data->payload_len[0])) {
 		if (match_http_response(data->payload[1], data->payload_len[1]))
@@ -1351,7 +1423,14 @@ static inline bool match_http(lpi_data_t *data) {
 		if (match_http_response(data->payload[0], data->payload_len[0]))
 			return true;
 	}
-	
+
+	/* Allow responses in both directions, even if this is doesn't entirely
+	 * make sense :/ */
+	if (match_http_response(data->payload[0], data->payload_len[0])) {
+		if (match_http_response(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+			
 
 	return false;
 		
@@ -1457,10 +1536,9 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_telnet(proto_d)) return LPI_PROTO_TELNET;
 
-        /* Yahoo messenger starts with YMSG */
-        if (match_str_either(proto_d, "YMSG")) return LPI_PROTO_YAHOO;
-        /* Some flows start with YAHO - I'm going to go with my gut instinct */
-        if (match_str_either(proto_d, "YAHO")) return LPI_PROTO_YAHOO;
+	if (match_yahoo_msg(proto_d)) return LPI_PROTO_YAHOO;
+
+	
 
         /* RTSP starts with RTSP */
         if (match_str_either(proto_d, "RTSP")) return LPI_PROTO_RTSP;
@@ -1646,6 +1724,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_afp(proto_d)) return LPI_PROTO_AFP;
 
 	if (match_pdbox(proto_d)) return LPI_PROTO_PDBOX;
+
+	if (match_ea_games(proto_d)) return LPI_PROTO_EA_GAMES;
 	
 	/* Unknown protocol that seems to put the packet length in the first
          * octet - XXX Figure out what this is! */
