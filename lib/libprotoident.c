@@ -283,6 +283,9 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_PDBOX:
 			return LPI_CATEGORY_P2P;
 		
+		case LPI_PROTO_UDP_PPLIVE:
+			return LPI_CATEGORY_P2PTV;
+		
 		case LPI_PROTO_NCSOFT:
                 case LPI_PROTO_WARCRAFT3:
                 case LPI_PROTO_BNCS:
@@ -310,6 +313,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_NEWERTH:
 		case LPI_PROTO_UDP_GTA4:
 		case LPI_PROTO_EA_GAMES:
+		case LPI_PROTO_UDP_MTA:
 			return LPI_CATEGORY_GAMING;
 
 		case LPI_PROTO_IRC:
@@ -403,6 +407,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Remote_Access";
 		case LPI_CATEGORY_TELCO:
 			return "Telco_Services";
+		case LPI_CATEGORY_P2PTV:
+			return "P2PTV";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_NOPAYLOAD:
@@ -718,6 +724,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Checkpoint_RDP";
 		case LPI_PROTO_UDP_VENTRILO:
 			return "Ventrilo_UDP";
+		case LPI_PROTO_UDP_MTA:
+			return "MultiTheftAuto";
+		case LPI_PROTO_UDP_PPLIVE:
+			return "PPLive";
 
 		
 		

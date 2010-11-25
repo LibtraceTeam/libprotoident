@@ -36,6 +36,7 @@ typedef enum {
 	LPI_CATEGORY_REMOTE,		/* Remote access, e.g. SSH, telnet */
 	LPI_CATEGORY_TELCO,		/* Telco services aside from VOIP, e.g
 					   SMS protocols */
+	LPI_CATEGORY_P2PTV,		/* P2P TV, e.g. PPLive */
 	LPI_CATEGORY_ICMP,
 	LPI_CATEGORY_NOPAYLOAD,
 	LPI_CATEGORY_UNSUPPORTED,
@@ -191,6 +192,8 @@ typedef enum {
 	LPI_PROTO_UDP_GTA4,	/* Grand Theft Auto 4 game protocol */
 	LPI_PROTO_UDP_CP_RDP,	/* Checkpoint RDP */
 	LPI_PROTO_UDP_VENTRILO,	/* Ventrilo VoiceChat */
+	LPI_PROTO_UDP_MTA,	/* Multitheftauto */
+	LPI_PROTO_UDP_PPLIVE,	
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */

@@ -74,6 +74,8 @@ static inline bool match_smtp(lpi_data_t *data) {
 			return true;
 		if (match_str_either(data, "550 "))
 			return true;
+		if (match_str_either(data, "550-"))
+			return true;
 		if (match_str_either(data, "421 "))
 			return true;
 		if (match_str_either(data, "421-"))
@@ -137,11 +139,19 @@ static inline bool match_pdbox(lpi_data_t *data) {
 
 static inline bool match_steam(lpi_data_t *data) {
 
-	if (match_str_either(data, "\x00\x00\x00\x07") &&
-			match_str_either(data, "\x01\x00\x00\x00") &&
-			data->server_port == 27030) {
+	if (!match_str_either(data, "\x01\x00\x00\x00"))
+		return false;
+	if (!match_chars_either(data, 0x00, 0x00, 0x00, ANY))
+		return false;
+
+	if (data->payload_len[0] == 4 && data->payload_len[1] == 1) {
 		return true;
 	}
+	
+	if (data->payload_len[1] == 4 && data->payload_len[0] == 1) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -557,6 +567,23 @@ static inline bool match_xunlei(lpi_data_t *data) {
 
         if (match_str_both(data, "\x29\x00\x00\x00", "\x29\x00\x00\x00"))
                 return true;
+        if (match_str_both(data, "\x36\x00\x00\x00", "\x33\x00\x00\x00"))
+                return true;
+        if (match_str_both(data, "\x36\x00\x00\x00", "\x36\x00\x00\x00"))
+                return true;
+	if (match_str_either(data, "\x33\x00\x00\x00")) {
+		if (data->payload_len[0] == 0 && data->payload_len[1] == 87)
+			return true;
+		if (data->payload_len[1] == 0 && data->payload_len[0] == 87)
+			return true;
+	}
+
+	if (match_str_either(data, "\x36\x00\x00\x00")) {
+		if (data->payload_len[0] == 0 && data->payload_len[1] == 71)
+			return true;
+		if (data->payload_len[1] == 0 && data->payload_len[0] == 71)
+			return true;
+	}
 
         return false;
 }
@@ -739,8 +766,10 @@ static inline bool match_telnet_pattern(uint32_t payload, uint32_t len) {
 	 * two 0xff characters, which happens to be the same value as ANY.
 	 */
 
-	if (len >= 4 && ((payload & 0xff0000ff) != (0xff0000ff)))
-		return false;
+	if (len >= 4) {
+		if ((payload & 0xff0000ff) != (0xff0000ff))
+			return false;
+	}
 	else if (len == 3 && ((payload & 0xff000000) != (0xff000000)))
 		return false;
 	else
@@ -804,6 +833,12 @@ static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
 	return false;
 }
 
+static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
+	if (MATCH(payload, 0x15, 0x03, 0x01, ANY))
+		return true;
+	return false;
+}
+
 static inline bool match_tls_content(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0x17, 0x03, 0x01, ANY))
 		return true;
@@ -837,6 +872,15 @@ static inline bool match_ssl(lpi_data_t *data) {
 			match_tls_content(data->payload[0], data->payload_len[0]))
 		return true;
 
+	/* Need to check for TLS alerts (errors) too */
+	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
+			match_tls_alert(data->payload[1], data->payload_len[1]))
+		return true;
+	if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
+			match_tls_alert(data->payload[0], data->payload_len[0]))
+		return true;
+	
+	
 	/* Some HTTPS servers respond with unencrypted content, presumably
 	 * when somebody invalid attempts a connection */
 	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
@@ -1177,6 +1221,10 @@ static inline bool match_file_header(uint32_t payload) {
 	/* Wz Patch */
 	if (MATCHSTR(payload, "WzPa"))
 		return true;
+	
+	/* Flash Video */
+	if (MATCH(payload, 'F', 'L', 'V', 0x01))
+		return true;
 
 	return false;
 
@@ -1392,7 +1440,7 @@ static inline bool match_p2p_http(lpi_data_t *data) {
 		return true;
 
 	if (match_str_either(data, "GET ")) {
-		if (data->payload_len[0] == 0 || data->payload_len[1])
+		if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
 			return true;
 	}
 	
@@ -1417,10 +1465,14 @@ static inline bool match_http(lpi_data_t *data) {
 			return true;
 		if (match_http_request(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_file_header(data->payload[1]))
+			return true;
 	}
 
 	if (match_http_request(data->payload[1], data->payload_len[1])) {
 		if (match_http_response(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_file_header(data->payload[0]))
 			return true;
 	}
 

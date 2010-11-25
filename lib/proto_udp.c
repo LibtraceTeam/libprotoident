@@ -48,20 +48,45 @@ static inline bool match_mp2p(lpi_data_t *data) {
 		return true;
 	if (match_chars_either(data, ANY, 0x4a, 0xd9, 0x65))
 		return true;
+	if (match_chars_either(data, ANY, 0x4a, 0xd6, 0x6f))
+		return true;
 
+
+	/* Seeing a lot of these in flows using port 41170 both ways */
+	if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00)) {
+		if (data->payload_len[1] != 0)
+			return false;
+		if (data->payload_len[0] == 242)
+			return true;
+		if (data->payload_len[0] == 240)
+			return true;
+	}
+
+	if (MATCH(data->payload[1], ANY, ANY, 0x00, 0x00)) {
+		if (data->payload_len[0] != 0)
+			return false;
+		if (data->payload_len[1] == 242)
+			return true;
+		if (data->payload_len[1] == 240)
+			return true;
+	}
 	return false;
 	
 }		
 
 static inline bool match_netbios_req(uint32_t payload, uint32_t len) {
 
-	if (!MATCH(payload, 0x80, 0xb0, 0x00, 0x00))
-		return false;
-	if (len == 50)
-		return true;
-	if (len == 20)
-		return true;
+	if (MATCH(payload, 0x80, 0xb0, 0x00, 0x00)) {
+		if (len == 50)
+			return true;
+		if (len == 20)
+			return true;
+	}
 
+	if (MATCH(payload, 0x80, 0x94, 0x00, 0x00)) {
+		if (len == 50)
+			return true;
+	}
 	return false;
 
 }
@@ -84,9 +109,41 @@ static inline bool match_netbios(lpi_data_t *data) {
 
 }
 
+static inline bool match_quake_ping(lpi_data_t *data) {
+
+	/* The client appears to send a "ping" (which is not part of the
+	 * documented Quake engine protocol). The server responds with a
+	 * standard "ffffffff" packet */
+
+	if (MATCHSTR(data->payload[0], "ping") && data->payload_len[0] == 4) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] != 14)
+			return false;
+		if (MATCHSTR(data->payload[1], "\xff\xff\xff\xff"))
+			return true;
+		return false;
+	}
+
+	if (MATCHSTR(data->payload[1], "ping") && data->payload_len[1] == 4) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[0] != 14)
+			return false;
+		if (MATCHSTR(data->payload[0], "\xff\xff\xff\xff"))
+			return true;
+		return false;
+	}
+
+	return false;
+}
+
 static inline bool match_quake(lpi_data_t *data) {
 
 	/* Trying to match Quake engine games - typically use port 27960 */
+
+	if (match_quake_ping(data))
+		return true;
 
 	if (!match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff"))
 		return false;
@@ -142,6 +199,19 @@ static inline bool match_rtp(lpi_data_t *data) {
 
 	return false;
 
+}
+
+static inline bool match_pplive(lpi_data_t *data) {
+
+	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x42\x01"))
+		return true;
+	if (match_str_either(data, "\xe9\x03\x41\x01")) {
+		if (data->payload_len[0] == 0 && data->payload_len[1] == 57)
+			return true;
+		if (data->payload_len[1] == 0 && data->payload_len[0] == 57)
+			return true;
+	}
+	return false;
 }
 
 static inline bool match_checkpoint_rdp(lpi_data_t *data) {
@@ -633,6 +703,39 @@ static inline bool match_steam(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_ase_ping(lpi_data_t *data) {
+
+	/* Commonly used by MultiTheftAuto - the use of "ping" and
+	 * "Ping" is not documented though */
+
+	if (MATCHSTR(data->payload[0], "ping")) {
+		if (data->payload_len[0] != 16)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] != 16)
+			return false;
+		if (MATCHSTR(data->payload[1], "Ping"))
+			return true;
+		return false;
+	}
+	
+	if (MATCHSTR(data->payload[1], "ping")) {
+		if (data->payload_len[1] != 16)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[0] != 16)
+			return false;
+		if (MATCHSTR(data->payload[0], "Ping"))
+			return true;
+		return false;
+	}
+	
+	return false;
+
+}
+
 static inline bool match_cod_payload(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
@@ -659,7 +762,7 @@ static inline bool match_cod(lpi_data_t *data) {
 			return true;
 	}
 
-	if (data->payload_len[0] == 14 || data->payload_len[1] == 15) {
+	if (data->payload_len[1] == 14 || data->payload_len[1] == 15) {
 		if (data->payload_len[0] == 0)
 			return true;
 		if (data->payload_len[0] > 100)
@@ -667,12 +770,44 @@ static inline bool match_cod(lpi_data_t *data) {
 	}
 
 	/* Other packet size combos */
-	if (data->payload_len[0] == 17 && data->payload_len[1] == 41)
+	if (data->payload_len[0] == 32 && data->payload_len[1] == 53)
 		return true;
-	if (data->payload_len[0] == 18 && data->payload_len[1] == 42)
+	if (data->payload_len[1] == 32 && data->payload_len[0] == 53)
 		return true;
-	if (data->payload_len[0] == 19 && data->payload_len[1] == 43)
+	
+	if (data->payload_len[0] == 16)	{
+		if (data->payload_len[1] == 18)
+			return true;
+		if (data->payload_len[1] == 16)
+			return true;
+		if (data->payload_len[1] == 13)
+			return true;
+	}
+
+	if (data->payload_len[1] == 16)	{
+		if (data->payload_len[0] == 18)
+			return true;
+		if (data->payload_len[0] == 16)
+			return true;
+		if (data->payload_len[0] == 13)
+			return true;
+	}
+
+	if (data->payload_len[0] >= 17 && data->payload_len[0] <= 19) { 
+		if (data->payload_len[1] < 41)
+			return false;
+		if (data->payload_len[1] > 43)
+			return false;
 		return true;
+	}
+
+	if (data->payload_len[1] >= 17 && data->payload_len[1] <= 19) { 
+		if (data->payload_len[0] < 41)
+			return false;
+		if (data->payload_len[0] > 43)
+			return false;
+		return true;
+	}
 
 	return false;
 }
@@ -1764,8 +1899,9 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCH(payload, 0xc5, 0x93, ANY, ANY) && (len == 2))
 		return true;
-	if (MATCH(payload, 0xc5, 0x94, ANY, ANY) && (len == 42)) {
-		return true;
+	if (MATCH(payload, 0xc5, 0x94, ANY, ANY)) {
+		if (len >= 38 && len <= 70)
+			return true;
 	}
 
 	/* 0xe3 covers conventional emule messages */
@@ -2141,9 +2277,14 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_gta4(proto_d)) return LPI_PROTO_UDP_GTA4;
 
+	if (match_pplive(proto_d)) return LPI_PROTO_UDP_PPLIVE;
+
 	if (match_checkpoint_rdp(proto_d)) return LPI_PROTO_UDP_CP_RDP;        
 
 	if (match_ventrilo(proto_d)) return LPI_PROTO_UDP_VENTRILO;
+	
+	/* Multitheftauto uses ASE on UDP to ping servers */
+	if (match_ase_ping(proto_d)) return LPI_PROTO_UDP_MTA;
         
 	/* Make sure this comes after XLSP */
 	if (match_cod(proto_d)) return LPI_PROTO_UDP_COD;
