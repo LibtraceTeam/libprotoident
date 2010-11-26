@@ -132,6 +132,7 @@ typedef enum {
 	LPI_PROTO_AFP,		/* Apple Filing Protocol */
 	LPI_PROTO_PDBOX,	/* Korean P2P TV protocol */
 	LPI_PROTO_EA_GAMES,	/* EA Games protocol */
+	LPI_PROTO_ZYNGA,	/* Protocol used by Zynga games */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -193,7 +194,13 @@ typedef enum {
 	LPI_PROTO_UDP_CP_RDP,	/* Checkpoint RDP */
 	LPI_PROTO_UDP_VENTRILO,	/* Ventrilo VoiceChat */
 	LPI_PROTO_UDP_MTA,	/* Multitheftauto */
-	LPI_PROTO_UDP_PPLIVE,	
+	LPI_PROTO_UDP_PPLIVE,
+	LPI_PROTO_UDP_JEDI,	/* Jedi Academy game */
+	LPI_PROTO_UDP_MOH,	/* Medal of Honor game */
+	LPI_PROTO_UDP_TREMULOUS, /* Tremulous - free OSS FPS */
+	LPI_PROTO_UDP_VIVOX,	/* Vivox voice chat */
+	LPI_PROTO_UDP_IPMSG,	/* IPMsg messenger */
+	LPI_PROTO_UDP_TEAMSPEAK,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */

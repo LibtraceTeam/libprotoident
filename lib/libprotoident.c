@@ -208,6 +208,8 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_RTP:
 		case LPI_PROTO_UDP_SKYPE:
 		case LPI_PROTO_UDP_VENTRILO:
+		case LPI_PROTO_UDP_VIVOX:
+		case LPI_PROTO_UDP_TEAMSPEAK:
                         return LPI_CATEGORY_VOIP;
                 
 		case LPI_PROTO_HAMACHI:
@@ -314,6 +316,10 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_GTA4:
 		case LPI_PROTO_EA_GAMES:
 		case LPI_PROTO_UDP_MTA:
+		case LPI_PROTO_UDP_JEDI:
+		case LPI_PROTO_UDP_MOH:
+		case LPI_PROTO_UDP_TREMULOUS:
+		case LPI_PROTO_ZYNGA:
 			return LPI_CATEGORY_GAMING;
 
 		case LPI_PROTO_IRC:
@@ -328,6 +334,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_MSN_CACHE:
                 case LPI_PROTO_MZINGA:
 		case LPI_PROTO_UDP_QQ:
+		case LPI_PROTO_UDP_IPMSG:
 			return LPI_CATEGORY_CHAT;
 
 		case LPI_PROTO_SSH:
@@ -608,6 +615,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "PDBOX";
 		case LPI_PROTO_EA_GAMES:
 			return "EA_Games";
+		case LPI_PROTO_ZYNGA:
+			return "Zynga";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -728,6 +737,18 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "MultiTheftAuto";
 		case LPI_PROTO_UDP_PPLIVE:
 			return "PPLive";
+		case LPI_PROTO_UDP_JEDI:
+			return "JediAcademy";
+		case LPI_PROTO_UDP_MOH:
+			return "MedalOfHonor";
+		case LPI_PROTO_UDP_TREMULOUS:
+			return "Tremulous";
+		case LPI_PROTO_UDP_VIVOX:
+			return "Vivox";
+		case LPI_PROTO_UDP_IPMSG:
+			return "IPMsg";
+		case LPI_PROTO_UDP_TEAMSPEAK:
+			return "TeamSpeak";
 
 		
 		

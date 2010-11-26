@@ -140,7 +140,8 @@ static inline bool match_quake_ping(lpi_data_t *data) {
 
 static inline bool match_quake(lpi_data_t *data) {
 
-	/* Trying to match Quake engine games - typically use port 27960 */
+	/* Trying to match generic Quake engine games - typically use port 
+	 * 27960 */
 
 	if (match_quake_ping(data))
 		return true;
@@ -148,11 +149,11 @@ static inline bool match_quake(lpi_data_t *data) {
 	if (!match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff"))
 		return false;
 	if (data->payload_len[0] == 16) {
-		if (data->payload_len[1] == 53 || data->payload_len[1] == 52)
+		if (data->payload_len[1] >= 51 && data->payload_len[1] <= 54)
 			return true;
 	}
 	if (data->payload_len[1] == 16) {
-		if (data->payload_len[0] == 53 || data->payload_len[0] == 52)
+		if (data->payload_len[0] >= 51 && data->payload_len[0] <= 54)
 			return true;
 	}
 
@@ -232,6 +233,38 @@ static inline bool match_checkpoint_rdp(lpi_data_t *data) {
 	}
 	
 	return false;	
+
+}
+
+static inline bool match_teamspeak(lpi_data_t *data) {
+
+	/* Teamspeak version 2 */
+	if (match_str_both(data, "\xf4\xbe\x03\x00", "\xf4\xbe\x03\x00"))
+		return true;
+	return false;
+
+}
+
+static inline bool match_ipmsg(lpi_data_t *data) {
+
+	/* IPMSG packet format:
+	 *
+	 * Version:MessageNumber:User:Host:Command:MsgContent
+	 *
+	 * Version is always 1.
+	 *
+	 * All IPMsg observed so far has a message number beginning with
+	 * 80...
+	 */
+
+	/* Do a port check as well, just to be sure */
+	if (data->server_port != 2425 && data->client_port != 2425)
+		return false;
+
+	if (match_chars_either(data, '1', ':', '8', '0'))
+		return true;
+
+	return true;
 
 }
 
@@ -736,6 +769,31 @@ static inline bool match_ase_ping(lpi_data_t *data) {
 
 }
 
+static inline bool match_jedi_academy(lpi_data_t *data) {
+
+	/* Pretty rare, but we can write a rule for it */
+	if (match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff")) {
+		/* Server browsing */
+		if (data->payload_len[0] == 65 && data->payload_len[1] == 181)
+			return true;
+		if (data->payload_len[0] == 66 && data->payload_len[1] == 182)
+			return true;
+		if (data->payload_len[1] == 65 && data->payload_len[0] == 181)
+			return true;
+		if (data->payload_len[1] == 66 && data->payload_len[0] == 182)
+			return true;
+
+		/* Actual gameplay */
+		if (data->payload_len[0] == 16 && data->payload_len[1] == 32)
+			return true;
+		if (data->payload_len[1] == 16 && data->payload_len[0] == 32)
+			return true;
+	}
+
+	return false;
+
+}
+
 static inline bool match_cod_payload(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
@@ -769,12 +827,52 @@ static inline bool match_cod(lpi_data_t *data) {
 			return true;
 	}
 
+	/* 13 is also observed */
+	if (data->payload_len[0] == 13) {
+		if (data->payload_len[1] > 880)
+			return true;
+	}
+
 	/* Other packet size combos */
-	if (data->payload_len[0] == 32 && data->payload_len[1] == 53)
-		return true;
-	if (data->payload_len[1] == 32 && data->payload_len[0] == 53)
-		return true;
+
+	/* 74 seems to be common on port 20800 which is associated with
+	 * COD:WaW
+	 */
+	if (data->payload_len[0] == 74) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
 	
+	if (data->payload_len[1] == 74) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	if (data->payload_len[0] == 45) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	if (data->payload_len[1] == 45) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	if (data->payload_len[0] == 53) {
+		if (data->payload_len[1] < 30)
+			return false;
+		if (data->payload_len[1] > 33)
+			return false;
+		return true;
+	}
+	if (data->payload_len[1] == 53) {
+		if (data->payload_len[0] < 30)
+			return false;
+		if (data->payload_len[0] > 33)
+			return false;
+		return true;
+	}
+
 	if (data->payload_len[0] == 16)	{
 		if (data->payload_len[1] == 18)
 			return true;
@@ -782,6 +880,12 @@ static inline bool match_cod(lpi_data_t *data) {
 			return true;
 		if (data->payload_len[1] == 13)
 			return true;
+		if (data->payload_len[1] == 0) {
+			if (data->server_port == 28960)
+				return true;
+			if (data->client_port == 28960)
+				return true;
+		}
 	}
 
 	if (data->payload_len[1] == 16)	{
@@ -791,20 +895,26 @@ static inline bool match_cod(lpi_data_t *data) {
 			return true;
 		if (data->payload_len[0] == 13)
 			return true;
+		if (data->payload_len[0] == 0) {
+			if (data->server_port == 28960)
+				return true;
+			if (data->client_port == 28960)
+				return true;
+		}
 	}
 
-	if (data->payload_len[0] >= 17 && data->payload_len[0] <= 19) { 
-		if (data->payload_len[1] < 41)
+	if (data->payload_len[0] >= 16 && data->payload_len[0] <= 19) { 
+		if (data->payload_len[1] < 40)
 			return false;
-		if (data->payload_len[1] > 43)
+		if (data->payload_len[1] > 44)
 			return false;
 		return true;
 	}
 
-	if (data->payload_len[1] >= 17 && data->payload_len[1] <= 19) { 
-		if (data->payload_len[0] < 41)
+	if (data->payload_len[1] >= 16 && data->payload_len[1] <= 19) { 
+		if (data->payload_len[0] < 40)
 			return false;
-		if (data->payload_len[0] > 43)
+		if (data->payload_len[0] > 44)
 			return false;
 		return true;
 	}
@@ -842,12 +952,96 @@ static inline bool match_imesh(lpi_data_t *data) {
 
 }
 
-static inline bool match_halflife(lpi_data_t *data) {
+static inline bool match_moh(lpi_data_t *data) {
 
 	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff))
 		return false;
 	if (!MATCH(data->payload[1], 0xff, 0xff, 0xff, 0xff))
 		return false;
+	
+	/* This is kinda a broad match, so let's refine it a bit by using the
+	 * port number */
+	if (data->server_port >= 12200 && data->server_port <= 12210) {
+
+		if (data->payload_len[0] == 16 && data->payload_len[1] > 600)
+			return true;
+		if (data->payload_len[1] == 16 && data->payload_len[0] > 600)
+			return true;
+	}
+
+	if (data->client_port >= 12200 && data->client_port <= 12210) {
+
+		if (data->payload_len[0] == 16 && data->payload_len[1] > 600)
+			return true;
+		if (data->payload_len[1] == 16 && data->payload_len[0] > 600)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_tremulous(lpi_data_t *data) {
+
+	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff)) {
+		if (data->payload_len[0] != 0)
+			return false;
+	}
+	if (!MATCH(data->payload[1], 0xff, 0xff, 0xff, 0xff)) {
+		if (data->payload_len[1] != 0)
+			return false;
+	}
+
+	/* Not super confident that this won't match other traffic, so
+	 * added a port rule here */
+	if (data->server_port != 30710 && data->client_port != 30710 &&
+			data->client_port != 30711 && 
+			data->server_port != 30711) {
+		return false;
+	}
+
+
+	if (data->payload_len[0] >= 20 && data->payload_len[0] <= 24) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	if (data->payload_len[1] >= 20 && data->payload_len[1] <= 24) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+	
+	if (data->payload_len[0] >= 116 && data->payload_len[0] <= 119) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	if (data->payload_len[1] >= 116 && data->payload_len[1] <= 119) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	if (data->payload_len[0] == 37) {
+		if (data->payload_len[1] == 98)
+			return true;
+	}
+	if (data->payload_len[1] == 37) {
+		if (data->payload_len[0] == 98)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_halflife(lpi_data_t *data) {
+
+	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff)) {
+		if (data->payload_len[0] != 0)
+			return false;
+	}
+	if (!MATCH(data->payload[1], 0xff, 0xff, 0xff, 0xff)) {
+		if (data->payload_len[1] != 0)
+			return false;
+	}
 
 	if (data->payload_len[0] == 20 || data->payload_len[1] == 20)
 		return true;
@@ -859,6 +1053,35 @@ static inline bool match_halflife(lpi_data_t *data) {
 	if (data->payload_len[1] == 65 && (data->payload_len[0] > 500 &&
 			data->payload_len[0] < 600))
 		return true;
+	if (data->payload_len[0] == 17 && data->payload_len[1] == 27)
+		return true;
+	if (data->payload_len[1] == 17 && data->payload_len[0] == 27)
+		return true;
+	
+
+	/* This differs only slightly from Quake-based stuff, which replies
+	 * with 51-54 byte packets - hopefully this never overlaps, although
+	 * we could combine the two protocols if we have to into a generic
+	 * "Quake ancestry" protocol */	
+	if (data->payload_len[0] == 16) {
+		if (data->payload_len[1] >= 45 && data->payload_len[1] <= 48)
+			return true;
+	}
+	if (data->payload_len[1] == 16) {
+		if (data->payload_len[0] >= 45 && data->payload_len[0] <= 48)
+			return true;
+	}
+
+	/* Another combo observed on port 27005 */
+	if (data->payload_len[0] == 87) {
+		if (data->payload_len[1] >= 24 && data->payload_len[1] <= 26)
+			return true;
+	}
+	if (data->payload_len[1] == 87) {
+		if (data->payload_len[0] >= 24 && data->payload_len[0] <= 26)
+			return true;
+	}
+
 
 	/*
 	if (data->server_port != 27005 && data->client_port != 27005)
@@ -1049,6 +1272,20 @@ static inline bool match_unknown_dht(lpi_data_t *data) {
 
 }
 
+static inline bool match_vivox(lpi_data_t *data) {
+
+	/* Seen this to Vivox servers, so I'm going to make the logical
+	 * assumption */
+	if (!match_str_both(data, "\x80\x6f\x00\x00", "\x80\x6f\x00\x01"))
+		return false;
+	
+	if (data->payload_len[0] == 108 || data->payload_len[1] == 108)
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_ventrilo(lpi_data_t *data) {
 
 	/* We see this on port 6100, so I'm assuming it is the UDP
@@ -1115,25 +1352,29 @@ static inline bool match_psn(lpi_data_t *data) {
 
 }
 
-static inline bool match_xlsp_payload(uint32_t payload, uint32_t len) {
+static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
+		uint32_t other_len) {
 
 	/* This is almost all based on observing traffic on port 3074. Not
 	 * very scientific, but seems more or less right */
 
+	
+	/* We've only ever seen a few of the packet sizes in one-way flows,
+	 * so let's not match any of the others if there is no response */
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00)) {
 		if (len == 122)
 			return true;
-		if (len == 156)
+		if (len == 156 && other_len != 0)
 			return true;
 		if (len == 82)
 			return true;
-		if (len == 83)
+		if (len == 83 && other_len != 0)
 			return true;
-		if (len == 43)
+		if (len == 43 && other_len != 0)
 			return true;
-		if (len == 75)
+		if (len == 75 && other_len != 0)
 			return true;
-		if (len == 0)
+		if (len == 0 && other_len != 0)
 			return true;
 	}
 
@@ -1163,13 +1404,6 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len) {
  * think this is pretty close */
 static inline bool match_xlsp(lpi_data_t *data) {
 
-	/* Enforce port 3074 being involved, to reduce false positive rate for
-	 * one-way transactions */
-	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
-		if (data->server_port != 3074 && data->client_port != 3074)
-			return false;
-	}
-
 
 	/* Commonly observed request/response pattern */
 	if (match_chars_either(data, 0x0d, 0x02, 0x00, ANY)) {
@@ -1188,33 +1422,55 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	}
 
 	/* Unlike other combos, 1336 and 287 (or rarely 286) only go with
-	 * each other */
+	 * each other 
+	 *
+	 * 1011 (or rarely 1010) is also a possible response */
 	if (match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00")) {
 		if (data->payload_len[0] == 1336) {
 			if (data->payload_len[1] == 287)
 				return true;
+			if (data->payload_len[1] == 1011)
+				return true;
 			if (data->payload_len[1] == 286)
+				return true;
+			if (data->payload_len[1] == 1010)
 				return true;
 		}
 		if (data->payload_len[1] == 1336) {
 			if (data->payload_len[0] == 287)
 				return true;
+			if (data->payload_len[0] == 1011)
+				return true;
 			if (data->payload_len[0] == 286)
+				return true;
+			if (data->payload_len[0] == 1010)
 				return true;
 		}
 	}
 
 
+	/* Enforce port 3074 being involved, to reduce false positive rate for
+	 * one-way transactions */
+
 	if (match_chars_either(data, 0xff, 0xff, 0xff, 0xff)) {
+		if (data->server_port != 3074 && data->client_port != 3074)
+			return false;
 		if (data->payload_len[0] == 14 && data->payload_len[1] == 0)
 			return true;
 		if (data->payload_len[1] == 14 && data->payload_len[0] == 0)
 			return true;
 	}
+
+	/* We could also enforce the port number here too, but we still see a 
+	 * lot of one-way traffic that matches these rules on other ports.
+	 * I'm pretty confident it is XLSP, but this should be watched
+	 * closely to make sure it isn't overmatching */
 	
-	if (!match_xlsp_payload(data->payload[0], data->payload_len[0]))
+	if (!match_xlsp_payload(data->payload[0], data->payload_len[0],
+			data->payload_len[1]))
 		return false;
-	if (!match_xlsp_payload(data->payload[1], data->payload_len[1]))
+	if (!match_xlsp_payload(data->payload[1], data->payload_len[1],
+			data->payload_len[0]))
 		return false;
 	
 	return true;
@@ -1768,6 +2024,14 @@ static inline bool match_pando_udp(lpi_data_t *data) {
 			data->payload_len[0] == 0)
 		return true;
 
+	/* This is something I've observed going to hosts belonging to
+	 * Pando */
+
+	if (match_str_both(data, "UDPA", "UDPR"))
+		return true;
+	if (match_str_both(data, "UDPA", "UDPE"))
+		return true;
+
 	return false;
 }
 
@@ -2110,11 +2374,15 @@ static inline bool match_mystery_0d(lpi_data_t *data) {
 		if (data->payload_len[1] == 25 && 
 				MATCH(data->payload[1], 0x0a, ANY, ANY, ANY))
 			return true;
+		if (data->payload_len[1] == 0)
+			return true;
 	}
 
 	if (data->payload_len[1]==1 && MATCH(data->payload[1], 0x0d, 0, 0, 0)) {
 		if (data->payload_len[0] == 25 && 
 				MATCH(data->payload[0], 0x0a, ANY, ANY, ANY))
+			return true;
+		if (data->payload_len[0] == 0)
 			return true;
 	}
 	
@@ -2217,8 +2485,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_sql_worm(proto_d)) return LPI_PROTO_UDP_SQLEXP;
 
-	if (match_xlsp(proto_d)) return LPI_PROTO_UDP_XLSP;
-
 	if (match_demonware(proto_d)) return LPI_PROTO_UDP_DEMONWARE;
 
 	if (match_halflife(proto_d)) return LPI_PROTO_UDP_HL;
@@ -2282,14 +2548,28 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_checkpoint_rdp(proto_d)) return LPI_PROTO_UDP_CP_RDP;        
 
 	if (match_ventrilo(proto_d)) return LPI_PROTO_UDP_VENTRILO;
+
+	if (match_vivox(proto_d)) return LPI_PROTO_UDP_VIVOX;
+
+	if (match_teamspeak(proto_d)) return LPI_PROTO_UDP_TEAMSPEAK;
+
+	if (match_ipmsg(proto_d)) return LPI_PROTO_UDP_IPMSG;
 	
 	/* Multitheftauto uses ASE on UDP to ping servers */
 	if (match_ase_ping(proto_d)) return LPI_PROTO_UDP_MTA;
-        
+	
+	if (match_jedi_academy(proto_d)) return LPI_PROTO_UDP_JEDI;
+
+	if (match_xlsp(proto_d)) return LPI_PROTO_UDP_XLSP;
+       
 	/* Make sure this comes after XLSP */
 	if (match_cod(proto_d)) return LPI_PROTO_UDP_COD;
 
 	if (match_quake(proto_d)) return LPI_PROTO_UDP_QUAKE;
+
+	if (match_moh(proto_d)) return LPI_PROTO_UDP_MOH;
+	
+	if (match_tremulous(proto_d)) return LPI_PROTO_UDP_TREMULOUS;
 
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;

@@ -98,6 +98,8 @@ static inline bool match_smtp(lpi_data_t *data) {
 			return true;
 		if (match_str_either(data, "476 "))
 			return true;
+		if (match_str_either(data, "475 "))
+			return true;
 	}
 
 	if (match_str_either(data, "QUIT") && (data->server_port == 25 || 
@@ -638,6 +640,13 @@ static inline bool match_hamachi(lpi_data_t *data) {
 
 }
 
+static inline bool match_zynga(lpi_data_t *data) {
+
+	if (match_str_both(data, "pres", "3 se"))
+		return true;
+	return false;
+
+}
 
 static inline bool match_azureus(lpi_data_t *data) {
 
@@ -770,8 +779,10 @@ static inline bool match_telnet_pattern(uint32_t payload, uint32_t len) {
 		if ((payload & 0xff0000ff) != (0xff0000ff))
 			return false;
 	}
-	else if (len == 3 && ((payload & 0xff000000) != (0xff000000)))
-		return false;
+	else if (len == 3) {
+		if ((payload & 0xff000000) != (0xff000000))
+			return false;
+	}
 	else
 		return false;
 	
@@ -1390,6 +1401,8 @@ static inline bool match_http_response(uint32_t payload, uint32_t len) {
 	
 	if (len == 0)
 		return true;
+	if (len == 1 && MATCH(payload, 'H', 0x00, 0x00, 0x00))
+		return true;
         if (MATCHSTR(payload, "HTTP")) {
 		return true;	
 	}
@@ -1565,6 +1578,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_str_both(proto_d, "AUTH", "201 ")) return LPI_PROTO_NNTP;
         if (match_str_both(proto_d, "AUTH", "200-")) return LPI_PROTO_NNTP;
         if (match_str_both(proto_d, "AUTH", "201-")) return LPI_PROTO_NNTP;
+        if (match_str_both(proto_d, "auth", "200 ")) return LPI_PROTO_NNTP;
+        if (match_str_both(proto_d, "auth", "201 ")) return LPI_PROTO_NNTP;
+        if (match_str_both(proto_d, "auth", "200-")) return LPI_PROTO_NNTP;
+        if (match_str_both(proto_d, "auth", "201-")) return LPI_PROTO_NNTP;
 
         /* IRC */
         if (match_str_either(proto_d, "PASS")) return LPI_PROTO_IRC;
@@ -1774,6 +1791,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_msnc_transfer(proto_d)) return LPI_PROTO_MSNC;
 
 	if (match_afp(proto_d)) return LPI_PROTO_AFP;
+
+	if (match_zynga(proto_d)) return LPI_PROTO_ZYNGA;
 
 	if (match_pdbox(proto_d)) return LPI_PROTO_PDBOX;
 
