@@ -139,6 +139,20 @@ static inline bool match_pdbox(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_clubbox(lpi_data_t *data) {
+
+	if (!match_str_both(data, "\x00\x00\x01\x03", "\x00\x00\x01\x03"))
+		return false;
+	
+	if (data->payload_len[0] == 36 && data->payload_len[1] == 28)
+		return true;
+	if (data->payload_len[1] == 36 && data->payload_len[0] == 28)
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_steam(lpi_data_t *data) {
 
 	if (!match_str_either(data, "\x01\x00\x00\x00"))
@@ -168,6 +182,24 @@ static inline bool match_rtmp(lpi_data_t *data) {
 		return true;
 	}
 	
+	return false;
+
+}
+
+static inline bool match_winmx(lpi_data_t *data) {
+
+	if (match_str_either(data, "SEND")) {
+		if (data->payload_len[0] == 1)
+			return true;
+		if (data->payload_len[1] == 1)
+			return true;
+	}
+	if (match_str_either(data, "GET ")) {
+		if (data->payload_len[0] == 1)
+			return true;
+		if (data->payload_len[1] == 1)
+			return true;
+	}
 	return false;
 
 }
@@ -1065,6 +1097,22 @@ static inline bool match_invalid(lpi_data_t *data) {
 			match_chars_either(data, 0x13, 'B', 'i', 't'))
 		return true;
 	
+	/* People sending GETs to a Bittorrent peer?? */
+	if (match_str_either(data, "GET ") && 
+			match_chars_either(data, 0x13, 'B', 'i', 't'))
+		return true;
+	
+	/* We also get a bunch of cases where one end is doing bittorrent
+	 * and the other end is speaking a protocol that begins with a 4
+	 * byte length field. */
+	if (match_chars_either(data, 0x13, 'B', 'i', 't')) {
+		if (match_payload_length(data->payload[0],data->payload_len[0]))
+			return true;
+		if (match_payload_length(data->payload[1],data->payload_len[1]))
+			return true;
+	}
+
+
 
         return false;
 }
@@ -1130,7 +1178,11 @@ static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0x13, 'B', 'i', 't'))
 		return true;
 	
-	if (len == 2 && MATCH(payload, 0x13, 'B', 'i', 0x00))
+	if (len == 3 && MATCH(payload, 0x13, 'B', 'i', 0x00))
+		return true;
+	if (len == 2 && MATCH(payload, 0x13, 'B', 0x00, 0x00))
+		return true;
+	if (len == 1 && MATCH(payload, 0x13, 0x00, 0x00, 0x00))
 		return true;
 
 	return false;
@@ -1374,25 +1426,35 @@ static inline bool match_http_request(uint32_t payload, uint32_t len) {
 		return true;
 
         if (MATCHSTR(payload, "GET ")) return true; 
-		
+	if (len == 1 && MATCH(payload, 'G', 0x00, 0x00, 0x00))
+		return true;
+	if (len == 2 && MATCH(payload, 'G', 'E', 0x00, 0x00))
+		return true;
+	if (len == 3 && MATCH(payload, 'G', 'E', 'T', 0x00))
+		return true;
+
         if (MATCHSTR(payload, "POST")) return true;
         if (MATCHSTR(payload, "HEAD")) return true;
         if (MATCHSTR(payload, "PUT ")) return true;
         if (MATCHSTR(payload, "DELE")) return true;
-        if (MATCHSTR(payload, "OPTI")) return true;
-        if (MATCHSTR(payload, "PROP")) return true;
-        if (MATCHSTR(payload, "MKCO")) return true;
-        if (MATCHSTR(payload, "POLL")) return true;
-        if (MATCHSTR(payload, "SEAR")) return true;
 	if (MATCHSTR(payload, "auth")) return true;
 
 	/* SVN? */
 	if (MATCHSTR(payload, "REPO")) return true;
 
-	/* These are somehow related to idisk.mac.com */
+	/* Webdav */
         if (MATCHSTR(payload, "LOCK")) return true;
         if (MATCHSTR(payload, "UNLO")) return true;
-	
+        if (MATCHSTR(payload, "OPTI")) return true;
+        if (MATCHSTR(payload, "PROP")) return true;
+        if (MATCHSTR(payload, "MKCO")) return true;
+        if (MATCHSTR(payload, "POLL")) return true;
+        if (MATCHSTR(payload, "SEAR")) return true;
+
+	/* Ntrip - some differential GPS system using modified HTTP */
+        if (MATCHSTR(payload, "SOUR")) return true;
+
+
 	return false;
 
 }
@@ -1500,6 +1562,45 @@ static inline bool match_http(lpi_data_t *data) {
 	return false;
 		
 
+}
+
+static inline bool match_mystery_9000_payload(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (len != 80)
+		return false;
+	if (MATCH(payload, 0x4c, 0x00, 0x00, 0x00))
+		return true;
+	return false;
+}
+
+static inline bool match_mystery_9000(lpi_data_t *data) {
+
+	/* Not entirely sure what this is - looks kinda like Samba that is
+	 * occurring primarily on port 9000. Many storage solutions use
+	 * port 9000 as a default port so this is a possibility, but the
+	 * use of this protocol is rather spammy */
+	
+	if (!match_mystery_9000_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_mystery_9000_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+}
+
+static inline bool match_mystery_pspr(lpi_data_t *data) {
+
+	if (match_str_both(data, "PSPR", "PSPR"))
+		return true;
+	if (match_str_either(data, "PSPR")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	return false;
 }
 
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
@@ -1796,6 +1897,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_pdbox(proto_d)) return LPI_PROTO_PDBOX;
 
+	if (match_clubbox(proto_d)) return LPI_PROTO_CLUBBOX;
+
+	if (match_winmx(proto_d)) return LPI_PROTO_WINMX;
+
 	if (match_ea_games(proto_d)) return LPI_PROTO_EA_GAMES;
 	
 	/* Unknown protocol that seems to put the packet length in the first
@@ -1822,6 +1927,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         /* Check for any weird broken behaviour, i.e. trying to tunnel via
          * the wrong server */
         if (match_invalid(proto_d)) return LPI_PROTO_INVALID;
+
+	if (match_mystery_9000(proto_d)) return LPI_PROTO_MYSTERY_9000;
+
+	if (match_mystery_pspr(proto_d)) return LPI_PROTO_MYSTERY_PSPR;
 
         return LPI_PROTO_UNKNOWN;
 }

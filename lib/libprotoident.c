@@ -282,10 +282,14 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_MP2P:
 		case LPI_PROTO_UDP_XFIRE_P2P:
 		case LPI_PROTO_DC:
-		case LPI_PROTO_PDBOX:
+		case LPI_PROTO_UDP_FREECHAL:
+		case LPI_PROTO_CLUBBOX:
+		case LPI_PROTO_UDP_XUNLEI:
+		case LPI_PROTO_WINMX:
 			return LPI_CATEGORY_P2P;
 		
 		case LPI_PROTO_UDP_PPLIVE:
+		case LPI_PROTO_PDBOX:
 			return LPI_CATEGORY_P2PTV;
 		
 		case LPI_PROTO_NCSOFT:
@@ -352,7 +356,9 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_KADEMLIA:
 		case LPI_PROTO_UDP_PANDO:
 		case LPI_PROTO_UDP_GNUTELLA2:
+		case LPI_PROTO_UDP_DC:
 		case LPI_PROTO_UDP_EMULE_MYSTERY:
+		case LPI_PROTO_UDP_KAZAA:
 			return LPI_CATEGORY_P2P_STRUCTURE;
                 
 		case LPI_PROTO_TELECOMKEY:
@@ -617,6 +623,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "EA_Games";
 		case LPI_PROTO_ZYNGA:
 			return "Zynga";
+		case LPI_PROTO_CLUBBOX:
+			return "Clubbox";
+		case LPI_PROTO_WINMX:
+			return "WinMX";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -749,9 +759,21 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "IPMsg";
 		case LPI_PROTO_UDP_TEAMSPEAK:
 			return "TeamSpeak";
+		case LPI_PROTO_UDP_DC:
+			return "DirectConnect_UDP";
+		case LPI_PROTO_UDP_FREECHAL:
+			return "FreeChal_UDP";
+		case LPI_PROTO_UDP_XUNLEI:
+			return "Xunlei_UDP";
+		case LPI_PROTO_UDP_KAZAA:
+			return "Kazaa_UDP";
 
 		
 		
+		case LPI_PROTO_MYSTERY_9000:
+			return "Mystery_9000";
+		case LPI_PROTO_MYSTERY_PSPR:
+			return "Mystery_PSPR";
 		case LPI_PROTO_UDP_EMULE_MYSTERY:
 			return "eMule_UDP_Mystery";
 		case LPI_PROTO_UDP_MYSTERY_0D:

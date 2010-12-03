@@ -133,6 +133,8 @@ typedef enum {
 	LPI_PROTO_PDBOX,	/* Korean P2P TV protocol */
 	LPI_PROTO_EA_GAMES,	/* EA Games protocol */
 	LPI_PROTO_ZYNGA,	/* Protocol used by Zynga games */
+	LPI_PROTO_CLUBBOX,	/* Another Korean file sharing protocol */
+	LPI_PROTO_WINMX,	/* WinMX */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -201,8 +203,15 @@ typedef enum {
 	LPI_PROTO_UDP_VIVOX,	/* Vivox voice chat */
 	LPI_PROTO_UDP_IPMSG,	/* IPMsg messenger */
 	LPI_PROTO_UDP_TEAMSPEAK,
+	LPI_PROTO_UDP_DC,	/* DirectConnect UDP commands */
+	LPI_PROTO_UDP_FREECHAL,	/* FreeChal P2P */
+	LPI_PROTO_UDP_XUNLEI,
+	LPI_PROTO_UDP_KAZAA,
 
 	/* Patterns that we can match, but do not know the protocol */
+	LPI_PROTO_MYSTERY_9000,	/* Occurs on tcp port 9000 */
+	LPI_PROTO_MYSTERY_PSPR,
+	
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */
 	LPI_PROTO_UDP_MYSTERY_0D,	
 	LPI_PROTO_UDP_MYSTERY_02_36,

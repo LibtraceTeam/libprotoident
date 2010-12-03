@@ -74,6 +74,14 @@ static inline bool match_mp2p(lpi_data_t *data) {
 	
 }		
 
+static inline bool match_freechal(lpi_data_t *data) {
+
+	if (match_str_both(data, "GET ", "FCP2"))
+		return true;
+	return false;
+
+}
+
 static inline bool match_netbios_req(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0x80, 0xb0, 0x00, 0x00)) {
@@ -385,6 +393,18 @@ static inline bool match_slp(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_directconnect(lpi_data_t *data) {
+	
+	if (data->payload_len[0] == 0 && 
+			MATCHSTR(data->payload[1], "$SR "))
+		return true;
+	if (data->payload_len[1] == 0 && 
+			MATCHSTR(data->payload[0], "$SR "))
+		return true;
+
+	return false;
+}
+
 static inline bool match_esp_encap(lpi_data_t *data) {
 
 	/* This sucks, as the four bytes are the security association ID for
@@ -456,6 +476,27 @@ static inline bool match_orbit(lpi_data_t *data) {
 		return false;
 
 	return true;	
+}
+
+static inline bool match_kazaa(lpi_data_t *data) {
+
+	/* 0x27 is a ping, 0x28 and 0x29 are pongs */
+
+	/* A Kazaa ping is usually 12 bytes, 0x28 pong is 17, 0x29 pong is 21 */
+
+	if (match_str_both(data, "\x27\x00\x00\x00", "\x28\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x27\x00\x00\x00", "\x29\x00\x00\x00"))
+		return true;
+
+	if (match_str_either(data, "\x27\x00\x00\x00")) {
+		if (data->payload_len[0] == 0 && data->payload_len[1] == 12)
+			return true;
+		if (data->payload_len[1] == 0 && data->payload_len[0] == 12)
+			return true;
+	}
+
+	return false;
 }
 
 static inline bool match_sql_worm(lpi_data_t *data) {
@@ -1485,6 +1526,62 @@ static inline bool match_ssdp(lpi_data_t *data) {
 
 }
 
+static inline bool match_xunlei(lpi_data_t *data) {
+
+
+	/* Require port 3076 for now, as all these rules are based on
+	 * traffic seen on port 3076 */
+	if (data->server_port != 3076 && data->client_port != 3076)
+		return false;
+	
+	if (match_str_both(data, "\x36\x00\x00\x00", "\x36\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x35\x00\x00\x00", "\x35\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x35\x00\x00\x00", "\x28\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x35\x00\x00\x00", "\x29\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x34\x00\x00\x00", "\x34\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x34\x00\x00\x00", "\x29\x00\x00\x00"))
+		return true;
+	if (match_str_both(data, "\x33\x00\x00\x00", "\x33\x00\x00\x00"))
+		return true;
+
+	if (match_str_either(data, "\x36\x00\x00\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	if (match_str_either(data, "\x35\x00\x00\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	if (match_str_either(data, "\x34\x00\x00\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	if (match_str_either(data, "\x33\x00\x00\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	if (match_str_either(data, "\x29\x00\x00\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+}
+
 static inline bool match_demonware(lpi_data_t *data) {
 
 	/* Demonware bandwidth testing involves sending a series of 1024
@@ -2075,7 +2172,7 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 
 	
 	/* Bootstrap version 2 request and response */
-	if (MATCH(payload, 0xe4, 0x00, 0x00, 0x00) && len == 27) 
+	if (MATCH(payload, 0xe4, 0x00, ANY, ANY) && len == 27) 
 		return true;
 	if (MATCH(payload, 0xe4, 0x08, ANY, ANY) && len == 529)
 		return true;
@@ -2150,6 +2247,8 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 
 	/* Compressed stuff seems to always begin the same */
 	if (MATCH(payload, 0xe5, 0x43, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0xe5, 0x08, 0x78, 0xda))
 		return true;
 
 	/* emule extensions */
@@ -2553,6 +2652,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_teamspeak(proto_d)) return LPI_PROTO_UDP_TEAMSPEAK;
 
+	if (match_directconnect(proto_d)) return LPI_PROTO_UDP_DC;
+
 	if (match_ipmsg(proto_d)) return LPI_PROTO_UDP_IPMSG;
 	
 	/* Multitheftauto uses ASE on UDP to ping servers */
@@ -2570,6 +2671,12 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_moh(proto_d)) return LPI_PROTO_UDP_MOH;
 	
 	if (match_tremulous(proto_d)) return LPI_PROTO_UDP_TREMULOUS;
+
+	if (match_freechal(proto_d)) return LPI_PROTO_UDP_FREECHAL;
+	
+	if (match_kazaa(proto_d)) return LPI_PROTO_UDP_KAZAA;
+
+	if (match_xunlei(proto_d)) return LPI_PROTO_UDP_XUNLEI;
 
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
