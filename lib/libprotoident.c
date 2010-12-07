@@ -150,10 +150,14 @@ lpi_protocol_t lpi_guess_protocol(lpi_data_t *data) {
 lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 
 	switch(proto) {
-		case LPI_PROTO_INVALID:
 		case LPI_PROTO_UNSUPPORTED:
 			return LPI_CATEGORY_UNSUPPORTED;
 		
+		case LPI_PROTO_INVALID:
+		case LPI_PROTO_INVALID_BT:
+		case LPI_PROTO_INVALID_HTTP:
+			return LPI_CATEGORY_MIXED;
+
 		case LPI_PROTO_UNKNOWN:
 		case LPI_PROTO_UDP:
 			return LPI_CATEGORY_UNKNOWN;
@@ -198,6 +202,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 	
 		case LPI_PROTO_ETRUST:
 		case LPI_PROTO_UDP_BACKWEB:
+		case LPI_PROTO_UDP_NORTON:
 			return LPI_CATEGORY_ANTIVIRUS;
 
 		case LPI_PROTO_NNTP:
@@ -210,6 +215,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_VENTRILO:
 		case LPI_PROTO_UDP_VIVOX:
 		case LPI_PROTO_UDP_TEAMSPEAK:
+		case LPI_PROTO_UDP_RTCP:
                         return LPI_CATEGORY_VOIP;
                 
 		case LPI_PROTO_HAMACHI:
@@ -220,6 +226,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_ESP:
 		case LPI_PROTO_UDP_TEREDO:
 		case LPI_PROTO_PPTP:
+		case LPI_PROTO_UDP_CISCO_VPN:
 			return LPI_CATEGORY_TUNNELLING;
 
 		case LPI_PROTO_UDP_PYZOR:
@@ -253,6 +260,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_POSTGRESQL:
                 case LPI_PROTO_DXP:
                 case LPI_PROTO_MYSQL:
+		case LPI_PROTO_WEBLOGIC:
 			return LPI_CATEGORY_DATABASES;
 	
                 case LPI_PROTO_SMB:
@@ -266,6 +274,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_MSNC:
                 case LPI_PROTO_TCP_XML:
 		case LPI_PROTO_AFP:
+		case LPI_PROTO_UDP_TFTP:
 			return LPI_CATEGORY_FILES;
 
 		case LPI_PROTO_BITTORRENT:
@@ -324,6 +333,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_MOH:
 		case LPI_PROTO_UDP_TREMULOUS:
 		case LPI_PROTO_ZYNGA:
+		case LPI_PROTO_UDP_UNREAL:
 			return LPI_CATEGORY_GAMING;
 
 		case LPI_PROTO_IRC:
@@ -424,6 +434,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "P2PTV";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
+		case LPI_CATEGORY_MIXED:
+			return "Mixed";
 		case LPI_CATEGORY_NOPAYLOAD:
 			return "No_Payload";
 		case LPI_CATEGORY_UNKNOWN:
@@ -627,6 +639,12 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Clubbox";
 		case LPI_PROTO_WINMX:
 			return "WinMX";
+		case LPI_PROTO_INVALID_BT:
+			return "Invalid_Bittorrent";
+		case LPI_PROTO_WEBLOGIC:
+			return "Weblogic";
+		case LPI_PROTO_INVALID_HTTP:
+			return "Invalid_HTTP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -767,13 +785,24 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Xunlei_UDP";
 		case LPI_PROTO_UDP_KAZAA:
 			return "Kazaa_UDP";
+		case LPI_PROTO_UDP_NORTON:
+			return "Norton_UDP";
+		case LPI_PROTO_UDP_CISCO_VPN:
+			return "Cisco_VPN_UDP";
+		case LPI_PROTO_UDP_RTCP:
+			return "RTCP";
+		case LPI_PROTO_UDP_UNREAL:
+			return "Unreal";
+		case LPI_PROTO_UDP_TFTP:
+			return "TFTP";
 
-		
 		
 		case LPI_PROTO_MYSTERY_9000:
 			return "Mystery_9000";
 		case LPI_PROTO_MYSTERY_PSPR:
 			return "Mystery_PSPR";
+		case LPI_PROTO_MYSTERY_8000:
+			return "Mystery_8000";
 		case LPI_PROTO_UDP_EMULE_MYSTERY:
 			return "eMule_UDP_Mystery";
 		case LPI_PROTO_UDP_MYSTERY_0D:
@@ -784,6 +813,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Mystery_FE";
 		case LPI_PROTO_UDP_MYSTERY_99:
 			return "Mystery_99";
+		case LPI_PROTO_UDP_MYSTERY_8000:
+			return "Mystery_8000";
         }
 
 	return "Invalid_Protocol";

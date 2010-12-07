@@ -644,9 +644,11 @@ static inline bool match_smb(lpi_data_t *data) {
 	if (data->server_port != 445 && data->client_port != 445)
 		return false;
 
-	if (!match_payload_length(data->payload[0], data->payload_len[0]))
+	if (!match_payload_length(data->payload[0], data->payload_len[0]) &&
+			data->payload_len[0] != 0)
 		return false;
-	if (!match_payload_length(data->payload[1], data->payload_len[1]))
+	if (!match_payload_length(data->payload[1], data->payload_len[1]) &&
+			data->payload_len[1] != 0)
 		return false;
 
         return true;
@@ -1071,6 +1073,9 @@ static inline bool match_invalid(lpi_data_t *data) {
          * e.g. trying to do HTTP tunnelling via an SMTP server
          */
 
+	/* XXX Bittorrent-related stuff is covered in 
+	 * match_invalid_bittorrent() */
+
         /* SOCKSv4 via FTP or SMTP 
          *
          * The last two octets '\x00\x50' is the port number - in this case
@@ -1090,9 +1095,38 @@ static inline bool match_invalid(lpi_data_t *data) {
 	if (match_str_both(data, "220 ", "GET "))
 		return true;
 
+	return false;
+}
+
+static inline bool match_invalid_http(lpi_data_t *data) {
+
+	/* HTTP servers that appear to respond with raw HTML */
+	if (match_str_either(data, "GET ")) {
+		if (match_chars_either(data, '<', 'H', 'T', 'M'))
+			return true;
+		if (match_chars_either(data, '<', 'h', 't', 'm'))
+			return true;
+		if (match_chars_either(data, '<', 'h', '1', '>'))
+			return true;
+		if (match_chars_either(data, '<', 't', 'i', 't'))
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_invalid_bittorrent(lpi_data_t *data) {
+
+	/* This function will match anyone doing bittorrent in one
+	 * direction and *something else* in the other.
+	 *
+	 * I've broken it down into several separate conditions, just in case
+	 * we want to treat them as separate instances later on */
+
+
+
 	/* People trying to do Bittorrent to an actual HTTP server, rather than
 	 * someone peering on port 80 */
-
 	if (match_str_either(data, "HTTP") && 
 			match_chars_either(data, 0x13, 'B', 'i', 't'))
 		return true;
@@ -1111,6 +1145,12 @@ static inline bool match_invalid(lpi_data_t *data) {
 		if (match_payload_length(data->payload[1],data->payload_len[1]))
 			return true;
 	}
+
+
+	/* This assumes we've checked for regular bittorrent prior to calling
+	 * this function! */
+	if (match_chars_either(data, 0x13, 'B', 'i', 't'))
+		return true;
 
 
 
@@ -1359,6 +1399,24 @@ static inline bool match_postgresql(lpi_data_t *data) {
 
 	return false;
 
+}
+
+static inline bool match_weblogic_t3(lpi_data_t *data) {
+
+	/* T3 is the protocol used by Weblogic, a Java application server */
+
+	/* sa is the admin username for MSSQL databases */
+	if (match_payload_length(data->payload[0], data->payload_len[0])) {
+		if (MATCH(data->payload[1], 0x00, 0x02, 's', 'a'))
+			return true;
+	}
+
+	if (match_payload_length(data->payload[1], data->payload_len[1])) {
+		if (MATCH(data->payload[0], 0x00, 0x02, 's', 'a'))
+			return true;
+	}
+
+	return false;
 }
 
 static inline bool match_ftp_command(uint32_t payload, uint32_t len) {
@@ -1921,6 +1979,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_imesh(proto_d)) return LPI_PROTO_IMESH;
 
+	if (match_weblogic_t3(proto_d)) return LPI_PROTO_WEBLOGIC;
+
         /* eMule */
         if (match_emule(proto_d)) return LPI_PROTO_EMULE;
 
@@ -1928,9 +1988,15 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
          * the wrong server */
         if (match_invalid(proto_d)) return LPI_PROTO_INVALID;
 
+	if (match_invalid_http(proto_d)) return LPI_PROTO_INVALID_HTTP;
+
+	if (match_invalid_bittorrent(proto_d)) return LPI_PROTO_INVALID_BT;
+
 	if (match_mystery_9000(proto_d)) return LPI_PROTO_MYSTERY_9000;
 
 	if (match_mystery_pspr(proto_d)) return LPI_PROTO_MYSTERY_PSPR;
+
+	if (match_mystery_8000(proto_d)) return LPI_PROTO_MYSTERY_8000;
 
         return LPI_PROTO_UNKNOWN;
 }

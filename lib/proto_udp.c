@@ -512,6 +512,25 @@ static inline bool match_sql_worm(lpi_data_t *data) {
 
 }
 
+static inline bool match_norton(lpi_data_t *data) {
+
+	if (MATCH(data->payload[0], 0x02, 0x0a, 0x00, 0xc0)) {
+		if (data->payload_len[0] != 16)
+			return false;
+		if (data->payload_len[1] != 0)
+			return false;
+		return true;
+	}
+	if (MATCH(data->payload[1], 0x02, 0x0a, 0x00, 0xc0)) {
+		if (data->payload_len[1] != 16)
+			return false;
+		if (data->payload_len[0] != 0)
+			return false;
+		return true;
+	}
+	return false;
+}
+
 /*
  * This covers Windows messenger spam over UDP 
  *
@@ -1405,7 +1424,7 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00)) {
 		if (len == 122)
 			return true;
-		if (len == 156 && other_len != 0)
+		if (len == 156)
 			return true;
 		if (len == 82)
 			return true;
@@ -1414,6 +1433,8 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 		if (len == 43 && other_len != 0)
 			return true;
 		if (len == 75 && other_len != 0)
+			return true;
+		if (len == 120 && other_len != 0)
 			return true;
 		if (len == 0 && other_len != 0)
 			return true;
@@ -1476,6 +1497,8 @@ static inline bool match_xlsp(lpi_data_t *data) {
 				return true;
 			if (data->payload_len[1] == 1010)
 				return true;
+			if (data->payload_len[1] == 1003)
+				return true;
 		}
 		if (data->payload_len[1] == 1336) {
 			if (data->payload_len[0] == 287)
@@ -1485,6 +1508,18 @@ static inline bool match_xlsp(lpi_data_t *data) {
 			if (data->payload_len[0] == 286)
 				return true;
 			if (data->payload_len[0] == 1010)
+				return true;
+			if (data->payload_len[0] == 1003)
+				return true;
+		}
+		
+		/* This is something to do with PunkBuster? */
+		if (data->payload_len[0] == 4) {
+			if (data->payload_len[1] == 4)
+				return true;
+		}
+		if (data->payload_len[1] == 4) {
+			if (data->payload_len[0] == 4)
 				return true;
 		}
 	}
@@ -2039,6 +2074,42 @@ static inline bool match_diablo2(lpi_data_t *data) {
 	return true;
 }
 
+static inline bool match_unreal_query(uint32_t payload, uint32_t len) {
+
+	/* UT2004 retail is 0x80, demo is 0x7f */
+
+	/* Queries are 5 bytes */
+	if (len != 5)
+		return false;
+	if (MATCH(payload, 0x80, 0x00, 0x00, 0x00)) 
+		return true;
+	if (MATCH(payload, 0x7f, 0x00, 0x00, 0x00)) 
+		return true;
+	return false;
+
+}
+
+static inline bool match_unreal(lpi_data_t *data) {
+
+	/* http://www.unrealadmin.org/forums/showthread.php?p=56944 */
+
+	if (match_unreal_query(data->payload[0], data->payload_len[0])) {
+		if (MATCH(data->payload[1], 0x80, 0x00, 0x00, 0x00))
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	if (match_unreal_query(data->payload[1], data->payload_len[1])) {
+		if (MATCH(data->payload[0], 0x80, 0x00, 0x00, 0x00))
+			return true;
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	return false;
+}
+
 static inline bool match_sc_message(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 16)
@@ -2059,6 +2130,107 @@ static inline bool match_starcraft(lpi_data_t *data) {
 	if (!match_sc_message(data->payload[1], data->payload_len[1]))
 		return false;
 
+	return true;
+
+}
+
+static inline bool match_tftp(lpi_data_t *data) {
+
+
+	/* Read request */	
+	if (MATCH(data->payload[0], 0x00, 0x01, ANY, ANY)) {
+		if (data->server_port != 69 && data->client_port != 69)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCH(data->payload[1], 0x00, 0x03, ANY, ANY))
+			return true;
+		if (MATCH(data->payload[1], 0x00, 0x05, ANY, ANY))
+			return true;
+	}
+
+	if (MATCH(data->payload[1], 0x00, 0x01, ANY, ANY)) {
+		if (data->server_port != 69 && data->client_port != 69)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], 0x00, 0x03, ANY, ANY))
+			return true;
+		if (MATCH(data->payload[0], 0x00, 0x05, ANY, ANY))
+			return true;
+	}
+
+	/* Write request */
+	if (MATCH(data->payload[0], 0x00, 0x02, ANY, ANY)) {
+		if (data->server_port != 69 && data->client_port != 69)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCH(data->payload[1], 0x00, 0x04, ANY, ANY))
+			return true;
+		if (MATCH(data->payload[1], 0x00, 0x05, ANY, ANY))
+			return true;
+	}
+
+	if (MATCH(data->payload[1], 0x00, 0x02, ANY, ANY)) {
+		if (data->server_port != 69 && data->client_port != 69)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], 0x00, 0x04, ANY, ANY))
+			return true;
+		if (MATCH(data->payload[0], 0x00, 0x05, ANY, ANY))
+			return true;
+	}
+
+	/* Some systems will switch to a different port for the file 
+	 * transfer itself, so the request is in a different flow */
+	if (MATCH(data->payload[0], 0x00, 0x03, 0x00, 0x01)) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCH(data->payload[1], 0x00, 0x05, ANY, ANY))
+			return true;
+		
+		/* Acks (0x04) must be 4 bytes */
+		if (data->payload_len[1] != 4)
+			return false;
+		if (MATCH(data->payload[1], 0x00, 0x04, 0x00, 0x01))
+			return true;
+	}
+
+	if (MATCH(data->payload[1], 0x00, 0x03, 0x00, 0x01)) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], 0x00, 0x05, ANY, ANY))
+			return true;
+		
+		/* Acks (0x04) must be 4 bytes */
+		if (data->payload_len[0] != 4)
+			return false;
+		if (MATCH(data->payload[0], 0x00, 0x04, 0x00, 0x01))
+			return true;
+	}
+
+	return false;
+
+}
+
+static inline bool match_rtcp_payload(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (MATCH(payload, 0x81, 0xc8, 0x00, 0x0c))
+		return true;
+	if (MATCH(payload, 0x80, 0xc9, 0x00, 0x01))
+		return true;
+	return false;
+}
+
+static inline bool match_rtcp(lpi_data_t *data) {
+
+	if (!match_rtcp_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_rtcp_payload(data->payload[1], data->payload_len[1]))
+		return false;
 	return true;
 
 }
@@ -2222,6 +2394,9 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0xe4, 0x40, ANY, ANY) && len == 48)
 		return true;
 	
+	if (MATCH(payload, 0xe4, 0x43, ANY, ANY) && len == 225)
+		return true;
+	
 	if (MATCH(payload, 0xe4, 0x48, ANY, ANY) && len == 19)
 		return true;
 
@@ -2379,6 +2554,35 @@ static inline bool match_kademlia_udp(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_cisco_ipsec_payload(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (len == 109)
+		return true;
+	if (len == 93)
+		return true;
+	return false;
+
+}
+
+static inline bool match_cisco_ipsec(lpi_data_t *data) {
+
+	/* Been seeing this on UDP port 10000, which I assume is the
+	 * Cisco IPSec VPN */
+
+	if (data->server_port != 10000 && data->client_port != 10000)
+		return false;
+
+	if (!match_cisco_ipsec_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_cisco_ipsec_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+
+}
+
 static inline bool match_mys_fe_payload(uint32_t payload, uint32_t len) {
 
 	uint16_t length;
@@ -2513,6 +2717,40 @@ static inline bool match_mystery_99(lpi_data_t *data) {
 	}
 
 	return false;
+}
+
+static inline bool match_8000_payload(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (MATCH(payload, 0x3b, 0x00, 0x00, 0x00)) {
+		return true;	
+	}
+	if (MATCH(payload, 0x3c, 0x00, 0x00, 0x00)) {
+		return true;	
+	}
+	if (MATCH(payload, 0x3d, 0x00, 0x00, 0x00)) {
+		return true;	
+	}
+	if (MATCH(payload, 0x3e, 0x00, 0x00, 0x00)) {
+		return true;	
+	}
+
+	return false;
+}
+
+inline bool match_mystery_8000(lpi_data_t *data) {
+
+	/* These patterns typically appear on UDP port 8000 (and occasionally
+	 * TCP port 80) */
+
+	if (!match_8000_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_8000_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
 }
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
@@ -2678,6 +2916,16 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_xunlei(proto_d)) return LPI_PROTO_UDP_XUNLEI;
 
+	if (match_norton(proto_d)) return LPI_PROTO_UDP_NORTON;
+
+	if (match_cisco_ipsec(proto_d)) return LPI_PROTO_UDP_CISCO_VPN;
+
+	if (match_rtcp(proto_d)) return LPI_PROTO_UDP_RTCP;
+
+	if (match_unreal(proto_d)) return LPI_PROTO_UDP_UNREAL;
+
+	if (match_tftp(proto_d)) return LPI_PROTO_UDP_TFTP;
+
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
 
@@ -2717,6 +2965,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_MYSTERY_FE;
 	if (match_mystery_99(proto_d))
 		return LPI_PROTO_UDP_MYSTERY_99;
+	if (match_mystery_8000(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_8000;
 
 
         return LPI_PROTO_UDP;
