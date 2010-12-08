@@ -829,6 +829,43 @@ static inline bool match_ase_ping(lpi_data_t *data) {
 
 }
 
+static inline bool match_garena(lpi_data_t *data) {
+
+	/* http://garenalinux.pastebay.com/71533 */
+
+	/* Garena is always on port 1513 */
+	if (data->server_port != 1513 && data->client_port != 1513)
+		return false;
+
+	/* Matching HELLO in each direction */
+	if (MATCH(data->payload[0], 0x02, 0x00, 0x00, 0x00)) {
+		if (data->payload_len[0] != 16)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] != 16)
+			return false;
+		if (MATCH(data->payload[1], 0x02, 0x00, 0x00, 0x00))
+			return true;
+		return false;
+	}
+
+	if (MATCH(data->payload[1], 0x02, 0x00, 0x00, 0x00)) {
+		if (data->payload_len[1] != 16)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[0] != 16)
+			return false;
+		if (MATCH(data->payload[0], 0x02, 0x00, 0x00, 0x00))
+			return true;
+		return false;
+	}
+
+	return false;
+}
+
+
 static inline bool match_jedi_academy(lpi_data_t *data) {
 
 	/* Pretty rare, but we can write a rule for it */
@@ -1422,6 +1459,8 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 	/* We've only ever seen a few of the packet sizes in one-way flows,
 	 * so let's not match any of the others if there is no response */
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00)) {
+		if (len == 139)
+			return true;
 		if (len == 122)
 			return true;
 		if (len == 156)
@@ -1623,17 +1662,32 @@ static inline bool match_demonware(lpi_data_t *data) {
 	 * byte packets to a known server - each packet has an incrementing
 	 * seqno, starting from zero */
 	
-	/* The recipient does not reply */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-
 	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
 		return false;
 
-	if (data->payload_len[0] == 1024 || data->payload_len[1] == 1024)
-		return true;
+	if (data->payload_len[0] == 1024) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] == 1024)
+			return true; 
+	}	
 
-	/* Could also check for port 3075 if needed */
+	if (data->payload_len[1] == 1024) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}	
+	
+	/* Sometimes 512 bytes are used as well, but only ever one-way */
+	if (data->payload_len[0] == 512) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}	
+	if (data->payload_len[1] == 512) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}	
+	
+	/* Could also check for ports 3074 and 3075 if needed */
 
 	return false;
 
@@ -2112,10 +2166,22 @@ static inline bool match_unreal(lpi_data_t *data) {
 
 static inline bool match_sc_message(uint32_t payload, uint32_t len) {
 
+	/* http://forum.valhallalegends.com/index.php?topic=17702.0 */
+
+	/* Starcraft header is 16 bytes - most bodies are either one or
+	 * two bytes */
+
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 16)
 		return true;
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 17)
 		return true;
+	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 18)
+		return true;
+
+	/* 34 also seems possible */
+	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00) && len == 34)
+		return true;
+
 
 	return false;
 }
@@ -2688,7 +2754,21 @@ static inline bool match_mystery_0d(lpi_data_t *data) {
 		if (data->payload_len[0] == 0)
 			return true;
 	}
-	
+
+	/* We also see the 25 byte 0x0a packet without a matching 0x0d packet
+	 */
+
+	if (data->payload_len[0] == 0) {
+		if (data->payload_len[1] == 25 && 
+				MATCH(data->payload[1], 0x0a, ANY, ANY, ANY))
+			return true;
+	}
+	if (data->payload_len[1] == 0) {
+		if (data->payload_len[0] == 25 && 
+				MATCH(data->payload[0], 0x0a, ANY, ANY, ANY))
+			return true;
+	}
+
 	return false;
 
 
@@ -2751,6 +2831,71 @@ inline bool match_mystery_8000(lpi_data_t *data) {
 		return false;
 
 	return true;
+}
+
+static inline bool match_mystery_45(lpi_data_t *data) {
+	
+	if (data->payload_len[0] != 0 && data->payload_len[0] != 33
+			&& data->payload_len[0] != 69)
+		return false;
+
+	if (data->payload_len[1] != 0 && data->payload_len[1] != 33
+			&& data->payload_len[1] != 69)
+		return false;
+
+	if (MATCH(data->payload[0], 0x00, 0x00, 0x00, 0x45)) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (!MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x45))
+			return false;
+		
+		if (data->payload_len[0] == 33 && data->payload_len[1] == 69)
+			return true;
+		if (data->payload_len[1] == 33 && data->payload_len[0] == 69)
+			return true;
+		return false;
+	}	
+	
+	if (MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x45)) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (!MATCH(data->payload[0], 0x00, 0x00, 0x00, 0x45))
+			return false;
+		
+		if (data->payload_len[0] == 33 && data->payload_len[1] == 69)
+			return true;
+		if (data->payload_len[1] == 33 && data->payload_len[0] == 69)
+			return true;
+		return false;
+	}	
+
+	return false;
+}
+
+static inline bool match_mystery_0660(lpi_data_t *data) {
+
+	if (data->payload_len[0] != 0 && data->payload_len[0] != 15)
+		return false;
+	if (data->payload_len[1] != 0 && data->payload_len[1] != 15)
+		return false;
+
+	if (MATCH(data->payload[0], 0x06, 0x60, 0x00, 0x00)) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCH(data->payload[1], 0x06, 0x60, 0x00, 0x00))
+			return true;
+		return false;
+	}
+
+	if (MATCH(data->payload[1], 0x06, 0x60, 0x00, 0x00)) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], 0x06, 0x60, 0x00, 0x00))
+			return true;
+		return false;
+	}
+
+	return false;
 }
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
@@ -2926,6 +3071,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_tftp(proto_d)) return LPI_PROTO_UDP_TFTP;
 
+	if (match_garena(proto_d)) return LPI_PROTO_UDP_GARENA;
+
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
 
@@ -2967,6 +3114,10 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_MYSTERY_99;
 	if (match_mystery_8000(proto_d))
 		return LPI_PROTO_UDP_MYSTERY_8000;
+	if (match_mystery_45(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_45;
+	if (match_mystery_0660(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_0660;
 
 
         return LPI_PROTO_UDP;

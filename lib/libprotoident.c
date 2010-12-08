@@ -295,6 +295,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_CLUBBOX:
 		case LPI_PROTO_UDP_XUNLEI:
 		case LPI_PROTO_WINMX:
+		case LPI_PROTO_MP2P:
 			return LPI_CATEGORY_P2P;
 		
 		case LPI_PROTO_UDP_PPLIVE:
@@ -334,6 +335,8 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_TREMULOUS:
 		case LPI_PROTO_ZYNGA:
 		case LPI_PROTO_UDP_UNREAL:
+		case LPI_PROTO_UDP_GARENA:
+		case LPI_PROTO_COD_WAW:
 			return LPI_CATEGORY_GAMING;
 
 		case LPI_PROTO_IRC:
@@ -645,6 +648,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Weblogic";
 		case LPI_PROTO_INVALID_HTTP:
 			return "Invalid_HTTP";
+		case LPI_PROTO_COD_WAW:
+			return "Call_of_Duty";
+		case LPI_PROTO_MP2P:
+			return "MP2P_TCP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -795,6 +802,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Unreal";
 		case LPI_PROTO_UDP_TFTP:
 			return "TFTP";
+		case LPI_PROTO_UDP_GARENA:
+			return "Garena_UDP";
 
 		
 		case LPI_PROTO_MYSTERY_9000:
@@ -803,6 +812,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Mystery_PSPR";
 		case LPI_PROTO_MYSTERY_8000:
 			return "Mystery_8000";
+		case LPI_PROTO_MYSTERY_IG:
+			return "Mystery_iG";
 		case LPI_PROTO_UDP_EMULE_MYSTERY:
 			return "eMule_UDP_Mystery";
 		case LPI_PROTO_UDP_MYSTERY_0D:
@@ -815,6 +826,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Mystery_99";
 		case LPI_PROTO_UDP_MYSTERY_8000:
 			return "Mystery_8000";
+		case LPI_PROTO_UDP_MYSTERY_45:
+			return "Mystery_45";
+		case LPI_PROTO_UDP_MYSTERY_0660:
+			return "Mystery_0660";
         }
 
 	return "Invalid_Protocol";

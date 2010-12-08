@@ -139,6 +139,8 @@ typedef enum {
 	LPI_PROTO_INVALID_BT,	/* Bittorrent in one direction but not other */
 	LPI_PROTO_WEBLOGIC,	/* Weblogic server */
 	LPI_PROTO_INVALID_HTTP,	/* HTTP server sending raw HTML */
+	LPI_PROTO_COD_WAW,	/* Call of Duty: World at War TCP */
+	LPI_PROTO_MP2P,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -216,11 +218,13 @@ typedef enum {
 	LPI_PROTO_UDP_RTCP,
 	LPI_PROTO_UDP_UNREAL,	/* Unreal server query protocol */
 	LPI_PROTO_UDP_TFTP,
+	LPI_PROTO_UDP_GARENA,	/* A gaming platform */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_MYSTERY_9000,	/* Occurs on tcp port 9000 */
 	LPI_PROTO_MYSTERY_PSPR,
 	LPI_PROTO_MYSTERY_8000,
+	LPI_PROTO_MYSTERY_IG,
 	
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */
 	LPI_PROTO_UDP_MYSTERY_0D,	
@@ -228,6 +232,8 @@ typedef enum {
 	LPI_PROTO_UDP_MYSTERY_FE,
 	LPI_PROTO_UDP_MYSTERY_99,
 	LPI_PROTO_UDP_MYSTERY_8000,
+	LPI_PROTO_UDP_MYSTERY_45,
+	LPI_PROTO_UDP_MYSTERY_0660,
 
 	LPI_PROTO_ICMP,
 

@@ -125,6 +125,25 @@ static inline bool match_smtp(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_cod_waw(lpi_data_t *data) {
+
+	/* Call of Duty: World at War uses TCP port 3074 - the protocol isn't
+	 * well documented, but traffic matching this pattern goes to known
+	 * CoD servers */
+
+	if (data->server_port != 3074 && data->client_port != 3074)
+		return false;
+
+	if (data->payload_len[0] != 4 || data->payload_len[1] != 4)
+		return false;
+	
+	if (data->payload[0] != 0 || data->payload[1] != 0)
+		return false;
+
+	return true;
+
+}
+
 static inline bool match_rbls(lpi_data_t *data) {
 
 	if (match_str_either(data, "rbls"))
@@ -340,6 +359,25 @@ inline bool match_dns(lpi_data_t *data) {
                 return false;
 
         return true;
+}
+
+static inline bool match_mp2p(lpi_data_t *data) {
+
+	/* Looking for STR, SIZ, MD5, GO!! */
+
+	if (match_str_both(data, "STR ", "SIZ "))
+		return true;
+	if (MATCHSTR(data->payload[0], "STR ")) {
+		if (data->payload_len[0] == 10 || data->payload_len[0] == 11)
+			return true;
+	}
+	if (MATCHSTR(data->payload[1], "STR ")) {
+		if (data->payload_len[1] == 10 || data->payload_len[1] == 11)
+			return true;
+	}
+
+	return false;
+
 }
 
 static inline bool match_bitextend(lpi_data_t *data) {
@@ -1649,12 +1687,32 @@ static inline bool match_mystery_9000(lpi_data_t *data) {
 
 static inline bool match_mystery_pspr(lpi_data_t *data) {
 
-	if (match_str_both(data, "PSPR", "PSPR"))
+	if (match_str_both(data, "PSPr", "PSPr"))
 		return true;
-	if (match_str_either(data, "PSPR")) {
+	if (match_str_either(data, "PSPr")) {
 		if (data->payload_len[0] == 0)
 			return true;
 		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_mystery_iG(lpi_data_t *data) {
+
+	/* Another mystery protocol - the payload pattern is the same in
+	 * both directions. Have observed this on port 20005 and port 8080,
+	 * but not obvious what exactly this is */
+
+	if (match_str_both(data, "\xd7\x69\x47\x26", "\xd7\x69\x47\x26"))
+		return true;
+	if (MATCH(data->payload[0], 0xd7, 0x69, 0x47, 0x26)) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	if (MATCH(data->payload[1], 0xd7, 0x69, 0x47, 0x26)) {
+		if (data->payload_len[0] == 0)
 			return true;
 	}
 
@@ -1981,6 +2039,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_weblogic_t3(proto_d)) return LPI_PROTO_WEBLOGIC;
 
+	if (match_cod_waw(proto_d)) return LPI_PROTO_COD_WAW;
+
+	if (match_mp2p(proto_d)) return LPI_PROTO_MP2P;
+
         /* eMule */
         if (match_emule(proto_d)) return LPI_PROTO_EMULE;
 
@@ -1997,6 +2059,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_mystery_pspr(proto_d)) return LPI_PROTO_MYSTERY_PSPR;
 
 	if (match_mystery_8000(proto_d)) return LPI_PROTO_MYSTERY_8000;
+
+	if (match_mystery_iG(proto_d)) return LPI_PROTO_MYSTERY_IG;
 
         return LPI_PROTO_UNKNOWN;
 }
