@@ -300,6 +300,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		
 		case LPI_PROTO_UDP_PPLIVE:
 		case LPI_PROTO_PDBOX:
+		case LPI_PROTO_UDP_PPSTREAM:	
 			return LPI_CATEGORY_P2PTV;
 		
 		case LPI_PROTO_NCSOFT:
@@ -804,6 +805,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "TFTP";
 		case LPI_PROTO_UDP_GARENA:
 			return "Garena_UDP";
+		case LPI_PROTO_UDP_PPSTREAM:
+			return "PPStream";
 
 		
 		case LPI_PROTO_MYSTERY_9000:

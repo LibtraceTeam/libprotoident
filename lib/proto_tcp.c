@@ -47,6 +47,8 @@ static inline bool match_smtp_command(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCHSTR(payload, "XXXX"))
 		return true;
+	if (MATCHSTR(payload, "HELP"))
+		return true;
 
 	/* Turns out there are idiots who send their ehlos one byte at a 
 	 * time :/ */

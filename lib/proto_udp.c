@@ -223,6 +223,39 @@ static inline bool match_pplive(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
+	uint16_t rep_len;
+
+	if (len == 0)
+		return true;
+
+	if (!MATCH(payload, ANY, ANY, 0x43, 0x00))
+		return false;
+
+	/* First two bytes are either len or len - 4 */
+
+	rep_len = * ((uint16_t *)&payload);
+
+	if (rep_len == len)
+		return true;
+	if (rep_len == len - 4)
+		return true;
+
+	return false;
+}
+
+static inline bool match_ppstream(lpi_data_t *data) {
+
+
+	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_ppstream_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+
+}
+
 static inline bool match_checkpoint_rdp(lpi_data_t *data) {
 
 	/* We only see this on port 259, so I'm pretty sure that this is
@@ -2035,11 +2068,22 @@ static bool match_teredo_payload(uint32_t payload, uint32_t len) {
 	
 	if (len == 0)
 		return true;
-	if (!MATCH(payload, 0x00, 0x01, 0x00, 0x00))
-		return false;
+	if (MATCH(payload, 0x00, 0x01, 0x00, 0x00)) {
+		if (len == 61 || len == 109 || len == 77)
+			return true;
+	}
 
-	if (len == 61 || len == 109 || len == 77)
+	/* Matching v6 traffic */
+	if (MATCH(payload, 0x60, 0x00, 0x00, 0x00)) {
 		return true;
+	}
+
+	/* We also see this in flows that have the same 5 tuple as other
+	 * Teredo flows */
+
+	if (len == 48 && MATCH(payload, 0x00, 0x00, ANY, ANY))
+		return true;
+
 	
 	return false;
 	
@@ -3072,6 +3116,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_tftp(proto_d)) return LPI_PROTO_UDP_TFTP;
 
 	if (match_garena(proto_d)) return LPI_PROTO_UDP_GARENA;
+
+	if (match_ppstream(proto_d)) return LPI_PROTO_UDP_PPSTREAM;
 
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;

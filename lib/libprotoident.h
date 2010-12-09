@@ -219,6 +219,7 @@ typedef enum {
 	LPI_PROTO_UDP_UNREAL,	/* Unreal server query protocol */
 	LPI_PROTO_UDP_TFTP,
 	LPI_PROTO_UDP_GARENA,	/* A gaming platform */
+	LPI_PROTO_UDP_PPSTREAM,	/* PPStream - Chinese P2PTV */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_MYSTERY_9000,	/* Occurs on tcp port 9000 */
