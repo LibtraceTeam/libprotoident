@@ -220,6 +220,11 @@ typedef enum {
 	LPI_PROTO_UDP_TFTP,
 	LPI_PROTO_UDP_GARENA,	/* A gaming platform */
 	LPI_PROTO_UDP_PPSTREAM,	/* PPStream - Chinese P2PTV */
+	LPI_PROTO_UDP_FORTINET,	/* Fortinet update protocol */
+	LPI_PROTO_UDP_TVANTS,	/* TVants P2PTV - no longer active */
+	LPI_PROTO_UDP_STORM_WORM,
+	LPI_PROTO_UDP_BATTLEFIELD,	/* Battlefield series of games */
+	LPI_PROTO_UDP_SOPCAST,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_MYSTERY_9000,	/* Occurs on tcp port 9000 */
@@ -235,6 +240,7 @@ typedef enum {
 	LPI_PROTO_UDP_MYSTERY_8000,
 	LPI_PROTO_UDP_MYSTERY_45,
 	LPI_PROTO_UDP_MYSTERY_0660,
+	LPI_PROTO_UDP_MYSTERY_E9,
 
 	LPI_PROTO_ICMP,
 

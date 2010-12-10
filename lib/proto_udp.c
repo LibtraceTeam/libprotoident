@@ -184,6 +184,62 @@ static inline bool match_gta4(lpi_data_t *data) {
 
 }
 
+static inline bool match_sopcast_req(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0xff, 0xff, 0x01, ANY)) {
+		if (len == 52)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_sopcast_reply(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0x00, ANY, ANY, ANY)) {
+		if (len == 80)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_sopcast(lpi_data_t *data) {
+
+	if (match_sopcast_req(data->payload[0], data->payload_len[0])) {
+		if (match_sopcast_reply(data->payload[1], data->payload_len[1]))
+			return true;
+		if (match_sopcast_req(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_sopcast_req(data->payload[1], data->payload_len[1])) {
+		if (match_sopcast_reply(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_sopcast_req(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
+
+}
+
+static inline bool match_fortinet(lpi_data_t *data) {
+
+	/* Seems to be part of the Fortinet update system */
+
+	if (match_str_both(data, "ihrk", "kow0")) 
+		return true;
+	if (match_str_either(data, "ihrk")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	return false;
+}
+
 static inline bool match_rtp(lpi_data_t *data) {
         if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
                         match_str_either(data, "\x00\x01\x00\x08"))
@@ -310,6 +366,17 @@ static inline bool match_ipmsg(lpi_data_t *data) {
 }
 
 static inline bool match_qq(lpi_data_t *data) {
+
+	/* QQ 2006 has a version number of 0x0f5f */
+	if (match_str_both(data, "\x02\x0f\x5f\x00", "\x02\x0f\x5f\x00"))
+		return true;
+
+	if (match_str_either(data, "\x02\x0f\x5f\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
 
 	if (match_str_both(data, "\x02\x01\x00\x00", "\x02\x01\x00\x00")) {
 		if (data->payload_len[0] == 75 && data->payload_len[1] == 43)
@@ -592,6 +659,20 @@ static inline bool match_gnutella_oob(lpi_data_t *data) {
 	if (data->payload_len[0] == 32 || data->payload_len[1] == 32)
 		return true;
 	if (data->payload_len[0] == 33 || data->payload_len[1] == 33)
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_probable_gnutella(lpi_data_t *data) {
+
+	/* XXX This could well be prone to false positives, so definitely
+	 * check this one LAST */
+
+	if (data->payload_len[0] == 35 && data->payload_len[1] == 0)
+		return true;
+	if (data->payload_len[1] == 35 && data->payload_len[0] == 0)
 		return true;
 
 	return false;
@@ -1082,7 +1163,58 @@ static inline bool match_imesh(lpi_data_t *data) {
 
 }
 
+static inline bool match_bf42_ping(lpi_data_t *data) {
+
+	/* Server browsing for battlefield 1942 */
+
+	if (match_str_both(data, "ping", "Ping"))
+		return true;
+	
+	if (MATCHSTR(data->payload[0], "ping")) {
+		if (data->payload_len[0] != 5)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	if (MATCHSTR(data->payload[1], "ping")) {
+		if (data->payload_len[1] != 5)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_moh_ping(lpi_data_t *data) {
+
+	/* Seems to be server browsing for Medal of Honor: AA */
+
+	if (match_str_both(data, "ping", "\xff\xff\xff\xff"))
+		return true;
+	
+	if (MATCHSTR(data->payload[0], "ping")) {
+		if (data->payload_len[0] != 4)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	if (MATCHSTR(data->payload[1], "ping")) {
+		if (data->payload_len[1] != 4)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	return false;
+}
+
 static inline bool match_moh(lpi_data_t *data) {
+
+	if (match_moh_ping(data))
+		return true;
 
 	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff))
 		return false;
@@ -1276,31 +1408,32 @@ static inline bool match_vuze_dht_request(uint32_t payload, uint32_t len,
 	/* Some implementations don't choose an appropriate MSB or get the
 	 * byte ordering wrong, so we only force an MSB check when we're
 	 * examining requests that get no response.
-	 *
-	 * However, we only need to check the payload length in the event
-	 * of a unidirectional flow */
+	 */
 	
 	if (len < 4)
 		return false;
 		
 	if (check_msb) {
 
-
-
 		if ((ntohl(payload) & 0x80000000) != 0x80000000)
 			return false;
-		if (len == 42) {
+		
+	} else {
+		/* Automatically return true if the MSB is set, regardless of
+		 * request size */
+		
+		if ((ntohl(payload) & 0x80000000) == 0x80000000)
 			return true;
-		}
-
-		if (len == 63 || len == 65 || len == 71)
-			return true;
-
-		return false;
 	}
 
-	if ((ntohl(payload) & 0x80000000) == 0x80000000)
+
+	if (len == 42) {
 		return true;
+	}
+
+	if (len == 63 || len == 65 || len == 71)
+		return true;
+
 	return false;
 
 }
@@ -1460,6 +1593,43 @@ static inline bool match_pyzor(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_storm_worm(lpi_data_t *data) {
+
+	/* This pattern is observed on ports 4000, 7871 and 11271 which are
+	 * all known port numbers for this trojan */
+
+	if (MATCH(data->payload[0], 0xe3, 0x1b, 0xd6, 0x21)) {
+		if (data->payload_len[0] != 4)
+			return false;
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCH(data->payload[1], 0xe3, 0x0c, 0x66, 0xe6))
+			return true;
+	}
+	
+	if (MATCH(data->payload[1], 0xe3, 0x1b, 0xd6, 0x21)) {
+		if (data->payload_len[1] != 4)
+			return false;
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], 0xe3, 0x0c, 0x66, 0xe6))
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool match_tvants(lpi_data_t *data) {
+
+	if (match_str_both(data, "\x04\x00\x05\x00", "\x04\x00\x05\x00"))
+		return true;
+	if (match_str_both(data, "\x04\x00\x07\x00", "\x04\x00\x05\x00"))
+		return true;
+	
+	return false;
+
+}
+
 /* I *think* this is PSN game traffic - it typically appears on UDP port 3658
  * which is commonly used for that but there's no documentation of the
  * protocol anywhere :(
@@ -1499,6 +1669,8 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 		if (len == 156)
 			return true;
 		if (len == 82)
+			return true;
+		if (len == 50)
 			return true;
 		if (len == 83 && other_len != 0)
 			return true;
@@ -2942,6 +3114,43 @@ static inline bool match_mystery_0660(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_e9_payload(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0xe9, 0x82, ANY, ANY)) {
+		if (len == 58)
+			return true;
+	}
+
+	if (MATCH(payload, 0xe9, 0x83, ANY, ANY)) {
+		if (len == 23)
+			return true;
+	}
+
+	if (MATCH(payload, 0xe9, 0x60, ANY, ANY)) {
+		if (len == 34)
+			return true;
+	}
+
+	return false;
+
+}
+
+static inline bool match_mystery_e9(lpi_data_t *data) {
+
+	/* Bytes 3 and 4 of payload should match */
+
+	if ((data->payload[0] & 0xffff0000) != (data->payload[1] & 0xffff0000))
+		return false;
+
+	if (!match_e9_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_e9_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+
+}
+
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
@@ -3051,6 +3260,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
 	if (match_heroes_newerth(proto_d)) return LPI_PROTO_UDP_NEWERTH;
 
+	if (match_fortinet(proto_d)) return LPI_PROTO_UDP_FORTINET;
+
 	if (match_str_either(proto_d, " VRV")) return LPI_PROTO_UDP_WORM_22105;
 
 	/* Not sure what exactly this is, but I'm pretty sure it is related to
@@ -3082,7 +3293,7 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_directconnect(proto_d)) return LPI_PROTO_UDP_DC;
 
 	if (match_ipmsg(proto_d)) return LPI_PROTO_UDP_IPMSG;
-	
+
 	/* Multitheftauto uses ASE on UDP to ping servers */
 	if (match_ase_ping(proto_d)) return LPI_PROTO_UDP_MTA;
 	
@@ -3118,6 +3329,14 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_garena(proto_d)) return LPI_PROTO_UDP_GARENA;
 
 	if (match_ppstream(proto_d)) return LPI_PROTO_UDP_PPSTREAM;
+
+	if (match_tvants(proto_d)) return LPI_PROTO_UDP_TVANTS;
+
+	if (match_storm_worm(proto_d)) return LPI_PROTO_UDP_STORM_WORM;
+
+	if (match_bf42_ping(proto_d)) return LPI_PROTO_UDP_BATTLEFIELD;
+
+	if (match_sopcast(proto_d)) return LPI_PROTO_UDP_SOPCAST;
 
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;
@@ -3164,7 +3383,11 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 		return LPI_PROTO_UDP_MYSTERY_45;
 	if (match_mystery_0660(proto_d))
 		return LPI_PROTO_UDP_MYSTERY_0660;
+	if (match_mystery_e9(proto_d))
+		return LPI_PROTO_UDP_MYSTERY_E9;
 
+	if (match_probable_gnutella(proto_d))
+		return LPI_PROTO_UDP_GNUTELLA;
 
         return LPI_PROTO_UDP;
 }

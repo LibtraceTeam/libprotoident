@@ -198,11 +198,13 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_SQLEXP:
                 case LPI_PROTO_MITGLIEDER:
                 case LPI_PROTO_UDP_WIN_MESSAGE:
+		case LPI_PROTO_UDP_STORM_WORM:
 	      		return LPI_CATEGORY_MALWARE;
 	
 		case LPI_PROTO_ETRUST:
 		case LPI_PROTO_UDP_BACKWEB:
 		case LPI_PROTO_UDP_NORTON:
+		case LPI_PROTO_UDP_FORTINET:
 			return LPI_CATEGORY_ANTIVIRUS;
 
 		case LPI_PROTO_NNTP:
@@ -300,7 +302,9 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		
 		case LPI_PROTO_UDP_PPLIVE:
 		case LPI_PROTO_PDBOX:
-		case LPI_PROTO_UDP_PPSTREAM:	
+		case LPI_PROTO_UDP_PPSTREAM:
+		case LPI_PROTO_UDP_TVANTS:
+		case LPI_PROTO_UDP_SOPCAST:
 			return LPI_CATEGORY_P2PTV;
 		
 		case LPI_PROTO_NCSOFT:
@@ -338,6 +342,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_UNREAL:
 		case LPI_PROTO_UDP_GARENA:
 		case LPI_PROTO_COD_WAW:
+		case LPI_PROTO_UDP_BATTLEFIELD:
 			return LPI_CATEGORY_GAMING;
 
 		case LPI_PROTO_IRC:
@@ -413,7 +418,7 @@ const char *lpi_print_category(lpi_category_t category) {
 		case LPI_CATEGORY_MALWARE:
 			return "Malware";
 		case LPI_CATEGORY_ANTIVIRUS:
-			return "Antivirus";
+			return "Protection";
 		case LPI_CATEGORY_ANTISPAM:
 			return "Antispam";
 		case LPI_CATEGORY_VOIP:
@@ -807,6 +812,16 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Garena_UDP";
 		case LPI_PROTO_UDP_PPSTREAM:
 			return "PPStream";
+		case LPI_PROTO_UDP_FORTINET:
+			return "Fortinet";
+		case LPI_PROTO_UDP_STORM_WORM:
+			return "StormWorm";
+		case LPI_PROTO_UDP_TVANTS:
+			return "TVants";
+		case LPI_PROTO_UDP_BATTLEFIELD:
+			return "Battlefield";
+		case LPI_PROTO_UDP_SOPCAST:
+			return "Sopcast";
 
 		
 		case LPI_PROTO_MYSTERY_9000:
@@ -833,6 +848,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Mystery_45";
 		case LPI_PROTO_UDP_MYSTERY_0660:
 			return "Mystery_0660";
+		case LPI_PROTO_UDP_MYSTERY_E9:
+			return "Mystery_E9";
         }
 
 	return "Invalid_Protocol";

@@ -659,6 +659,12 @@ static inline bool match_xunlei(lpi_data_t *data) {
 			return true;
 	}
 
+	if (match_str_either(data, "\x29\x00\x00\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
         return false;
 }
 
@@ -1130,9 +1136,13 @@ static inline bool match_invalid(lpi_data_t *data) {
         /* HTTP tunnelling via FTP or SMTP */
         if (match_str_both(data, "220 ", "CONN"))
                 return true;
+        if (match_str_both(data, "450 ", "CONN"))
+                return true;
 
 	/* Trying to send HTTP commands to FTP or SMTP servers */
 	if (match_str_both(data, "220 ", "GET "))
+		return true;
+	if (match_str_both(data, "450 ", "GET "))
 		return true;
 
 	return false;
@@ -1197,7 +1207,29 @@ static inline bool match_invalid_bittorrent(lpi_data_t *data) {
         return false;
 }
 
-static inline bool match_trackmania(lpi_data_t *data) {
+static inline bool match_trackmania_2350(lpi_data_t *data) {
+
+	/* One version of the trackmania protocol, typically seen running
+	 * on port 2350 */
+
+        if (!match_payload_length(ntohl(data->payload[0]), 
+			data->payload_len[0]))
+                return false;
+
+        if (!match_payload_length(ntohl(data->payload[1]), 
+			data->payload_len[1]))
+                return false;
+
+	if (!match_chars_either(data, 0x1c, 0x00, 0x00, 0x00))
+		return false;
+
+	return true;
+
+}
+
+static inline bool match_trackmania_3450(lpi_data_t *data) {
+
+	/* Version of trackmania protocol usually seen on port 3450 */
 
 	if (data->server_port != 3450 && data->client_port != 3450)
 		return false;
@@ -1214,6 +1246,17 @@ static inline bool match_trackmania(lpi_data_t *data) {
                 return false;
 
 	return true;
+
+}
+
+static inline bool match_trackmania(lpi_data_t *data) {
+
+	if (match_trackmania_3450(data))
+		return true;
+	if (match_trackmania_2350(data))
+		return true;
+
+	return false;
 
 }
 
@@ -1446,16 +1489,22 @@ static inline bool match_weblogic_t3(lpi_data_t *data) {
 	/* T3 is the protocol used by Weblogic, a Java application server */
 
 	/* sa is the admin username for MSSQL databases */
-	if (match_payload_length(data->payload[0], data->payload_len[0])) {
-		if (MATCH(data->payload[1], 0x00, 0x02, 's', 'a'))
+	if (MATCH(data->payload[1], 0x00, 0x02, 's', 'a')) {
+		if (match_payload_length(data->payload[0], 
+				data->payload_len[0])) 
+			return true;
+		if (data->client_port == 7001 || data->server_port == 7001)
 			return true;
 	}
 
-	if (match_payload_length(data->payload[1], data->payload_len[1])) {
-		if (MATCH(data->payload[0], 0x00, 0x02, 's', 'a'))
+	if (MATCH(data->payload[0], 0x00, 0x02, 's', 'a')) {
+		if (match_payload_length(data->payload[1], 
+				data->payload_len[1])) 
+			return true;
+		if (data->client_port == 7001 || data->server_port == 7001)
 			return true;
 	}
-
+	
 	return false;
 }
 
@@ -1566,7 +1615,15 @@ static inline bool match_http_response(uint32_t payload, uint32_t len) {
         if (MATCHSTR(payload, "HTTP")) {
 		return true;	
 	}
-	
+
+	/* UNKNOWN seems to be a valid response from some servers, e.g.
+	 * mini_httpd */
+        if (MATCHSTR(payload, "UNKN")) {
+		return true;	
+	}
+
+
+
 	return false;
 
 	
@@ -1638,14 +1695,16 @@ static inline bool match_http(lpi_data_t *data) {
 			return true;
 		if (match_http_request(data->payload[1], data->payload_len[1]))
 			return true;
-		if (match_file_header(data->payload[1]))
+		if (match_file_header(data->payload[1]) && 
+				data->payload_len[0] != 0)
 			return true;
 	}
 
 	if (match_http_request(data->payload[1], data->payload_len[1])) {
 		if (match_http_response(data->payload[0], data->payload_len[0]))
 			return true;
-		if (match_file_header(data->payload[0]))
+		if (match_file_header(data->payload[0]) && 
+				data->payload_len[1] != 0)
 			return true;
 	}
 
