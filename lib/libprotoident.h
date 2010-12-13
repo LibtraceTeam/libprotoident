@@ -16,7 +16,7 @@ typedef enum {
 	LPI_CATEGORY_MAIL,
 	LPI_CATEGORY_P2P,
 	LPI_CATEGORY_P2P_STRUCTURE,	/* Maintenance of P2P networks */
-	LPI_CATEGORY_SECURITY,
+	LPI_CATEGORY_KEY_EXCHANGE,
 	LPI_CATEGORY_ECOMMERCE,
 	LPI_CATEGORY_GAMING,
 	LPI_CATEGORY_ENCRYPT,		/* Encrypted traffic that is not
@@ -24,7 +24,7 @@ typedef enum {
 	LPI_CATEGORY_MONITORING,	/* Network measurement / monitoring */
 	LPI_CATEGORY_NEWS,
 	LPI_CATEGORY_MALWARE,
-	LPI_CATEGORY_ANTIVIRUS,
+	LPI_CATEGORY_SECURITY,
 	LPI_CATEGORY_ANTISPAM,
 	LPI_CATEGORY_VOIP,
 	LPI_CATEGORY_TUNNELLING,	/* Tunnelling protocols */
@@ -37,6 +37,7 @@ typedef enum {
 	LPI_CATEGORY_TELCO,		/* Telco services aside from VOIP, e.g
 					   SMS protocols */
 	LPI_CATEGORY_P2PTV,		/* P2P TV, e.g. PPLive */
+	LPI_CATEGORY_RCS,		/* Revision Control */
 	LPI_CATEGORY_ICMP,
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,
@@ -141,6 +142,8 @@ typedef enum {
 	LPI_PROTO_INVALID_HTTP,	/* HTTP server sending raw HTML */
 	LPI_PROTO_COD_WAW,	/* Call of Duty: World at War TCP */
 	LPI_PROTO_MP2P,
+	LPI_PROTO_SVN,
+	LPI_PROTO_SOCKS5,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -227,6 +230,7 @@ typedef enum {
 	LPI_PROTO_UDP_SOPCAST,
 
 	/* Patterns that we can match, but do not know the protocol */
+	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
 	LPI_PROTO_MYSTERY_9000,	/* Occurs on tcp port 9000 */
 	LPI_PROTO_MYSTERY_PSPR,
 	LPI_PROTO_MYSTERY_8000,

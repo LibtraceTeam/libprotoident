@@ -185,7 +185,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_ISAKMP:
                 case LPI_PROTO_KMS:
 		case LPI_PROTO_UDP_CP_RDP:
-			return LPI_CATEGORY_SECURITY;
+			return LPI_CATEGORY_KEY_EXCHANGE;
 		
 		case LPI_PROTO_UDP_TRACEROUTE:
 		case LPI_PROTO_UDP_SNMP:
@@ -205,7 +205,10 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_BACKWEB:
 		case LPI_PROTO_UDP_NORTON:
 		case LPI_PROTO_UDP_FORTINET:
-			return LPI_CATEGORY_ANTIVIRUS;
+			return LPI_CATEGORY_SECURITY;
+
+		case LPI_PROTO_SVN:
+			return LPI_CATEGORY_RCS;
 
 		case LPI_PROTO_NNTP:
                         return LPI_CATEGORY_NEWS;
@@ -229,6 +232,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_TEREDO:
 		case LPI_PROTO_PPTP:
 		case LPI_PROTO_UDP_CISCO_VPN:
+		case LPI_PROTO_SOCKS5:
 			return LPI_CATEGORY_TUNNELLING;
 
 		case LPI_PROTO_UDP_PYZOR:
@@ -403,8 +407,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "P2P";
 		case LPI_CATEGORY_P2P_STRUCTURE:
 			return "P2P_Structure";
-		case LPI_CATEGORY_SECURITY:
-			return "Security";
+		case LPI_CATEGORY_KEY_EXCHANGE:
+			return "Key_Exchange";
 		case LPI_CATEGORY_ECOMMERCE:
 			return "ECommerce";
 		case LPI_CATEGORY_GAMING:
@@ -417,8 +421,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "News";
 		case LPI_CATEGORY_MALWARE:
 			return "Malware";
-		case LPI_CATEGORY_ANTIVIRUS:
-			return "Protection";
+		case LPI_CATEGORY_SECURITY:
+			return "Security";
 		case LPI_CATEGORY_ANTISPAM:
 			return "Antispam";
 		case LPI_CATEGORY_VOIP:
@@ -441,6 +445,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Telco_Services";
 		case LPI_CATEGORY_P2PTV:
 			return "P2PTV";
+		case LPI_CATEGORY_RCS:
+			return "Revision_Control";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:
@@ -658,6 +664,10 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Call_of_Duty";
 		case LPI_PROTO_MP2P:
 			return "MP2P_TCP";
+		case LPI_PROTO_SVN:
+			return "SVN";
+		case LPI_PROTO_SOCKS5:
+			return "SOCKS5";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -824,6 +834,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Sopcast";
 
 		
+		case LPI_PROTO_REJECTION:
+			return "Rejection";
 		case LPI_PROTO_MYSTERY_9000:
 			return "Mystery_9000";
 		case LPI_PROTO_MYSTERY_PSPR:

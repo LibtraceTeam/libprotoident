@@ -423,6 +423,51 @@ static inline bool match_bitextend(lpi_data_t *data) {
 
 }
 
+static inline bool match_socks5_req(uint32_t payload, uint32_t len) {
+
+	/* Just assume "no auth" method supported, for now */
+	if (!(MATCH(payload, 0x05, 0x01, 0x00, 0x00)))
+		return false;
+
+	if (len != 3)
+		return false;
+
+	return true;
+	
+}
+
+static inline bool match_socks5_resp(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	/* Just assume "no auth" method supported, for now */
+	if (!(MATCH(payload, 0x05, 0x00, 0x00, 0x00)))
+		return false;
+
+	if (len != 2)
+		return false;
+
+	return true;
+	
+}
+
+static inline bool match_socks5(lpi_data_t *data) {
+	
+	if (match_socks5_req(data->payload[0], data->payload_len[0])) {
+		if (match_socks5_resp(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+		
+	if (match_socks5_req(data->payload[1], data->payload_len[1])) {
+		if (match_socks5_resp(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
+
+}
+
 static inline bool match_imesh_payload(uint32_t payload, uint32_t len) {
 	if (len == 0)
 		return true;
@@ -677,6 +722,31 @@ static inline bool match_afp(lpi_data_t *data) {
 
 }
 
+static inline bool match_smb_payload(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (match_payload_length(payload, len))
+		return true;
+
+	/* Some stupid systems send the NetBIOS header separately, which
+	 * makes this a lot harder to detect :( 
+	 *
+	 * Instead, look for common payload sizes. */
+	
+	if (MATCH(payload, 0x00, 0x00, 0x00, 0x85))
+		return true;
+	
+	/* Also, sometimes we just forget the NetBIOS header, or the 
+	 * connection fails before it is retransmitted */
+	if (MATCH(payload, 0xff, 'S', 'M', 'B'))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_smb(lpi_data_t *data) {
 
         /* SMB is often prepended with a NetBIOS session service header.
@@ -690,13 +760,11 @@ static inline bool match_smb(lpi_data_t *data) {
 	if (data->server_port != 445 && data->client_port != 445)
 		return false;
 
-	if (!match_payload_length(data->payload[0], data->payload_len[0]) &&
-			data->payload_len[0] != 0)
-		return false;
-	if (!match_payload_length(data->payload[1], data->payload_len[1]) &&
-			data->payload_len[1] != 0)
+	if (!match_smb_payload(data->payload[0], data->payload_len[0]))
 		return false;
 
+	if (!match_smb_payload(data->payload[1], data->payload_len[1]))
+		return false;
         return true;
 
 }
@@ -888,6 +956,29 @@ static inline bool match_telnet(lpi_data_t *data) {
 	
 }
 
+static inline bool match_rejection(lpi_data_t *data) {
+
+	/* This is an odd one - the server allows a TCP handshake to complete,
+	 * but responds to any requests with a single 0x02 byte. Not sure
+	 * whether this is some kind of honeypot or what.
+	 *
+	 * We see this behaviour on ports 445, 1433 and 80, if we need 
+	 * further checking */
+
+	if (MATCH(data->payload[0], 0x02, 0x00, 0x00, 0x00)) {
+		if (data->payload_len[0] == 1)
+			return true;
+	}
+
+	if (MATCH(data->payload[1], 0x02, 0x00, 0x00, 0x00)) {
+		if (data->payload_len[1] == 1)
+			return true;
+	}
+
+
+	return false;
+}
+
 /* 16 03 00 X is an SSLv3 handshake */
 static inline bool match_ssl3_handshake(uint32_t payload, uint32_t len) {
 
@@ -1051,44 +1142,86 @@ static inline bool match_mysql(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_tds_request(uint32_t payload, uint32_t len) {
+
+	uint32_t stated_len = 0;
+	
+	stated_len = (ntohl(payload) & 0xffff);
+	if (stated_len != len)
+		return false;
+
+	if (MATCH(payload, 0x12, 0x01, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0x10, 0x01, ANY, ANY))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_tds_response(uint32_t payload, uint32_t len) {
+	
+	uint32_t stated_len = 0;
+
+	if (len == 0)
+		return true;
+
+	if (!MATCH(payload, 0x04, 0x01, ANY, ANY))
+		return false;
+	stated_len = (ntohl(payload) & 0xffff);
+	if (stated_len != len)
+		return false;
+
+	return true;
+
+
+}
+
 static inline bool match_tds(lpi_data_t *data) {
 
-        uint32_t stated_len = 0;
+	if (match_tds_request(data->payload[0], data->payload_len[0])) {
+		if (match_tds_response(data->payload[1], data->payload_len[1]))
+			return true;
+	}
 
-        if (MATCH(data->payload[0], 0x04, 0x01, ANY, ANY) &&
-                        MATCH(data->payload[1], 0x12, 0x01, ANY, ANY)) {
-
-                /* Check both lengths */
-
-                stated_len = (ntohl(data->payload[0]) & 0xffff);
-                if (stated_len != data->payload_len[0])
-                        return false;
-
-                stated_len = (ntohl(data->payload[1]) & 0xffff);
-                if (stated_len != data->payload_len[1])
-                        return false;
-
-                return true;
-        }
-
-
-        if (MATCH(data->payload[1], 0x04, 0x01, ANY, ANY) &&
-                        MATCH(data->payload[0], 0x12, 0x01, ANY, ANY)) {
-
-                /* Check both lengths */
-
-                stated_len = (ntohl(data->payload[0]) & 0xffff);
-                if (stated_len != data->payload_len[0])
-                        return false;
-
-                stated_len = (ntohl(data->payload[1]) & 0xffff);
-                if (stated_len != data->payload_len[1])
-                        return false;
-
-                return true;
-        }
-
+	if (match_tds_request(data->payload[1], data->payload_len[1])) {
+		if (match_tds_response(data->payload[0], data->payload_len[0]))
+			return true;
+	}
         return false;
+}
+
+static inline bool match_svn_greet(uint32_t payload, uint32_t len) {
+
+	if (MATCHSTR(payload, "( su"))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_svn_resp(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	
+	if (MATCHSTR(payload, "( 2 "))
+		return true;
+	return false;
+}
+
+static inline bool match_svn(lpi_data_t *data) {
+
+	if (match_svn_greet(data->payload[0], data->payload_len[0])) {
+		if (match_svn_resp(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_svn_greet(data->payload[1], data->payload_len[1])) {
+		if (match_svn_resp(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
 }
 
 static inline bool match_notes_rpc(lpi_data_t *data) {
@@ -1144,6 +1277,20 @@ static inline bool match_invalid(lpi_data_t *data) {
 		return true;
 	if (match_str_both(data, "450 ", "GET "))
 		return true;
+
+	/* Trying to send HTTP commands to an SVN server */
+	if (match_str_both(data, "( su", "GET "))
+		return true;
+
+	/* People running an HTTP server on the MS SQL server port */
+	if (match_tds_request(data->payload[0], data->payload_len[0])) {
+		if (MATCHSTR(data->payload[1], "HTTP"))
+			return true;
+	}
+	if (match_tds_request(data->payload[1], data->payload_len[1])) {
+		if (MATCHSTR(data->payload[0], "HTTP"))
+			return true;
+	}
 
 	return false;
 }
@@ -2104,6 +2251,10 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_mp2p(proto_d)) return LPI_PROTO_MP2P;
 
+	if (match_svn(proto_d)) return LPI_PROTO_SVN;
+
+	if (match_socks5(proto_d)) return LPI_PROTO_SOCKS5;
+
         /* eMule */
         if (match_emule(proto_d)) return LPI_PROTO_EMULE;
 
@@ -2122,6 +2273,9 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_mystery_8000(proto_d)) return LPI_PROTO_MYSTERY_8000;
 
 	if (match_mystery_iG(proto_d)) return LPI_PROTO_MYSTERY_IG;
+
+	/* Leave this one til last */
+	if (match_rejection(proto_d)) return LPI_PROTO_REJECTION;
 
         return LPI_PROTO_UNKNOWN;
 }

@@ -270,6 +270,8 @@ static inline bool match_pplive(lpi_data_t *data) {
 
 	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x42\x01"))
 		return true;
+	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x41\x01"))
+		return true;
 	if (match_str_either(data, "\xe9\x03\x41\x01")) {
 		if (data->payload_len[0] == 0 && data->payload_len[1] == 57)
 			return true;
@@ -550,13 +552,15 @@ static inline bool match_orbit_payload(uint32_t payload, uint32_t len) {
 	if (len == 0)
 		return true;
 
-	if (MATCH(payload, 0xaa, 0x20, 0x04, 0x04) && len == 36)
+	if (MATCH(payload, 0xaa, 0x20, ANY, ANY) && len == 36)
 		return true;
 	if (MATCH(payload, 0xaa, 0x10, ANY, ANY) && len == 27)
 		return true;
 	if (MATCH(payload, 0xaa, 0x18, ANY, ANY) && len == 27)
 		return true;
-	if (MATCH(payload, 0xab, 0x08, 0x78, 0xda))
+	if (MATCH(payload, 0xaa, 0x28, ANY, ANY) && len == 120)
+		return true;
+	if (MATCH(payload, 0xab, ANY, 0x78, 0xda))
 		return true;
 
 
@@ -566,9 +570,6 @@ static inline bool match_orbit(lpi_data_t *data) {
 
 	/* There's no nice spec for the Orbit UDP protocol, so I'm just
 	 * going to match based on evidence observed thus far */
-
-	if (data->server_port != 20129 && data->client_port != 20129)
-		return false;
 
 	if (!match_orbit_payload(data->payload[0], data->payload_len[0]))
 		return false;
@@ -638,16 +639,19 @@ static inline bool match_norton(lpi_data_t *data) {
  */
 static inline bool match_messenger_spam(lpi_data_t *data) {
 
-	/* The recipient does not reply */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
-		return false;
-
-	if (match_chars_either(data, 0x04, 0x00, ANY, 0x00))
+	if (match_str_both(data, "\x04\x00\x28\x00", "\x04\x02\x08\x00"))
 		return true;
+
+	if (match_str_either(data, "\x04\x00\x28\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
 	return false;
 }
+
 
 /* http://wiki.limewire.org/index.php?title=Out_of_Band_System */
 static inline bool match_gnutella_oob(lpi_data_t *data) {
@@ -2690,6 +2694,8 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0xe4, 0x28, ANY, ANY)) {
 		if (len == 119 || len == 69 || len == 294) 
 			return true;
+		if (len == 44)
+			return true;
 	}
 	
 	return false;
@@ -2702,10 +2708,11 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 	 * for uncompressed and 0xe5 for compressed data */
 
 
-	/* Compressed stuff seems to always begin the same */
 	if (MATCH(payload, 0xe5, 0x43, ANY, ANY))
 		return true;
 	if (MATCH(payload, 0xe5, 0x08, 0x78, 0xda))
+		return true;
+	if (MATCH(payload, 0xe5, 0x28, 0x78, 0xda))
 		return true;
 
 	/* emule extensions */
@@ -3123,6 +3130,10 @@ static inline bool match_e9_payload(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0xe9, 0x83, ANY, ANY)) {
 		if (len == 23)
+			return true;
+		if (len == 28)
+			return true;
+		if (len == 46)
 			return true;
 	}
 
