@@ -215,12 +215,13 @@ static inline bool match_winmx(lpi_data_t *data) {
 		if (data->payload_len[1] == 1)
 			return true;
 	}
-	if (match_str_either(data, "GET ")) {
+	if (match_chars_either(data, 'G', 'E', 'T', ANY)) {
 		if (data->payload_len[0] == 1)
 			return true;
 		if (data->payload_len[1] == 1)
 			return true;
 	}
+	
 	return false;
 
 }
@@ -1003,22 +1004,30 @@ static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
 	return false;
 }
 
-/* SSLv2 handshake - the ANY byte in the 0x80 payload is actually the length of the payload - 2. */
+/* SSLv2 handshake - the ANY byte in the 0x80 payload is actually the length 
+ * of the payload - 2. 
+ *
+ * XXX This isn't always true - consecutive packets may be merged it seems :(
+ */
 static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
         uint32_t stated_len = 0;
         
 	if (!MATCH(payload, 0x80, ANY, 0x01, 0x03)) 
 		return false;
-        stated_len = (ntohl(payload) & 0xff0000) >> 16;
-        if (stated_len == len - 2)
-        	return true;
-	return false;
+	return true;
 }
 
 static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0x15, 0x03, 0x01, ANY))
 		return true;
 	return false;
+}
+
+static inline bool match_tls_change(uint32_t payload, uint32_t len) {
+	if (MATCH(payload, 0x14, 0x03, 0x01, ANY))
+		return true;
+	return false;
+
 }
 
 static inline bool match_tls_content(uint32_t payload, uint32_t len) {
@@ -1060,6 +1069,14 @@ static inline bool match_ssl(lpi_data_t *data) {
 		return true;
 	if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
 			match_tls_alert(data->payload[0], data->payload_len[0]))
+		return true;
+	
+	/* Need to check for cipher changes too */
+	if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
+			match_tls_change(data->payload[1], data->payload_len[1]))
+		return true;
+	if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
+			match_tls_change(data->payload[0], data->payload_len[0]))
 		return true;
 	
 	
@@ -1310,6 +1327,23 @@ static inline bool match_invalid_http(lpi_data_t *data) {
 	}
 
 	return false;
+}
+
+static inline bool match_invalid_smtp(lpi_data_t *data) {
+
+	/* SMTP flows that do not conform to the spec properly */
+
+	if (match_str_both(data, "250-", "EHLO"))
+		return true;
+		
+	if (match_str_both(data, "250 ", "HELO"))
+		return true;
+		
+	if (match_str_both(data, "220 ", "MAIL"))
+		return true;
+		
+	return false;
+
 }
 
 static inline bool match_invalid_bittorrent(lpi_data_t *data) {
@@ -2263,6 +2297,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_invalid(proto_d)) return LPI_PROTO_INVALID;
 
 	if (match_invalid_http(proto_d)) return LPI_PROTO_INVALID_HTTP;
+
+	if (match_invalid_smtp(proto_d)) return LPI_PROTO_INVALID_SMTP;
 
 	if (match_invalid_bittorrent(proto_d)) return LPI_PROTO_INVALID_BT;
 

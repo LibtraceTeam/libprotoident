@@ -155,7 +155,6 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		
 		case LPI_PROTO_INVALID:
 		case LPI_PROTO_INVALID_BT:
-		case LPI_PROTO_INVALID_HTTP:
 			return LPI_CATEGORY_MIXED;
 
 		case LPI_PROTO_UNKNOWN:
@@ -171,12 +170,14 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_HTTP:
 		case LPI_PROTO_HTTPS:
 		case LPI_PROTO_HTTP_BADPORT:
+		case LPI_PROTO_INVALID_HTTP:
 			return LPI_CATEGORY_WEB;
 
 		case LPI_PROTO_SMTP:
 		case LPI_PROTO_POP3:
 		case LPI_PROTO_IMAP:
 		case LPI_PROTO_IMAPS:
+		case LPI_PROTO_INVALID_SMTP:
 			return LPI_CATEGORY_MAIL;
 
 		case LPI_PROTO_SSL:
@@ -336,7 +337,6 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_UDP_THQ:
 		case LPI_PROTO_UDP_ESO:
 		case LPI_PROTO_UDP_NEWERTH:
-		case LPI_PROTO_UDP_GTA4:
 		case LPI_PROTO_EA_GAMES:
 		case LPI_PROTO_UDP_MTA:
 		case LPI_PROTO_UDP_JEDI:
@@ -668,6 +668,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SVN";
 		case LPI_PROTO_SOCKS5:
 			return "SOCKS5";
+		case LPI_PROTO_INVALID_SMTP:
+			return "Invalid_SMTP";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -778,8 +780,6 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SSDP";
 		case LPI_PROTO_UDP_NETBIOS:
 			return "Netbios_UDP";
-		case LPI_PROTO_UDP_GTA4:
-			return "GTA4";
 		case LPI_PROTO_UDP_CP_RDP:
 			return "Checkpoint_RDP";
 		case LPI_PROTO_UDP_VENTRILO:

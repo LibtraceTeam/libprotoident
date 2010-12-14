@@ -26,6 +26,17 @@ static inline bool match_gamespy(lpi_data_t *data) {
                 ((data->payload[0] << 16) == (data->payload[1] & 0xffff0000)))
                 return true;
 
+	/* These packets have also been observed between gamespy servers
+	 * and for gamespy-powered games, e.g. GTA 4 */
+	if (match_str_both(data, "\xfd\xfc\x1e\x66", "\xfd\xfc\x1e\x66"))
+		return true;
+
+	if (match_str_either(data, "\xfd\xfc\x1e\x66")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
         return false;
 
 }
@@ -168,22 +179,6 @@ static inline bool match_quake(lpi_data_t *data) {
 	return false;
 }
 
-static inline bool match_gta4(lpi_data_t *data) {
-
-	if (match_str_both(data, "\xfd\xfc\x1e\x66", "\xfd\xfc\x1e\x66"))
-		return true;
-
-	if (match_str_either(data, "\xfd\xfc\x1e\x66")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-
-	return false;
-
-}
-
 static inline bool match_sopcast_req(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0xff, 0xff, 0x01, ANY)) {
@@ -196,8 +191,12 @@ static inline bool match_sopcast_req(uint32_t payload, uint32_t len) {
 
 static inline bool match_sopcast_reply(uint32_t payload, uint32_t len) {
 
-	if (MATCH(payload, 0x00, ANY, ANY, ANY)) {
+	if (MATCH(payload, 0x00, ANY, 0x02, ANY)) {
 		if (len == 80)
+			return true;
+	}
+	if (MATCH(payload, 0x00, ANY, 0x01, ANY)) {
+		if (len == 60)
 			return true;
 	}
 
@@ -205,6 +204,9 @@ static inline bool match_sopcast_reply(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_sopcast(lpi_data_t *data) {
+
+	if ((data->payload[0] & 0xff000000) != (data->payload[1] & 0xff000000))
+		return false;
 
 	if (match_sopcast_req(data->payload[0], data->payload_len[0])) {
 		if (match_sopcast_reply(data->payload[1], data->payload_len[1]))
@@ -268,6 +270,7 @@ static inline bool match_rtp(lpi_data_t *data) {
 
 static inline bool match_pplive(lpi_data_t *data) {
 
+
 	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x42\x01"))
 		return true;
 	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x41\x01"))
@@ -278,6 +281,10 @@ static inline bool match_pplive(lpi_data_t *data) {
 		if (data->payload_len[1] == 0 && data->payload_len[0] == 57)
 			return true;
 	}
+	/* According to a Chinese paper (Xiaona et al), this is a pattern
+	 * for PPLive */
+	if (match_str_both(data, "\x1c\x1c\x32\x01", "\x1c\x1c\x32\x01"))
+		return true;
 	return false;
 }
 
@@ -3288,8 +3295,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_eso(proto_d)) return LPI_PROTO_UDP_ESO;
 
 	if (match_netbios(proto_d)) return LPI_PROTO_UDP_NETBIOS;
-
-	if (match_gta4(proto_d)) return LPI_PROTO_UDP_GTA4;
 
 	if (match_pplive(proto_d)) return LPI_PROTO_UDP_PPLIVE;
 

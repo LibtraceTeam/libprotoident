@@ -144,6 +144,7 @@ typedef enum {
 	LPI_PROTO_MP2P,
 	LPI_PROTO_SVN,
 	LPI_PROTO_SOCKS5,
+	LPI_PROTO_INVALID_SMTP,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -201,7 +202,6 @@ typedef enum {
 	LPI_PROTO_UDP_ESO,	/* Games using Ensemble Studios Online */
 	LPI_PROTO_UDP_SSDP,
 	LPI_PROTO_UDP_NETBIOS,	/* Netbios lookup */
-	LPI_PROTO_UDP_GTA4,	/* Grand Theft Auto 4 game protocol */
 	LPI_PROTO_UDP_CP_RDP,	/* Checkpoint RDP */
 	LPI_PROTO_UDP_VENTRILO,	/* Ventrilo VoiceChat */
 	LPI_PROTO_UDP_MTA,	/* Multitheftauto */
