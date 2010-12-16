@@ -23,6 +23,7 @@ bool only_dir0 = false;
 bool only_dir1 = false;
 
 bool require_both = false;
+bool nat_hole = false;
 
 /* This data structure is used to demonstrate how to use the 'extension' 
  * pointer to store custom data for a flow */
@@ -30,6 +31,8 @@ typedef struct unknown {
 	uint8_t init_dir;
 	uint64_t in_bytes;
 	uint64_t out_bytes;
+	uint64_t in_pkts;
+	uint64_t out_pkts;
 	double start_ts;
 	lpi_data_t lpi;
 } UnknownFlow;
@@ -45,6 +48,8 @@ void init_unknown_flow(Flow *f, uint8_t dir, double ts) {
 	unk->init_dir = dir;
 	unk->in_bytes = 0;
 	unk->out_bytes = 0;
+	unk->in_pkts = 0;
+	unk->out_pkts = 0;
 	unk->start_ts = ts;
 	lpi_init_data(&unk->lpi);
 	f->extension = unk;
@@ -92,7 +97,14 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
 		}
 	}
 
+	if (nat_hole) {
+                if (unk->init_dir != 1)
+                        return;
+                if (unk->lpi.payload_len[0] == 0 && unk->in_pkts <= 3)
+                        return;
+        }
 
+	
         in.s_addr = f->id.get_server_ip();
         snprintf(ip, 1000, "%s", inet_ntoa(in));
 
@@ -203,10 +215,14 @@ void per_packet(libtrace_packet_t *packet) {
 			unk->init_dir = dir;
 	}
 
-	if (dir == 0)
+	if (dir == 0) {
+		unk->out_pkts += 1;
 		unk->out_bytes += trace_get_payload_length(packet);
-	else
+	}
+	else {
 		unk->in_bytes += trace_get_payload_length(packet);
+		unk->in_pkts += 1;
+	}
 
 
 	/* Cast the extension pointer to match the custom data type */	
@@ -247,7 +263,7 @@ int main(int argc, char *argv[]) {
                 return -1;
         }
 
-	while ((opt = getopt(argc, argv, "bd:f:")) != EOF) {
+	while ((opt = getopt(argc, argv, "bHd:f:")) != EOF) {
                 switch (opt) {
 			case 'b':
 				require_both = true;
@@ -262,6 +278,9 @@ int main(int argc, char *argv[]) {
 			case 'f':
                                 filterstring = optarg;
                                 break;
+			case 'H':
+				nat_hole = true;
+				break;
                 }
         }
 

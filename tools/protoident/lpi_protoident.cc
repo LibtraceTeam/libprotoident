@@ -23,9 +23,12 @@ bool only_dir0 = false;
 bool only_dir1 = false;
 
 bool require_both = false;
+bool nat_hole = false;
 
 typedef struct ident {
 	uint8_t init_dir;
+	uint64_t in_pkts;
+	uint64_t out_pkts;
 	uint64_t in_bytes;
 	uint64_t out_bytes;
 	double start_ts;
@@ -43,6 +46,8 @@ void init_ident_flow(Flow *f, uint8_t dir, double ts) {
 	ident->init_dir = dir;
 	ident->in_bytes = 0;
 	ident->out_bytes = 0;
+	ident->in_pkts = 0;
+	ident->out_pkts = 0;
 	ident->start_ts = ts;
 	lpi_init_data(&ident->lpi);
 	f->extension = ident;
@@ -89,6 +94,13 @@ void display_ident(Flow *f, IdentFlow *ident) {
 				ident->lpi.payload_len[1] == 0) {
 			return;
 		}
+	}
+
+	if (nat_hole) {
+		if (ident->init_dir != 1)
+			return;
+		if (ident->lpi.payload_len[0] == 0 && ident->in_pkts <= 3)
+			return;
 	}
 
 	proto = lpi_guess_protocol(&ident->lpi);
@@ -201,10 +213,14 @@ void per_packet(libtrace_packet_t *packet) {
 			ident->init_dir = dir;
 	}
 
-	if (dir == 0)
+	if (dir == 0) {
 		ident->out_bytes += trace_get_payload_length(packet);
-	else
+		ident->out_pkts += 1;
+	}
+	else {
 		ident->in_bytes += trace_get_payload_length(packet);
+		ident->in_pkts += 1;
+	}
 
 
 	/* Cast the extension pointer to match the custom data type */	
@@ -245,7 +261,7 @@ int main(int argc, char *argv[]) {
                 return -1;
         }
 
-	while ((opt = getopt(argc, argv, "bd:f:")) != EOF) {
+	while ((opt = getopt(argc, argv, "bHd:f:")) != EOF) {
                 switch (opt) {
 			case 'b':
 				require_both = true;
@@ -260,6 +276,9 @@ int main(int argc, char *argv[]) {
 			case 'f':
                                 filterstring = optarg;
                                 break;
+			case 'H':
+				nat_hole = true;
+				break;
                 }
         }
 
