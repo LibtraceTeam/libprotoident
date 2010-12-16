@@ -144,7 +144,11 @@ typedef enum {
 	LPI_PROTO_MP2P,
 	LPI_PROTO_SVN,
 	LPI_PROTO_SOCKS5,
+	LPI_PROTO_SOCKS4,
 	LPI_PROTO_INVALID_SMTP,
+	LPI_PROTO_MMS,		/* Microsoft Media Server */
+	LPI_PROTO_WEB_JUNK,	/* Clients communicating with web servers
+				   using non-HTTP */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -235,6 +239,7 @@ typedef enum {
 	LPI_PROTO_MYSTERY_PSPR,
 	LPI_PROTO_MYSTERY_8000,
 	LPI_PROTO_MYSTERY_IG,
+	LPI_PROTO_MYSTERY_CONN,
 	
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */
 	LPI_PROTO_UDP_MYSTERY_0D,	

@@ -3,6 +3,70 @@
 #include "proto_common.h"
 #include "proto_tcp.h"
 
+static inline bool match_http_request(uint32_t payload, uint32_t len) {
+
+        /* HTTP requests - some of these are MS-specific extensions */
+	if (len == 0)
+		return true;
+
+        if (MATCHSTR(payload, "GET ")) return true; 
+	if (len == 1 && MATCH(payload, 'G', 0x00, 0x00, 0x00))
+		return true;
+	if (len == 2 && MATCH(payload, 'G', 'E', 0x00, 0x00))
+		return true;
+	if (len == 3 && MATCH(payload, 'G', 'E', 'T', 0x00))
+		return true;
+
+        if (MATCHSTR(payload, "POST")) return true;
+        if (MATCHSTR(payload, "HEAD")) return true;
+        if (MATCHSTR(payload, "PUT ")) return true;
+        if (MATCHSTR(payload, "DELE")) return true;
+	if (MATCHSTR(payload, "auth")) return true;
+
+	/* SVN? */
+	if (MATCHSTR(payload, "REPO")) return true;
+
+	/* Webdav */
+        if (MATCHSTR(payload, "LOCK")) return true;
+        if (MATCHSTR(payload, "UNLO")) return true;
+        if (MATCHSTR(payload, "OPTI")) return true;
+        if (MATCHSTR(payload, "PROP")) return true;
+        if (MATCHSTR(payload, "MKCO")) return true;
+        if (MATCHSTR(payload, "POLL")) return true;
+        if (MATCHSTR(payload, "SEAR")) return true;
+
+	/* Ntrip - some differential GPS system using modified HTTP */
+        if (MATCHSTR(payload, "SOUR")) return true;
+
+
+	return false;
+
+}
+
+static inline bool match_http_response(uint32_t payload, uint32_t len) {
+	
+	if (len == 0)
+		return true;
+	if (len == 1 && MATCH(payload, 'H', 0x00, 0x00, 0x00))
+		return true;
+        if (MATCHSTR(payload, "HTTP")) {
+		return true;	
+	}
+
+	/* UNKNOWN seems to be a valid response from some servers, e.g.
+	 * mini_httpd */
+        if (MATCHSTR(payload, "UNKN")) {
+		return true;	
+	}
+
+
+
+	return false;
+
+	
+}
+
+
 static inline bool match_smtp_banner(uint32_t payload, uint32_t len) {
 
 	/* Stupid servers that only send the banner one or two bytes at
@@ -467,6 +531,48 @@ static inline bool match_socks5(lpi_data_t *data) {
 
 	return false;
 
+}
+
+static inline bool match_socks4_req(uint32_t payload, uint32_t len) {
+
+	/* Assuming port 80 for now - will update if we see other ports
+	 * used 
+	 *
+	 * Octets 3 and 4 contain the port number */
+	if (!(MATCH(payload, 0x04, 0x01, 0x00, 0x50)))
+		return false;
+
+	if (len != 9)
+		return false;
+
+	return true;
+	
+}
+
+static inline bool match_socks4_resp(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	/* Haven't seen any legit responses yet :/ */
+
+	return false;
+	
+}
+
+static inline bool match_socks4(lpi_data_t *data) {
+
+	if (match_socks4_req(data->payload[0], data->payload_len[0])) {
+		if (match_socks4_resp(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_socks4_req(data->payload[1], data->payload_len[1])) {
+		if (match_socks4_resp(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
 }
 
 static inline bool match_imesh_payload(uint32_t payload, uint32_t len) {
@@ -1111,11 +1217,26 @@ static inline bool match_ssl(lpi_data_t *data) {
 
 static inline bool match_msnc_transfer(lpi_data_t *data) {
 
-	if (!(data->payload_len[0] == 4 && data->payload_len[1] == 4))
-		return false;
-	
-	if (match_str_both(data, "\x30\x00\x00\x00", "\x04\x00\x00\x00"))
-		return true;
+	/* http://msnpiki.msnfanatic.com/index.php/MSNC:File_Transfer#Direct_connection:_Handshake */
+
+	/* MSNC sends the length as a separate packet before the data. To
+	 * confirm MSNC, you have to look at the second packet sent by the
+	 * connecting host. It should begin with 'foo'. */
+
+	if (match_str_both(data, "\x30\x00\x00\x00", "\x04\x00\x00\x00")) {
+		if (data->payload_len[0] == 4 && data->payload_len[1] == 4)
+			return true;
+	}
+	if (match_str_both(data, "\x10\x00\x00\x00", "\x04\x00\x00\x00")) {
+		if (MATCH(data->payload[0], 0x04, 0x00, 0x00, 0x00)) {
+			if (data->payload_len[0] == 4)
+				return true;
+		}
+		if (MATCH(data->payload[1], 0x04, 0x00, 0x00, 0x00)) {
+			if (data->payload_len[1] == 4)
+				return true;
+		}
+	}
 
 	return false;
 
@@ -1312,7 +1433,38 @@ static inline bool match_invalid(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_web_junk(lpi_data_t *data) {
+
+	/* Connections to web servers where the client clearly is not
+	 * speaking HTTP.
+	 *
+	 * XXX Check flows matching this occasionally for new HTTP request
+	 * types that we've missed :( 
+	 */
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+		return false;
+
+	if (!match_http_request(data->payload[0], data->payload_len[0])) {
+		if (MATCHSTR(data->payload[1], "HTTP"))
+			return true;
+	}
+	
+	if (!match_http_request(data->payload[1], data->payload_len[1])) {
+		if (MATCHSTR(data->payload[0], "HTTP"))
+			return true;
+	}
+
+	return false;
+}
+
 static inline bool match_invalid_http(lpi_data_t *data) {
+
+	/* This function is for identifying web servers that are not 
+	 * following the HTTP spec properly.
+	 *
+	 * For flows where the client is not doing HTTP properly, see
+	 * match_web_junk().
+	 */
 
 	/* HTTP servers that appear to respond with raw HTML */
 	if (match_str_either(data, "GET ")) {
@@ -1415,18 +1567,26 @@ static inline bool match_trackmania_3450(lpi_data_t *data) {
 	if (data->server_port != 3450 && data->client_port != 3450)
 		return false;
 	
-	if (!match_str_both(data, "\x23\x00\x00\x00", "\x13\x00\x00\x00"))
-		return false;
+	if (match_str_both(data, "\x23\x00\x00\x00", "\x13\x00\x00\x00")) {
 	
-        if (!match_payload_length(ntohl(data->payload[0]), 
-			data->payload_len[0]))
-                return false;
+	        if (!match_payload_length(ntohl(data->payload[0]), 
+				data->payload_len[0]))
+        	        return false;
 
-        if (!match_payload_length(ntohl(data->payload[1]), 
-			data->payload_len[1]))
-                return false;
+        	if (!match_payload_length(ntohl(data->payload[1]), 
+				data->payload_len[1]))
+                	return false;
+		return true;
+	}
 
-	return true;
+	if (match_str_either(data, "\x23\x00\x00\x00")) {
+		if (data->payload_len[0] == 39 && data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] == 39 && data->payload_len[0] == 0)
+			return true;
+	}
+
+	return false;
 
 }
 
@@ -1472,6 +1632,43 @@ static inline bool match_yahoo_msg(lpi_data_t *data) {
 	if (match_str_either(data, "<Yms")) return true;
 
 	return false;
+}
+
+static inline bool match_ssh2_payload(uint32_t payload, uint32_t len) {
+
+	/* SSH-2 begins with a four byte length field */
+
+	if (len == 0)
+		return true;
+	if (ntohl(payload) == len)
+		return true;
+	return false;
+
+}
+
+static inline bool match_ssh(lpi_data_t *data) {
+
+	if (match_str_either(data, "SSH-")) 
+		return true;
+
+	/* Require port 22 for the following rules as they are not
+	 * specific to SSH */
+	if (data->server_port != 22 && data->client_port != 22)
+		return false;
+        if (match_str_either(data, "QUIT"))
+                return true;
+	
+	if (match_ssh2_payload(data->payload[0], data->payload_len[0])) {
+		if (match_ssh2_payload(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	if (match_ssh2_payload(data->payload[1], data->payload_len[1])) {
+		if (match_ssh2_payload(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
+
 }
 
 static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
@@ -1561,6 +1758,9 @@ static inline bool match_file_header(uint32_t payload) {
 	if (MATCHSTR(payload, "<htm"))
 		return true;
 
+	if (MATCH(payload, 0x0a, '<', '!', 'D'))
+		return true;
+
 	/* 7zip */
 	if (MATCH(payload, 0x37, 0x7a, 0xbc, 0xaf))
 		return true;
@@ -1591,6 +1791,39 @@ static inline bool match_file_header(uint32_t payload) {
 	
 	/* Flash Video */
 	if (MATCH(payload, 'F', 'L', 'V', 0x01))
+		return true;
+
+	/* .BKF (Microsoft Tape Format) */
+	if (MATCHSTR(payload, "TAPE"))
+		return true;
+
+	/* MS Office Doc file - this is unpleasantly geeky */
+	if (MATCH(payload, 0xd0, 0xcf, 0x11, 0xe0))
+		return true;
+
+	/* ASP */
+	if (MATCH(payload, 0x3c, 0x25, 0x40, 0x20))
+		return true;
+
+	/* WMS file */
+	if (MATCH(payload, 0x3c, 0x21, 0x2d, 0x2d))
+		return true;
+
+	/* I'm pretty sure the following are files of some type or another.
+	 * They crop up pretty often in our test data sets, so I'm going to
+	 * put them in here.
+	 *
+	 * Hopefully one day we will find out what they really are */
+
+	if (MATCH(payload, '<', 'c', 'f', ANY))
+		return true;
+	if (MATCH(payload, '<', 'C', 'F', ANY))
+		return true;
+	if (MATCHSTR(payload, ".tem"))
+		return true;
+	if (MATCHSTR(payload, ".ite"))
+		return true;
+	if (MATCHSTR(payload, ".lef"))
 		return true;
 
 	return false;
@@ -1639,6 +1872,42 @@ static inline bool match_bulk_download(lpi_data_t *data) {
 			match_file_header(data->payload[1]))
 		return true;
 
+	return false;
+}
+
+static inline bool match_mms_server(uint32_t payload, uint32_t len) {
+
+	if (len != 272)
+		return false;
+	if (MATCH(payload, 0x01, 0x00, 0x00, 0x00))
+		return true;
+	return false;
+	
+}
+
+static inline bool match_mms_client(uint32_t payload, uint32_t len) {
+
+	if (len != 144)
+		return false;
+	if (MATCH(payload, 0x01, 0x00, 0x00, ANY))
+		return true;
+	return false;
+	
+}
+
+static inline bool match_mms(lpi_data_t *data) {
+
+	/* Microsoft Media Server protocol */
+
+	if (match_mms_server(data->payload[0], data->payload_len[0])) {
+		if (match_mms_client(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_mms_server(data->payload[1], data->payload_len[1])) {
+		if (match_mms_client(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 	return false;
 }
 
@@ -1747,69 +2016,6 @@ static inline bool match_ftp_control(lpi_data_t *data) {
 	return false;
 }
 	
-static inline bool match_http_request(uint32_t payload, uint32_t len) {
-
-        /* HTTP requests - some of these are MS-specific extensions */
-	if (len == 0)
-		return true;
-
-        if (MATCHSTR(payload, "GET ")) return true; 
-	if (len == 1 && MATCH(payload, 'G', 0x00, 0x00, 0x00))
-		return true;
-	if (len == 2 && MATCH(payload, 'G', 'E', 0x00, 0x00))
-		return true;
-	if (len == 3 && MATCH(payload, 'G', 'E', 'T', 0x00))
-		return true;
-
-        if (MATCHSTR(payload, "POST")) return true;
-        if (MATCHSTR(payload, "HEAD")) return true;
-        if (MATCHSTR(payload, "PUT ")) return true;
-        if (MATCHSTR(payload, "DELE")) return true;
-	if (MATCHSTR(payload, "auth")) return true;
-
-	/* SVN? */
-	if (MATCHSTR(payload, "REPO")) return true;
-
-	/* Webdav */
-        if (MATCHSTR(payload, "LOCK")) return true;
-        if (MATCHSTR(payload, "UNLO")) return true;
-        if (MATCHSTR(payload, "OPTI")) return true;
-        if (MATCHSTR(payload, "PROP")) return true;
-        if (MATCHSTR(payload, "MKCO")) return true;
-        if (MATCHSTR(payload, "POLL")) return true;
-        if (MATCHSTR(payload, "SEAR")) return true;
-
-	/* Ntrip - some differential GPS system using modified HTTP */
-        if (MATCHSTR(payload, "SOUR")) return true;
-
-
-	return false;
-
-}
-
-static inline bool match_http_response(uint32_t payload, uint32_t len) {
-	
-	if (len == 0)
-		return true;
-	if (len == 1 && MATCH(payload, 'H', 0x00, 0x00, 0x00))
-		return true;
-        if (MATCHSTR(payload, "HTTP")) {
-		return true;	
-	}
-
-	/* UNKNOWN seems to be a valid response from some servers, e.g.
-	 * mini_httpd */
-        if (MATCHSTR(payload, "UNKN")) {
-		return true;	
-	}
-
-
-
-	return false;
-
-	
-}
-
 static inline bool valid_http_port(lpi_data_t *data) {
 	/* Must be on a known HTTP port - designed to filter 
 	 * out P2P protos that use HTTP.
@@ -1961,6 +2167,26 @@ static inline bool match_mystery_iG(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_mystery_conn(lpi_data_t *data) {
+
+	/* Appears to be some sort of file transfer protocol, but
+	 * trying to google for a protocol using words such as "connect"
+	 * and "receive" is not very helpful */
+
+	if (match_str_both(data, "conn", "reci"))
+		return true;
+
+	if (match_str_either(data, "reci")) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+	return false;
+
+}
+
 lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 {
         
@@ -2000,9 +2226,7 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
         if (match_smtp(proto_d)) return LPI_PROTO_SMTP;
 
         /* SSH */
-        if (match_str_either(proto_d, "SSH-")) return LPI_PROTO_SSH;
-        if (match_str_either(proto_d, "QUIT") && proto_d->server_port == 22)
-                return LPI_PROTO_SSH;
+        if (match_ssh(proto_d)) return LPI_PROTO_SSH;
 
         /* POP3 */
         if (match_chars_either(proto_d, '+','O','K',ANY))
@@ -2287,7 +2511,11 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_svn(proto_d)) return LPI_PROTO_SVN;
 
+	if (match_socks4(proto_d)) return LPI_PROTO_SOCKS4;
+
 	if (match_socks5(proto_d)) return LPI_PROTO_SOCKS5;
+
+	if (match_mms(proto_d)) return LPI_PROTO_MMS;
 
         /* eMule */
         if (match_emule(proto_d)) return LPI_PROTO_EMULE;
@@ -2302,6 +2530,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 
 	if (match_invalid_bittorrent(proto_d)) return LPI_PROTO_INVALID_BT;
 
+	if (match_web_junk(proto_d)) return LPI_PROTO_WEB_JUNK;
+
 	if (match_mystery_9000(proto_d)) return LPI_PROTO_MYSTERY_9000;
 
 	if (match_mystery_pspr(proto_d)) return LPI_PROTO_MYSTERY_PSPR;
@@ -2309,6 +2539,8 @@ lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
 	if (match_mystery_8000(proto_d)) return LPI_PROTO_MYSTERY_8000;
 
 	if (match_mystery_iG(proto_d)) return LPI_PROTO_MYSTERY_IG;
+
+	if (match_mystery_conn(proto_d)) return LPI_PROTO_MYSTERY_CONN;
 
 	/* Leave this one til last */
 	if (match_rejection(proto_d)) return LPI_PROTO_REJECTION;

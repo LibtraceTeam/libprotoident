@@ -543,6 +543,15 @@ static inline bool match_isakmp(lpi_data_t *data) {
 	if (data->server_port != 500 && data->client_port != 500)
 		return false;
 
+	/* Catching one-way ISAKMP is hard, we have to rely on port numbers
+	 * because nothing else is consistent :( */
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (data->server_port == 500 && data->client_port == 500)
+			return true;
+		return false;
+	}
+
+
 	/* First four bytes are the cookie for the initiator, so should match 
 	 * in both directions */
 
@@ -1390,6 +1399,34 @@ static inline bool match_other_btudp(lpi_data_t *data) {
 
 }
 
+static inline bool match_vuze_dht_alt(lpi_data_t *data) {
+
+	/* Flows matching this rule *appear* to be doing something related
+	 * to the Vuze DHT system, but this behaviour is undocumented.
+	 *
+	 * I have observed flows that match the conventional Vuze DHT rule
+	 * involving the same IP/port as flows that match this rule, so
+	 * that does suggest it is related to Vuze somehow. */
+
+	if (data->payload_len[0] != 0 && 
+			(ntohl(data->payload[0]) & 0x80000000) != 0x80000000)
+		return false;
+	if (data->payload_len[1] != 0 &&
+			(ntohl(data->payload[1]) & 0x80000000) != 0x80000000)
+		return false;
+
+	if (data->payload_len[0] == 90 && data->payload_len[1] == 79)
+		return true;
+	if (data->payload_len[1] == 90 && data->payload_len[0] == 79)
+		return true;
+	if (data->payload_len[0] == 90 && data->payload_len[1] == 0)
+		return true;
+	if (data->payload_len[1] == 90 && data->payload_len[0] == 0)
+		return true;
+
+	return false;
+}
+
 static inline bool match_vuze_dht_reply(uint32_t data, uint32_t len) {
 
 	/* Each reply action is an odd number */
@@ -1518,6 +1555,10 @@ static inline bool match_vuze_dht(lpi_data_t *data) {
 				data->payload_len[0], true))
 			return true;
 	}
+
+
+	if (match_vuze_dht_alt(data))
+		return true;
 
 	return false;	
 	
@@ -1669,7 +1710,8 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 	/* This is almost all based on observing traffic on port 3074. Not
 	 * very scientific, but seems more or less right */
 
-	
+
+
 	/* We've only ever seen a few of the packet sizes in one-way flows,
 	 * so let's not match any of the others if there is no response */
 	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00)) {
@@ -1720,7 +1762,6 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 /* XXX Not 100% sure on this because there is little documentation, but I
  * think this is pretty close */
 static inline bool match_xlsp(lpi_data_t *data) {
-
 
 	/* Commonly observed request/response pattern */
 	if (match_chars_either(data, 0x0d, 0x02, 0x00, ANY)) {
@@ -1783,7 +1824,7 @@ static inline bool match_xlsp(lpi_data_t *data) {
 	/* Enforce port 3074 being involved, to reduce false positive rate for
 	 * one-way transactions */
 
-	if (match_chars_either(data, 0xff, 0xff, 0xff, 0xff)) {
+	if (match_str_either(data, "\xff\xff\xff\xff")) {
 		if (data->server_port != 3074 && data->client_port != 3074)
 			return false;
 		if (data->payload_len[0] == 14 && data->payload_len[1] == 0)

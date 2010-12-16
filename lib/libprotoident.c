@@ -155,6 +155,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		
 		case LPI_PROTO_INVALID:
 		case LPI_PROTO_INVALID_BT:
+		case LPI_PROTO_WEB_JUNK:
 			return LPI_CATEGORY_MIXED;
 
 		case LPI_PROTO_UNKNOWN:
@@ -234,6 +235,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_PPTP:
 		case LPI_PROTO_UDP_CISCO_VPN:
 		case LPI_PROTO_SOCKS5:
+		case LPI_PROTO_SOCKS4:
 			return LPI_CATEGORY_TUNNELLING;
 
 		case LPI_PROTO_UDP_PYZOR:
@@ -250,6 +252,7 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_FLASH:
 		case LPI_PROTO_SHOUTCAST:
 		case LPI_PROTO_UDP_REAL:
+		case LPI_PROTO_MMS:
 			return LPI_CATEGORY_STREAMING;	
 		
 		case LPI_PROTO_DNS:
@@ -668,8 +671,14 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "SVN";
 		case LPI_PROTO_SOCKS5:
 			return "SOCKS5";
+		case LPI_PROTO_SOCKS4:
+			return "SOCKS4";
 		case LPI_PROTO_INVALID_SMTP:
 			return "Invalid_SMTP";
+		case LPI_PROTO_MMS:
+			return "MMS";
+		case LPI_PROTO_WEB_JUNK:
+			return "Web_Junk";
 
                 /* UDP Protocols */
                 case LPI_PROTO_UDP_SIP:
@@ -844,6 +853,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Mystery_8000";
 		case LPI_PROTO_MYSTERY_IG:
 			return "Mystery_iG";
+		case LPI_PROTO_MYSTERY_CONN:
+			return "Mystery_conn";
 		case LPI_PROTO_UDP_EMULE_MYSTERY:
 			return "eMule_UDP_Mystery";
 		case LPI_PROTO_UDP_MYSTERY_0D:
