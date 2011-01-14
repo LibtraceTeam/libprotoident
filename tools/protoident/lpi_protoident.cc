@@ -163,6 +163,9 @@ void per_packet(libtrace_packet_t *packet) {
 
         uint16_t l3_type;
 
+	uint16_t src_port;
+	uint16_t dst_port;
+
         /* Libflowmanager only deals with IP traffic, so ignore anything
 	 * that does not have an IP header */
         ip = (libtrace_ip_t *)trace_get_layer3(packet, &l3_type, NULL);
@@ -179,10 +182,21 @@ void per_packet(libtrace_packet_t *packet) {
 	 * reliable. Feel free to replace this with something more suitable
 	 * for your own needs!.
 	 */
-	dir = trace_get_direction(packet);
+	
+	src_port = trace_get_source_port(packet);
+	dst_port = trace_get_destination_port(packet);
 
-	if (dir > 1)
-		return;
+	if (src_port == dst_port) {
+		if (ip->ip_src.s_addr < ip->ip_dst.s_addr)
+			dir = 0;
+		else
+			dir = 1;
+	} else {
+		if (trace_get_server_port(ip->ip_p, src_port, dst_port) == USE_SOURCE)
+			dir = 0;
+		else
+			dir = 1;
+	}
 
         /* Ignore packets where the IP addresses are the same - something is
          * probably screwy and it's REALLY hard to determine direction */
@@ -213,6 +227,8 @@ void per_packet(libtrace_packet_t *packet) {
 			ident->init_dir = dir;
 	}
 
+	
+	/* Update our own byte and packet counters for reporting purposes */
 	if (dir == 0) {
 		ident->out_bytes += trace_get_payload_length(packet);
 		ident->out_pkts += 1;
@@ -222,8 +238,8 @@ void per_packet(libtrace_packet_t *packet) {
 		ident->in_pkts += 1;
 	}
 
-
-	/* Cast the extension pointer to match the custom data type */	
+	/* Pass the packet into libprotoident so that it can extract any
+	 * info it needs from this packet */
 	lpi_update_data(packet, &ident->lpi, dir);
 
         /* Update TCP state for TCP flows. The TCP state determines how long
