@@ -61,25 +61,23 @@ static inline bool match_mp2p(lpi_data_t *data) {
 		return true;
 	if (match_chars_either(data, ANY, 0x4a, 0xd6, 0x6f))
 		return true;
+	if (match_chars_either(data, ANY, 0x4a, 0xd6, 0x90))
+		return true;
 
 
 	/* Seeing a lot of these in flows using port 41170 both ways */
-	if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00)) {
+	if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00) &&
+			data->payload_len[0] != 0) {
 		if (data->payload_len[1] != 0)
 			return false;
-		if (data->payload_len[0] == 242)
-			return true;
-		if (data->payload_len[0] == 240)
-			return true;
+		return true;
 	}
 
-	if (MATCH(data->payload[1], ANY, ANY, 0x00, 0x00)) {
+	if (MATCH(data->payload[1], ANY, ANY, 0x00, 0x00) &&
+			data->payload_len[1] != 0) {
 		if (data->payload_len[0] != 0)
 			return false;
-		if (data->payload_len[1] == 242)
-			return true;
-		if (data->payload_len[1] == 240)
-			return true;
+		return true;
 	}
 	return false;
 	
@@ -1628,6 +1626,8 @@ static inline bool match_xfire_p2p(lpi_data_t *data) {
 
 	if (match_str_both(data, "SC01", "CK01"))
 		return true;
+	if (match_str_either(data, "MC01")) 
+		return true;
 	return false;
 
 }
@@ -1725,16 +1725,24 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 			return true;
 		if (len == 50)
 			return true;
-		if (len == 83 && other_len != 0)
+		if (len == 83)
 			return true;
-		if (len == 43 && other_len != 0)
+		if (len == 43)
 			return true;
-		if (len == 75 && other_len != 0)
+		if (len == 75)
 			return true;
 		if (len == 120 && other_len != 0)
 			return true;
+		if (len == 91 && other_len != 0)
+			return true;
 		if (len == 0 && other_len != 0)
 			return true;
+	
+		if (len == 90 && other_len == 138)
+			return true;
+		if (len == 138 && other_len == 90)
+			return true;
+	
 	}
 
 	if (len == 24) {
@@ -1915,6 +1923,19 @@ static inline bool match_xunlei(lpi_data_t *data) {
 
 static inline bool match_demonware(lpi_data_t *data) {
 
+	
+	/* This is some sort of control channel for demonware? */
+	if (data->payload_len[0] == 15 && data->payload_len[1] == 0) {
+		if (MATCH(data->payload[0], 0x15, 0x02, 0x00, ANY))
+			return true;
+	}
+	
+	if (data->payload_len[1] == 15 && data->payload_len[0] == 0) {
+		if (MATCH(data->payload[1], 0x15, 0x02, 0x00, ANY))
+			return true;
+	}
+	
+	
 	/* Demonware bandwidth testing involves sending a series of 1024
 	 * byte packets to a known server - each packet has an incrementing
 	 * seqno, starting from zero */
@@ -1943,7 +1964,7 @@ static inline bool match_demonware(lpi_data_t *data) {
 		if (data->payload_len[0] == 0)
 			return true;
 	}	
-	
+
 	/* Could also check for ports 3074 and 3075 if needed */
 
 	return false;
@@ -2696,9 +2717,7 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0xe4, 0x4b, ANY, ANY) && len == 19) 
 		return true;
 	if (MATCH(payload, 0xe4, 0x11, ANY, ANY)) {
-		if (len == 22 || len == 38 || len == 28 || len == 36 ||
-				len == 34) 
-			return true;
+		return true;
 	}
 
 	if (MATCH(payload, 0xe4, 0x19, ANY, ANY)) {
@@ -2743,6 +2762,8 @@ static inline bool match_kad(uint32_t payload, uint32_t len) {
 		if (len == 119 || len == 69 || len == 294) 
 			return true;
 		if (len == 44)
+			return true;
+		if (len == 269)
 			return true;
 	}
 	
@@ -2928,6 +2949,9 @@ static inline bool match_mys_fe_payload(uint32_t payload, uint32_t len) {
 	/* This appears to have a 3 byte header. First byte is always 0xfe.
 	 * Second and third bytes are the length (minus the 3 byte header).
 	 */
+
+	if (len == 0)
+		return true;
 
 	if (!MATCH(payload, 0xfe, ANY, ANY, ANY))
 		return false;
