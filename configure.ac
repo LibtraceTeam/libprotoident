@@ -47,7 +47,7 @@ AC_ARG_WITH(tools,
 		fi
 ])
 
-AC_CHECK_LIB([trace], [trace_create_packet],,trace_found=0)
+AC_CHECK_LIB([trace], [trace_get_payload_length],,trace_found=0)
 
 if test "$build_tools" = yes; then
 	AC_CHECK_LIB([flowmanager], [lfm_match_packet_to_flow],,lfm_found=0)
@@ -59,7 +59,7 @@ AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile
 		tools/find_unknown/Makefile tools/protoident/Makefile])
 
 if test "$trace_found" = 0; then
-	AC_MSG_ERROR(Required library libtrace not found; use LDFLAGS to specify library location)
+	AC_MSG_ERROR(Required library libtrace 3.0.7 or later not found; use LDFLAGS to specify library location)
 fi
 
 if test "$lfm_found" = 0; then
