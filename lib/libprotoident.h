@@ -11,41 +11,45 @@ extern "C" {
  * describes what they are used for, e.g. P2P, Web, Mail etc.
  */
 typedef enum {
-	LPI_CATEGORY_WEB,
-	LPI_CATEGORY_CHAT,
-	LPI_CATEGORY_MAIL,
-	LPI_CATEGORY_P2P,
+	LPI_CATEGORY_WEB,		/* HTTP-based protocols */
+	LPI_CATEGORY_CHAT,		/* Instant messaging and chatrooms */
+	LPI_CATEGORY_MAIL,		/* E-mail */
+	LPI_CATEGORY_P2P,		/* Peer-to-peer uploads and downloads */
 	LPI_CATEGORY_P2P_STRUCTURE,	/* Maintenance of P2P networks */
-	LPI_CATEGORY_KEY_EXCHANGE,
-	LPI_CATEGORY_ECOMMERCE,
-	LPI_CATEGORY_GAMING,
+	LPI_CATEGORY_KEY_EXCHANGE,	/* Protocols used to exchange and
+					   manage cryptographic keys, e.g.
+					   ISAKMP */
+	LPI_CATEGORY_ECOMMERCE,		/* Financial transaction protocols */
+	LPI_CATEGORY_GAMING,		/* Game protocols */
 	LPI_CATEGORY_ENCRYPT,		/* Encrypted traffic that is not
 					   clearly part of another category */
 	LPI_CATEGORY_MONITORING,	/* Network measurement / monitoring */
-	LPI_CATEGORY_NEWS,
-	LPI_CATEGORY_MALWARE,
-	LPI_CATEGORY_SECURITY,
-	LPI_CATEGORY_ANTISPAM,
-	LPI_CATEGORY_VOIP,
+	LPI_CATEGORY_NEWS,		/* Newsgroup protocols, e.g. NNTP */
+	LPI_CATEGORY_MALWARE,		/* Viruses, trojans etc. */
+	LPI_CATEGORY_SECURITY,		/* Antivirus and firewall updates */
+	LPI_CATEGORY_ANTISPAM,		/* Anti-spam software update protocols
+					 */
+	LPI_CATEGORY_VOIP,		/* Voice chat and Internet telephony 
+					   protocols */
 	LPI_CATEGORY_TUNNELLING,	/* Tunnelling protocols */
 	LPI_CATEGORY_NAT,		/* NAT traversal protocols */
-	LPI_CATEGORY_STREAMING,
+	LPI_CATEGORY_STREAMING,		/* Streaming media protocols */
 	LPI_CATEGORY_SERVICES,		/* Basic services, e.g. DNS, NTP */
-	LPI_CATEGORY_DATABASES,
-	LPI_CATEGORY_FILES,
+	LPI_CATEGORY_DATABASES,		/* Database remote access protocols */
+	LPI_CATEGORY_FILES,		/* Non-P2P file transfer protocols */
 	LPI_CATEGORY_REMOTE,		/* Remote access, e.g. SSH, telnet */
 	LPI_CATEGORY_TELCO,		/* Telco services aside from VOIP, e.g
 					   SMS protocols */
 	LPI_CATEGORY_P2PTV,		/* P2P TV, e.g. PPLive */
 	LPI_CATEGORY_RCS,		/* Revision Control */
-	LPI_CATEGORY_ICMP,
+	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
-	LPI_CATEGORY_NOPAYLOAD,
-	LPI_CATEGORY_UNSUPPORTED,
-	LPI_CATEGORY_UNKNOWN,
+	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
+	LPI_CATEGORY_UNSUPPORTED,	/* Transport protocol unsupported */
+	LPI_CATEGORY_UNKNOWN,		/* Protocol could not be identified */
 	LPI_CATEGORY_NO_CATEGORY,	/* Protocol has not been placed into a
 					   category yet */
-	LPI_CATEGORY_LAST
+	LPI_CATEGORY_LAST		/* Must always be last */
 } lpi_category_t;
 
 
@@ -260,6 +264,10 @@ typedef enum {
 	LPI_PROTO_LAST		/** ALWAYS have this as the last value */
 } lpi_protocol_t;
 
+/* This structure stores all the data needed by libprotoident to identify the
+ * application protocol for a flow. Do not change the contents of this struct
+ * directly - lpi_update_data() will do that for you - but reading the values
+ * should be ok. */
 typedef struct lpi {
 	uint32_t payload[2];
 	uint32_t seqno[2];
@@ -271,12 +279,70 @@ typedef struct lpi {
 	uint32_t ips[2];
 } lpi_data_t;
 
-int lpi_init_data(lpi_data_t *data);
+
+/** Initialises an LPI data structure, setting all the members to appropriate
+ *  starting values.
+ *
+ * @param data	The LPI data structure to be initialised.
+ */
+void lpi_init_data(lpi_data_t *data);
+
+/** Updates the LPI data structure based on the contents of the packet
+ *  provided.
+ *
+ *  @note The direction must be provided by the caller, as we cannot rely
+ *  on trace_get_direction().
+ *
+ *  @param packet The packet to update the LPI data from.
+ *  @param data	The LPI data structure to be updated.
+ *  @param dir The direction of the packet - 0 is outgoing, 1 is incoming.
+ *
+ *  @return 0 if the packet was ignored, 1 if the LPI data was updated.
+ */
 int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir);
+
+/** Returns a unique string describing the provided protocol.
+ *
+ * This is essentially a protocol-to-string conversion function.
+ *
+ * @param proto The protocol that a string representation is required for.
+ *
+ * @return A pointer to a statically allocated string describing the protocol.
+ * This is allocated on the stack, so should be used or copied immediately.
+ */
 const char *lpi_print(lpi_protocol_t proto);
+
+/** Given a protocol, returns the category that it matches.
+ *
+ * @param proto The protocol that a category is required for.
+ *
+ * @return The category that the protocol belongs to.
+ */
 lpi_category_t lpi_categorise(lpi_protocol_t proto);
+
+/** Returns a unique string describing the provided category. 
+ *
+ * This is essentially a category-to-string conversion function.
+ *
+ * @param cateogry The category that a string representation is required for.
+ *
+ * @return A pointer to a statically allocated string describing the category.
+ * This is allocated on the stack, so should be used or copied immediately.
+ */
 const char *lpi_print_category(lpi_category_t category);
+
+/** Using the provided data, attempts to determine the L7 protocol being used
+ *  by that flow.
+ *
+ *  @param data	The LPI data to use when determining the protocol.
+ *
+ *  @return The application protocol that matches the profile described by the
+ *  given LPI data. If no protocol matches, LPI_UNKNOWN or LPI_UNKNOWN_UDP will
+ *  be returned (depending on the transport protocol).
+ */
 lpi_protocol_t lpi_guess_protocol(lpi_data_t *data);
+
+
 #ifdef __cplusplus 
 }
 #endif
