@@ -41,6 +41,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <signal.h>
 
 #include <libtrace.h>
 #include <libflowmanager.h>
@@ -51,6 +52,8 @@ bool only_dir1 = false;
 
 bool require_both = false;
 bool nat_hole = false;
+
+static volatile int done = 0;
 
 /* This data structure is used to demonstrate how to use the 'extension' 
  * pointer to store custom data for a flow */
@@ -285,14 +288,19 @@ void per_packet(libtrace_packet_t *packet) {
 
 }
 
+static void cleanup_signal(int sig) {
+	(void)sig;
+	done = 1;
+}
 
 int main(int argc, char *argv[]) {
 
         libtrace_t *trace;
         libtrace_packet_t *packet;
 	libtrace_filter_t *filter = NULL;
-
-        bool opt_true = true;
+	struct sigaction sigact; 
+        
+	bool opt_true = true;
         bool opt_false = false;
 
         int i, opt;
@@ -349,6 +357,17 @@ int main(int argc, char *argv[]) {
 	if (lfm_set_config_option(LFM_CONFIG_SHORT_UDP, &opt_false) == 0)
 		return -1;
 
+
+	sigact.sa_handler = cleanup_signal;
+	sigemptyset(&sigact.sa_mask);
+	sigact.sa_flags = SA_RESTART;
+
+	sigaction(SIGINT, &sigact, NULL);
+	sigaction(SIGTERM, &sigact, NULL);
+
+	signal(SIGINT,&cleanup_signal);
+	signal(SIGTERM,&cleanup_signal);
+
         for (i = optind; i < argc; i++) {
 
                 fprintf(stderr, "%s\n", argv[i]);
@@ -381,8 +400,13 @@ int main(int argc, char *argv[]) {
                 while (trace_read_packet(trace, packet) > 0) {
                         ts = trace_get_seconds(packet);
 			per_packet(packet);
+			if (done)
+				break;
 
                 }
+
+		if (done)
+			break;
 
                 if (trace_is_err(trace)) {
                         trace_perror(trace, "Reading packets");
