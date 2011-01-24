@@ -147,8 +147,8 @@ API
 ===
 
 If you want to develop your own tools based on libprotoident, you'll need to
-use the libprotoident API. The API is very simple and probably the best way to 
-learn it to examine how the existing tools work. The source for the tools is
+use the libprotoident API. The API is very simple and the best way to learn it 
+is to examine how the existing tools work. The source for the tools is
 located in the tools/ directory.
 
 The tools use libflowmanager to do the flow tracking, using functions beginning

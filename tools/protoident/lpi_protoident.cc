@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include <libtrace.h>
 #include <libflowmanager.h>
@@ -106,10 +107,10 @@ void display_ident(Flow *f, IdentFlow *ident) {
 	proto = lpi_guess_protocol(&ident->lpi);
 
         in.s_addr = f->id.get_server_ip();
-        snprintf(ip, 1000, "%s", inet_ntoa(in));
+        snprintf(ip, 50, "%s", inet_ntoa(in));
 
         in.s_addr = f->id.get_client_ip();
-        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %lu %lu", 
+        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %" PRIu64 " %" PRIu64, 
 			lpi_print(proto), ip, inet_ntoa(in),
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), ident->start_ts,

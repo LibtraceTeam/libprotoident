@@ -19,7 +19,7 @@ static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 }
 
 
-int lpi_init_data(lpi_data_t *data) {
+void lpi_init_data(lpi_data_t *data) {
 
 	data->payload[0] = 0;
 	data->payload[1] = 0;

@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include <libtrace.h>
 #include <libflowmanager.h>
@@ -106,10 +107,11 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
 
 	
         in.s_addr = f->id.get_server_ip();
-        snprintf(ip, 1000, "%s", inet_ntoa(in));
+        snprintf(ip, 50, "%s", inet_ntoa(in));
 
         in.s_addr = f->id.get_client_ip();
-        snprintf(str, 1000, "%s %s %u %u %u %.3f %lu %lu", ip, inet_ntoa(in),
+        snprintf(str, 1000, "%s %s %u %u %u %.3f %" PRIu64 " %" PRIu64,  ip, 
+			inet_ntoa(in),
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), unk->start_ts,
 			unk->out_bytes, unk->in_bytes);

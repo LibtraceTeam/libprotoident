@@ -7,8 +7,16 @@
 
 #define MASKOCTET(x) \
         ((x) == ANY ? 0U : 255U)
+
+#if BYTE_ORDER == BIG_ENDIAN
 #define FORMUP(a,b,c,d) \
-        (unsigned)((((d)&0xFF)<<24)|(((c)&0xFF)<<16)|(((b)&0xFF)<<8)|((a)&0xFF))
+        (unsigned)((((a)&0xFF)<<24)|(((b)&0xFF)<<16)|(((c)&0xFF)<<8)|((d)&0xFF))
+#else
+#define FORMUP(a,b,c,d) \
+	(unsigned)((((d)&0xFF)<<24)|(((c)&0xFF)<<16)|(((b)&0xFF)<<8)|((a)&0xFF))
+#endif
+
+
 #define FORMUPMASK(a,b,c,d) \
         FORMUP(MASKOCTET(a),MASKOCTET(b),MASKOCTET(c),MASKOCTET(d))
 #define MATCH(x,a,b,c,d) \
