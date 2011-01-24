@@ -278,6 +278,25 @@ static inline bool match_fortinet(lpi_data_t *data) {
 	return false;
 }
 
+static inline bool match_serialnumberd(lpi_data_t *data) {
+
+	if (MATCHSTR(data->payload[0], "SNQU")) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (MATCHSTR(data->payload[1], "SNRE"))
+			return true;
+	}
+
+	if (MATCHSTR(data->payload[1], "SNQU")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCHSTR(data->payload[0], "SNRE"))
+			return true;
+	}
+
+	return false;
+}
+
 static inline bool match_rtp(lpi_data_t *data) {
         if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
                         match_str_either(data, "\x00\x01\x00\x08"))
@@ -3457,6 +3476,8 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_bf42_ping(proto_d)) return LPI_PROTO_UDP_BATTLEFIELD;
 
 	if (match_sopcast(proto_d)) return LPI_PROTO_UDP_SOPCAST;
+
+	if (match_serialnumberd(proto_d)) return LPI_PROTO_UDP_SERIALNUMBERD;
 
 	if (match_dns(proto_d))
                 return LPI_PROTO_UDP_DNS;

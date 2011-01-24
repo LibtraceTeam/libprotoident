@@ -269,6 +269,7 @@ typedef enum {
 	LPI_PROTO_UDP_STORM_WORM,
 	LPI_PROTO_UDP_BATTLEFIELD,	/* Battlefield series of games */
 	LPI_PROTO_UDP_SOPCAST,
+	LPI_PROTO_UDP_SERIALNUMBERD,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

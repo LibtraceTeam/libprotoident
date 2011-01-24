@@ -295,7 +295,8 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
                 case LPI_PROTO_UDP_NTP:
 		case LPI_PROTO_UDP_SLP:
 		case LPI_PROTO_UDP_SSDP:
-		case LPI_PROTO_UDP_NETBIOS:	
+		case LPI_PROTO_UDP_NETBIOS:
+		case LPI_PROTO_UDP_SERIALNUMBERD:	
 			return LPI_CATEGORY_SERVICES;	
                 
 		case LPI_PROTO_TDS:
@@ -873,6 +874,8 @@ const char *lpi_print(lpi_protocol_t proto) {
 			return "Battlefield";
 		case LPI_PROTO_UDP_SOPCAST:
 			return "Sopcast";
+		case LPI_PROTO_UDP_SERIALNUMBERD:
+			return "Serialnumberd";
 
 		
 		case LPI_PROTO_REJECTION:
