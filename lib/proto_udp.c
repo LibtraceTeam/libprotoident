@@ -135,6 +135,13 @@ static inline bool match_netbios_req(uint32_t payload, uint32_t len) {
 		if (len == 50)
 			return true;
 	}
+
+	/* Broadcast traffic observed on our Uni network :/ */
+	if (MATCH(payload, ANY, ANY, 0x01, 0x10)) {
+		if (len == 50)
+			return true;
+		
+	}
 	return false;
 
 }
