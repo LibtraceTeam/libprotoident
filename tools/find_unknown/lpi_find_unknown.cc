@@ -293,6 +293,21 @@ static void cleanup_signal(int sig) {
 	done = 1;
 }
 
+static void usage(char *prog) {
+
+	printf("Usage details for %s\n\n", prog);
+	printf("%s [-b] [-d <dir>] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
+	printf("Options:\n");
+	printf("  -b		Ignore flows that do not send data in both directions \n");
+	printf("  -d <dir>	Ignore flows where the initial packet does not match the given \n   		direction\n");
+	printf("  -f <filter>	Ignore flows that do not match the given BPF filter\n");
+	printf("  -R 		Ignore flows involving private RFC 1918 address space\n");
+	printf("  -H		Ignore flows that do not meet the criteria for an SPNAT hole\n");
+
+	exit(0);
+
+}
+
 int main(int argc, char *argv[]) {
 
         libtrace_t *trace;
@@ -307,6 +322,7 @@ int main(int argc, char *argv[]) {
         double ts;
 	char *filterstring = NULL;
 	int dir;
+	bool ignore_rfc1918 = false;
 
         packet = trace_create_packet();
         if (packet == NULL) {
@@ -314,7 +330,7 @@ int main(int argc, char *argv[]) {
                 return -1;
         }
 
-	while ((opt = getopt(argc, argv, "bHd:f:")) != EOF) {
+	while ((opt = getopt(argc, argv, "bHd:f:Rh")) != EOF) {
                 switch (opt) {
 			case 'b':
 				require_both = true;
@@ -329,10 +345,17 @@ int main(int argc, char *argv[]) {
 			case 'f':
                                 filterstring = optarg;
                                 break;
+			case 'R':
+				ignore_rfc1918 = true;
+				break;
 			case 'H':
 				nat_hole = true;
 				break;
-                }
+                	case 'h':
+			default:
+				usage(argv[0]);
+		}
+
         }
 
         if (filterstring != NULL) {
@@ -342,7 +365,8 @@ int main(int argc, char *argv[]) {
 
 	/* This tells libflowmanager to ignore any flows where an RFC1918
 	 * private IP address is involved */
-        if (lfm_set_config_option(LFM_CONFIG_IGNORE_RFC1918, &opt_true) == 0)
+        if (lfm_set_config_option(LFM_CONFIG_IGNORE_RFC1918, 
+				&ignore_rfc1918) == 0)
                 return -1;
 
 	/* This tells libflowmanager not to replicate the TCP timewait
