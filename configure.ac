@@ -1,7 +1,7 @@
 AC_INIT(libprotoident, 1.0.0, contact@wand.net.nz)
 
 AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR(lib/libprotoident.c)
+AC_CONFIG_SRCDIR(lib/libprotoident.cc)
 AM_CONFIG_HEADER(config.h)
 
 # Make sure we use the relatively silent automake output
@@ -56,7 +56,8 @@ fi
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])
 
 AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile 
-		tools/find_unknown/Makefile tools/protoident/Makefile])
+		tools/find_unknown/Makefile tools/protoident/Makefile
+		lib/udp/Makefile lib/tcp/Makefile])
 
 if test "$trace_found" = 0; then
 	AC_MSG_ERROR(Required library libtrace 3.0.7 or later not found; use LDFLAGS to specify library location)

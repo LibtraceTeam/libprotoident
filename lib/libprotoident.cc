@@ -30,12 +30,32 @@
  * $Id$
  */
 
+#define __STDC_FORMAT_MACROS
+#define __STDC_LIMIT_MACROS
+
 #include <stdio.h>
 #include <assert.h>
 #include <libtrace.h>
+#include <inttypes.h>
+#include <sys/types.h>
+#include <stdint.h>
+
 #include "libprotoident.h"
 #include "proto_tcp.h"
 #include "proto_udp.h"
+#include "proto_manager.h"
+
+#define DEFAULT_MOD_LOCATION "/usr/local/lib/libprotoident/"
+
+bool init_called = false;
+LPIModuleMap TCP_protocols;
+LPIModuleMap UDP_protocols;
+
+lpi_module_t *lpi_icmp = NULL;
+lpi_module_t *lpi_unsupported = NULL;
+lpi_module_t *lpi_unknown_tcp = NULL;
+lpi_module_t *lpi_unknown_udp = NULL;
+
 
 static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
@@ -50,6 +70,37 @@ static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
 }
 
+int lpi_init_library(const char *module_loc) {
+
+	char base_loc[1000];
+	char full_loc[2000];
+
+	if (module_loc == NULL) {
+		strncpy(base_loc, DEFAULT_MOD_LOCATION, 999);
+	} else {
+		strncpy(base_loc, module_loc, 999);
+	}
+
+	strncpy(full_loc, base_loc, 1000);
+	strncat(full_loc, "/tcp/", 5);
+
+	if (register_protocols(&TCP_protocols, full_loc) == -1) 
+		return -1;
+	
+	strncpy(full_loc, base_loc, 1000);
+	strncat(full_loc, "/udp/", 5);
+
+	if (register_protocols(&UDP_protocols, full_loc) == -1) 
+		return -1;
+
+	init_other_protocols();
+	
+	init_called = true;
+
+
+	return 0;
+
+}
 
 void lpi_init_data(lpi_data_t *data) {
 
@@ -163,25 +214,95 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 }
 
-lpi_protocol_t lpi_guess_protocol(lpi_data_t *data) {
+static lpi_module_t *test_protocol_list(LPIModuleList *ml, lpi_data_t *data) {
+
+	LPIModuleList::iterator l_it;
+	
+	/*
+	 * Ultimately, I want to spawn up to MAXTHREADS threads for rule
+	 * matching so we can parallelise this process. For now, though, I'll
+	 * just naively loop through the list.
+	 */
+
+	for (l_it = ml->begin(); l_it != ml->end(); l_it ++) {
+		lpi_module_t *module = *l_it;
+
+		/* To save time, I'm going to break on the first successful
+		 * match. A threaded version would wait for all the modules
+		 * to run, storing all successful results in a list of some
+		 * sort and selecting an appropriate result from there.
+		 */
+
+		if (module->lpi_callback(data, module)) 
+			return module;
+		
+	}
+
+	return NULL;
+}
+
+static lpi_module_t *guess_protocol(LPIModuleMap *modmap, lpi_data_t *data) {
+
+	lpi_module_t *proto = NULL;
+
+	LPIModuleMap::iterator m_it;
+
+	/* Deal with each priority in turn - want to match higher priority
+	 * rules first. 
+	 */
+	
+	for (m_it = modmap->begin(); m_it != modmap->end(); m_it ++) {
+		LPIModuleList *ml = m_it->second;
+		
+		proto = test_protocol_list(ml, data);
+
+		if (proto != NULL)
+			break;
+	}
+
+	return proto;
+
+}
+
+lpi_module_t *lpi_guess_protocol(lpi_data_t *data) {
+
+	lpi_module_t *p = NULL;
+
+	if (!init_called) {
+		fprintf(stderr, "lpi_init_library was never called - cannot guess the protocol\n");
+		return NULL;
+	}
 
 	switch(data->trans_proto) {
 		case TRACE_IPPROTO_ICMP:
-			return LPI_PROTO_ICMP;
+			return lpi_icmp;
 		case TRACE_IPPROTO_TCP:
-			return guess_tcp_protocol(data);
+			p = guess_protocol(&TCP_protocols, data);
+			if (p == NULL)
+				p = lpi_unknown_tcp;
+			break;
+
 		case TRACE_IPPROTO_UDP:
-			return guess_udp_protocol(data);
+			p = guess_protocol(&UDP_protocols, data);
+			if (p == NULL)
+				p = lpi_unknown_udp;
+			break;
 		default:
-			return LPI_PROTO_UNSUPPORTED;
+			return lpi_unsupported;
 	}
 
-	return LPI_PROTO_UNSUPPORTED;
+
+	return p;
 }
 	
-lpi_category_t lpi_categorise(lpi_protocol_t proto) {
+lpi_category_t lpi_categorise(lpi_module_t *module) {
 
-	switch(proto) {
+	if (module == NULL)
+		return LPI_CATEGORY_NO_CATEGORY;
+
+	return module->category;
+
+	switch(module->protocol) {
 		case LPI_PROTO_UNSUPPORTED:
 			return LPI_CATEGORY_UNSUPPORTED;
 		
@@ -427,7 +548,8 @@ lpi_category_t lpi_categorise(lpi_protocol_t proto) {
 		case LPI_PROTO_TIP:
 			return LPI_CATEGORY_ECOMMERCE;
 	}
-	return LPI_CATEGORY_NO_CATEGORY;
+	if (module == NULL)
+		return LPI_CATEGORY_NO_CATEGORY;
 }
 
 const char *lpi_print_category(lpi_category_t category) {
@@ -502,8 +624,14 @@ const char *lpi_print_category(lpi_category_t category) {
 }
 			
 
-const char *lpi_print(lpi_protocol_t proto) {
-	switch(proto) {
+const char *lpi_print(lpi_module_t *module) {
+
+	if (module == NULL)
+		return "NULL";
+
+	return module->name;
+	
+	switch(module->protocol) {
 		case LPI_PROTO_INVALID:
 			return "Invalid";
 		case LPI_PROTO_UNKNOWN:

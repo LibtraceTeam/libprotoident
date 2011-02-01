@@ -112,7 +112,7 @@ void display_ident(Flow *f, IdentFlow *ident) {
         char ip[50];
         char str[1000];
         struct in_addr in;
-	lpi_protocol_t proto;
+	lpi_module_t *proto;
 
 	if (only_dir0 && ident->init_dir == 1)
 		return;
@@ -293,13 +293,14 @@ static void cleanup_signal(int sig) {
 static void usage(char *prog) {
 
         printf("Usage details for %s\n\n", prog);
-        printf("%s [-b] [-d <dir>] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
+        printf("%s [-b] [-d <dir>] [-f <filter>] [-R] [-H] [-m <location>] inputURI [inputURI ...]\n\n", prog);
         printf("Options:\n");
         printf("  -b            Ignore flows that do not send data in both directions \n");
         printf("  -d <dir>      Ignore flows where the initial packet does not match the given  \n   		direction\n");
         printf("  -f <filter>   Ignore flows that do not match the given BPF filter\n");
         printf("  -R            Ignore flows involving private RFC 1918 address space\n");
         printf("  -H            Ignore flows that do not meet the criteria for an SPNAT hole\n");
+	printf("  -m <location> Specifies a location to search for the protocol modules\n");
 
         exit(0);
 
@@ -321,6 +322,7 @@ int main(int argc, char *argv[]) {
 	char *filterstring = NULL;
 	int dir;
 	bool ignore_rfc1918 = false;
+	char *module_loc = NULL;
 
         packet = trace_create_packet();
         if (packet == NULL) {
@@ -328,7 +330,7 @@ int main(int argc, char *argv[]) {
                 return -1;
         }
 
-	while ((opt = getopt(argc, argv, "bHd:f:Rh")) != EOF) {
+	while ((opt = getopt(argc, argv, "m:bHd:f:Rh")) != EOF) {
                 switch (opt) {
 			case 'b':
 				require_both = true;
@@ -345,6 +347,9 @@ int main(int argc, char *argv[]) {
                                 break;
 			case 'H':
 				nat_hole = true;
+				break;
+			case 'm':
+				module_loc = optarg;
 				break;
 			case 'R':
 				ignore_rfc1918 = true;
@@ -387,7 +392,9 @@ int main(int argc, char *argv[]) {
 
         signal(SIGINT,&cleanup_signal);
         signal(SIGTERM,&cleanup_signal);
-	
+
+	lpi_init_library(module_loc);
+
         for (i = optind; i < argc; i++) {
 
                 fprintf(stderr, "%s\n", argv[i]);

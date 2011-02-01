@@ -313,6 +313,20 @@ typedef struct lpi {
 	uint32_t ips[2];
 } lpi_data_t;
 
+typedef struct lpi_module lpi_module_t;
+
+struct lpi_module {
+        void *dlhandle;
+        lpi_protocol_t protocol;
+        lpi_category_t category;
+        uint8_t priority;
+        char name[256];
+
+        bool (*lpi_callback) (lpi_data_t *proto_d, lpi_module_t *module);
+
+};
+
+int lpi_init_library(const char *module_loc);
 
 /** Initialises an LPI data structure, setting all the members to appropriate
  *  starting values.
@@ -344,7 +358,7 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir);
  * @return A pointer to a statically allocated string describing the protocol.
  * This is allocated on the stack, so should be used or copied immediately.
  */
-const char *lpi_print(lpi_protocol_t proto);
+const char *lpi_print(lpi_module_t *proto);
 
 /** Given a protocol, returns the category that it matches.
  *
@@ -352,7 +366,7 @@ const char *lpi_print(lpi_protocol_t proto);
  *
  * @return The category that the protocol belongs to.
  */
-lpi_category_t lpi_categorise(lpi_protocol_t proto);
+lpi_category_t lpi_categorise(lpi_module_t *proto);
 
 /** Returns a unique string describing the provided category. 
  *
@@ -374,7 +388,7 @@ const char *lpi_print_category(lpi_category_t category);
  *  given LPI data. If no protocol matches, LPI_UNKNOWN or LPI_UNKNOWN_UDP will
  *  be returned (depending on the transport protocol).
  */
-lpi_protocol_t lpi_guess_protocol(lpi_data_t *data);
+lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
 
 
 #ifdef __cplusplus 
