@@ -36,12 +36,25 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_steam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* Steam TCP Download */
+
+	if (!match_str_either(data, "\x01\x00\x00\x00"))
+                return false;
+        if (!match_chars_either(data, 0x00, 0x00, 0x00, ANY))
+                return false;
+
+        if (data->payload_len[0] == 4 && data->payload_len[1] == 1) {
+                return true;
+        }
+
+        if (data->payload_len[1] == 4 && data->payload_len[0] == 1) {
+                return true;
+        }
+	
+
 	return false;
-
 }
 
 extern "C"
@@ -49,12 +62,14 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_STEAM;
+	strncpy(mod->name, "Steam_TCP", 255);
+	mod->category = LPI_CATEGORY_GAMING;
+
+	/* Might not be as reliable as some other rules (?) */
+	mod->priority = 3; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_steam;
 
 	return mod;
 

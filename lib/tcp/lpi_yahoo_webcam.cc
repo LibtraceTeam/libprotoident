@@ -36,12 +36,17 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_yahoo_webcam(lpi_data_t *data, 
+		lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (match_str_either(data, "<SND"))
+                return true;
+        if (match_str_either(data, "<REQ"))
+                return true;
+        if (match_chars_either(data, 0x0d, 0x00, 0x05, 0x00))
+                return true;
+
 	return false;
-
 }
 
 extern "C"
@@ -49,12 +54,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_YAHOO_WEBCAM;
+	strncpy(mod->name, "Yahoo_Webcam", 255);
+	mod->category = LPI_CATEGORY_CHAT;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_yahoo_webcam;
 
 	return mod;
 

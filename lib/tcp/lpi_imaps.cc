@@ -36,12 +36,16 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_imaps(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
+	if (!match_ssl(data))
+		return false;
+	
+	/* Assume all SSL traffic on port 993 is IMAPS */
+	if (data->server_port == 993 || data->client_port == 993)
 		return true;
+	
 	return false;
-
 }
 
 extern "C"
@@ -49,12 +53,14 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_IMAPS;
+	strncpy(mod->name, "IMAPS", 255);
+	mod->category = LPI_CATEGORY_MAIL;
+
+	/* Must be a higher priority than regular SSL */
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_imaps;
 
 	return mod;
 

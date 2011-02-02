@@ -36,11 +36,30 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
-	return false;
+	uint32_t stated_len = 0;
+
+        /* RDP is transported via TPKT
+         *
+         * TPKT header is 03 00 + 2 bytes of length (including the TPKT header)
+         */
+
+        if ((!MATCH(data->payload[0], 0x03, 0x00, ANY, ANY)) &&
+                (!MATCH(data->payload[1], 0x03, 0x00, ANY, ANY))) {
+                return false;
+        }
+
+        stated_len = ntohl(data->payload[0]) & 0xffff;
+        if (stated_len != data->payload_len[0])
+                return false;
+
+        stated_len = ntohl(data->payload[1]) & 0xffff;
+        if (stated_len != data->payload_len[1])
+                return false;
+
+        return true;
+	
 
 }
 
@@ -49,12 +68,14 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_RDP;
+	strncpy(mod->name, "RDP", 255);
+	mod->category = LPI_CATEGORY_REMOTE;
+	
+	/* Moving this to 3 purely on gut feeling */
+	mod->priority = 3; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_rdp;
 
 	return mod;
 

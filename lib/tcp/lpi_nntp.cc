@@ -36,12 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_nntp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (match_str_either(data, "mode")) return true;
+        if (match_str_either(data, "MODE")) return true;
+        if (match_str_either(data, "GROU")) return true;
+        if (match_str_either(data, "grou")) return true;
+
+        if (match_str_both(data, "AUTH", "200 ")) return true;
+        if (match_str_both(data, "AUTH", "201 ")) return true;
+        if (match_str_both(data, "AUTH", "200-")) return true;
+        if (match_str_both(data, "AUTH", "201-")) return true;
+        if (match_str_both(data, "auth", "200 ")) return true;
+        if (match_str_both(data, "auth", "201 ")) return true;
+        if (match_str_both(data, "auth", "200-")) return true;
+        if (match_str_both(data, "auth", "201-")) return true;
+
 	return false;
-
 }
 
 extern "C"
@@ -49,12 +60,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_NNTP;
+	strncpy(mod->name, "NNTP", 255);
+	mod->category = LPI_CATEGORY_NEWS;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_nntp;
 
 	return mod;
 

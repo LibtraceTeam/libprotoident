@@ -36,12 +36,33 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
 
-	if (match_dns(data))
-		return true;
-	return false;
+        if (len == 0)
+                return true;
 
+        if (MATCH(payload, 0x13, 'B', 'i', 't'))
+                return true;
+
+        if (len == 3 && MATCH(payload, 0x13, 'B', 'i', 0x00))
+                return true;
+        if (len == 2 && MATCH(payload, 0x13, 'B', 0x00, 0x00))
+                return true;
+        if (len == 1 && MATCH(payload, 0x13, 0x00, 0x00, 0x00))
+                return true;
+
+        return false;
+
+}
+
+
+static inline bool match_bittorrent(lpi_data_t *data, lpi_module_t *mod UNUSED) 
+{
+        if (!match_bittorrent_header(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_bittorrent_header(data->payload[1], data->payload_len[1]))
+                return false;
+        return true;
 }
 
 extern "C"
@@ -49,12 +70,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_BITTORRENT;
+	strncpy(mod->name, "Bittorrent", 255);
+	mod->category = LPI_CATEGORY_P2P;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_bittorrent;
 
 	return mod;
 

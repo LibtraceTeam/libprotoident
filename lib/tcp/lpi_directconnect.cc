@@ -36,10 +36,22 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_dc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* $MyN seemed best to check for - might have to check for $max and
+	 * $Sup as well */
+	/* NOTE: Some people seem to use DC to connect to port 80 and get
+	 * HTTP responses. At this stage, I'd rather that fell under DC rather
+	 * than HTTP, so we need to check for this before we check for HTTP */
+
+
+	if (match_str_either(data, "$MyN")) return true;
+	if (match_str_either(data, "$Sup")) return true;
+	if (match_str_either(data, "$Loc")) return true;
+
+	/* Response is usually an HTTP response - we could check that if
+	 * needed */
+	
 	return false;
 
 }
@@ -49,12 +61,14 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_DC;
+	strncpy(mod->name, "DirectConnect", 255);
+	mod->category = LPI_CATEGORY_P2P;
+	
+	/* Make sure we have a higher priority than regular HTTP */
+	mod->priority = 1; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_dc;
 
 	return mod;
 

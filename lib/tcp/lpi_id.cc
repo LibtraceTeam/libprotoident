@@ -36,12 +36,15 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_id(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
+	/* TODO: Starts with only digits - request matches the response  */
+	
+	/* 20 3a 20 55 is an ID protocol error, I think */
+	if (match_str_either(data, " : U"))
 		return true;
-	return false;
 
+	return false;
 }
 
 extern "C"
@@ -49,12 +52,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
+	mod->protocol = LPI_PROTO_ID;
+	strncpy(mod->name, "ID_Protocol", 255);
 	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_id;
 
 	return mod;
 

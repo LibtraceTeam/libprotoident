@@ -36,12 +36,26 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_p2p_http(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
-	return false;
+        /* Must not be on a known HTTP port
+         *
+         * XXX I know that people will still try to use port 80 for their
+         * warezing, but we want to at least try and get the most obvious 
+         * HTTP-based P2P
+         */
+        if (valid_http_port(data))
+                return false;
 
+        if (match_str_both(data, "GET ", "HTTP"))
+                return true;
+
+        if (match_str_either(data, "GET ")) {
+                if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+                        return true;
+        }
+
+        return false;
 }
 
 extern "C"
@@ -49,12 +63,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_P2P_HTTP;
+	strncpy(mod->name, "HTTP_P2P", 255);
+	mod->category = LPI_CATEGORY_P2P;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_p2p_http;
 
 	return mod;
 

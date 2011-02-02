@@ -36,42 +36,45 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_dns_zone_transfer(lpi_data_t *data) {
+/* Rules adapted from l7-filter */
+static inline bool match_telnet_pattern(uint32_t payload, uint32_t len) {
 
-        uint16_t length;
-	void *ptr;
+        /* Sadly we cannot use a simple MATCH, because we're looking for
+         * two 0xff characters, which happens to be the same value as ANY.
+         */
 
-        if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+        if (len >= 4) {
+                if ((payload & 0xff0000ff) != (0xff0000ff))
+                        return false;
+        }
+        else if (len == 3) {
+                if ((payload & 0xff000000) != (0xff000000))
+                        return false;
+        }
+        else
                 return false;
 
-        if (data->server_port != 53 && data->client_port != 53)
-                return false;
+        if (MATCH(payload, ANY, 0xfb, ANY, ANY))
+                return true;
+        if (MATCH(payload, ANY, 0xfc, ANY, ANY))
+                return true;
+        if (MATCH(payload, ANY, 0xfd, ANY, ANY))
+                return true;
+        if (MATCH(payload, ANY, 0xfe, ANY, ANY))
+                return true;
 
-	ptr = (void *)&data->payload[0];
-	length = *((uint16_t *)ptr);
-
-        if (ntohs(length) != data->payload_len[0] - 2)
-                return false;
-
-	ptr = (void *)&data->payload[1];
-	length = *((uint16_t *)ptr);
-
-        if (ntohs(length) != data->payload_len[1] - 2)
-                return false;
-
-        return true;
+        return false;
 }
 
 
-static bool match_tcp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_telnet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
-	if (match_dns_zone_transfer(data))
-		return true;
-	
+	if (match_telnet_pattern(data->payload[0], data->payload_len[0]))
+                return true;
+        if (match_telnet_pattern(data->payload[1], data->payload_len[1]))
+                return true;
+
 	return false;
-
 }
 
 extern "C"
@@ -79,12 +82,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_TELNET;
+	strncpy(mod->name, "Telnet", 255);
+	mod->category = LPI_CATEGORY_REMOTE;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_tcp_dns;
+	mod->lpi_callback = match_telnet;
 
 	return mod;
 

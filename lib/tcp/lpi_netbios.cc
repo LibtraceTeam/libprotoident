@@ -36,12 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_netbios(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	uint32_t stated_len = 0;
+
+        if (MATCH(data->payload[0], 0x81, 0x00, ANY, ANY)) {
+                stated_len = ntohl(data->payload[0]) & 0xffff;
+                if (stated_len == data->payload_len[0] - 4)
+                        return true;
+        }
+
+        if (MATCH(data->payload[1], 0x81, 0x00, ANY, ANY)) {
+                stated_len = ntohl(data->payload[1]) & 0xffff;
+                if (stated_len == data->payload_len[1] - 4)
+                        return true;
+        }
+
 	return false;
-
 }
 
 extern "C"
@@ -49,12 +60,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
+	mod->protocol = LPI_PROTO_NETBIOS;
+	strncpy(mod->name, "NetBIOS", 255);
 	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_netbios;
 
 	return mod;
 

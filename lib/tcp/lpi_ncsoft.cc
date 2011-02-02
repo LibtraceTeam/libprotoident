@@ -36,12 +36,12 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ncsoft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
+	if (match_chars_either(data, 0x00, 0x05, 0x0c, 0x00))
 		return true;
-	return false;
 
+	return false;
 }
 
 extern "C"
@@ -49,12 +49,15 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_NCSOFT;
+	strncpy(mod->name, "NCSoft", 255);
+	mod->category = LPI_CATEGORY_GAMING;
+	
+	/* Not the strongest rule, although this hasn't caused any problems
+	 * in the past */
+	mod->priority = 3; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_ncsoft;
 
 	return mod;
 

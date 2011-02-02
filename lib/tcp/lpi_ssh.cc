@@ -36,25 +36,55 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ssh2_payload(uint32_t payload, uint32_t len) {
 
-	if (match_dns(data))
-		return true;
-	return false;
+        /* SSH-2 begins with a four byte length field */
+
+        if (len == 0)
+                return true;
+        if (ntohl(payload) == len)
+                return true;
+        return false;
 
 }
+
+static inline bool match_ssh(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_str_either(data, "SSH-"))
+                return true;
+
+        /* Require port 22 for the following rules as they are not
+         * specific to SSH */
+        if (data->server_port != 22 && data->client_port != 22)
+                return false;
+        if (match_str_either(data, "QUIT"))
+                return true;
+
+        if (match_ssh2_payload(data->payload[0], data->payload_len[0])) {
+                if (match_ssh2_payload(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        if (match_ssh2_payload(data->payload[1], data->payload_len[1])) {
+                if (match_ssh2_payload(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        return false;
+
+}
+
 
 extern "C"
 lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_SSH;
+	strncpy(mod->name, "SSH", 255);
+	mod->category = LPI_CATEGORY_REMOTE;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_ssh;
 
 	return mod;
 

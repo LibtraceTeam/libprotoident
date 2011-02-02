@@ -97,6 +97,11 @@ int lpi_init_library(const char *module_loc) {
 	
 	init_called = true;
 
+	if (TCP_protocols.empty() && UDP_protocols.empty()) {
+		fprintf(stderr, "WARNING: No protocol modules loaded\n");
+		return -1;
+	}
+
 
 	return 0;
 
@@ -253,6 +258,8 @@ static lpi_module_t *guess_protocol(LPIModuleMap *modmap, lpi_data_t *data) {
 	
 	for (m_it = modmap->begin(); m_it != modmap->end(); m_it ++) {
 		LPIModuleList *ml = m_it->second;
+		//fprintf(stderr, "Testing protocols at priority level %u\n",
+		//		m_it->first);
 		
 		proto = test_protocol_list(ml, data);
 
@@ -430,13 +437,11 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
                 case LPI_PROTO_SMB:
                 case LPI_PROTO_FTP_CONTROL:
 		case LPI_PROTO_FTP_DATA:
-                case LPI_PROTO_AR:
                 case LPI_PROTO_MS_DS:
                 case LPI_PROTO_RSYNC:
 		case LPI_PROTO_HARVEYS:
 		case LPI_PROTO_UDP_ORBIT:
 		case LPI_PROTO_MSNC:
-                case LPI_PROTO_TCP_XML:
 		case LPI_PROTO_AFP:
 		case LPI_PROTO_UDP_TFTP:
 			return LPI_CATEGORY_FILES;
@@ -710,8 +715,6 @@ const char *lpi_print(lpi_module_t *module) {
                         return "AllSeeingEye";
                 case LPI_PROTO_ARES:
                         return "Ares";
-                case LPI_PROTO_AR:
-                        return "ar_Archive";
                 case LPI_PROTO_NNTP:
                         return "NNTP";
                 case LPI_PROTO_NAPSTER:
@@ -734,8 +737,6 @@ const char *lpi_print(lpi_module_t *module) {
                         return "SIP";
                 case LPI_PROTO_MZINGA:
                         return "Mzinga";
-                case LPI_PROTO_TCP_XML:
-                        return "XML";
                 case LPI_PROTO_XUNLEI:
                         return "Xunlei";
                 case LPI_PROTO_GOKUCHAT:

@@ -36,12 +36,12 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_rpcscan(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
+	/* RPC Exploit */
+	if (match_chars_either(data, 0x05, 0x00, 0x0b, 0x03))
 		return true;
 	return false;
-
 }
 
 extern "C"
@@ -49,12 +49,15 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_RPC_SCAN;
+	strncpy(mod->name, "RPC_Exploit", 255);
+	mod->category = LPI_CATEGORY_MALWARE;
+
+	/* Most malware can go to priority 5 - want to match legit protocols
+	 * first */	
+	mod->priority = 5; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_rpcscan;
 
 	return mod;
 

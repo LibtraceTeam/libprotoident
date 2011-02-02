@@ -36,9 +36,11 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (match_dns(data))
+static inline bool match_shoutcast(lpi_data_t *data, lpi_module_t *mod UNUSED) 
+{
+	if (match_str_both(data, "GET ", "ICY "))
+		return true;
+	if (match_chars_either(data, 'O', 'K', '2', 0x0d))
 		return true;
 	return false;
 
@@ -49,12 +51,14 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_SHOUTCAST;
+	strncpy(mod->name, "Shoutcast", 255);
+	mod->category = LPI_CATEGORY_STREAMING;
+
+	/* Probably best to have a higher priority than HTTP */
+	mod->priority = 1; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_shoutcast;
 
 	return mod;
 

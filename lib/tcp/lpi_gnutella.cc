@@ -36,12 +36,14 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_gnutella(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
+	if (match_str_either(data, "GNUT"))
 		return true;
-	return false;
+	if (match_str_either(data, "GIV "))
+		return true;
 
+	return false;
 }
 
 extern "C"
@@ -49,12 +51,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_GNUTELLA;
+	strncpy(mod->name, "Gnutella", 255);
+	mod->category = LPI_CATEGORY_P2P;
+	mod->priority = 1; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_gnutella;
 
 	return mod;
 

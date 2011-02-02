@@ -36,6 +36,21 @@
 
 #include <libtrace.h>
 
+#if __GNUC__ >= 3 
+#  define DEPRECATED __attribute__((deprecated))
+#  define SIMPLE_FUNCTION __attribute__((pure))
+#  define UNUSED __attribute__((unused))
+#  define PACKED __attribute__((packed))
+#  define PRINTF(formatpos,argpos) __attribute__((format(printf,formatpos,argpos)))
+#else
+#  define DEPRECATED
+#  define SIMPLE_FUNCTION
+#  define UNUSED
+#  define PACKED 
+#  define PRINTF(formatpos,argpos) 
+#endif
+
+
 #ifdef __cplusplus 
 extern "C" {
 #endif
@@ -119,7 +134,6 @@ typedef enum {
         LPI_PROTO_FTP_DATA,
         LPI_PROTO_EYE,         /* Yahoo Game Server Browser */
         LPI_PROTO_ARES,        /* Ares peer-to-peer protocol */
-        LPI_PROTO_AR,          /* ar archives, usually Debian .deb files */
         LPI_PROTO_NNTP,        /* Newsfeeds */
         LPI_PROTO_NAPSTER,
         LPI_PROTO_BNCS,        /* Battle.net Chat Server */
@@ -131,7 +145,6 @@ typedef enum {
         LPI_PROTO_MS_DS,
         LPI_PROTO_SIP,         /* Session Initiation Protocol*/
         LPI_PROTO_MZINGA,
-        LPI_PROTO_TCP_XML,
         LPI_PROTO_GOKUCHAT,
         LPI_PROTO_XUNLEI,
         LPI_PROTO_DXP,

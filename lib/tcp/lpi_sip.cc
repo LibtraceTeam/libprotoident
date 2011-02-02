@@ -36,12 +36,17 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_sip(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
+	if (match_str_both(data, "SIP/", "REGI"))
 		return true;
-	return false;
+	/* Non-RFC SIP added by Donald Neal, June 2008 */
+	if (match_str_either(data, "SIP-")) {
+		if (match_chars_either(data, 'R', ' ', ANY, ANY))
+			return true;
+	}
 
+	return false;
 }
 
 extern "C"
@@ -49,12 +54,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_SIP;
+	strncpy(mod->name, "SIP_TCP", 255);
+	mod->category = LPI_CATEGORY_VOIP;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_sip;
 
 	return mod;
 

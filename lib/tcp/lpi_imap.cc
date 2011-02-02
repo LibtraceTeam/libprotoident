@@ -36,9 +36,8 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_udp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (match_dns(data))
+static inline bool match_imap(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	if (match_str_either(data, "* OK")) 
 		return true;
 	return false;
 
@@ -49,12 +48,12 @@ lpi_module_t * lpi_register() {
 	
 	lpi_module_t *mod = new lpi_module_t;
 
-	mod->protocol = LPI_PROTO_UDP_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
+	mod->protocol = LPI_PROTO_IMAP;
+	strncpy(mod->name, "IMAP", 255);
+	mod->category = LPI_CATEGORY_MAIL;
+	mod->priority = 2; 	
 	mod->dlhandle = NULL;
-	mod->lpi_callback = match_udp_dns;
+	mod->lpi_callback = match_imap;
 
 	return mod;
 
