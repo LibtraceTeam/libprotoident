@@ -159,19 +159,15 @@ static inline bool match_smtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         return false;
 }
 
+static lpi_module_t lpi_smtp = {
+	LPI_PROTO_SMTP,
+	LPI_CATEGORY_MAIL,
+	"SMTP",
+	2,
+	match_smtp
+};
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
-
-	mod->protocol = LPI_PROTO_SMTP;
-	strncpy(mod->name, "SMTP", 255);
-	mod->category = LPI_CATEGORY_MAIL;
-	mod->priority = 1; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_smtp;
-
-	return mod;
-
+void register_smtp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_smtp, mod_map);
 }
+

@@ -4,7 +4,87 @@
 #include <dlfcn.h>
 
 #include "proto_manager.h"
+#include "tcp/tcp_protocols.h"
+#include "udp/udp_protocols.h"
 
+void register_protocol(lpi_module_t *mod, LPIModuleMap *mod_map) {
+	LPIModuleMap::iterator it;
+	LPIModuleList *ml;
+
+	printf("Registering %s - priority %u\n", mod->name, mod->priority);
+
+	it = mod_map->find(mod->priority); 
+
+	if (it == mod_map->end()) {
+		(*mod_map)[mod->priority] = new LPIModuleList();
+		
+		it = mod_map->find(mod->priority);
+	}
+	
+	ml = it->second;
+	ml->push_back(mod);
+
+
+}
+
+int register_tcp_protocols(LPIModuleMap *mod_map) {
+
+	register_ares(mod_map);
+	register_bitextend(mod_map);
+	register_bittorrent(mod_map);
+	register_directconnect(mod_map);
+	register_dns_tcp(mod_map);
+	register_eye(mod_map);
+	register_flash(mod_map);
+	register_ftpcontrol(mod_map);
+	register_ftpdata(mod_map);
+	register_gnutella(mod_map);
+	register_harveys(mod_map);
+	register_http_badport(mod_map);
+	register_http(mod_map);
+	register_http_p2p(mod_map);
+	register_https(mod_map);
+	register_http_tunnel(mod_map);
+	register_ica(mod_map);
+	register_id(mod_map);
+	register_imap(mod_map);
+	register_imaps(mod_map);
+	register_irc(mod_map);
+	register_msn(mod_map);
+	register_mzinga(mod_map);
+	register_ncsoft(mod_map);
+	register_netbios(mod_map);
+	register_nntp(mod_map);
+	register_tcp_no_payload(mod_map);
+	register_pando(mod_map);
+	register_pop3(mod_map);
+	register_razor(mod_map);
+	register_rdp(mod_map);
+	register_rfb(mod_map);
+	register_rpcscan(mod_map);
+	register_rsync(mod_map);
+	register_rtsp(mod_map);
+	register_shoutcast(mod_map);
+	register_sip(mod_map);
+	register_smb(mod_map);
+	register_smtp(mod_map);
+	register_ssh(mod_map);
+	register_ssl(mod_map);
+	register_steam(mod_map);
+	register_telnet(mod_map);
+	register_trackmania(mod_map);
+	register_warcraft3(mod_map);
+	register_yahoo(mod_map);
+	register_yahoo_webcam(mod_map);
+	return 0;
+}
+
+int register_udp_protocols(LPIModuleMap *mod_map) {
+
+	return 0;
+}
+
+#if 0
 int register_protocols(LPIModuleMap *mod_map, char *location) {
 	glob_t glob_buf;
 	void *hdl;
@@ -75,6 +155,7 @@ int register_protocols(LPIModuleMap *mod_map, char *location) {
 	return 0;
 
 }
+#endif
 
 void init_other_protocols() {
 
@@ -82,8 +163,7 @@ void init_other_protocols() {
 
 	lpi_icmp->protocol = LPI_PROTO_ICMP;
 	lpi_icmp->category = LPI_CATEGORY_ICMP;
-	lpi_icmp->dlhandle = NULL;
-	strncpy(lpi_icmp->name, "ICMP", 255);
+	lpi_icmp->name = "ICMP";
 	lpi_icmp->priority = 255;
 	lpi_icmp->lpi_callback = NULL;
 
@@ -91,8 +171,7 @@ void init_other_protocols() {
 
 	lpi_unknown_tcp->protocol = LPI_PROTO_UNKNOWN;
 	lpi_unknown_tcp->category = LPI_CATEGORY_UNKNOWN;
-	lpi_unknown_tcp->dlhandle = NULL;
-	strncpy(lpi_unknown_tcp->name, "Unknown_TCP", 255);
+	lpi_unknown_tcp->name = "Unknown_TCP";
 	lpi_unknown_tcp->priority = 255;
 	lpi_unknown_tcp->lpi_callback = NULL;
 	
@@ -100,8 +179,7 @@ void init_other_protocols() {
 
 	lpi_unknown_udp->protocol = LPI_PROTO_UDP;
 	lpi_unknown_udp->category = LPI_CATEGORY_UNKNOWN;
-	lpi_unknown_udp->dlhandle = NULL;
-	strncpy(lpi_unknown_udp->name, "Unknown_UDP", 255);
+	lpi_unknown_udp->name = "Unknown_UDP";
 	lpi_unknown_udp->priority = 255;
 	lpi_unknown_udp->lpi_callback = NULL;
 
@@ -109,8 +187,7 @@ void init_other_protocols() {
 
 	lpi_unsupported->protocol = LPI_PROTO_UNSUPPORTED;
 	lpi_unsupported->category = LPI_CATEGORY_UNSUPPORTED;
-	lpi_unsupported->dlhandle = NULL;
-	strncpy(lpi_unsupported->name, "Unsupported", 255);
+	lpi_unsupported->name = "Unsupported";
 	lpi_unsupported->priority = 255;
 	lpi_unsupported->lpi_callback = NULL;
 

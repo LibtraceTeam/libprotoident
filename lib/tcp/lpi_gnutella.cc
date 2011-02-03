@@ -46,18 +46,15 @@ static inline bool match_gnutella(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_gnutella = {
+	LPI_PROTO_GNUTELLA,
+	LPI_CATEGORY_P2P,
+	"Gnutella",
+	1, /* Avoid matching HTTP which uses similar commands */
+	match_gnutella
+};
 
-	mod->protocol = LPI_PROTO_GNUTELLA;
-	strncpy(mod->name, "Gnutella", 255);
-	mod->category = LPI_CATEGORY_P2P;
-	mod->priority = 1; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_gnutella;
-
-	return mod;
-
+void register_gnutella(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_gnutella, mod_map);
 }
+

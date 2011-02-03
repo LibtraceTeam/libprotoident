@@ -77,18 +77,15 @@ static inline bool match_telnet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_telnet = {
+	LPI_PROTO_TELNET,
+	LPI_CATEGORY_REMOTE,
+	"Telnet", 
+	2,
+	match_telnet
+};
 
-	mod->protocol = LPI_PROTO_TELNET;
-	strncpy(mod->name, "Telnet", 255);
-	mod->category = LPI_CATEGORY_REMOTE;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_telnet;
-
-	return mod;
-
+void register_telnet(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_telnet, mod_map);
 }
+

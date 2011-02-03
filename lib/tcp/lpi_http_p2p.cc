@@ -58,18 +58,15 @@ static inline bool match_p2p_http(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_http_p2p = {
+	LPI_PROTO_P2P_HTTP,
+	LPI_CATEGORY_P2P,
+	"HTTP_P2P",
+	2,
+	match_p2p_http
+};
 
-	mod->protocol = LPI_PROTO_P2P_HTTP;
-	strncpy(mod->name, "HTTP_P2P", 255);
-	mod->category = LPI_CATEGORY_P2P;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_p2p_http;
-
-	return mod;
-
+void register_http_p2p(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_http_p2p, mod_map);
 }
+

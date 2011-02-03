@@ -65,18 +65,15 @@ static inline bool match_bittorrent(lpi_data_t *data, lpi_module_t *mod UNUSED)
         return true;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_bittorrent = {
+	LPI_PROTO_BITTORRENT,
+	LPI_CATEGORY_P2P,
+	"Bittorrent",
+	2,
+	match_bittorrent
+};
 
-	mod->protocol = LPI_PROTO_BITTORRENT;
-	strncpy(mod->name, "Bittorrent", 255);
-	mod->category = LPI_CATEGORY_P2P;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_bittorrent;
-
-	return mod;
-
+void register_bittorrent(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_bittorrent, mod_map);
 }
+

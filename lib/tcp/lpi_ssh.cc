@@ -73,19 +73,15 @@ static inline bool match_ssh(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
+static lpi_module_t lpi_ssh = {
+	LPI_PROTO_SSH,
+	LPI_CATEGORY_REMOTE,
+	"SSH",
+	2,
+	match_ssh
+};
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
-
-	mod->protocol = LPI_PROTO_SSH;
-	strncpy(mod->name, "SSH", 255);
-	mod->category = LPI_CATEGORY_REMOTE;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_ssh;
-
-	return mod;
-
+void register_ssh(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ssh, mod_map);
 }
+

@@ -82,20 +82,15 @@ static inline bool match_bitextend(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_bitextend = {
+	LPI_PROTO_BITEXT,
+	LPI_CATEGORY_P2P,
+	"Bittorrent_Extension",
+	3, /* This is probably fine, but I'd rather have this at 3 than 2 */
+	match_bitextend
+};
 
-	mod->protocol = LPI_PROTO_BITEXT;
-	strncpy(mod->name, "Bittorrent_Extension", 255);
-	mod->category = LPI_CATEGORY_P2P;
-	
-	/* This is probably fine, but I'd rather have this at 3 than 2 */
-	mod->priority = 3; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_bitextend;
-
-	return mod;
-
+void register_bitextend(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_bitextend, mod_map);
 }
+

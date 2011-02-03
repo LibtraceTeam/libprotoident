@@ -44,21 +44,16 @@ static inline bool match_ncsoft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_ncsoft = {
+	LPI_PROTO_NCSOFT,
+	LPI_CATEGORY_GAMING,
+	"NCSoft",
+	3, /* Not the strongest rule, although this hasn't caused any problems
+	    * in the past */
+	match_ncsoft
+};
 
-	mod->protocol = LPI_PROTO_NCSOFT;
-	strncpy(mod->name, "NCSoft", 255);
-	mod->category = LPI_CATEGORY_GAMING;
-	
-	/* Not the strongest rule, although this hasn't caused any problems
-	 * in the past */
-	mod->priority = 3; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_ncsoft;
-
-	return mod;
-
+void register_ncsoft(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ncsoft, mod_map);
 }
+

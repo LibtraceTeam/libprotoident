@@ -43,18 +43,15 @@ static inline bool match_imap(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_imap = {
+	LPI_PROTO_IMAP,
+	LPI_CATEGORY_MAIL,
+	"IMAP",
+	2,
+	match_imap
+};
 
-	mod->protocol = LPI_PROTO_IMAP;
-	strncpy(mod->name, "IMAP", 255);
-	mod->category = LPI_CATEGORY_MAIL;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_imap;
-
-	return mod;
-
+void register_imap(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_imap, mod_map);
 }
+

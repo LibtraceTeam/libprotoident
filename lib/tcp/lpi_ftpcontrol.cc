@@ -96,18 +96,15 @@ static inline bool match_ftp_control(lpi_data_t *data,
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_ftpcontrol = {
+	LPI_PROTO_FTP_CONTROL,
+	LPI_CATEGORY_FILES,
+	"FTP_Control",
+	2,
+	match_ftp_control
+};
 
-	mod->protocol = LPI_PROTO_FTP_CONTROL;
-	strncpy(mod->name, "FTP_Control", 255);
-	mod->category = LPI_CATEGORY_FILES;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_ftp_control;
-
-	return mod;
-
+void register_ftpcontrol(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ftpcontrol, mod_map);
 }
+

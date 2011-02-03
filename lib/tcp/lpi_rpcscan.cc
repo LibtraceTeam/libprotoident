@@ -44,21 +44,16 @@ static inline bool match_rpcscan(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_rpcscan = {
+	LPI_PROTO_RPC_SCAN,
+	LPI_CATEGORY_MALWARE,
+	"RPC_Exploit",
+	5, /* Most malware can go to priority 5 - want to match legit protocols
+	    * first */
+	match_rpcscan
+};
 
-	mod->protocol = LPI_PROTO_RPC_SCAN;
-	strncpy(mod->name, "RPC_Exploit", 255);
-	mod->category = LPI_CATEGORY_MALWARE;
-
-	/* Most malware can go to priority 5 - want to match legit protocols
-	 * first */	
-	mod->priority = 5; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_rpcscan;
-
-	return mod;
-
+void register_rpcscan(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rpcscan, mod_map);
 }
+

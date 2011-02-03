@@ -43,18 +43,15 @@ static inline bool match_rtsp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_rtsp = {
+	LPI_PROTO_RTSP,
+	LPI_CATEGORY_STREAMING,
+	"RTSP",
+	2,
+	match_rtsp
+};
 
-	mod->protocol = LPI_PROTO_RTSP;
-	strncpy(mod->name, "RTSP", 255);
-	mod->category = LPI_CATEGORY_STREAMING;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_rtsp;
-
-	return mod;
-
+void register_rtsp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rtsp, mod_map);
 }
+

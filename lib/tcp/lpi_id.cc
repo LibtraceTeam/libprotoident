@@ -47,18 +47,15 @@ static inline bool match_id(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_id = {
+	LPI_PROTO_ID,
+	LPI_CATEGORY_SERVICES,
+	"ID_Protocol",
+	2,
+	match_id
+};
 
-	mod->protocol = LPI_PROTO_ID;
-	strncpy(mod->name, "ID_Protocol", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_id;
-
-	return mod;
-
+void register_id(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_id, mod_map);
 }
+

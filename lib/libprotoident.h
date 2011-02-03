@@ -329,17 +329,17 @@ typedef struct lpi {
 typedef struct lpi_module lpi_module_t;
 
 struct lpi_module {
-        void *dlhandle;
+        //void *dlhandle;
         lpi_protocol_t protocol;
         lpi_category_t category;
+        const char *name;
         uint8_t priority;
-        char name[256];
 
         bool (*lpi_callback) (lpi_data_t *proto_d, lpi_module_t *module);
 
 };
 
-int lpi_init_library(const char *module_loc);
+int lpi_init_library(void);
 
 /** Initialises an LPI data structure, setting all the members to appropriate
  *  starting values.

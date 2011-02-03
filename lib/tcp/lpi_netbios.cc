@@ -54,19 +54,15 @@ static inline bool match_netbios(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	return false;
 }
+static lpi_module_t lpi_netbios = {
+	LPI_PROTO_NETBIOS,
+	LPI_CATEGORY_SERVICES,
+	"NetBIOS",
+	2, 
+	match_netbios
+}; 
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
-
-	mod->protocol = LPI_PROTO_NETBIOS;
-	strncpy(mod->name, "NetBIOS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_netbios;
-
-	return mod;
-
+void register_netbios(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_netbios, mod_map);
 }
+

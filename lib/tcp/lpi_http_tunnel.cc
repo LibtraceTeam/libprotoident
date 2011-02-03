@@ -50,21 +50,15 @@ static inline bool match_http_tunnel(lpi_data_t *data, lpi_module_t *mod UNUSED)
 	return false;
 }
 
+static lpi_module_t lpi_http_tunnel = {
+	LPI_PROTO_HTTP_TUNNEL,
+	LPI_CATEGORY_TUNNELLING,
+	"HTTP_Tunnel",
+	1, /* Make sure we are higher priority than HTTP */
+	match_http_tunnel
+};
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
-
-	mod->protocol = LPI_PROTO_HTTP_TUNNEL;
-	strncpy(mod->name, "HTTP_Tunnel", 255);
-	mod->category = LPI_CATEGORY_TUNNELLING;
-
-	/* Make sure we are higher priority than HTTP */
-	mod->priority = 1; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_http_tunnel;
-
-	return mod;
-
+void register_http_tunnel(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_http_tunnel, mod_map);
 }
+

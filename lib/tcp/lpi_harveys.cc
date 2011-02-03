@@ -46,18 +46,15 @@ static inline bool match_harveys(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_harveys = {
+	LPI_PROTO_HARVEYS,
+	LPI_CATEGORY_FILES,
+	"Harveys",
+	2,
+	match_harveys
+};
 
-	mod->protocol = LPI_PROTO_HARVEYS;
-	strncpy(mod->name, "Harveys", 255);
-	mod->category = LPI_CATEGORY_FILES;
-	mod->priority = 1; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_harveys;
-
-	return mod;
-
+void register_harveys(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_harveys, mod_map);
 }
+

@@ -50,18 +50,15 @@ static inline bool match_flash(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_flash = {
+	LPI_PROTO_FLASH,
+	LPI_CATEGORY_STREAMING,
+	"Flash_Player",
+	2,
+	match_flash
+};
 
-	mod->protocol = LPI_PROTO_FLASH;
-	strncpy(mod->name, "Flash_Player", 255);
-	mod->category = LPI_CATEGORY_STREAMING;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_flash;
-
-	return mod;
-
+void register_flash(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_flash, mod_map);
 }
+

@@ -50,20 +50,15 @@ static inline bool match_other_ssl(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_ssl = {
+	LPI_PROTO_SSL,
+	LPI_CATEGORY_ENCRYPT,
+	"SSL/TLS",
+	3, /* Make this lower priority than IMAPS and HTTPS, just in case */
+	match_other_ssl
+};
 
-	mod->protocol = LPI_PROTO_SSL;
-	strncpy(mod->name, "SSL/TLS", 255);
-	mod->category = LPI_CATEGORY_ENCRYPT;
-
-	/* Make this lower priority than IMAPS and HTTPS, just in case */
-	mod->priority = 3; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_other_ssl;
-
-	return mod;
-
+void register_ssl(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ssl, mod_map);
 }
+

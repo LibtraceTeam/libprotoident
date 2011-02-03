@@ -87,21 +87,15 @@ static inline bool match_smb(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_smb = {
+	LPI_PROTO_SMB,
+	LPI_CATEGORY_FILES,
+	"SMB",
+	2,
+	match_smb
+};
 
-	mod->protocol = LPI_PROTO_SMB;
-	strncpy(mod->name, "SMB", 255);
-	mod->category = LPI_CATEGORY_FILES;
-	
-	/* The port number req means we can trust this rule more than other
-	 * 4 byte length matches */
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_smb;
-
-	return mod;
-
+void register_smb(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_smb, mod_map);
 }
+

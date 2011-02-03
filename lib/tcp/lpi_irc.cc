@@ -46,18 +46,15 @@ static inline bool match_irc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_irc = {
+	LPI_PROTO_IRC,
+	LPI_CATEGORY_CHAT,
+	"IRC",
+	2,
+	match_irc
+};
 
-	mod->protocol = LPI_PROTO_IRC;
-	strncpy(mod->name, "IRC", 255);
-	mod->category = LPI_CATEGORY_CHAT;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_irc;
-
-	return mod;
-
+void register_irc(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_irc, mod_map);
 }
+

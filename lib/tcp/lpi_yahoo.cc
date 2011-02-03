@@ -49,18 +49,15 @@ static inline bool match_yahoo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_yahoo = {
+	LPI_PROTO_YAHOO,
+	LPI_CATEGORY_CHAT,
+	"Yahoo",
+	2,
+	match_yahoo
+};
 
-	mod->protocol = LPI_PROTO_YAHOO;
-	strncpy(mod->name, "Yahoo", 255);
-	mod->category = LPI_CATEGORY_CHAT;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_yahoo;
-
-	return mod;
-
+void register_yahoo(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_yahoo, mod_map);
 }
+

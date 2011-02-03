@@ -74,18 +74,14 @@ static bool match_tcp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_dns = {
+	LPI_PROTO_DNS,
+	LPI_CATEGORY_SERVICES,
+	"DNS",
+	5, 	/* Not a high certainty */
+	match_tcp_dns
+};
 
-	mod->protocol = LPI_PROTO_DNS;
-	strncpy(mod->name, "DNS", 255);
-	mod->category = LPI_CATEGORY_SERVICES;
-	mod->priority = 5; 	/* Not a high certainty */
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_tcp_dns;
-
-	return mod;
-
+void register_dns_tcp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_dns, mod_map);
 }

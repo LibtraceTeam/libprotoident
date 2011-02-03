@@ -49,18 +49,15 @@ static inline bool match_sip(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_sip = {
+	LPI_PROTO_SIP,
+	LPI_CATEGORY_VOIP,
+	"SIP",
+	2,
+	match_sip
+};
 
-	mod->protocol = LPI_PROTO_SIP;
-	strncpy(mod->name, "SIP_TCP", 255);
-	mod->category = LPI_CATEGORY_VOIP;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_sip;
-
-	return mod;
-
+void register_sip(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_sip, mod_map);
 }
+

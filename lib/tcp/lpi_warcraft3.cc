@@ -55,20 +55,15 @@ static inline bool match_warcraft3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_warcraft3 = {
+	LPI_PROTO_WARCRAFT3,
+	LPI_CATEGORY_GAMING,
+	"Warcraft3",
+	3, /* I'm a bit dubious about the value of this rule */
+	match_warcraft3
+};
 
-	mod->protocol = LPI_PROTO_WARCRAFT3;
-	strncpy(mod->name, "Warcraft3", 255);
-	mod->category = LPI_CATEGORY_GAMING;
-	
-	/* I'm a bit dubious about the value of this rule */
-	mod->priority = 3; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_warcraft3;
-
-	return mod;
-
+void register_warcraft3(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_warcraft3, mod_map);
 }
+

@@ -48,20 +48,15 @@ static inline bool match_imaps(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_imaps = {
+	LPI_PROTO_IMAPS,
+	LPI_CATEGORY_MAIL,
+	"IMAPS",
+	2, /* Should be a higher priority than regular SSL */
+	match_imaps
+};
 
-	mod->protocol = LPI_PROTO_IMAPS;
-	strncpy(mod->name, "IMAPS", 255);
-	mod->category = LPI_CATEGORY_MAIL;
-
-	/* Must be a higher priority than regular SSL */
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_imaps;
-
-	return mod;
-
+void register_imaps(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_imaps, mod_map);
 }
+

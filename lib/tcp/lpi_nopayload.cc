@@ -46,18 +46,14 @@ bool match_no_payload(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return true;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_no_payload = {
+	LPI_PROTO_NO_PAYLOAD,
+	LPI_CATEGORY_NOPAYLOAD,
+	"No Payload",
+	0,	/* Must supercede all other protocols */
+	match_no_payload
+};
 
-	mod->protocol = LPI_PROTO_NO_PAYLOAD;
-	strncpy(mod->name, "No_Payload", 255);
-	mod->category = LPI_CATEGORY_NOPAYLOAD;
-	mod->priority = 0; 	/* This supercedes all other protocols */	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_no_payload;
-
-	return mod;
-
+void register_tcp_no_payload(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_no_payload, mod_map);
 }

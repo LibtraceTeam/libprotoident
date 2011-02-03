@@ -43,18 +43,15 @@ static inline bool match_rsync(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_rsync = {
+	LPI_PROTO_RSYNC,
+	LPI_CATEGORY_FILES,
+	"Rsync",
+	2,
+	match_rsync
+};
 
-	mod->protocol = LPI_PROTO_RSYNC;
-	strncpy(mod->name, "Rsync", 255);
-	mod->category = LPI_CATEGORY_FILES;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_rsync;
-
-	return mod;
-
+void register_rsync(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rsync, mod_map);
 }
+

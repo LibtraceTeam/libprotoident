@@ -56,19 +56,15 @@ static inline bool match_http_badport(lpi_data_t *data, lpi_module_t *mod) {
 
 }
 
+static lpi_module_t lpi_http_badport = {
+	LPI_PROTO_HTTP_BADPORT,
+	LPI_CATEGORY_WEB,
+	"HTTP_443",
+	2,
+	match_http_badport
+};
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
-
-	mod->protocol = LPI_PROTO_HTTP_BADPORT;
-	strncpy(mod->name, "HTTP_443", 255);
-	mod->category = LPI_CATEGORY_WEB;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_http_badport;
-
-	return mod;
-
+void register_http_badport(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_http_badport, mod_map);
 }
+

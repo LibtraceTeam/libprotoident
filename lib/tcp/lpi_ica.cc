@@ -44,18 +44,15 @@ static inline bool match_ica(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_ica = {
+	LPI_PROTO_ICA,
+	LPI_CATEGORY_REMOTE,
+	"CitrixICA",
+	2,
+	match_ica
+};
 
-	mod->protocol = LPI_PROTO_ICA;
-	strncpy(mod->name, "CitrixICA", 255);
-	mod->category = LPI_CATEGORY_REMOTE;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_ica;
-
-	return mod;
-
+void register_ica(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ica, mod_map);
 }
+

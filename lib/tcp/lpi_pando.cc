@@ -43,18 +43,15 @@ static inline bool match_pando(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_pando = {
+	LPI_PROTO_PANDO,
+	LPI_CATEGORY_P2P,
+	"Pando",
+	2,
+	match_pando
+}; 
 
-	mod->protocol = LPI_PROTO_PANDO;
-	strncpy(mod->name, "Pando", 255);
-	mod->category = LPI_CATEGORY_P2P;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_pando;
-
-	return mod;
-
+void register_pando(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_pando, mod_map);
 }
+

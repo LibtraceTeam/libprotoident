@@ -56,20 +56,15 @@ static inline bool match_dc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_directconnect = {
+	LPI_PROTO_DC,
+	LPI_CATEGORY_P2P,
+	"DirectConnect",
+	1, /* Need a higher priority than regular HTTP */
+	match_dc
+};
 
-	mod->protocol = LPI_PROTO_DC;
-	strncpy(mod->name, "DirectConnect", 255);
-	mod->category = LPI_CATEGORY_P2P;
-	
-	/* Make sure we have a higher priority than regular HTTP */
-	mod->priority = 1; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_dc;
-
-	return mod;
-
+void register_directconnect(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_directconnect, mod_map);
 }
+

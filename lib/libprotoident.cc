@@ -41,11 +41,8 @@
 #include <stdint.h>
 
 #include "libprotoident.h"
-#include "proto_tcp.h"
-#include "proto_udp.h"
 #include "proto_manager.h"
 
-#define DEFAULT_MOD_LOCATION "/usr/local/lib/libprotoident/"
 
 bool init_called = false;
 LPIModuleMap TCP_protocols;
@@ -70,27 +67,12 @@ static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
 }
 
-int lpi_init_library(const char *module_loc) {
+int lpi_init_library() {
 
-	char base_loc[1000];
-	char full_loc[2000];
-
-	if (module_loc == NULL) {
-		strncpy(base_loc, DEFAULT_MOD_LOCATION, 999);
-	} else {
-		strncpy(base_loc, module_loc, 999);
-	}
-
-	strncpy(full_loc, base_loc, 1000);
-	strncat(full_loc, "/tcp/", 5);
-
-	if (register_protocols(&TCP_protocols, full_loc) == -1) 
+	if (register_tcp_protocols(&TCP_protocols) == -1) 
 		return -1;
 	
-	strncpy(full_loc, base_loc, 1000);
-	strncat(full_loc, "/udp/", 5);
-
-	if (register_protocols(&UDP_protocols, full_loc) == -1) 
+	if (register_udp_protocols(&UDP_protocols) == -1) 
 		return -1;
 
 	init_other_protocols();

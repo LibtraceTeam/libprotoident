@@ -49,18 +49,15 @@ static inline bool match_yahoo_webcam(lpi_data_t *data,
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_yahoo_webcam = {
+	LPI_PROTO_YAHOO_WEBCAM,
+	LPI_CATEGORY_CHAT,
+	"Yahoo_Webcam",
+	2, 
+	match_yahoo_webcam
+};
 
-	mod->protocol = LPI_PROTO_YAHOO_WEBCAM;
-	strncpy(mod->name, "Yahoo_Webcam", 255);
-	mod->category = LPI_CATEGORY_CHAT;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_yahoo_webcam;
-
-	return mod;
-
+void register_yahoo_webcam(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_yahoo_webcam, mod_map);
 }
+

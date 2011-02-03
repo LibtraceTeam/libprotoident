@@ -46,18 +46,15 @@ static inline bool match_eye(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_eye = {
+	LPI_PROTO_EYE,
+	LPI_CATEGORY_GAMING,
+	"AllSeeingEye",
+	2,
+	match_eye
+}; 
 
-	mod->protocol = LPI_PROTO_EYE;
-	strncpy(mod->name, "AllSeeingEye", 255);
-	mod->category = LPI_CATEGORY_GAMING;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_eye;
-
-	return mod;
-
+void register_eye(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_eye, mod_map);
 }
+

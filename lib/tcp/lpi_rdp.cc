@@ -63,20 +63,14 @@ static inline bool match_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_rdp = {
+	LPI_PROTO_RDP,
+	LPI_CATEGORY_REMOTE,
+	"RDP",
+	3, /*  Moving this to 3 purely on gut feeling */
+	match_rdp
+};
 
-	mod->protocol = LPI_PROTO_RDP;
-	strncpy(mod->name, "RDP", 255);
-	mod->category = LPI_CATEGORY_REMOTE;
-	
-	/* Moving this to 3 purely on gut feeling */
-	mod->priority = 3; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_rdp;
-
-	return mod;
-
+void register_rdp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rdp, mod_map);
 }

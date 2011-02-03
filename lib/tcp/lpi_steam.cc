@@ -57,20 +57,15 @@ static inline bool match_steam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_steam = {
+	LPI_PROTO_STEAM,
+	LPI_CATEGORY_GAMING,
+	"Steam_TCP",
+	3, /* Might not be as reliable as some other rules (?) */
+	match_steam
+};
 
-	mod->protocol = LPI_PROTO_STEAM;
-	strncpy(mod->name, "Steam_TCP", 255);
-	mod->category = LPI_CATEGORY_GAMING;
-
-	/* Might not be as reliable as some other rules (?) */
-	mod->priority = 3; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_steam;
-
-	return mod;
-
+void register_steam(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_steam, mod_map);
 }
+

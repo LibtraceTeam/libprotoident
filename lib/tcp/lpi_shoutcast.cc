@@ -46,20 +46,15 @@ static inline bool match_shoutcast(lpi_data_t *data, lpi_module_t *mod UNUSED)
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_shoutcast = {
+	LPI_PROTO_SHOUTCAST,
+	LPI_CATEGORY_STREAMING,
+	"Shoutcast",
+	1, /* Should be ahead of HTTP, due to "GET" */
+	match_shoutcast
+};
 
-	mod->protocol = LPI_PROTO_SHOUTCAST;
-	strncpy(mod->name, "Shoutcast", 255);
-	mod->category = LPI_CATEGORY_STREAMING;
-
-	/* Probably best to have a higher priority than HTTP */
-	mod->priority = 1; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_shoutcast;
-
-	return mod;
-
+void register_shoutcast(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_shoutcast, mod_map);
 }
+

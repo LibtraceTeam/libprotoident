@@ -98,18 +98,15 @@ static inline bool match_trackmania(lpi_data_t *data, lpi_module_t *mod UNUSED)
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_trackmania = {
+	LPI_PROTO_TRACKMANIA,
+	LPI_CATEGORY_GAMING,
+	"Trackmania",
+	2,
+	match_trackmania
+};
 
-	mod->protocol = LPI_PROTO_TRACKMANIA;
-	strncpy(mod->name, "Trackmania", 255);
-	mod->category = LPI_CATEGORY_GAMING;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_trackmania;
-
-	return mod;
-
+void register_trackmania(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_trackmania, mod_map);
 }
+

@@ -98,21 +98,15 @@ static inline bool match_http(lpi_data_t *data, lpi_module_t *mod) {
 
 }
 
+static lpi_module_t lpi_http = {
+	LPI_PROTO_HTTP,
+	LPI_CATEGORY_WEB,
+	"HTTP",
+	2,	
+	match_http
+};
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
-
-	mod->protocol = LPI_PROTO_HTTP;
-	strncpy(mod->name, "HTTP", 255);
-	mod->category = LPI_CATEGORY_WEB;
-
-	/* There are a few HTTP-like protocols that we want to match first */
-	mod->priority = 2;	 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_http;
-
-	return mod;
-
+void register_http(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_http, mod_map);
 }
+

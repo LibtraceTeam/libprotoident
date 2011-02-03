@@ -52,20 +52,15 @@ static inline bool match_https(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_https = {
+	LPI_PROTO_HTTPS,
+	LPI_CATEGORY_WEB,
+	"HTTPS",
+	2, /* Should be higher priority than regular SSL */
+	match_https
+};
 
-	mod->protocol = LPI_PROTO_HTTPS;
-	strncpy(mod->name, "HTTPS", 255);
-	mod->category = LPI_CATEGORY_WEB;
-
-	/* Must be a higher priority than regular SSL */
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_https;
-
-	return mod;
-
+void register_https(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_https, mod_map);
 }
+

@@ -55,18 +55,15 @@ static inline bool match_nntp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_nntp = {
+	LPI_PROTO_NNTP,
+	LPI_CATEGORY_NEWS,
+	"NNTP",
+	2,
+	match_nntp
+};
 
-	mod->protocol = LPI_PROTO_NNTP;
-	strncpy(mod->name, "NNTP", 255);
-	mod->category = LPI_CATEGORY_NEWS;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_nntp;
-
-	return mod;
-
+void register_nntp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_nntp, mod_map);
 }
+

@@ -134,21 +134,16 @@ static inline bool match_ftp_data(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_ftpdata = {
+	LPI_PROTO_FTP_DATA,
+	LPI_CATEGORY_FILES,
+	"FTP_Data",
+	5, /* Some of these rules rely on port numbers and one-way data, so
+	    * should have a lower priority than more concrete rules */
+	match_ftp_data
+};
 
-	mod->protocol = LPI_PROTO_FTP_DATA;
-	strncpy(mod->name, "FTP_Data", 255);
-	mod->category = LPI_CATEGORY_FILES;
-	
-	/* Some of these rules rely on port numbers and one-way data, so
-	 * should have a lower priority than more concrete rules */
-	mod->priority = 5; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_ftp_data;
-
-	return mod;
-
+void register_ftpdata(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ftpdata, mod_map);
 }
+

@@ -48,18 +48,15 @@ static inline bool match_msn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_msn = {
+	LPI_PROTO_MSN,
+	LPI_CATEGORY_CHAT,
+	"MSN",
+	2,
+	match_msn
+};
 
-	mod->protocol = LPI_PROTO_MSN;
-	strncpy(mod->name, "MSN", 255);
-	mod->category = LPI_CATEGORY_CHAT;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_msn;
-
-	return mod;
-
+void register_msn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_msn, mod_map);
 }
+

@@ -44,18 +44,15 @@ static inline bool match_pop3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 }
 
-extern "C"
-lpi_module_t * lpi_register() {
-	
-	lpi_module_t *mod = new lpi_module_t;
+static lpi_module_t lpi_pop3 = {
+	LPI_PROTO_POP3,
+	LPI_CATEGORY_MAIL,
+	"POP3",
+	2,
+	match_pop3
+};
 
-	mod->protocol = LPI_PROTO_POP3;
-	strncpy(mod->name, "POP3", 255);
-	mod->category = LPI_CATEGORY_MAIL;
-	mod->priority = 2; 	
-	mod->dlhandle = NULL;
-	mod->lpi_callback = match_pop3;
-
-	return mod;
-
+void register_pop3(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_pop3, mod_map);
 }
+
