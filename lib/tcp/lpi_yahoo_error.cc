@@ -30,42 +30,41 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_yahoo_error(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
+	/* Yahoo seems to respond to HTTP errors in a really odd way - it
+         * opens up a new connection and just sends raw HTML with the
+         * error message in it. Not sure how they expect that to work, though.
          */
 
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
+        /* The html isn't entirely valid either - they start with <HEAD>
+         * rather than <HTML>...
+         */
+        if (match_str_either(data, "<HEA"))
                 return true;
 
-        return false;
+
+	return false;
 }
 
+static lpi_module_t lpi_yahoo_error = {
+	LPI_PROTO_YAHOO_ERROR,
+	LPI_CATEGORY_CHAT,
+	"YahooError",
+	5,	/* This rule is a bit odd */
+	match_yahoo_error
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_yahoo_error(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_yahoo_error, mod_map);
 }
 

@@ -30,42 +30,46 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_invalid_http(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
+	/* This function is for identifying web servers that are not 
+         * following the HTTP spec properly.
+         *
+         * For flows where the client is not doing HTTP properly, see
+         * match_web_junk().
          */
 
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
+        /* HTTP servers that appear to respond with raw HTML */
+        if (match_str_either(data, "GET ")) {
+                if (match_chars_either(data, '<', 'H', 'T', 'M'))
+                        return true;
+                if (match_chars_either(data, '<', 'h', 't', 'm'))
+                        return true;
+                if (match_chars_either(data, '<', 'h', '1', '>'))
+                        return true;
+                if (match_chars_either(data, '<', 't', 'i', 't'))
+                        return true;
+        }
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
 
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
-
-        return false;
+	return false;
 }
 
+static lpi_module_t lpi_invalid_http = {
+	LPI_PROTO_INVALID_HTTP,
+	LPI_CATEGORY_WEB,
+	"Invalid_HTTP",
+	200,
+	match_invalid_http
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_invalid_http(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_invalid_http, mod_map);
 }
 

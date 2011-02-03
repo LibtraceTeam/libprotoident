@@ -30,42 +30,40 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_cod_waw(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* Call of Duty: World at War uses TCP port 3074 - the protocol isn't
+         * well documented, but traffic matching this pattern goes to known
+         * CoD servers */
 
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (data->server_port != 3074 && data->client_port != 3074)
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
+        if (data->payload_len[0] != 4 || data->payload_len[1] != 4)
                 return false;
 
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
+        if (data->payload[0] != 0 || data->payload[1] != 0)
+                return false;
 
-        return false;
+        return true;
+
 }
 
+static lpi_module_t lpi_cod_waw = {
+	LPI_PROTO_COD_WAW,
+	LPI_CATEGORY_GAMING,
+	"Call_of_Duty",
+	10,	/* Weak rule */
+	match_cod_waw
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_cod_waw(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cod_waw, mod_map);
 }
 

@@ -30,42 +30,27 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
-
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
-
-        return false;
+static inline bool match_mitglieder(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	if (match_chars_either(data, 0x04, 0x01, 0x00, 0x19))
+		return true;
+	return false;
 }
 
+static lpi_module_t lpi_mitglieder = {
+	LPI_PROTO_MITGLIEDER,
+	LPI_CATEGORY_MALWARE,
+	"Mitglieder_Trojan",
+	5,
+	match_mitglieder
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_mitglieder(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mitglieder, mod_map);
 }
 

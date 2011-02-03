@@ -30,42 +30,32 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_tor(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* I *think* this is TOR but have not confirmed */
+	if (match_chars_either(data, 0x3d, 0x00, 0x00, 0x00) &&
+			(data->payload_len[0] == 4 ||
+			data->payload_len[1] == 4))
+		return true;
 
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
-
-        return false;
+	return false;
 }
 
+static lpi_module_t lpi_tor = {
+	LPI_PROTO_TOR,
+	LPI_CATEGORY_TUNNELLING,
+	"TOR",
+	5, 	/* Not the strongest rule */
+	match_tor
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_tor(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_tor, mod_map);
 }
 

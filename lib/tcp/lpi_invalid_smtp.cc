@@ -30,42 +30,38 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_invalid_smtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* SMTP flows that do not conform to the spec properly */
 
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
+        if (match_str_both(data, "250-", "EHLO"))
                 return true;
 
-        return false;
+        if (match_str_both(data, "250 ", "HELO"))
+                return true;
+
+        if (match_str_both(data, "220 ", "MAIL"))
+                return true;
+
+
+	return false;
 }
 
+static lpi_module_t lpi_invalid_smtp = {
+	LPI_PROTO_INVALID_SMTP,
+	LPI_CATEGORY_MAIL,
+	"Invalid_SMTP",
+	200,
+	match_invalid_smtp
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_invalid_smtp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_invalid_smtp, mod_map);
 }
 

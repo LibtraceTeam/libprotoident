@@ -30,42 +30,39 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_hamachi(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
+	/* All Hamachi messages that I've seen begin with a 4 byte length
+         * field. Other protocols also do this, so I also check for the
+         * default Hamachi port (12975)
          */
-
         if (!match_payload_length(data->payload[0], data->payload_len[0]))
                 return false;
 
         if (!match_payload_length(data->payload[1], data->payload_len[1]))
                 return false;
 
-        if (data->server_port == 27001 || data->client_port == 27001)
+        if (data->server_port == 12975 || data->client_port == 12975)
                 return true;
 
-        return false;
+	return false;
 }
 
+static lpi_module_t lpi_hamachi = {
+	LPI_PROTO_HAMACHI,
+	LPI_CATEGORY_TUNNELLING,
+	"Hamachi",
+	3,
+	match_hamachi
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_hamachi(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_hamachi, mod_map);
 }
 

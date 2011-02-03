@@ -491,4 +491,43 @@ bool match_dns(lpi_data_t *data) {
 
 }
 
+bool match_tds_request(uint32_t payload, uint32_t len) {
+
+        uint32_t stated_len = 0;
+
+        stated_len = (ntohl(payload) & 0xffff);
+        if (stated_len != len)
+                return false;
+
+        if (MATCH(payload, 0x12, 0x01, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x10, 0x01, ANY, ANY))
+                return true;
+
+        return false;
+
+}
+
+
+bool match_8000_payload(uint32_t payload, uint32_t len) {
+
+        if (len == 0)
+                return true;
+
+        if (MATCH(payload, 0x3b, 0x00, 0x00, 0x00)) {
+                return true;
+        }
+        if (MATCH(payload, 0x3c, 0x00, 0x00, 0x00)) {
+                return true;
+        }
+        if (MATCH(payload, 0x3d, 0x00, 0x00, 0x00)) {
+                return true;
+        }
+        if (MATCH(payload, 0x3e, 0x00, 0x00, 0x00)) {
+                return true;
+        }
+
+        return false;
+}
+
 

@@ -30,42 +30,49 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
-
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
+static inline bool match_imesh_payload(uint32_t payload, uint32_t len) {
+        if (len == 0)
                 return true;
 
+        if (len == 2 && MATCH(payload, 0x06, 0x00, 0x00, 0x00))
+                return true;
+        if (len == 10 && MATCH(payload, 0x06, 0x00, 0x04, 0x00))
+                return true;
+        if (len == 12 && MATCH(payload, 0x06, 0x00, 0x06, 0x00))
+                return true;
         return false;
+
 }
 
 
+static inline bool match_imesh(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
+	/* Credit for this rule goes to opendpi - so if they're wrong then
+         * we're wrong! */
 
-        return LPI_PROTO_UNKNOWN;
+        if (!match_imesh_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_imesh_payload(data->payload[1], data->payload_len[1]))
+                return false;
+        return true;
+
+}
+
+static lpi_module_t lpi_imesh = {
+	LPI_PROTO_IMESH,
+	LPI_CATEGORY_P2P,
+	"iMesh_TCP",
+	2,
+	match_imesh
+};
+
+void register_imesh(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_imesh, mod_map);
 }
 

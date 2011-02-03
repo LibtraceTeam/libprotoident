@@ -30,42 +30,42 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_notes_rpc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
+	/* Notes RPC is a proprietary protocol and I haven't been able to
+         * find anything to confirm or disprove any of this. 
+         *
+         * As a result, this rule is pretty iffy as it is based on a bunch
+         * of flows observed going to 1 server using port 1352. There is
+         * no documented basis for this (unlike most other rules)
          */
 
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (!match_str_either(data, "\x78\x00\x00\x00"))
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
+        if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00) &&
+                        MATCH(data->payload[1], ANY, ANY, 0x00, 0x00))
                 return true;
+	
 
-        return false;
+	return false;
 }
 
+static lpi_module_t lpi_notes_rpc = {
+	LPI_PROTO_NOTES_RPC,
+	LPI_CATEGORY_REMOTE,
+	"Lotus_Notes_RPC",
+	10,	/* Don't really trust this rule that much :/ */
+	match_notes_rpc
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_notes_rpc(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_notes_rpc, mod_map);
 }
 

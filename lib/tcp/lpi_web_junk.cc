@@ -30,42 +30,46 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_web_junk(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
+	/* Connections to web servers where the client clearly is not
+         * speaking HTTP.
+         *
+         * XXX Check flows matching this occasionally for new HTTP request
+         * types that we've missed :( 
          */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
+        if (!match_http_request(data->payload[0], data->payload_len[0])) {
+                if (MATCHSTR(data->payload[1], "HTTP"))
+                        return true;
+        }
 
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
+        if (!match_http_request(data->payload[1], data->payload_len[1])) {
+                if (MATCHSTR(data->payload[0], "HTTP"))
+                        return true;
+        }
 
-        return false;
+
+	return false;
 }
 
+static lpi_module_t lpi_web_junk = {
+	LPI_PROTO_WEB_JUNK,
+	LPI_CATEGORY_MIXED,
+	"Web_Junk",
+	200,
+	match_web_junk
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_web_junk(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_web_junk, mod_map);
 }
 

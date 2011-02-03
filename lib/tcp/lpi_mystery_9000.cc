@@ -30,42 +30,48 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
-
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
+static inline bool match_mystery_9000_payload(uint32_t payload, uint32_t len) {
+        if (len == 0)
                 return true;
-
+        if (len != 80)
+                return false;
+        if (MATCH(payload, 0x4c, 0x00, 0x00, 0x00))
+                return true;
         return false;
 }
 
 
+static inline bool match_mystery_9000(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
+	/* Not entirely sure what this is - looks kinda like Samba that is
+         * occurring primarily on port 9000. Many storage solutions use
+         * port 9000 as a default port so this is a possibility, but the
+         * use of this protocol is rather spammy */
 
-        return LPI_PROTO_UNKNOWN;
+        if (!match_mystery_9000_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_mystery_9000_payload(data->payload[1], data->payload_len[1]))
+                return false;
+
+        return true;
+	
+}
+
+static lpi_module_t lpi_mystery_9000 = {
+	LPI_PROTO_MYSTERY_9000,
+	LPI_CATEGORY_NO_CATEGORY,
+	"Mystery_9000",
+	250,	
+	match_mystery_9000
+};
+
+void register_mystery_9000(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mystery_9000, mod_map);
 }
 

@@ -30,42 +30,40 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_ea_games(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* Not sure exactly what game this is, but the server matches the
+         * EA IP range and the default port is 9946 */
 
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
+        if (match_str_both(data, "&lgr", "&lgr"))
                 return true;
 
-        return false;
+        if (match_str_either(data, "&lgr")) {
+                if (data->payload_len[0] == 0)
+                        return true;
+                if (data->payload_len[1] == 0)
+                        return true;
+        }
+
+
+	return false;
 }
 
+static lpi_module_t lpi_ea_games = {
+	LPI_PROTO_EA_GAMES,
+	LPI_CATEGORY_GAMING,
+	"EA_Games",
+	3,
+	match_ea_games
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_ea_games(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ea_games, mod_map);
 }
 

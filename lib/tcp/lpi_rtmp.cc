@@ -30,42 +30,36 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
+        if (MATCH(data->payload[0], 0x03, ANY, ANY, ANY) &&
+                        MATCH(data->payload[1], 0x03, ANY, ANY, ANY)) {
 
-        if (data->server_port == 27001 || data->client_port == 27001)
                 return true;
+        }
+	
 
-        return false;
+	return false;
 }
 
+static lpi_module_t lpi_rtmp = {
+	LPI_PROTO_RTMP,
+	LPI_CATEGORY_STREAMING,
+	"RTMP",
+	5,	/* Not a strong rule */
+	match_rtmp
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_rtmp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rtmp, mod_map);
 }
 

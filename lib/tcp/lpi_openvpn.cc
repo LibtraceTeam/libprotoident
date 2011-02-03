@@ -30,42 +30,56 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_openvpn_handshake(uint32_t payload, uint32_t len) {
 
+        uint16_t pktlen = ntohs((uint16_t)payload);
 
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        /* First two bytes are the length of the packet (not including the
+         * length) */
+        if (pktlen + 2 != len)
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
+        /* Handshake packets have opcodes of either 7 or 8 and key IDs of 
+         * zero, so the third byte is either 0x38 or 0x40 */
 
-        if (data->server_port == 27001 || data->client_port == 27001)
+        /* Ref: http://tinyurl.com/37tt3xe */
+
+        if (MATCH(payload, ANY, ANY, 0x38, ANY))
+                return true;
+        if (MATCH(payload, ANY, ANY, 0x40, ANY))
                 return true;
 
+
         return false;
+
 }
 
 
+static inline bool match_openvpn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
+	if (!match_openvpn_handshake(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_openvpn_handshake(data->payload[1], data->payload_len[1]))
+                return false;
 
-        return LPI_PROTO_UNKNOWN;
+	return true;
+}
+
+static lpi_module_t lpi_openvpn = {
+	LPI_PROTO_OPENVPN,
+	LPI_CATEGORY_TUNNELLING,
+	"OpenVPN",
+	3,	/* Most of this rule is based on a length field in the header */
+	match_openvpn
+};
+
+void register_openvpn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_openvpn, mod_map);
 }
 

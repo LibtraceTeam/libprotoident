@@ -30,42 +30,35 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_mystery_8000(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* These patterns typically appear on UDP port 8000 (and occasionally
+         * TCP port 80) */
 
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (!match_8000_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_8000_payload(data->payload[1], data->payload_len[1]))
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
+        return true;
 
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
-
-        return false;
 }
 
+static lpi_module_t lpi_mystery_8000 = {
+	LPI_PROTO_MYSTERY_8000,
+	LPI_CATEGORY_NO_CATEGORY,
+	"Mystery_8000",
+	250,
+	match_mystery_8000
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_mystery_8000(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mystery_8000, mod_map);
 }
 

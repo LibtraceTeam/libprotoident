@@ -30,42 +30,44 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_pptp_payload(uint32_t payload, uint32_t len) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
+        if (len != 156)
                 return false;
 
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
+        if (!MATCH(payload, 0x00, 0x9c, 0x00, 0x01))
                 return false;
 
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
+        return true;
 
-        return false;
 }
 
 
+static inline bool match_pptp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
+	if (!match_pptp_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_pptp_payload(data->payload[1], data->payload_len[1]))
+		return false;
+	return true;
 
-        return LPI_PROTO_UNKNOWN;
+}
+
+static lpi_module_t lpi_pptp = {
+	LPI_PROTO_PPTP,
+	LPI_CATEGORY_TUNNELLING,
+	"PPTP",
+	2,
+	match_pptp
+};
+
+void register_pptp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_pptp, mod_map);
 }
 

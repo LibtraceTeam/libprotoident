@@ -30,42 +30,28 @@
  * $Id$
  */
 
+#include <string.h>
+
 #include "libprotoident.h"
+#include "proto_manager.h"
 #include "proto_common.h"
-#include "proto_tcp.h"
 
+static inline bool match_tip(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-
-
-
-
-static inline bool match_azureus(lpi_data_t *data) {
-
-        /* Azureus begins all messages with a 4 byte length field. 
-         * Unfortunately, it is not uncommon for other protocols to do the 
-         * same, so I'm also forced to check for the default Azureus port
-         * (27001)
-         */
-
-        if (!match_payload_length(data->payload[0], data->payload_len[0]))
-                return false;
-
-        if (!match_payload_length(data->payload[1], data->payload_len[1]))
-                return false;
-
-        if (data->server_port == 27001 || data->client_port == 27001)
-                return true;
-
-        return false;
+	if (match_str_either(data, "PUSH"))
+		return true;
+	return false;
 }
 
+static lpi_module_t lpi_tip = {
+	LPI_PROTO_TIP,
+	LPI_CATEGORY_ECOMMERCE,
+	"TIP",
+	3,	/* Not a very strong rule */
+	match_tip
+};
 
-
-lpi_protocol_t guess_tcp_protocol(lpi_data_t *proto_d)
-{
-        
-
-        return LPI_PROTO_UNKNOWN;
+void register_tip(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_tip, mod_map);
 }
 
