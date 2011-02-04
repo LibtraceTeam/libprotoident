@@ -34,85 +34,7 @@
 #include "proto_common.h"
 #include "proto_udp.h"
 
-static inline bool match_gamespy(lpi_data_t *data) {
 
-        if (match_str_either(data, "\\sta"))
-                return true;
-        if (match_str_either(data, "\\inf"))
-                return true;
-        if (match_str_either(data, "\\gam"))
-                return true;
-        if (match_str_either(data, "\\hos"))
-                return true;
-        if (match_str_either(data, "\\bas"))
-                return true;
-
-	/* Gamespy request begins with 0xfe 0xfd FOO BAR. The response begins
-	 * with FOO BAR, where FOO and BAR are specific bytes */
-
-        if (MATCH(data->payload[0], 0xfe, 0xfd, ANY, ANY) &&
-                ((data->payload[1] << 16) == (data->payload[0] & 0xffff0000)))
-                return true;
-        if (MATCH(data->payload[1], 0xfe, 0xfd, ANY, ANY) &&
-                ((data->payload[0] << 16) == (data->payload[1] & 0xffff0000)))
-                return true;
-
-	/* These packets have also been observed between gamespy servers
-	 * and for gamespy-powered games, e.g. GTA 4 */
-	if (match_str_both(data, "\xfd\xfc\x1e\x66", "\xfd\xfc\x1e\x66"))
-		return true;
-
-	if (match_str_either(data, "\xfd\xfc\x1e\x66")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-        return false;
-
-}
-
-static inline bool match_mp2p(lpi_data_t *data) {
-
-	/* At least one of the endpoints needs to be on the known port */
-	if (data->server_port != 41170 && data->client_port != 41170)
-		return false;
-
-	if (match_chars_either(data, 0x3d, 0x4a, 0xd9, ANY))
-		return true;
-	if (match_chars_either(data, 0x3e, 0x4a, 0xd9, ANY))
-		return true;
-	if (match_chars_either(data, 0x3d, 0x4b, 0xd9, ANY))
-		return true;
-	if (match_chars_either(data, 0x3e, 0x4b, 0xd9, ANY))
-		return true;
-	if (match_chars_either(data, ANY, 0x4b, 0xd9, 0x65))
-		return true;
-	if (match_chars_either(data, ANY, 0x4a, 0xd9, 0x65))
-		return true;
-	if (match_chars_either(data, ANY, 0x4a, 0xd6, 0x6f))
-		return true;
-	if (match_chars_either(data, ANY, 0x4a, 0xd6, 0x90))
-		return true;
-
-
-	/* Seeing a lot of these in flows using port 41170 both ways */
-	if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00) &&
-			data->payload_len[0] != 0) {
-		if (data->payload_len[1] != 0)
-			return false;
-		return true;
-	}
-
-	if (MATCH(data->payload[1], ANY, ANY, 0x00, 0x00) &&
-			data->payload_len[1] != 0) {
-		if (data->payload_len[0] != 0)
-			return false;
-		return true;
-	}
-	return false;
-	
-}		
 
 static inline bool match_freechal(lpi_data_t *data) {
 
@@ -297,31 +219,6 @@ static inline bool match_serialnumberd(lpi_data_t *data) {
 	return false;
 }
 
-static inline bool match_rtp(lpi_data_t *data) {
-        if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
-                        match_str_either(data, "\x00\x01\x00\x08"))
-		return true;
-	
-	/* 96 and 97 are the first two dynamic payload types */
-	if (match_chars_either(data, 0x80, 0x60, ANY, ANY) && 
-			(data->payload_len[0] == 0 || data->payload_len[1]==0))
-		return true;
-	if (match_chars_either(data, 0x80, 0x61, ANY, ANY) && 
-			(data->payload_len[0] == 0 || data->payload_len[1]==0))
-		return true;
-
-	
-	/* If the MSB in the second byte is set, this is a "marker" packet */
-	if (match_chars_either(data, 0x80, 0xe0, ANY, ANY) && 
-			(data->payload_len[0] == 0 || data->payload_len[1]==0))
-		return true;
-	if (match_chars_either(data, 0x80, 0xe1, ANY, ANY) && 
-			(data->payload_len[0] == 0 || data->payload_len[1]==0))
-		return true;
-
-	return false;
-
-}
 
 static inline bool match_pplive(lpi_data_t *data) {
 
@@ -487,26 +384,6 @@ static inline bool match_eso(lpi_data_t *data) {
 
 }
 
-static inline bool match_rdt(lpi_data_t *data) {
-
-	/* The Real Data Transport is not explicitly documented in full,
-	 * but these packets seem to resemble those examples we have been able
-	 * to find.
-	 *
-	 * https://protocol.helixcommunity.org/2005/devdocs/RDT_Feature_Level_30.txt
-	 */
-
-	if (!match_str_both(data, "\x00\xff\x03\x00", "\x00\xff\x04\x49"))
-		return false;
-
-	if (data->payload_len[0] == 3 && data->payload_len[1] == 11)
-		return true;
-	if (data->payload_len[1] == 3 && data->payload_len[0] == 11)
-		return true;
-
-	return false;
-}
-
 static inline bool match_slp_req(uint32_t payload, uint32_t len) {
 
 	/* According to RFC 2608, the 3rd and 4th bytes should be the 
@@ -592,65 +469,6 @@ static inline bool match_esp_encap(lpi_data_t *data) {
 
 }
 
-static inline bool match_isakmp(lpi_data_t *data) {
-
-	/* Rule out anything not on UDP port 500 */
-	if (data->server_port != 500 && data->client_port != 500)
-		return false;
-
-	/* Catching one-way ISAKMP is hard, we have to rely on port numbers
-	 * because nothing else is consistent :( */
-	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
-		if (data->server_port == 500 && data->client_port == 500)
-			return true;
-		return false;
-	}
-
-
-	/* First four bytes are the cookie for the initiator, so should match 
-	 * in both directions */
-
-	if (data->payload[0] != data->payload[1])
-		return false;
-	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
-		return false;
-
-	return true;
-}
-
-static inline bool match_orbit_payload(uint32_t payload, uint32_t len) {
-
-	if (len == 0)
-		return true;
-
-	if (MATCH(payload, 0xaa, 0x20, ANY, ANY) && len == 36)
-		return true;
-	if (MATCH(payload, 0xaa, 0x10, ANY, ANY) && len == 27)
-		return true;
-	if (MATCH(payload, 0xaa, 0x18, ANY, ANY) && len == 27)
-		return true;
-	if (MATCH(payload, 0xaa, 0x28, ANY, ANY) && len == 120)
-		return true;
-	if (MATCH(payload, 0xab, ANY, 0x78, 0xda))
-		return true;
-	
-	return false;
-
-}
-
-static inline bool match_orbit(lpi_data_t *data) {
-
-	/* There's no nice spec for the Orbit UDP protocol, so I'm just
-	 * going to match based on evidence observed thus far */
-
-	if (!match_orbit_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_orbit_payload(data->payload[1], data->payload_len[1]))
-		return false;
-
-	return true;	
-}
-
 static inline bool match_kazaa(lpi_data_t *data) {
 
 	/* 0x27 is a ping, 0x28 and 0x29 are pongs */
@@ -672,19 +490,6 @@ static inline bool match_kazaa(lpi_data_t *data) {
 	return false;
 }
 
-static inline bool match_sql_worm(lpi_data_t *data) {
-
-	/* The recipient does not reply (with any luck!) */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-
-	if (match_chars_either(data, 0x04, 0x01, 0x01, 0x01))
-		return true;
-
-	return false;
-
-}
-
 static inline bool match_norton(lpi_data_t *data) {
 
 	if (MATCH(data->payload[0], 0x02, 0x0a, 0x00, 0xc0)) {
@@ -704,42 +509,6 @@ static inline bool match_norton(lpi_data_t *data) {
 	return false;
 }
 
-/*
- * This covers Windows messenger spam over UDP 
- *
- * Ref: http://www.mynetwatchman.com/kb/security/articles/popupspam/netsend.htm
- */
-static inline bool match_messenger_spam(lpi_data_t *data) {
-
-	if (match_str_both(data, "\x04\x00\x28\x00", "\x04\x02\x08\x00"))
-		return true;
-
-	if (match_str_either(data, "\x04\x00\x28\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-
-	return false;
-}
-
-
-/* http://wiki.limewire.org/index.php?title=Out_of_Band_System */
-static inline bool match_gnutella_oob(lpi_data_t *data) {
-
-	if (!match_ip_address_both(data))
-		return false;
-	
-	/* Payload size seems to be either 32 or 33 bytes */
-	if (data->payload_len[0] == 32 || data->payload_len[1] == 32)
-		return true;
-	if (data->payload_len[0] == 33 || data->payload_len[1] == 33)
-		return true;
-
-	return false;
-
-}
 
 static inline bool match_probable_gnutella(lpi_data_t *data) {
 
@@ -755,179 +524,6 @@ static inline bool match_probable_gnutella(lpi_data_t *data) {
 
 }
 
-static inline bool match_gnutella(lpi_data_t *data) {
-
-
-	/* All Gnutella UDP communications begin with a random 16 byte
-	 * message ID - the request and the response must have the same
-	 * message ID */
-
-	/* OK, for now I'm going to just work with two-way exchanges, because
-	 * one-way is going to be pretty unreliable :( */
-
-	/* One exception! Unanswered PINGs */
-	if (data->payload_len[0] == 23 && data->payload_len[1] == 0)
-		return true;
-	if (data->payload_len[1] == 23 && data->payload_len[0] == 0)
-		return true;
-
-	if (data->payload_len[1] == 0 || data->payload_len[0] == 0)
-		return false;
-
-	/* There seem to be some message types that do weird stuff with the
-	 * GUID - I suspect they are Limewire extensions. */
-
-	if (data->payload_len[0] == 23 && data->payload_len[1] == 23) {
-		if (match_chars_either(data, 0x00, 0x00, 0x00, 0x00))
-			return true;
-	}
-
-	/* If there is payload in both directions, the message IDs must match */
-	if (data->payload[0] != data->payload[1])
-		return false;
-
-
-	/* All of these payload combinations are based purely on transactions
-	 * observed on UDP port 6346 (a known Gnutella port) - sadly, there's
-	 * no genuinely good documentation on the typical size of Gnutella
-	 * UDP requests */
-	
-	/* PING */
-	if (data->payload_len[0] == 23 && data->payload_len[1] < 100)
-		return true;
-	if (data->payload_len[1] == 23 && data->payload_len[0] < 100)
-		return true;
-	
-	/* 727 byte packets are matched with 81 or 86 byte packets */
-	if (data->payload_len[0] == 727 && (data->payload_len[1] == 81 ||
-			data->payload_len[1] == 86))
-		return true;
-	if (data->payload_len[1] == 727 && (data->payload_len[0] == 81 ||
-			data->payload_len[0] == 86))
-		return true;
-
-	/* 72 and (61 or 81 or 86) byte packets seem to go together */
-	if (data->payload_len[0] == 72) {
-		if (data->payload_len[1] == 61)
-			return true;
-		if (data->payload_len[1] == 81)
-			return true;
-		if (data->payload_len[1] == 86)
-			return true;
-	}
-
-	if (data->payload_len[1] == 72) {
-		if (data->payload_len[0] == 61)
-			return true;
-		if (data->payload_len[0] == 81)
-			return true;
-		if (data->payload_len[0] == 86)
-			return true;
-	}
-
-	/* 81 and 544 */
-	if (data->payload_len[0] == 81 && data->payload_len[1] == 544)
-		return true;
-	if (data->payload_len[1] == 81 && data->payload_len[0] == 544)
-		return true;
-
-	/* 55 and 47 */
-	if (data->payload_len[0] == 55 && data->payload_len[1] == 47)
-		return true;
-	if (data->payload_len[1] == 55 && data->payload_len[0] == 47)
-		return true;
-
-	/* 38 and 96 */
-	if (data->payload_len[0] == 38 && data->payload_len[1] == 96)
-		return true;
-	if (data->payload_len[1] == 38 && data->payload_len[0] == 96)
-		return true;
-
-	/* 67 and (81 or 86) */
-	if (data->payload_len[0] == 67 && (data->payload_len[1] == 81 ||
-			data->payload_len[1] == 86))
-		return true;
-	if (data->payload_len[1] == 67 && (data->payload_len[0] == 81 ||
-			data->payload_len[0] == 86))
-		return true;
-
-
-	/* Responses to 35 byte requests range between 136 and 180 bytes */
-	if (data->payload_len[0] == 35 && (data->payload_len[1] <= 180 &&
-			data->payload_len[1] >= 136))
-		return true;
-	if (data->payload_len[1] == 35 && (data->payload_len[0] <= 180 &&
-			data->payload_len[0] >= 136))
-		return true;
-
-	/* 29 byte requests seem to be met with 80-100 byte responses OR
-	 * a 46 byte response */
-	if (data->payload_len[0] == 29) {
-		if (data->payload_len[1] <= 100 && data->payload_len[1] >= 80)
-			return true;
-		if (data->payload_len[1] == 46)
-			return true;
-	}
-	if (data->payload_len[1] == 29) {
-		if (data->payload_len[0] <= 100 && data->payload_len[0] >= 80)
-			return true;
-		if (data->payload_len[0] == 46)
-			return true;
-	}
-
-	/* 34 byte requests seem to be met with 138-165 byte responses */
-	if (data->payload_len[0] == 34 && (data->payload_len[1] <= 165 &&
-			data->payload_len[1] >= 138))
-		return true;
-	if (data->payload_len[1] == 34 && (data->payload_len[0] <= 165 &&
-			data->payload_len[0] >= 138))
-		return true;
-	
-	/* 86 byte requests seem to be met with 100-225 byte responses */
-	if (data->payload_len[0] == 86 && (data->payload_len[1] <= 225 &&
-			data->payload_len[1] >= 100))
-		return true;
-	if (data->payload_len[1] == 86 && (data->payload_len[0] <= 225 &&
-			data->payload_len[0] >= 100))
-		return true;
-
-	/* 193 matches 108 or 111 */
-	if (data->payload_len[0] == 193 && (data->payload_len[1] == 108 ||
-			data->payload_len[1] == 111))
-		return true;
-	if (data->payload_len[1] == 193 && (data->payload_len[0] == 108 ||
-			data->payload_len[0] == 111))
-		return true;
-
-	/* The response to 73 bytes tends to vary in size */
-	if (data->payload_len[0] == 73)
-		return true;
-	if (data->payload_len[1] == 73)
-		return true;
-
-	/* The response to 96 bytes tends to vary in size */
-	if (data->payload_len[0] == 96)
-		return true;
-	if (data->payload_len[1] == 96)
-		return true;
-	
-	/* The response to 28 bytes tends to vary in size, but is less than 
-	 * 200 */
-	if (data->payload_len[0] == 28 && data->payload_len[1] < 200)
-		return true;
-	if (data->payload_len[1] == 28 && data->payload_len[0] < 200)
-		return true;
-	
-	/* Same for 31 bytes */
-	if (data->payload_len[0] == 31 && data->payload_len[1] < 200)
-		return true;
-	if (data->payload_len[1] == 31 && data->payload_len[0] < 200)
-		return true;
-	
-	return false;	
-	
-
-}
 
 /* http://xbtt.sourceforge.net/udp_tracker_protocol.html */
 static inline bool match_xbt_tracker(lpi_data_t *data) {
@@ -949,41 +545,6 @@ static inline bool match_xbt_tracker(lpi_data_t *data) {
 
 	return false;
 
-}
-
-static inline bool match_steam(lpi_data_t *data) {
-
-        /* Master Server Queries begin with 31 ff 30 2e
-         *
-         * NOTE: the ff byte can vary depending on the region that the user
-         * is querying for, but ff is the "all regions" option and is the
-         * typical default. 
-         */
-        if (match_str_either(data, "\x31\xff\x30\x2e")
-                        && match_str_either(data, "\xff\xff\xff\xff")) {
-                return true;
-        }
-
-        /* Server Info queries are always 53 bytes and begin with ff ff ff ff.
-         * The reply also begins with ff ff ff ff but can vary in size */
-
-        if (MATCHSTR(data->payload[0], "\xff\xff\xff\xff") &&
-                data->payload_len[0] == 25 &&
-                (MATCHSTR(data->payload[1], "\xff\xff\xff\xff") ||
-                data->payload_len[1] == 0)) {
-
-                return true;
-        }
-
-        if (MATCHSTR(data->payload[1], "\xff\xff\xff\xff") &&
-                data->payload_len[1] == 25 &&
-                (MATCHSTR(data->payload[0], "\xff\xff\xff\xff") ||
-                data->payload_len[0] == 0)) {
-
-                return true;
-        }
-
-        return false;
 }
 
 static inline bool match_ase_ping(lpi_data_t *data) {
@@ -1209,35 +770,6 @@ static inline bool match_cod(lpi_data_t *data) {
 	return false;
 }
 
-static inline bool match_traceroute(lpi_data_t *data) {
-
-	/* The iVMG people put payload in their traceroute packets that
-	 * we can easily identify */
-
-	if (match_str_either(data, "iVMG"))
-		return true;
-	return false;
-
-}
-
-/* XXX Not really sure on this one - based on the code from OpenDPI but I
- * can't find any documentation that confirms this */
-static inline bool match_imesh(lpi_data_t *data) {
-
-	/* The recipient does not reply */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-	
-	/* All packets are 36 bytes */
-	if (data->payload_len[0] != 36 && data->payload_len[1] != 36)
-		return false;
-		
-	if (match_chars_either(data, 0x02, 0x00, 0x00, 0x00))
-		return true;
-
-	return false;
-
-}
 
 static inline bool match_bf42_ping(lpi_data_t *data) {
 
@@ -1370,68 +902,6 @@ static inline bool match_tremulous(lpi_data_t *data) {
 	return false;
 }
 
-static inline bool match_halflife(lpi_data_t *data) {
-
-	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff)) {
-		if (data->payload_len[0] != 0)
-			return false;
-	}
-	if (!MATCH(data->payload[1], 0xff, 0xff, 0xff, 0xff)) {
-		if (data->payload_len[1] != 0)
-			return false;
-	}
-
-	if (data->payload_len[0] == 20 || data->payload_len[1] == 20)
-		return true;
-	if (data->payload_len[1] == 9 || data->payload_len[0] == 9)
-		return true;
-	if (data->payload_len[0] == 65 && (data->payload_len[1] > 500 &&
-			data->payload_len[1] < 600))
-		return true;
-	if (data->payload_len[1] == 65 && (data->payload_len[0] > 500 &&
-			data->payload_len[0] < 600))
-		return true;
-	if (data->payload_len[0] == 17 && data->payload_len[1] == 27)
-		return true;
-	if (data->payload_len[1] == 17 && data->payload_len[0] == 27)
-		return true;
-	
-
-	/* This differs only slightly from Quake-based stuff, which replies
-	 * with 51-54 byte packets - hopefully this never overlaps, although
-	 * we could combine the two protocols if we have to into a generic
-	 * "Quake ancestry" protocol */	
-	if (data->payload_len[0] == 16) {
-		if (data->payload_len[1] >= 45 && data->payload_len[1] <= 48)
-			return true;
-	}
-	if (data->payload_len[1] == 16) {
-		if (data->payload_len[0] >= 45 && data->payload_len[0] <= 48)
-			return true;
-	}
-
-	/* Another combo observed on port 27005 */
-	if (data->payload_len[0] == 87) {
-		if (data->payload_len[1] >= 24 && data->payload_len[1] <= 26)
-			return true;
-	}
-	if (data->payload_len[1] == 87) {
-		if (data->payload_len[0] >= 24 && data->payload_len[0] <= 26)
-			return true;
-	}
-
-
-	/*
-	if (data->server_port != 27005 && data->client_port != 27005)
-		return false;
-	if (data->server_port != 27015 && data->client_port != 27015)
-		return false;
-	*/
-
-	return false;
-
-
-}
 
 static inline bool match_other_btudp(lpi_data_t *data) {
 
@@ -1690,18 +1160,6 @@ static inline bool match_xfire_p2p(lpi_data_t *data) {
 
 }
 
-static inline bool match_pyzor(lpi_data_t *data) {
-	if (match_str_both(data, "User", "Code"))
-		return true;
-	if (match_str_both(data, "User", "Thre"))
-		return true;
-	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
-		if (match_str_either(data, "User"))
-			return true;
-	}
-
-	return false;
-}
 
 static inline bool match_storm_worm(lpi_data_t *data) {
 
@@ -1737,28 +1195,6 @@ static inline bool match_tvants(lpi_data_t *data) {
 		return true;
 	
 	return false;
-
-}
-
-/* I *think* this is PSN game traffic - it typically appears on UDP port 3658
- * which is commonly used for that but there's no documentation of the
- * protocol anywhere :(
- */
-static inline bool match_psn(lpi_data_t *data) {
-
-	if (data->payload_len[0] == 0 &&
-			MATCH(data->payload[1], 0xff, 0x83, 0xff, 0xfe))
-		return true;
-	if (data->payload_len[1] == 0 &&
-			MATCH(data->payload[0], 0xff, 0x83, 0xff, 0xfe))
-		return true;
-
-	if (MATCH(data->payload[0], 0xff, 0x83, 0xff, 0xfe) &&
-			MATCH(data->payload[1],  0xff, 0x83, 0xff, 0xfe))
-		return true;
-
-	return false;
-
 
 }
 
@@ -1923,313 +1359,7 @@ static inline bool match_ssdp(lpi_data_t *data) {
 
 }
 
-static inline bool match_xunlei(lpi_data_t *data) {
 
-
-	/* Require port 3076 for now, as all these rules are based on
-	 * traffic seen on port 3076 */
-	if (data->server_port != 3076 && data->client_port != 3076)
-		return false;
-	
-	if (match_str_both(data, "\x36\x00\x00\x00", "\x36\x00\x00\x00"))
-		return true;
-	if (match_str_both(data, "\x35\x00\x00\x00", "\x35\x00\x00\x00"))
-		return true;
-	if (match_str_both(data, "\x35\x00\x00\x00", "\x28\x00\x00\x00"))
-		return true;
-	if (match_str_both(data, "\x35\x00\x00\x00", "\x29\x00\x00\x00"))
-		return true;
-	if (match_str_both(data, "\x34\x00\x00\x00", "\x34\x00\x00\x00"))
-		return true;
-	if (match_str_both(data, "\x34\x00\x00\x00", "\x29\x00\x00\x00"))
-		return true;
-	if (match_str_both(data, "\x33\x00\x00\x00", "\x33\x00\x00\x00"))
-		return true;
-
-	if (match_str_either(data, "\x36\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-	if (match_str_either(data, "\x35\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-	if (match_str_either(data, "\x34\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-	if (match_str_either(data, "\x33\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-	if (match_str_either(data, "\x29\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-
-}
-
-static inline bool match_demonware(lpi_data_t *data) {
-
-	
-	/* This is some sort of control channel for demonware? */
-	if (data->payload_len[0] == 15 && data->payload_len[1] == 0) {
-		if (MATCH(data->payload[0], 0x15, 0x02, 0x00, ANY))
-			return true;
-	}
-	
-	if (data->payload_len[1] == 15 && data->payload_len[0] == 0) {
-		if (MATCH(data->payload[1], 0x15, 0x02, 0x00, ANY))
-			return true;
-	}
-	
-	
-	/* Demonware bandwidth testing involves sending a series of 1024
-	 * byte packets to a known server - each packet has an incrementing
-	 * seqno, starting from zero */
-	
-	if (!match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00"))
-		return false;
-
-	if (data->payload_len[0] == 1024) {
-		if (data->payload_len[1] == 0)
-			return true;
-		if (data->payload_len[1] == 1024)
-			return true; 
-	}	
-
-	if (data->payload_len[1] == 1024) {
-		if (data->payload_len[0] == 0)
-			return true;
-	}	
-	
-	/* Sometimes 512 bytes are used as well, but only ever one-way */
-	if (data->payload_len[0] == 512) {
-		if (data->payload_len[1] == 0)
-			return true;
-	}	
-	if (data->payload_len[1] == 512) {
-		if (data->payload_len[0] == 0)
-			return true;
-	}	
-
-	/* Could also check for ports 3074 and 3075 if needed */
-
-	return false;
-
-}
-
-static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
-
-	uint8_t first;
-	uint8_t version;
-	uint8_t mode;
-
-	if (len != 48 && len != 68)
-		return false;
-
-	first = (uint8_t) (payload);
-
-	version = (first & 0x38) >> 3;
-	mode = (first & 0x07);
-
-	if (version > 4 || version == 0)
-		return false;
-	if (mode != 1 && mode != 3)
-		return false;
-
-	return true;
-
-}
-
-static inline bool match_ntp_response(uint32_t payload, uint32_t len) {
-
-	uint8_t first;
-	uint8_t version;
-	uint8_t mode;
-
-	/* Server may not have replied */
-	if (len == 0)
-		return true;
-
-	first = (uint8_t) (payload);
-
-	version = (first & 0x38) >> 3;
-	mode = (first & 0x07);
-
-	if (version > 4 || version == 0)
-		return false;
-	if (mode != 4 && mode != 2 && mode != 1)
-		return false;
-	
-	return true;
-}
-
-static inline bool match_ntp(lpi_data_t *data) {
-
-	/* Force NTP to be on port 123 */
-
-	if (data->server_port != 123 && data->client_port != 123)
-		return false;
-
-	if (match_ntp_request(data->payload[0], data->payload_len[0])) {
-		if (match_ntp_response(data->payload[1], data->payload_len[1]))
-			return true;
-	}
-
-	if (match_ntp_request(data->payload[1], data->payload_len[1])) {
-		if (match_ntp_response(data->payload[0], data->payload_len[0]))
-			return true;
-	}
-
-	return false;
-}
-
-static inline bool match_snmp_payload(uint32_t payload, uint32_t len) {
-	
-	/* SNMP is BER encoded, which is an ass to decode */
-	uint8_t snmplen = 0;
-	uint8_t *byte;
-	int i;
-
-	/* Must be a SEQUENCE */
-	if (!MATCH(payload, 0x30, ANY, ANY, ANY))
-		return false;
-
-	byte = ((uint8_t *)&payload) + 1;
-	
-	if (*byte< 0x80) {
-		snmplen = *byte;
-
-		if (!MATCH(payload, 0x30, ANY, 0x02, 0x01))
-			return false;
-		if (len - 2 != snmplen)
-			return false;
-		return true;
-	} 
-	
-	if (*byte == 0x81) {
-		snmplen = *(byte + 1);
-		
-		if (!MATCH(payload, 0x30, 0x81, ANY, 0x02))
-			return false;
-		if (len - 3 != snmplen)
-			return false;
-		return true;
-	}
-
-	if (*byte == 0x82) {
-		uint16_t longlen = *((uint16_t *)(byte + 1));
-		
-		if (len - 4 != ntohs(longlen))
-			return false;
-		return true;
-	}
-
-	return false;
-
-}
-
-static inline bool match_snmp(lpi_data_t *data) {
-	
-	if (!match_snmp_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_snmp_payload(data->payload[1], data->payload_len[1]))	
-		return false;
-
-	return true;
-}
-
-/* Matches the Opaserv worm that attacks UDP port 137
- * Ref: http://www.usenix.org/events/osdi04/tech/full_papers/singh/singh_html/
- */
-static inline bool match_opaserv(lpi_data_t *data) {
-
-	/* The recipient does not reply (usually) */
-	if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-		return false;
-	
-	if (data->server_port != 137 && data->client_port != 137)
-		return false;
-
-	if (match_chars_either(data, 0x01, 0x00, 0x00, 0x10))
-		return true;
-
-	return false;
-}
-
-static inline bool match_msn_video(lpi_data_t *data) {
-
-        /* The authorization messages use a code of 0x48, followed by 3
-         * bytes of zero. The packet contains no non-header payload, so the
-         * payload length must be the size of the MSN video header (10 bytes)
-         *
-         * Ref: http://ml20rc.msnfanatic.com/vc_1_1/index.html
-         */
-        if (!(MATCHSTR(data->payload[0], "\x48\x00\x00\x00") &&
-                        data->payload_len[0] == 10))
-                return false;
-
-        if (!(MATCHSTR(data->payload[1], "\x48\x00\x00\x00") &&
-                        data->payload_len[1] == 10))
-                return false;
-
-        return true;
-}
-
-
-
-static inline bool match_ipv6(lpi_data_t *data) {
-
-	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
-		return false;
-	
-	if (match_str_both(data, "\x60\x00\x00\x00", "\x60\x00\x00\x00")) {
-		return true;
-	}
-
-	if (MATCHSTR(data->payload[0], "\x60\x00\x00\x00")) {
-		if (data->payload_len[1] == 0) {
-			return true;
-		}
-	}
-
-	if (MATCHSTR(data->payload[1], "\x60\x00\x00\x00")) {
-		if (data->payload_len[0] == 0) {
-			return true;
-		}
-	}
-	return false;	
-}
-
-static inline bool match_msn_cache(lpi_data_t *data) {
-
-	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
-		return false;
-
-	/* These packets seem to be 20 bytes */
-	if (data->payload_len[0] != 20 && data->payload_len[1] != 20)
-		return false;
-
-	if (match_chars_either(data, 0x02, 0x04, 0x00, 0x00))
-		return true;
-	if (match_chars_either(data, 0x02, 0x01, 0x41, 0x31))
-		return true;
-
-
-	return false;
-
-}
 
 static inline bool match_skype_rule1(lpi_data_t *data) {
 
@@ -2327,84 +1457,6 @@ static inline bool match_skype(lpi_data_t *data) {
 	return false;
 }
 
-static bool match_stun_payload(uint32_t payload, uint32_t len) {
-
-	if (len == 0)
-		return false;
-	
-	/* Bytes 3 and 4 are the Message Length - the STUN header 
-	 *
-	 * XXX Byte ordering is a cock! */
-	if ((ntohl(payload) & 0x0000ffff) != len - 20)
-		return false;
-	
-	if (MATCH(payload, 0x00, 0x01, ANY, ANY))
-		return true;
-	if (MATCH(payload, 0x01, 0x01, ANY, ANY))
-		return true;
-
-	return false;
-
-}
-
-static inline bool match_stun(lpi_data_t *data) {
-
-	/* This seems to be a special response containing a STUN token
-	 *
-	 * Not very well-documented though :(
-	 */
-
-	if (match_str_either(data, "RSP/"))
-		return true;
-
-	if (match_stun_payload(data->payload[0], data->payload_len[0]))
-		return true;
-	if (match_stun_payload(data->payload[1], data->payload_len[1]))
-		return true;
-
-	return false;
-
-
-}
-
-static bool match_teredo_payload(uint32_t payload, uint32_t len) {
-	
-	if (len == 0)
-		return true;
-	if (MATCH(payload, 0x00, 0x01, 0x00, 0x00)) {
-		if (len == 61 || len == 109 || len == 77)
-			return true;
-	}
-
-	/* Matching v6 traffic */
-	if (MATCH(payload, 0x60, 0x00, 0x00, 0x00)) {
-		return true;
-	}
-
-	/* We also see this in flows that have the same 5 tuple as other
-	 * Teredo flows */
-
-	if (len == 48 && MATCH(payload, 0x00, 0x00, ANY, ANY))
-		return true;
-
-	
-	return false;
-	
-}
-
-static inline bool match_teredo(lpi_data_t *data) {
-
-	if (data->server_port != 3544 && data->client_port != 3544)
-		return false;
-	
-	if (!match_teredo_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_teredo_payload(data->payload[1], data->payload_len[1]))
-		return false;
-
-	return true;
-
-}
 
 static inline bool match_newerth_payload(uint32_t payload, uint32_t len) {
 	if (len == 0)
@@ -2442,34 +1494,6 @@ static inline bool match_thq(lpi_data_t *data) {
 		return false;
 	if (data->payload_len[1] != 0 &&
 			!MATCH(data->payload[1], 'Q', 'N', 'A', ANY))
-		return false;
-
-	return true;
-}
-
-static inline bool match_diablo2_message(uint32_t payload, uint32_t len) {
-
-	if (len == 0)
-		return true;
-
-	if (MATCH(payload, 0x03, 0x00, 0x00, 0x00) && len == 8)
-		return true;
-	if (MATCH(payload, 0x05, 0x00, 0x00, 0x00) && len == 8)
-		return true;
-	if (MATCH(payload, 0x09, 0x00, 0x00, 0x00) && len == 12)
-		return true;
-
-	return false;
-}
-
-static inline bool match_diablo2(lpi_data_t *data) {
-
-	if (data->server_port != 6112 && data->client_port != 6112)
-		return false;
-	
-	if (!match_diablo2_message(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_diablo2_message(data->payload[1], data->payload_len[1]))
 		return false;
 
 	return true;
@@ -2648,19 +1672,6 @@ static inline bool match_rtcp(lpi_data_t *data) {
 
 }
 
-static inline bool match_sip(lpi_data_t *data) {
-
-        if (match_chars_either(data, 'S', 'I', 'P', ANY))
-		return true;
-	
-	if (match_str_either(data, "OPTI") && 
-			(data->payload_len[0] == 0 || 
-			data->payload_len[1] == 0))
-		return true;
-
-	return false;
-	
-}
 
 static inline bool match_linkproof(lpi_data_t *data) {
 
@@ -3294,100 +2305,6 @@ static inline bool match_mystery_e9(lpi_data_t *data) {
 
 lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 
-	if (proto_d->payload_len[0] == 0 && proto_d->payload_len[1] == 0)
-		return LPI_PROTO_NO_PAYLOAD;
-
-
-        if (match_sip(proto_d))
-                return LPI_PROTO_UDP_SIP;
-
-	/* XXX May want to separate Vuze DHT from the other DHT at some point */
-        if (match_chars_either(proto_d, 'd', '1', ':', ANY))
-                return LPI_PROTO_UDP_BTDHT;
-        if (match_chars_either(proto_d, 'd', '1', ANY, ':'))
-                return LPI_PROTO_UDP_BTDHT;
-
-	if (match_gamespy(proto_d)) return LPI_PROTO_UDP_GAMESPY;
-
-        if (match_chars_either(proto_d, 0x01, 0x01, 0x06, 0x00))
-                return LPI_PROTO_UDP_DHCP;
-
-        if (match_chars_either(proto_d, 0x02, 0x01, 0x06, 0x00))
-                return LPI_PROTO_UDP_DHCP;
-
-	if (match_traceroute(proto_d)) return LPI_PROTO_UDP_TRACEROUTE;
-
-        if (match_steam(proto_d)) return LPI_PROTO_UDP_STEAM;
-
-	if (match_stun(proto_d)) return LPI_PROTO_UDP_STUN;
-
-        if (match_chars_either(proto_d, 'G', 'N', 'D', ANY))
-                return LPI_PROTO_UDP_GNUTELLA2;
-	if (match_gnutella_oob(proto_d))
-                return LPI_PROTO_UDP_GNUTELLA;
-
-        if (match_str_both(proto_d, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
-                return LPI_PROTO_XUNLEI;
-	if (match_str_either(proto_d, "\x32\x00\x00\x00") && 	
-			(proto_d->payload_len[0] == 0 || 
-			proto_d->payload_len[1] == 0))
-		return LPI_PROTO_XUNLEI;
-
-	if (match_opaserv(proto_d)) return LPI_PROTO_UDP_OPASERV;
-
-	if (match_mp2p(proto_d)) return LPI_PROTO_UDP_MP2P;
-
-        if (match_str_either(proto_d, "VS01"))
-                return LPI_PROTO_UDP_STEAM_FRIENDS;
-
-	if (match_str_either(proto_d, "DISC")) 
-		return LPI_PROTO_UDP_SPAMFIGHTER;
-	if (match_str_either(proto_d, "SCP\x03")) 
-		return LPI_PROTO_UDP_SPAMFIGHTER;
-	if (match_pyzor(proto_d)) return LPI_PROTO_UDP_PYZOR;
-
-
-        if (match_str_either(proto_d, "EYE1"))
-                return LPI_PROTO_UDP_EYE;
-
-	if (match_messenger_spam(proto_d))
-		return LPI_PROTO_UDP_WIN_MESSAGE;
-
-	if (match_rtp(proto_d))
-                return LPI_PROTO_UDP_RTP;
-
-	if (match_chars_either(proto_d, 0x40, 0x00, 0x00, 0x00))
-		return LPI_PROTO_UDP_SECONDLIFE;
-
-	if (match_sql_worm(proto_d)) return LPI_PROTO_UDP_SQLEXP;
-
-	if (match_demonware(proto_d)) return LPI_PROTO_UDP_DEMONWARE;
-
-	if (match_halflife(proto_d)) return LPI_PROTO_UDP_HL;
-
-        if (match_msn_video(proto_d)) return LPI_PROTO_UDP_MSN_VIDEO;
-
-	if (match_msn_cache(proto_d)) return LPI_PROTO_UDP_MSN_CACHE;
-
-        if (match_ntp(proto_d)) return LPI_PROTO_UDP_NTP;
-
-	if (match_ipv6(proto_d)) return LPI_PROTO_UDP_IPV6;
-	
-	if (match_imesh(proto_d)) return LPI_PROTO_UDP_IMESH;
-
-	if (match_diablo2(proto_d)) return LPI_PROTO_UDP_DIABLO2;
-
-	if (match_orbit(proto_d)) return LPI_PROTO_UDP_ORBIT;
-
-	if (match_teredo(proto_d)) return LPI_PROTO_UDP_TEREDO;
-
-	if (match_psn(proto_d)) return LPI_PROTO_UDP_PSN;
-
-	if (match_rdt(proto_d)) return LPI_PROTO_UDP_REAL;
-
-	if (match_isakmp(proto_d)) return LPI_PROTO_UDP_ISAKMP;
-
-	if (match_snmp(proto_d)) return LPI_PROTO_UDP_SNMP;
 
 	if (match_backweb(proto_d)) return LPI_PROTO_UDP_BACKWEB;
 
@@ -3453,8 +2370,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	
 	if (match_kazaa(proto_d)) return LPI_PROTO_UDP_KAZAA;
 
-	if (match_xunlei(proto_d)) return LPI_PROTO_UDP_XUNLEI;
-
 	if (match_norton(proto_d)) return LPI_PROTO_UDP_NORTON;
 
 	if (match_cisco_ipsec(proto_d)) return LPI_PROTO_UDP_CISCO_VPN;
@@ -3501,10 +2416,6 @@ lpi_protocol_t guess_udp_protocol(lpi_data_t *proto_d) {
 	if (match_skype(proto_d))
 		return LPI_PROTO_UDP_SKYPE;
 
-	/* This matches only on payload size in some instances, so needs to be
-	 * near the end */	
-	if (match_gnutella(proto_d))
-		return LPI_PROTO_UDP_GNUTELLA;
 	if (match_esp_encap(proto_d)) return LPI_PROTO_UDP_ESP;
 
 	if (match_mystery_emule(proto_d))

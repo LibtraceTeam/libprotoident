@@ -130,6 +130,41 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 int register_udp_protocols(LPIModuleMap *mod_map) {
 
+	register_demonware(mod_map);
+	register_dhcp(mod_map);
+	register_dht_dict(mod_map);
+	register_diablo2(mod_map);
+	register_eye_udp(mod_map);
+	register_gamespy(mod_map);
+	register_gnutella_udp(mod_map);
+	register_gnutella2_udp(mod_map);
+	register_halflife(mod_map);
+	register_imesh_udp(mod_map);
+	register_ipv6_udp(mod_map);
+	register_isakmp(mod_map);
+	register_mp2p_udp(mod_map);
+	register_msn_cache(mod_map);
+	register_msn_video(mod_map);
+	register_udp_no_payload(mod_map);
+	register_ntp(mod_map);
+	register_opaserv(mod_map);
+	register_orbit_udp(mod_map);
+	register_psn(mod_map);
+	register_pyzor(mod_map);
+	register_real(mod_map);
+	register_rtp(mod_map);
+	register_second_life(mod_map);
+	register_sip_udp(mod_map);
+	register_snmp(mod_map);
+	register_spamfighter(mod_map);
+	register_sql_worm(mod_map);
+	register_steamfriends(mod_map);
+	register_steam_udp(mod_map);
+	register_stun(mod_map);
+	register_teredo(mod_map);
+	register_traceroute(mod_map);
+	register_winmessage(mod_map);
+	register_xunlei_udp(mod_map);
 	return 0;
 }
 
