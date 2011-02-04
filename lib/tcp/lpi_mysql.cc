@@ -78,7 +78,7 @@ static lpi_module_t lpi_mysql = {
 	LPI_PROTO_MYSQL,
 	LPI_CATEGORY_DATABASES,
 	"MySQL",
-	3,
+	4,
 	match_mysql
 };
 

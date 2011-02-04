@@ -46,7 +46,7 @@ static lpi_module_t lpi_mitglieder = {
 	LPI_PROTO_MITGLIEDER,
 	LPI_CATEGORY_MALWARE,
 	"Mitglieder_Trojan",
-	5,
+	8,
 	match_mitglieder
 };
 

@@ -53,7 +53,7 @@ static lpi_module_t lpi_yahoo = {
 	LPI_PROTO_YAHOO,
 	LPI_CATEGORY_CHAT,
 	"Yahoo",
-	2,
+	3,
 	match_yahoo
 };
 

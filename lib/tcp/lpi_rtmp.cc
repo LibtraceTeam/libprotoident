@@ -55,7 +55,7 @@ static lpi_module_t lpi_rtmp = {
 	LPI_PROTO_RTMP,
 	LPI_CATEGORY_STREAMING,
 	"RTMP",
-	5,	/* Not a strong rule */
+	6,	/* Not a strong rule */
 	match_rtmp
 };
 

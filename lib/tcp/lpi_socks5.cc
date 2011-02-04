@@ -85,7 +85,7 @@ static lpi_module_t lpi_socks5 = {
 	LPI_PROTO_SOCKS5,
 	LPI_CATEGORY_TUNNELLING,
 	"SOCKS5",
-	2,
+	3,
 	match_socks5
 };
 

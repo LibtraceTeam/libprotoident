@@ -49,7 +49,7 @@ static lpi_module_t lpi_goku = {
 	LPI_PROTO_GOKUCHAT,
 	LPI_CATEGORY_CHAT,
 	"GokuChat",
-	2,
+	3,
 	match_goku
 };
 

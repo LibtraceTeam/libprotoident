@@ -66,7 +66,7 @@ static lpi_module_t lpi_msnc = {
 	LPI_PROTO_MSNC,
 	LPI_CATEGORY_FILES,
 	"MSNC",
-	2,
+	3,
 	match_msnc
 };
 

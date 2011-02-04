@@ -68,7 +68,7 @@ static lpi_module_t lpi_imesh = {
 	LPI_PROTO_IMESH,
 	LPI_CATEGORY_P2P,
 	"iMesh_TCP",
-	2,
+	3,
 	match_imesh
 };
 

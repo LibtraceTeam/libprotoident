@@ -47,7 +47,7 @@ static lpi_module_t lpi_pando = {
 	LPI_PROTO_PANDO,
 	LPI_CATEGORY_P2P,
 	"Pando",
-	2,
+	3,
 	match_pando
 }; 
 

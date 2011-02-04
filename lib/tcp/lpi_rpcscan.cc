@@ -48,7 +48,7 @@ static lpi_module_t lpi_rpcscan = {
 	LPI_PROTO_RPC_SCAN,
 	LPI_CATEGORY_MALWARE,
 	"RPC_Exploit",
-	5, /* Most malware can go to priority 5 - want to match legit protocols
+	8, /* Most malware can go to priority 8 - want to match legit protocols
 	    * first */
 	match_rpcscan
 };

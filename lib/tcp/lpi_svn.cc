@@ -75,7 +75,7 @@ static lpi_module_t lpi_svn = {
 	LPI_PROTO_SVN,
 	LPI_CATEGORY_RCS,
 	"SVN",
-	2,
+	3,
 	match_svn
 };
 

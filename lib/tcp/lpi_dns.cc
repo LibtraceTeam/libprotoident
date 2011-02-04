@@ -78,7 +78,7 @@ static lpi_module_t lpi_dns = {
 	LPI_PROTO_DNS,
 	LPI_CATEGORY_SERVICES,
 	"DNS",
-	5, 	/* Not a high certainty */
+	6, 	/* Not a high certainty */
 	match_tcp_dns
 };
 

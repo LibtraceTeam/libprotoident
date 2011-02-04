@@ -47,7 +47,7 @@ static lpi_module_t lpi_message4u = {
 	LPI_PROTO_M4U,
 	LPI_CATEGORY_TELCO,
 	"Message4U",
-	2,
+	3,
 	match_message4u
 };
 

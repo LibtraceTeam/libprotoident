@@ -53,7 +53,7 @@ static lpi_module_t lpi_yahoo_webcam = {
 	LPI_PROTO_YAHOO_WEBCAM,
 	LPI_CATEGORY_CHAT,
 	"Yahoo_Webcam",
-	2, 
+	3, 
 	match_yahoo_webcam
 };
 

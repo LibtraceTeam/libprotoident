@@ -47,7 +47,7 @@ static lpi_module_t lpi_msnv = {
 	LPI_PROTO_MSNV,
 	LPI_CATEGORY_CHAT,
 	"MSN_Voice",
-	2,
+	3,
 	match_msnv
 };
 

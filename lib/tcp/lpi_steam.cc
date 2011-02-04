@@ -61,7 +61,7 @@ static lpi_module_t lpi_steam = {
 	LPI_PROTO_STEAM,
 	LPI_CATEGORY_GAMING,
 	"Steam_TCP",
-	3, /* Might not be as reliable as some other rules (?) */
+	4, /* Might not be as reliable as some other rules (?) */
 	match_steam
 };
 

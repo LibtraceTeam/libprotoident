@@ -47,7 +47,7 @@ static lpi_module_t lpi_dxp = {
 	LPI_PROTO_DXP,
 	LPI_CATEGORY_DATABASES,
 	"Silverplatter_DXP",
-	2,
+	3,
 	match_dxp
 };
 

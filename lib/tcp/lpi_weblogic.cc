@@ -65,7 +65,7 @@ static lpi_module_t lpi_weblogic = {
 	LPI_PROTO_WEBLOGIC,
 	LPI_CATEGORY_DATABASES,
 	"Weblogic",
-	5,
+	8,
 	match_weblogic
 };
 

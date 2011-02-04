@@ -47,7 +47,7 @@ static lpi_module_t lpi_tip = {
 	LPI_PROTO_TIP,
 	LPI_CATEGORY_ECOMMERCE,
 	"TIP",
-	3,	/* Not a very strong rule */
+	5,	/* Not a very strong rule */
 	match_tip
 };
 

@@ -48,7 +48,7 @@ static lpi_module_t lpi_rbls = {
 	LPI_PROTO_RBLS,
 	LPI_CATEGORY_ANTISPAM,
 	"RBL",
-	2,
+	3,
 	match_rbls
 };
 

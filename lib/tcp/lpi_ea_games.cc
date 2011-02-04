@@ -59,7 +59,7 @@ static lpi_module_t lpi_ea_games = {
 	LPI_PROTO_EA_GAMES,
 	LPI_CATEGORY_GAMING,
 	"EA_Games",
-	3,
+	4,
 	match_ea_games
 };
 

@@ -74,7 +74,7 @@ static lpi_module_t lpi_tds = {
 	LPI_PROTO_TDS,
 	LPI_CATEGORY_DATABASES,
 	"TDS",
-	3,
+	4,
 	match_tds
 };
 

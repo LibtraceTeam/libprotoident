@@ -47,7 +47,7 @@ static lpi_module_t lpi_rsync = {
 	LPI_PROTO_RSYNC,
 	LPI_CATEGORY_FILES,
 	"Rsync",
-	2,
+	3,
 	match_rsync
 };
 

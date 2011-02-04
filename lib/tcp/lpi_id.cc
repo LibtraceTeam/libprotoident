@@ -51,7 +51,7 @@ static lpi_module_t lpi_id = {
 	LPI_PROTO_ID,
 	LPI_CATEGORY_SERVICES,
 	"ID_Protocol",
-	2,
+	3,
 	match_id
 };
 

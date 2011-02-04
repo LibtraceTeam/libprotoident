@@ -138,7 +138,7 @@ static lpi_module_t lpi_ftpdata = {
 	LPI_PROTO_FTP_DATA,
 	LPI_CATEGORY_FILES,
 	"FTP_Data",
-	5, /* Some of these rules rely on port numbers and one-way data, so
+	7, /* Some of these rules rely on port numbers and one-way data, so
 	    * should have a lower priority than more concrete rules */
 	match_ftp_data
 };

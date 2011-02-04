@@ -48,7 +48,7 @@ static lpi_module_t lpi_rfb = {
 	LPI_PROTO_RFB,
 	LPI_CATEGORY_REMOTE,
 	"RFB",
-	2,
+	3,
 	match_rfb
 };
 

@@ -48,7 +48,7 @@ static lpi_module_t lpi_ares = {
 	LPI_PROTO_ARES,
 	LPI_CATEGORY_P2P,
 	"Ares",
-	2,
+	3,
 	match_ares
 };
 

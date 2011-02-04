@@ -48,7 +48,7 @@ static lpi_module_t lpi_ncsoft = {
 	LPI_PROTO_NCSOFT,
 	LPI_CATEGORY_GAMING,
 	"NCSoft",
-	3, /* Not the strongest rule, although this hasn't caused any problems
+	4, /* Not the strongest rule, although this hasn't caused any problems
 	    * in the past */
 	match_ncsoft
 };

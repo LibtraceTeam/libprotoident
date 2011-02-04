@@ -50,7 +50,7 @@ static lpi_module_t lpi_eye = {
 	LPI_PROTO_EYE,
 	LPI_CATEGORY_GAMING,
 	"AllSeeingEye",
-	2,
+	3,
 	match_eye
 }; 
 

@@ -91,7 +91,7 @@ static lpi_module_t lpi_smb = {
 	LPI_PROTO_SMB,
 	LPI_CATEGORY_FILES,
 	"SMB",
-	2,
+	3,
 	match_smb
 };
 

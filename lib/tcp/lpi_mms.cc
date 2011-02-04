@@ -79,7 +79,7 @@ static lpi_module_t lpi_mms = {
 	LPI_PROTO_MMS,
 	LPI_CATEGORY_STREAMING,
 	"MMS",
-	3,
+	4,
 	match_mms
 };
 

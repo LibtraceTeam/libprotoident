@@ -63,7 +63,7 @@ static lpi_module_t lpi_pptp = {
 	LPI_PROTO_PPTP,
 	LPI_CATEGORY_TUNNELLING,
 	"PPTP",
-	2,
+	3,
 	match_pptp
 };
 

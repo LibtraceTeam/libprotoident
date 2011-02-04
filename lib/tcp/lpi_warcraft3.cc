@@ -59,7 +59,7 @@ static lpi_module_t lpi_warcraft3 = {
 	LPI_PROTO_WARCRAFT3,
 	LPI_CATEGORY_GAMING,
 	"Warcraft3",
-	3, /* I'm a bit dubious about the value of this rule */
+	5, /* I'm a bit dubious about the value of this rule */
 	match_warcraft3
 };
 

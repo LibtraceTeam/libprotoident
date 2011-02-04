@@ -63,7 +63,7 @@ static lpi_module_t lpi_conquer = {
 	LPI_PROTO_CONQUER,
 	LPI_CATEGORY_GAMING,
 	"ConquerOnline",
-	2,
+	3,
 	match_conquer
 };
 

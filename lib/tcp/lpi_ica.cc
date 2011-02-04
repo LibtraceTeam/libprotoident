@@ -48,7 +48,7 @@ static lpi_module_t lpi_ica = {
 	LPI_PROTO_ICA,
 	LPI_CATEGORY_REMOTE,
 	"CitrixICA",
-	2,
+	3,
 	match_ica
 };
 

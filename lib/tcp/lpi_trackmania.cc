@@ -102,7 +102,7 @@ static lpi_module_t lpi_trackmania = {
 	LPI_PROTO_TRACKMANIA,
 	LPI_CATEGORY_GAMING,
 	"Trackmania",
-	2,
+	3,
 	match_trackmania
 };
 

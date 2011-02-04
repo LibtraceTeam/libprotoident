@@ -67,7 +67,7 @@ static lpi_module_t lpi_rdp = {
 	LPI_PROTO_RDP,
 	LPI_CATEGORY_REMOTE,
 	"RDP",
-	3, /*  Moving this to 3 purely on gut feeling */
+	4, /*  Moving this to 4 purely on gut feeling */
 	match_rdp
 };
 

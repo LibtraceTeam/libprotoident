@@ -86,7 +86,7 @@ static lpi_module_t lpi_wow = {
 	LPI_PROTO_WOW,
 	LPI_CATEGORY_GAMING,
 	"WorldOfWarcraft",
-	3,	/* Not super-strong, especially for one-way */
+	4,	/* Not super-strong, especially for one-way */
 	match_wow
 };
 

@@ -75,7 +75,7 @@ static lpi_module_t lpi_openvpn = {
 	LPI_PROTO_OPENVPN,
 	LPI_CATEGORY_TUNNELLING,
 	"OpenVPN",
-	3,	/* Most of this rule is based on a length field in the header */
+	4,	/* Most of this rule is based on a length field in the header */
 	match_openvpn
 };
 

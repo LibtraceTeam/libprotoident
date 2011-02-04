@@ -56,7 +56,7 @@ static lpi_module_t lpi_telecomkey = {
 	LPI_PROTO_TELECOMKEY,
 	LPI_CATEGORY_TELCO,
 	"TelecomKey",
-	2,
+	3,
 	match_telecomkey
 };
 

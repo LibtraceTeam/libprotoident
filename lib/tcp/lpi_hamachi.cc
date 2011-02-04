@@ -58,7 +58,7 @@ static lpi_module_t lpi_hamachi = {
 	LPI_PROTO_HAMACHI,
 	LPI_CATEGORY_TUNNELLING,
 	"Hamachi",
-	3,
+	4,
 	match_hamachi
 };
 

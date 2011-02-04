@@ -86,7 +86,7 @@ static lpi_module_t lpi_bitextend = {
 	LPI_PROTO_BITEXT,
 	LPI_CATEGORY_P2P,
 	"Bittorrent_Extension",
-	3, /* This is probably fine, but I'd rather have this at 3 than 2 */
+	5, /* This is probably fine, but I'd rather have this at 5 than 2 */
 	match_bitextend
 };
 

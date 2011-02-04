@@ -84,7 +84,7 @@ static lpi_module_t lpi_socks4 = {
 	LPI_PROTO_SOCKS4,
 	LPI_CATEGORY_TUNNELLING,
 	"SOCKS4",
-	3,
+	5,
 	match_socks4
 };
 

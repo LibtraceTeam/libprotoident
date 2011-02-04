@@ -49,7 +49,7 @@ static lpi_module_t lpi_afp = {
 	LPI_PROTO_AFP,
 	LPI_CATEGORY_FILES,
 	"AFP",
-	3,
+	5,
 	match_afp
 };
 

@@ -47,7 +47,7 @@ static lpi_module_t lpi_pdbox = {
 	LPI_PROTO_PDBOX,
 	LPI_CATEGORY_P2PTV,
 	"PDBOX",
-	2,
+	3,
 	match_pdbox
 };
 

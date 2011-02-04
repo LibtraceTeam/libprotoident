@@ -82,7 +82,7 @@ static lpi_module_t lpi_xunlei = {
 	LPI_PROTO_XUNLEI,
 	LPI_CATEGORY_P2P,
 	"Xunlei",
-	2,
+	3,
 	match_xunlei
 };
 

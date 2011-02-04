@@ -54,7 +54,7 @@ static lpi_module_t lpi_ssl = {
 	LPI_PROTO_SSL,
 	LPI_CATEGORY_ENCRYPT,
 	"SSL/TLS",
-	3, /* Make this lower priority than IMAPS and HTTPS, just in case */
+	4, /* Make this lower priority than IMAPS and HTTPS, just in case */
 	match_other_ssl
 };
 

@@ -60,7 +60,7 @@ static lpi_module_t lpi_yahoo_error = {
 	LPI_PROTO_YAHOO_ERROR,
 	LPI_CATEGORY_CHAT,
 	"YahooError",
-	5,	/* This rule is a bit odd */
+	10,	/* This rule is a bit odd */
 	match_yahoo_error
 };
 

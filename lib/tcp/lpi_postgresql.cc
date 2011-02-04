@@ -62,7 +62,7 @@ static lpi_module_t lpi_postgresql = {
 	LPI_PROTO_POSTGRESQL,
 	LPI_CATEGORY_DATABASES,
 	"Postgresql",
-	3,
+	4,
 	match_postgresql
 };
 

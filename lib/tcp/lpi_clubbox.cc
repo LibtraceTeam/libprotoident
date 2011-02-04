@@ -53,7 +53,7 @@ static lpi_module_t lpi_clubbox = {
 	LPI_PROTO_CLUBBOX,
 	LPI_CATEGORY_P2P,
 	"Clubbox",
-	2,
+	3,
 	match_clubbox
 };
 

@@ -48,7 +48,7 @@ static lpi_module_t lpi_mzinga = {
 	LPI_PROTO_MZINGA,
 	LPI_CATEGORY_CHAT,
 	"Mzinga",
-	2,
+	3,
 	match_mzinga
 };
 

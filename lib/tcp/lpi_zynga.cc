@@ -48,7 +48,7 @@ static lpi_module_t lpi_zynga = {
 	LPI_PROTO_ZYNGA,
 	LPI_CATEGORY_GAMING,
 	"Zynga",
-	2,
+	3,
 	match_zynga
 };
 

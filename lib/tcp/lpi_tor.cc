@@ -51,7 +51,7 @@ static lpi_module_t lpi_tor = {
 	LPI_PROTO_TOR,
 	LPI_CATEGORY_TUNNELLING,
 	"TOR",
-	5, 	/* Not the strongest rule */
+	7, 	/* Not the strongest rule */
 	match_tor
 };
 

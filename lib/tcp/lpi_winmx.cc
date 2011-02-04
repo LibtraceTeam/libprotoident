@@ -58,7 +58,7 @@ static lpi_module_t lpi_winmx = {
 	LPI_PROTO_WINMX,
 	LPI_CATEGORY_P2P,
 	"WinMX",
-	3,	/* Have this lower priority than HTTP - GET-based rule */
+	4,	/* Have this lower priority than HTTP - GET-based rule */
 	match_winmx
 };
 
