@@ -36,23 +36,38 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_esp_encap(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* This sucks, as the four bytes are the security association ID for
+         * the flow. We can only really go on port numbers, although we can
+         * identify IKE packets by looking for the Non-ESP marker (which is
+         * all zeroes)
+         *
+         * Just have to match on ports, I guess :(
+         */
+
+        if (data->server_port == 4500 && data->client_port == 4500)
+                return true;
+
+        /* If only one port is 4500, check for the Non-ESP marker */
+        if (data->server_port == 4500 || data->client_port == 4500) {
+                if (data->payload[0] == 0 && data->payload[1] == 0)
+                        return true;
+        }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_esp_encap = {
+	LPI_PROTO_UDP_ESP,
+	LPI_CATEGORY_TUNNELLING,
+	"ESP_UDP",
+	200,	/* This is a pretty terrible rule */
+	match_esp_encap
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_esp_encap(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_esp_encap, mod_map);
 }
 

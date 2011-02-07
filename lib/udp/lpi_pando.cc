@@ -36,23 +36,46 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+/* This seems to be a Pando thing - I've found libtorrent handshakes within
+ * full payload captures of these packets that refer to Pando peer exchange.
+ *
+ * It may be a wider Bittorrent thing, but I haven't found any evidence to
+ * suggest that any clients other than Pando use it */
 
-	if (match_dns(data))
-		return true;
+static inline bool match_pando_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_str_both(data, "\x00\x00\x00\x09", "\x00\x00\x00\x09"))
+                return true;
+
+        if (MATCH(data->payload[0], 0x00, 0x00, 0x00, 0x09) &&
+                        data->payload_len[1] == 0)
+                return true;
+
+        if (MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x09) &&
+                        data->payload_len[0] == 0)
+                return true;
+
+        /* This is something I've observed going to hosts belonging to
+         * Pando */
+
+        if (match_str_both(data, "UDPA", "UDPR"))
+                return true;
+        if (match_str_both(data, "UDPA", "UDPE"))
+                return true;
+	
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_pando_udp = {
+	LPI_PROTO_UDP_PANDO,
+	LPI_CATEGORY_P2P_STRUCTURE,
+	"Pando_UDP",
+	10,
+	match_pando_udp
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_pando_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_pando_udp, mod_map);
 }
 

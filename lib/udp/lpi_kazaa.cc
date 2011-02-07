@@ -36,23 +36,36 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_kazaa(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* 0x27 is a ping, 0x28 and 0x29 are pongs */
+
+        /* A Kazaa ping is usually 12 bytes, 0x28 pong is 17, 0x29 pong is 21 */
+
+        if (match_str_both(data, "\x27\x00\x00\x00", "\x28\x00\x00\x00"))
+                return true;
+        if (match_str_both(data, "\x27\x00\x00\x00", "\x29\x00\x00\x00"))
+                return true;
+
+        if (match_str_either(data, "\x27\x00\x00\x00")) {
+                if (data->payload_len[0] == 0 && data->payload_len[1] == 12)
+                        return true;
+                if (data->payload_len[1] == 0 && data->payload_len[0] == 12)
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_kazaa = {
+	LPI_PROTO_UDP_KAZAA,
+	LPI_CATEGORY_P2P_STRUCTURE,
+	"Kazaa_UDP",
+	4,
+	match_kazaa
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_kazaa(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_kazaa, mod_map);
 }
 

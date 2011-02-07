@@ -36,23 +36,45 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_cisco_ipsec_payload(uint32_t payload, uint32_t len) {
 
-	if (match_dns(data))
-		return true;
+        if (len == 0)
+                return true;
+        if (len == 109)
+                return true;
+        if (len == 93)
+                return true;
+        return false;
 
-	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+
+static inline bool match_cisco_ipsec(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	/* Been seeing this on UDP port 10000, which I assume is the
+         * Cisco IPSec VPN */
+
+        if (data->server_port != 10000 && data->client_port != 10000)
+                return false;
+
+        if (!match_cisco_ipsec_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_cisco_ipsec_payload(data->payload[1], data->payload_len[1]))
+                return false;
+
+        return true;
+
+
+}
+
+static lpi_module_t lpi_cisco_ipsec = {
+	LPI_PROTO_UDP_CISCO_VPN,
+	LPI_CATEGORY_TUNNELLING,
+	"Cisco_VPN_UDP",
+	8,
+	match_cisco_ipsec
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_cisco_ipsec(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cisco_ipsec, mod_map);
 }
 

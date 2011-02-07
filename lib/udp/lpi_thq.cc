@@ -36,23 +36,36 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_thq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* I *suspect* this is the protocol used by RTS games released by
+         * THQ - haven't been able to confirm for sure, though
+         *
+         * Most traffic is on port 6112, which is used by Blizzard and THQ
+         * games, but we already have rules for most Blizzard stuff */
 
-	return false;
+        /* The ANY byte also matches the packet length - 17, if we need 
+         * further matching rules */
+        if (data->payload_len[0] != 0 &&
+                        !MATCH(data->payload[0], 'Q', 'N', 'A', ANY))
+                return false;
+        if (data->payload_len[1] != 0 &&
+                        !MATCH(data->payload[1], 'Q', 'N', 'A', ANY))
+                return false;
+
+        return true;
+
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_thq = {
+	LPI_PROTO_UDP_THQ,
+	LPI_CATEGORY_GAMING,
+	"THQ",
+	3,
+	match_thq
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_thq(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_thq, mod_map);
 }
 

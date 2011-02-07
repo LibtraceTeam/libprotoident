@@ -36,23 +36,36 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_norton(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (MATCH(data->payload[0], 0x02, 0x0a, 0x00, 0xc0)) {
+                if (data->payload_len[0] != 16)
+                        return false;
+                if (data->payload_len[1] != 0)
+                        return false;
+                return true;
+        }
+        if (MATCH(data->payload[1], 0x02, 0x0a, 0x00, 0xc0)) {
+                if (data->payload_len[1] != 16)
+                        return false;
+                if (data->payload_len[0] != 0)
+                        return false;
+                return true;
+        }
+	
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_norton = {
+	LPI_PROTO_UDP_NORTON,
+	LPI_CATEGORY_SECURITY,
+	"Norton_UDP",
+	5,
+	match_norton
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_norton(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_norton, mod_map);
 }
 

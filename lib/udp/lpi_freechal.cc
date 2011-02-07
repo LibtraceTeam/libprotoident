@@ -36,23 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_freechal(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (match_str_both(data, "GET ", "FCP2"))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_freechal = {
+	LPI_PROTO_UDP_FREECHAL,
+	LPI_CATEGORY_P2P,
+	"FreeChal_UDP",
+	3,
+	match_freechal
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_freechal(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_freechal, mod_map);
 }
 

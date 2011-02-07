@@ -36,23 +36,44 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_eso_payload(uint32_t payload, uint32_t len) {
 
-	if (match_dns(data))
-		return true;
+        if (len == 0)
+                return true;
+        if (len == 40 && MATCH(payload, 0x00, ANY, ANY, ANY))
+                return true;
+        if (len == 10 && MATCH(payload, 0x07, 0xa9, 0x00, 0x00))
+                return true;
 
-	return false;
+        return false;
+
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+
+static inline bool match_eso(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	/* I'm pretty sure this is Ensemble game traffic, as it is the
+         * only thing I can find matching the port 2300 that it commonly
+         * occurs on. No game docs available, though :( */
+
+        if (!match_eso_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_eso_payload(data->payload[1], data->payload_len[1]))
+                return false;
+        return true;
+	
+
+}
+
+static lpi_module_t lpi_eso = {
+	LPI_PROTO_UDP_ESO,
+	LPI_CATEGORY_GAMING,
+	"EnsembleOnline",
+	5,
+	match_eso
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_eso(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_eso, mod_map);
 }
 

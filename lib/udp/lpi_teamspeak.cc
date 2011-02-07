@@ -36,23 +36,24 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_teamspeak(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* Teamspeak version 2 */
+        if (match_str_both(data, "\xf4\xbe\x03\x00", "\xf4\xbe\x03\x00"))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_teamspeak = {
+	LPI_PROTO_UDP_TEAMSPEAK,
+	LPI_CATEGORY_VOIP,
+	"TeamSpeak",
+	3,
+	match_teamspeak
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_teamspeak(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_teamspeak, mod_map);
 }
 

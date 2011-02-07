@@ -36,23 +36,28 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_directconnect_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (data->payload_len[0] == 0 &&
+                        MATCHSTR(data->payload[1], "$SR "))
+                return true;
+        if (data->payload_len[1] == 0 &&
+                        MATCHSTR(data->payload[0], "$SR "))
+                return true;
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_directconnect_udp = {
+	LPI_PROTO_UDP_DC,
+	LPI_CATEGORY_P2P_STRUCTURE,
+	"DirectConnect_UDP",
+	3,
+	match_directconnect_udp
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_directconnect_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_directconnect_udp, mod_map);
 }
 

@@ -36,23 +36,36 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (match_dns(data))
-		return true;
-
-	return false;
+static inline bool match_rtcp_payload(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+        if (MATCH(payload, 0x81, 0xc8, 0x00, 0x0c))
+                return true;
+        if (MATCH(payload, 0x80, 0xc9, 0x00, 0x01))
+                return true;
+        return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+
+static inline bool match_rtcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (!match_rtcp_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_rtcp_payload(data->payload[1], data->payload_len[1]))
+                return false;
+        return true;
+
+}
+
+static lpi_module_t lpi_rtcp = {
+	LPI_PROTO_UDP_RTCP,
+	LPI_CATEGORY_VOIP,
+	"RTCP",
+	3,
+	match_rtcp
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_rtcp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rtcp, mod_map);
 }
 

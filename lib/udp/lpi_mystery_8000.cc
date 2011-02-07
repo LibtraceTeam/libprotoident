@@ -36,23 +36,29 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_mystery_8000_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* These patterns typically appear on UDP port 8000 (and occasionally
+         * TCP port 80) */
 
-	return false;
+        if (!match_8000_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_8000_payload(data->payload[1], data->payload_len[1]))
+                return false;
+
+
+	return true;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_mystery_8000_udp = {
+	LPI_PROTO_UDP_MYSTERY_8000,
+	LPI_CATEGORY_NO_CATEGORY,
+	"Mystery_8000",
+	250,
+	match_mystery_8000_udp
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_mystery_8000_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mystery_8000_udp, mod_map);
 }
 

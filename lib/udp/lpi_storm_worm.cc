@@ -36,23 +36,42 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_storm_worm(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* This pattern is observed on ports 4000, 7871 and 11271 which are
+         * all known port numbers for this trojan */
+
+        if (MATCH(data->payload[0], 0xe3, 0x1b, 0xd6, 0x21)) {
+                if (data->payload_len[0] != 4)
+                        return false;
+                if (data->payload_len[1] == 0)
+                        return true;
+                if (MATCH(data->payload[1], 0xe3, 0x0c, 0x66, 0xe6))
+                        return true;
+        }
+
+        if (MATCH(data->payload[1], 0xe3, 0x1b, 0xd6, 0x21)) {
+                if (data->payload_len[1] != 4)
+                        return false;
+                if (data->payload_len[0] == 0)
+                        return true;
+                if (MATCH(data->payload[0], 0xe3, 0x0c, 0x66, 0xe6))
+                        return true;
+        }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_storm_worm = {
+	LPI_PROTO_UDP_STORM_WORM,
+	LPI_CATEGORY_MALWARE,
+	"StormWorm",
+	10,
+	match_storm_worm
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_storm_worm(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_storm_worm, mod_map);
 }
 

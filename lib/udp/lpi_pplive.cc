@@ -36,23 +36,36 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_pplive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x42\x01"))
+                return true;
+        if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x41\x01"))
+                return true;
+        if (match_str_either(data, "\xe9\x03\x41\x01")) {
+                if (data->payload_len[0] == 0 && data->payload_len[1] == 57)
+                        return true;
+                if (data->payload_len[1] == 0 && data->payload_len[0] == 57)
+                        return true;
+        }
+        /* According to a Chinese paper (Xiaona et al), this is a pattern
+         * for PPLive */
+        if (match_str_both(data, "\x1c\x1c\x32\x01", "\x1c\x1c\x32\x01"))
+                return true;
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_pplive = {
+	LPI_PROTO_UDP_PPLIVE,
+	LPI_CATEGORY_P2PTV,
+	"PPLive",
+	3,
+	match_pplive
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_pplive(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_pplive, mod_map);
 }
 

@@ -36,23 +36,40 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_mystery_99(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	/* Another mystery protocol - this one is possibly something to do
+         * with bittorrent, as I've seen it on port 6881 from time to time */
 
-	if (match_dns(data))
-		return true;
+        /* Both payloads must match */
+        if (data->payload[0] != data->payload[1])
+                return false;
+
+        /* One of the payloads is 99 bytes, the other is between 168 and 173
+         * bytes */
+
+        if (data->payload_len[0] == 99) {
+                if (data->payload_len[1] >= 168 && data->payload_len[1] <= 173)
+                        return true;
+        }
+
+        if (data->payload_len[1] == 99) {
+                if (data->payload_len[0] >= 168 && data->payload_len[0] <= 173)
+                        return true;
+        }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_mystery_99 = {
+	LPI_PROTO_UDP_MYSTERY_99,
+	LPI_CATEGORY_NO_CATEGORY,
+	"Mystery_99",
+	250,
+	match_mystery_99
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_mystery_99(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mystery_99, mod_map);
 }
 

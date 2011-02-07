@@ -36,23 +36,42 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_mystery_0660(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (data->payload_len[0] != 0 && data->payload_len[0] != 15)
+                return false;
+        if (data->payload_len[1] != 0 && data->payload_len[1] != 15)
+                return false;
+
+        if (MATCH(data->payload[0], 0x06, 0x60, 0x00, 0x00)) {
+                if (data->payload_len[1] == 0)
+                        return true;
+                if (MATCH(data->payload[1], 0x06, 0x60, 0x00, 0x00))
+                        return true;
+                return false;
+        }
+
+        if (MATCH(data->payload[1], 0x06, 0x60, 0x00, 0x00)) {
+                if (data->payload_len[0] == 0)
+                        return true;
+                if (MATCH(data->payload[0], 0x06, 0x60, 0x00, 0x00))
+                        return true;
+                return false;
+        }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_mystery_0660 = {
+	LPI_PROTO_UDP_MYSTERY_0660,
+	LPI_CATEGORY_NO_CATEGORY,
+	"Mystery_0660",
+	250,
+	match_mystery_0660
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_mystery_0660(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mystery_0660, mod_map);
 }
 

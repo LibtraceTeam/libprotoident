@@ -36,23 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ssdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (match_str_either(data, "M-SE"))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
+static lpi_module_t lpi_ssdp = {
+	LPI_PROTO_UDP_SSDP,
 	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+	"SSDP",
+	5,
+	match_ssdp
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_ssdp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ssdp, mod_map);
 }
 

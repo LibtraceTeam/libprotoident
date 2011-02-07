@@ -47,7 +47,7 @@ static inline bool match_dhcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 }
 
 static lpi_module_t lpi_dhcp = {
-	LPI_PROTO_UDP_DHCP
+	LPI_PROTO_UDP_DHCP,
 	LPI_CATEGORY_SERVICES,
 	"DHCP",
 	3,

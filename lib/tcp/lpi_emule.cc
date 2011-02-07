@@ -36,47 +36,10 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_emule(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_emule_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* Check that payload begins with e3 or c5 in both directions before 
-         * classifying as eMule */
-        /* (I noticed that most emule(probably) flows began with "e3 xx 00 00" 
-         * or "c5 xx 00 00", perhaps is worth looking into... Although I 
-         * couldn't find anything about emule packets) */
-
-        if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
-                return false;
-
-        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
-            MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00))
-                return true;
-
-        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
-            MATCH(data->payload[1], 0xc5, ANY, 0x00, 0x00))
-                return true;
-
-        /* XXX I haven't seen any obviously legit emule that starts with c5
-         * in both directions */
-        /*
-        if (MATCH(data->payload[0], 0xc5, ANY, ANY, ANY) &&
-            MATCH(data->payload[1], 0xc5, ANY, ANY, ANY))
-                return true;
-        */
-
-        if (MATCH(data->payload[0], 0xc5, ANY, 0x00, 0x00) &&
-            MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00))
-                return true;
-
-        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
-                data->payload_len[1] == 0)
-                return true;
-
-        if (MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00) &&
-                data->payload_len[0] == 0)
-                return true;
-
-	
-
+	if (match_emule(data))
+		return true;
 	return false;
 }
 
@@ -85,7 +48,7 @@ static lpi_module_t lpi_emule = {
 	LPI_CATEGORY_P2P,
 	"EMule",
 	10,	/* We've always had this at low priority */
-	match_emule
+	match_emule_tcp
 };
 
 void register_emule(LPIModuleMap *mod_map) {

@@ -36,23 +36,35 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_checkpoint_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* We only see this on port 259, so I'm pretty sure that this is
+         * the Checkpoint proprietary RDP protocol (not to be confused with
+         * Remote Desktop Protocol or the RDP transport protocol).
+         *
+         * Begins with a four byte magic number */
+
+        if (match_str_both(data, "\xf0\x01\xcc\xcc", "\xf0\x01\xcc\xcc"))
+                return true;
+        if (match_str_either(data, "\xf0\x01\xcc\xcc")) {
+                if (data->payload_len[0] == 0)
+                        return true;
+                if (data->payload_len[1] == 0)
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_checkpoint_rdp = {
+	LPI_PROTO_UDP_CP_RDP,
+	LPI_CATEGORY_KEY_EXCHANGE,
+	"Checkpoint_RDP",
+	3,
+	match_checkpoint_rdp
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_checkpoint_rdp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_checkpoint_rdp, mod_map);
 }
 

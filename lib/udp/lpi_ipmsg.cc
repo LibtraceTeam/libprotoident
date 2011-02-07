@@ -36,23 +36,37 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ipmsg(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	 /* IPMSG packet format:
+         *
+         * Version:MessageNumber:User:Host:Command:MsgContent
+         *
+         * Version is always 1.
+         *
+         * All IPMsg observed so far has a message number beginning with
+         * 80...
+         */
 
-	return false;
+        /* Do a port check as well, just to be sure */
+        if (data->server_port != 2425 && data->client_port != 2425)
+                return false;
+
+        if (match_chars_either(data, '1', ':', '8', '0'))
+                return true;
+
+        return true;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_ipmsg = {
+	LPI_PROTO_UDP_IPMSG,
+	LPI_CATEGORY_CHAT,
+	"IPMsg",
+	5,
+	match_ipmsg
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_ipmsg(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ipmsg, mod_map);
 }
 

@@ -36,23 +36,26 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_backweb(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (data->server_port != 370 && data->client_port != 370)
+                return false;
+
+        if (match_chars_either(data, 0x21, 0x24, 0x00, ANY))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_backweb = {
+	LPI_PROTO_UDP_BACKWEB,
+	LPI_CATEGORY_SECURITY,
+	"BackWeb",
+	5,
+	match_backweb
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_backweb(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_backweb, mod_map);
 }
 

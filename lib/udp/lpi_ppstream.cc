@@ -36,23 +36,49 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
+        uint16_t rep_len;
 
-	if (match_dns(data))
-		return true;
+        if (len == 0)
+                return true;
 
-	return false;
+        if (!MATCH(payload, ANY, ANY, 0x43, 0x00))
+                return false;
+
+        /* First two bytes are either len or len - 4 */
+
+        rep_len = * ((uint16_t *)&payload);
+
+        if (rep_len == len)
+                return true;
+        if (rep_len == len - 4)
+                return true;
+
+        return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+
+static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_ppstream_payload(data->payload[1], data->payload_len[1]))
+                return false;
+
+        return true;
+
+
+}
+
+static lpi_module_t lpi_ppstream = {
+	LPI_PROTO_UDP_PPSTREAM,
+	LPI_CATEGORY_P2PTV,
+	"PPStream",
+	5,
+	match_ppstream
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_ppstream(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ppstream, mod_map);
 }
 

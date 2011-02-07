@@ -36,23 +36,37 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ventrilo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* We see this on port 6100, so I'm assuming it is the UDP
+         * Ventrilo protocol. No real documentation of it to confirm,
+         * though */
+
+        if (!(match_str_both(data, "\x00\x00\x00\x00", "\x00\x00\x00\x00")))
+                return false;
+
+        if (data->payload_len[0] == 108 && data->payload_len[1] == 132)
+                return true;
+        if (data->payload_len[1] == 108 && data->payload_len[0] == 132)
+                return true;
+        if (data->payload_len[0] == 52 && data->payload_len[1] == 196)
+                return true;
+        if (data->payload_len[1] == 52 && data->payload_len[0] == 196)
+                return true;
+	
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_ventrilo = {
+	LPI_PROTO_UDP_VENTRILO,
+	LPI_CATEGORY_VOIP,
+	"Ventrilo_UDP",
+	5,
+	match_ventrilo
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_ventrilo(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ventrilo, mod_map);
 }
 

@@ -530,4 +530,47 @@ bool match_8000_payload(uint32_t payload, uint32_t len) {
         return false;
 }
 
+bool match_emule(lpi_data_t *data) {
+
+        /* Check that payload begins with e3 or c5 in both directions before 
+         * classifying as eMule */
+        /* (I noticed that most emule(probably) flows began with "e3 xx 00 00" 
+         * or "c5 xx 00 00", perhaps is worth looking into... Although I 
+         * couldn't find anything about emule packets) */
+
+        if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
+                return false;
+
+        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
+            MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00))
+                return true;
+
+        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
+            MATCH(data->payload[1], 0xc5, ANY, 0x00, 0x00))
+                return true;
+
+        /* XXX I haven't seen any obviously legit emule that starts with c5
+         * in both directions */
+        /*
+        if (MATCH(data->payload[0], 0xc5, ANY, ANY, ANY) &&
+            MATCH(data->payload[1], 0xc5, ANY, ANY, ANY))
+                return true;
+        */
+
+        if (MATCH(data->payload[0], 0xc5, ANY, 0x00, 0x00) &&
+            MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00))
+                return true;
+
+        if (MATCH(data->payload[0], 0xe3, ANY, 0x00, 0x00) &&
+                data->payload_len[1] == 0)
+                return true;
+
+        if (MATCH(data->payload[1], 0xe3, ANY, 0x00, 0x00) &&
+                data->payload_len[0] == 0)
+                return true;
+
+
+
+        return false;
+}
 

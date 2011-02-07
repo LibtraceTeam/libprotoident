@@ -36,23 +36,53 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_steamfriends(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_unreal_query(uint32_t payload, uint32_t len) {
 
-	if (match_str_either(data, "VS01"))
-		return true;
+        /* UT2004 retail is 0x80, demo is 0x7f */
+
+        /* Queries are 5 bytes */
+        if (len != 5)
+                return false;
+        if (MATCH(payload, 0x80, 0x00, 0x00, 0x00))
+                return true;
+        if (MATCH(payload, 0x7f, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
+
+static inline bool match_unreal(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	/* http://www.unrealadmin.org/forums/showthread.php?p=56944 */
+
+        if (match_unreal_query(data->payload[0], data->payload_len[0])) {
+                if (MATCH(data->payload[1], 0x80, 0x00, 0x00, 0x00))
+                        return true;
+                if (data->payload_len[1] == 0)
+                        return true;
+        }
+
+        if (match_unreal_query(data->payload[1], data->payload_len[1])) {
+                if (MATCH(data->payload[0], 0x80, 0x00, 0x00, 0x00))
+                        return true;
+                if (data->payload_len[0] == 0)
+                        return true;
+        }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_steamfriends = {
-	LPI_PROTO_UDP_STEAM_FRIENDS,
+static lpi_module_t lpi_unreal = {
+	LPI_PROTO_UDP_UNREAL,
 	LPI_CATEGORY_GAMING,
-	"Steam_Friends",
-	3,
-	match_steamfriends
+	"Unreal",
+	5,
+	match_unreal
 };
 
-void register_steamfriends(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_steamfriends, mod_map);
+void register_unreal(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_unreal, mod_map);
 }
 

@@ -1,39 +1,96 @@
 noinst_LTLIBRARIES = libprotoident_udp.la
 libprotoident_udp_la_SOURCES = \
+	lpi_backweb.cc \
+	lpi_battlefield.cc \
+	lpi_checkpoint_rdp.cc \
+	lpi_cisco_ipsec.cc \
+	lpi_cod.cc \
 	lpi_demonware.cc \
 	lpi_dhcp.cc \
 	lpi_dht_dict.cc \
+	lpi_dht_other.cc \
 	lpi_diablo2.cc \
-	lpi_eye_udp.cc \
+	lpi_directconnect.cc \
+	lpi_dns.cc \
+	lpi_emule.cc \
+	lpi_eso.cc \
+	lpi_esp_encap.cc \
+	lpi_eye.cc \
+	lpi_fortinet.cc \
+	lpi_freechal.cc \
 	lpi_gamespy.cc \
+	lpi_garena.cc \
 	lpi_gnutella.cc \
 	lpi_gnutella2.cc \
 	lpi_halflife.cc \
 	lpi_imesh.cc \
+	lpi_ipmsg.cc \
 	lpi_ipv6.cc \
 	lpi_isakmp.cc \
+	lpi_jedi.cc \
+	lpi_kademlia.cc \
+	lpi_kazaa.cc \
+	lpi_linkproof.cc \
+	lpi_moh.cc \
 	lpi_mp2p.cc \
 	lpi_msn_cache.cc \
 	lpi_msn_video.cc \
+	lpi_mta.cc \
+	lpi_mystery_02_36.cc \
+	lpi_mystery_0660.cc \
+	lpi_mystery_0d.cc \
+	lpi_mystery_45.cc \
+	lpi_mystery_8000.cc \
+	lpi_mystery_99.cc \
+	lpi_mystery_e9.cc \
+	lpi_mystery_emule.cc \
+	lpi_mystery_fe.cc \
+	lpi_netbios.cc \
+	lpi_newerth.cc \
 	lpi_nopayload.cc \
+	lpi_norton.cc \
 	lpi_ntp.cc \
 	lpi_opaserv.cc \
 	lpi_orbit.cc \
+	lpi_pando.cc \
+	lpi_pplive.cc \
+	lpi_ppstream.cc \
+	lpi_probable_gnutella.cc \
 	lpi_psn.cc \
 	lpi_pyzor.cc \
+	lpi_qq.cc \
+	lpi_quake.cc \
 	lpi_real.cc \
+	lpi_rtcp.cc \
 	lpi_rtp.cc \
 	lpi_second_life.cc \
+	lpi_serialnumberd.cc \
 	lpi_sip.cc \
+	lpi_slp.cc \
 	lpi_snmp.cc \
+	lpi_sopcast.cc \
 	lpi_spamfighter.cc \
 	lpi_sql_worm.cc \
+	lpi_ssdp.cc \
+	lpi_starcraft.cc \
 	lpi_steam.cc \
 	lpi_steamfriends.cc \
+	lpi_storm_worm.cc \
 	lpi_stun.cc \
+	lpi_teamspeak.cc \
 	lpi_teredo.cc \
+	lpi_tftp.cc \
+	lpi_thq.cc \
 	lpi_traceroute.cc \
+	lpi_tremulous.cc \
+	lpi_tvants.cc \
+	lpi_unreal.cc \
+	lpi_ventrilo.cc \
+	lpi_vivox.cc \
 	lpi_winmessage.cc \
+	lpi_worm_22105.cc \
+	lpi_xfire_p2p.cc \
+	lpi_xlsp.cc \
 	lpi_xunlei.cc
 
 AM_CFLAGS=-I"$(top_srcdir)/lib"

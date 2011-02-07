@@ -36,23 +36,28 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_vivox(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* Seen this to Vivox servers, so I'm going to make the logical
+         * assumption */
+        if (!match_str_both(data, "\x80\x6f\x00\x00", "\x80\x6f\x00\x01"))
+                return false;
+
+        if (data->payload_len[0] == 108 || data->payload_len[1] == 108)
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_vivox = {
+	LPI_PROTO_UDP_VIVOX,
+	LPI_CATEGORY_VOIP,
+	"Vivox",
+	5,
+	match_vivox
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_vivox(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_vivox, mod_map);
 }
 

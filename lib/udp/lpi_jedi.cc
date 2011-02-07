@@ -36,23 +36,40 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_jedi(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	/* Pretty rare, but we can write a rule for it */
+        if (match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff")) {
+                /* Server browsing */
+                if (data->payload_len[0] == 65 && data->payload_len[1] == 181)
+                        return true;
+                if (data->payload_len[0] == 66 && data->payload_len[1] == 182)
+                        return true;
+                if (data->payload_len[1] == 65 && data->payload_len[0] == 181)
+                        return true;
+                if (data->payload_len[1] == 66 && data->payload_len[0] == 182)
+                        return true;
+
+                /* Actual gameplay */
+                if (data->payload_len[0] == 16 && data->payload_len[1] == 32)
+                        return true;
+                if (data->payload_len[1] == 16 && data->payload_len[0] == 32)
+                        return true;
+        }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_jedi = {
+	LPI_PROTO_UDP_JEDI,
+	LPI_CATEGORY_GAMING,
+	"JediAcademy",
+	5,
+	match_jedi
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_jedi(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_jedi, mod_map);
 }
 

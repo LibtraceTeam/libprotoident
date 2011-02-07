@@ -36,23 +36,25 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_xfire_p2p(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_dns(data))
-		return true;
+	if (match_str_both(data, "SC01", "CK01"))
+                return true;
+        if (match_str_either(data, "MC01"))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_xfire_p2p = {
+	LPI_PROTO_UDP_XFIRE_P2P,
+	LPI_CATEGORY_P2P,
+	"Xfire_P2P",
+	3,
+	match_xfire_p2p
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_xfire_p2p(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_xfire_p2p, mod_map);
 }
 
