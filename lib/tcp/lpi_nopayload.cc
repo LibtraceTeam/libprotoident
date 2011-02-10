@@ -49,7 +49,7 @@ bool match_no_payload(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_no_payload = {
 	LPI_PROTO_NO_PAYLOAD,
 	LPI_CATEGORY_NOPAYLOAD,
-	"No Payload",
+	"No_Payload",
 	0,	/* Must supercede all other protocols */
 	match_no_payload
 };

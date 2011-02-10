@@ -139,7 +139,7 @@ void display_ident(Flow *f, IdentFlow *ident) {
 
         in.s_addr = f->id.get_client_ip();
         snprintf(str, 1000, "%s %s %s %u %u %u %.3f %" PRIu64 " %" PRIu64, 
-			lpi_print(proto), ip, inet_ntoa(in),
+			proto->name, ip, inet_ntoa(in),
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), ident->start_ts,
 			ident->out_bytes, ident->in_bytes);

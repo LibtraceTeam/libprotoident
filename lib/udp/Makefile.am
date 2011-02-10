@@ -66,6 +66,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_second_life.cc \
 	lpi_serialnumberd.cc \
 	lpi_sip.cc \
+	lpi_skype.cc \
 	lpi_slp.cc \
 	lpi_snmp.cc \
 	lpi_sopcast.cc \
@@ -93,7 +94,9 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xlsp.cc \
 	lpi_xunlei.cc
 
-AM_CFLAGS=-I"$(top_srcdir)/lib"
-AM_CXXFLAGS=-I"$(top_srcdir)/lib"
+EXTRA_DIST=udp_protocols.h
+
+libprotoident_udp_la_CFLAGS=-I"$(top_srcdir)/lib"
+libprotoident_udp_la_CPPFLAGS=-I"$(top_srcdir)/lib"
 INCLUDES=@ADD_INCLS@
 

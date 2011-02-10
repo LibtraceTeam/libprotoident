@@ -5,9 +5,11 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
+	lpi_cisco_vpn.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \
+	lpi_cvs.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_dxp.cc \
@@ -97,7 +99,9 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_yahoo_webcam.cc \
 	lpi_zynga.cc 
 
-AM_CFLAGS=-I"$(top_srcdir)/lib"
-AM_CXXFLAGS=-I"$(top_srcdir)/lib"
+EXTRA_DIST=tcp_protocols.h
+
+libprotoident_tcp_la_CFLAGS=-I"$(top_srcdir)/lib"
+libprotoident_tcp_la_CPPFLAGS=-I"$(top_srcdir)/lib"
 INCLUDES=@ADD_INCLS@
 

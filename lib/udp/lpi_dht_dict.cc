@@ -52,7 +52,7 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_dht_dict = {
 	LPI_PROTO_UDP_BTDHT,
 	LPI_CATEGORY_P2P_STRUCTURE,
-	"Bittorrent_UDP",
+	"BitTorrent_UDP",
 	2,
 	match_dht_dict
 };

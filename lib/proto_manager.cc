@@ -11,8 +11,6 @@ void register_protocol(lpi_module_t *mod, LPIModuleMap *mod_map) {
 	LPIModuleMap::iterator it;
 	LPIModuleList *ml;
 
-	printf("Registering %s - priority %u\n", mod->name, mod->priority);
-
 	it = mod_map->find(mod->priority); 
 
 	if (it == mod_map->end()) {
@@ -34,9 +32,11 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
+	register_cisco_vpn(mod_map);
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
 	register_conquer(mod_map);
+	register_cvs(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
 	register_dxp(mod_map);
@@ -195,6 +195,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_second_life(mod_map);
 	register_serialnumberd(mod_map);
 	register_sip_udp(mod_map);
+	register_skype(mod_map);
 	register_slp(mod_map);
 	register_snmp(mod_map);
 	register_sopcast(mod_map);
@@ -225,80 +226,28 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	return 0;
 }
 
-#if 0
-int register_protocols(LPIModuleMap *mod_map, char *location) {
-	glob_t glob_buf;
-	void *hdl;
-	const char *error;
-	LPIModuleList *ml;
-	LPIModuleMap::iterator it;
+static void register_list_names(LPIModuleList *ml, LPINameMap *names) {
+	LPIModuleList::iterator it; 
 
-	lpi_module_t *new_module;
-	char full_loc[10000];
+	for (it = ml->begin(); it != ml->end(); it ++) {
+		lpi_module_t *mod = *it;
 
-	if (location == NULL) {
-
-		fprintf(stderr, "NULL location passed to register_protocols\n");
-		return -1;
+		(*names)[mod->protocol] = mod->name;
 	}
-
-	if (mod_map == NULL) {
-		fprintf(stderr, "NULL module list passed to register_protocols\n");
-		return -1;
-	}
-
-	strncpy(full_loc, location, 10000-10);
-	strncat(full_loc, "/*.so", strlen("/*.so") + 1);
-	glob(full_loc, 0, NULL, &glob_buf);
-
-	for (uint32_t i = 0; i < glob_buf.gl_pathc; i++) {
-		fprintf(stderr, "Registering %s\n", glob_buf.gl_pathv[i]);
-
-		hdl = dlopen(glob_buf.gl_pathv[i], RTLD_LAZY);
-
-		if (!hdl) {
-			fprintf(stderr, "Failed to open shared library\n");
-			if ((error = dlerror()) != NULL)
-				fprintf(stderr, "%s\n", error);
-			continue;
-		}
-
-		lpi_reg_ptr r_func = (lpi_reg_ptr)dlsym(hdl, "lpi_register");
-		if ((error = dlerror()) != NULL) {
-			fprintf(stderr, "Error: %s\n", error);
-			continue;
-		}
-
-		new_module = r_func();
-		if (new_module == NULL) {
-			fprintf(stderr, "Failed to register protocol: %s\n",
-					glob_buf.gl_pathv[i]);
-			continue;
-		}
-
-		new_module->dlhandle = hdl;
-		
-		it = mod_map->find(new_module->priority); 
-
-		if (it == mod_map->end()) {
-			(*mod_map)[new_module->priority] = new LPIModuleList();
-			
-			it = mod_map->find(new_module->priority);
-		}
-		
-		ml = it->second;
-		ml->push_back(new_module);
-
-
-	}
-
-	globfree(&glob_buf);
-	return 0;
 
 }
-#endif
 
-void init_other_protocols() {
+void register_names(LPIModuleMap *mods, LPINameMap *names) {
+
+	LPIModuleMap::iterator it;
+
+	for (it = mods->begin(); it != mods->end(); it ++) {
+		register_list_names(it->second, names);
+	}
+
+}
+
+void init_other_protocols(LPINameMap *name_map) {
 
 	lpi_icmp = new lpi_module_t;
 
@@ -307,6 +256,7 @@ void init_other_protocols() {
 	lpi_icmp->name = "ICMP";
 	lpi_icmp->priority = 255;
 	lpi_icmp->lpi_callback = NULL;
+	(*name_map)[lpi_icmp->protocol] = lpi_icmp->name;
 
 	lpi_unknown_tcp = new lpi_module_t;
 
@@ -315,6 +265,7 @@ void init_other_protocols() {
 	lpi_unknown_tcp->name = "Unknown_TCP";
 	lpi_unknown_tcp->priority = 255;
 	lpi_unknown_tcp->lpi_callback = NULL;
+	(*name_map)[lpi_unknown_tcp->protocol] = lpi_unknown_tcp->name;
 	
 	lpi_unknown_udp = new lpi_module_t;
 
@@ -323,6 +274,7 @@ void init_other_protocols() {
 	lpi_unknown_udp->name = "Unknown_UDP";
 	lpi_unknown_udp->priority = 255;
 	lpi_unknown_udp->lpi_callback = NULL;
+	(*name_map)[lpi_unknown_udp->protocol] = lpi_unknown_udp->name;
 
 	lpi_unsupported = new lpi_module_t;
 
@@ -331,6 +283,7 @@ void init_other_protocols() {
 	lpi_unsupported->name = "Unsupported";
 	lpi_unsupported->priority = 255;
 	lpi_unsupported->lpi_callback = NULL;
+	(*name_map)[lpi_unsupported->protocol] = lpi_unsupported->name;
 
 }
 

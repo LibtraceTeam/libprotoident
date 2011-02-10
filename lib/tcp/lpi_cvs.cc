@@ -36,44 +36,61 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
+static inline bool match_cvs_request(uint32_t data, uint32_t len) {
 
-        if (len == 0)
-                return true;
-
-        if (MATCH(payload, 0x13, 'B', 'i', 't'))
-                return true;
-
-        if (len == 3 && MATCH(payload, 0x13, 'B', 'i', 0x00))
-                return true;
-        if (len == 2 && MATCH(payload, 0x13, 'B', 0x00, 0x00))
-                return true;
-        if (len == 1 && MATCH(payload, 0x13, 0x00, 0x00, 0x00))
-                return true;
-
-        return false;
+	if (MATCHSTR(data, "BEGI"))
+		return true;
+	return false;
 
 }
 
+static inline bool match_cvs_response(uint32_t data, uint32_t len) {
 
-static inline bool match_bittorrent(lpi_data_t *data, lpi_module_t *mod UNUSED) 
-{
-        if (!match_bittorrent_header(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_bittorrent_header(data->payload[1], data->payload_len[1]))
-                return false;
-        return true;
+	if (len == 0)
+		return true;
+	
+	/* "I LOVE YOU" = auth succeeded */
+	if (MATCHSTR(data, "I LO"))
+		return true;
+	
+	/* "I HATE YOU" = auth failed */
+	if (MATCHSTR(data, "I HA"))
+		return true;
+
+	/* "E <msg>" = a message */
+	if (MATCH(data, 'E', ' ', ANY, ANY))
+		return true;
+
+	/* error = an error */
+	if (MATCHSTR(data, "erro"))
+		return true;
+	
+	return false;
+
 }
 
-static lpi_module_t lpi_bittorrent = {
-	LPI_PROTO_BITTORRENT,
-	LPI_CATEGORY_P2P,
-	"BitTorrent",
-	2,
-	match_bittorrent
+static inline bool match_cvs(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_cvs_request(data->payload[0], data->payload_len[0]) &&
+			match_cvs_response(data->payload[1], data->payload_len[1]))
+		return true;
+	
+	if (match_cvs_request(data->payload[1], data->payload_len[1]) &&
+			match_cvs_response(data->payload[0], data->payload_len[0]))
+		return true;
+
+	return false;
+}
+
+static lpi_module_t lpi_cvs = {
+	LPI_PROTO_CVS,
+	LPI_CATEGORY_RCS,
+	"CVS",
+	3,
+	match_cvs
 };
 
-void register_bittorrent(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_bittorrent, mod_map);
+void register_cvs(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cvs, mod_map);
 }
 

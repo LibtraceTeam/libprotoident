@@ -38,8 +38,6 @@
 
 static inline bool match_mms_server(uint32_t payload, uint32_t len) {
 
-        if (len != 272)
-                return false;
         if (MATCH(payload, 0x01, 0x00, 0x00, 0x00))
                 return true;
         return false;

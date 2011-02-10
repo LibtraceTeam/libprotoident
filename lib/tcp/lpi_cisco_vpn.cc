@@ -36,44 +36,33 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-
-        if (MATCH(payload, 0x13, 'B', 'i', 't'))
-                return true;
-
-        if (len == 3 && MATCH(payload, 0x13, 'B', 'i', 0x00))
-                return true;
-        if (len == 2 && MATCH(payload, 0x13, 'B', 0x00, 0x00))
-                return true;
-        if (len == 1 && MATCH(payload, 0x13, 0x00, 0x00, 0x00))
-                return true;
-
-        return false;
-
+static inline bool match_cisco_vpn_payload(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (MATCH(payload, 0x01, 0xf4, 0x01, 0xf4))
+		return true;
+	return false;
 }
 
+static inline bool match_cisco_vpn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_bittorrent(lpi_data_t *data, lpi_module_t *mod UNUSED) 
-{
-        if (!match_bittorrent_header(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_bittorrent_header(data->payload[1], data->payload_len[1]))
-                return false;
-        return true;
+	if (!match_cisco_vpn_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_cisco_vpn_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
 }
 
-static lpi_module_t lpi_bittorrent = {
-	LPI_PROTO_BITTORRENT,
-	LPI_CATEGORY_P2P,
-	"BitTorrent",
-	2,
-	match_bittorrent
+static lpi_module_t lpi_cisco_vpn = {
+	LPI_PROTO_CISCO_VPN,
+	LPI_CATEGORY_TUNNELLING,
+	"Cisco_VPN",
+	3,
+	match_cisco_vpn
 };
 
-void register_bittorrent(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_bittorrent, mod_map);
+void register_cisco_vpn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cisco_vpn, mod_map);
 }
 

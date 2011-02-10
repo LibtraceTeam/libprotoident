@@ -197,8 +197,10 @@ typedef enum {
 	LPI_PROTO_SOCKS4,
 	LPI_PROTO_INVALID_SMTP,
 	LPI_PROTO_MMS,		/* Microsoft Media Server */
+	LPI_PROTO_CISCO_VPN,	/* Cisco VPN protocol */
 	LPI_PROTO_WEB_JUNK,	/* Clients communicating with web servers
 				   using non-HTTP */
+	LPI_PROTO_CVS,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -371,7 +373,7 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir);
  * @return A pointer to a statically allocated string describing the protocol.
  * This is allocated on the stack, so should be used or copied immediately.
  */
-const char *lpi_print(lpi_module_t *proto);
+const char *lpi_print(lpi_protocol_t proto);
 
 /** Given a protocol, returns the category that it matches.
  *

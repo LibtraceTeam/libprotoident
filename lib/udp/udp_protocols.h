@@ -68,6 +68,7 @@ void register_rtp(LPIModuleMap *mod_map);
 void register_second_life(LPIModuleMap *mod_map);
 void register_serialnumberd(LPIModuleMap *mod_map);
 void register_sip_udp(LPIModuleMap *mod_map);
+void register_skype(LPIModuleMap *mod_map);
 void register_slp(LPIModuleMap *mod_map);
 void register_snmp(LPIModuleMap *mod_map);
 void register_sopcast(LPIModuleMap *mod_map);

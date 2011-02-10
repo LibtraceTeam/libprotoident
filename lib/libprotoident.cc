@@ -53,6 +53,7 @@ lpi_module_t *lpi_unsupported = NULL;
 lpi_module_t *lpi_unknown_tcp = NULL;
 lpi_module_t *lpi_unknown_udp = NULL;
 
+static LPINameMap lpi_names;
 
 static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
@@ -75,7 +76,10 @@ int lpi_init_library() {
 	if (register_udp_protocols(&UDP_protocols) == -1) 
 		return -1;
 
-	init_other_protocols();
+	init_other_protocols(&lpi_names);
+
+	register_names(&TCP_protocols, &lpi_names);
+	register_names(&UDP_protocols, &lpi_names);
 	
 	init_called = true;
 
@@ -610,7 +614,20 @@ const char *lpi_print_category(lpi_category_t category) {
 
 }
 			
+const char *lpi_print(lpi_protocol_t proto) {
 
+	LPINameMap::iterator it;
+
+	it = lpi_names.find(proto);
+
+	if (it == lpi_names.end()) {
+		return "NULL";
+	}	
+	return (it->second);
+	
+}
+
+#if 0
 const char *lpi_print(lpi_module_t *module) {
 
 	if (module == NULL)
@@ -1023,4 +1040,4 @@ const char *lpi_print(lpi_module_t *module) {
 
 	return "Invalid_Protocol";
 }
-
+#endif
