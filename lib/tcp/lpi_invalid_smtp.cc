@@ -49,6 +49,8 @@ static inline bool match_invalid_smtp(lpi_data_t *data, lpi_module_t *mod UNUSED
         if (match_str_both(data, "220 ", "MAIL"))
                 return true;
 
+	if (match_str_both(data, "\x00\x00\x00\x00", "EHLO"))
+		return true;
 
 	return false;
 }

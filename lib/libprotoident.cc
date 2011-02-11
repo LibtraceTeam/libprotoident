@@ -161,6 +161,9 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	}
 
 	transport = trace_get_transport(packet, &proto, &rem);
+	if (data->trans_proto == 0)
+		data->trans_proto = proto;
+	
 	if (transport == NULL || rem == 0)
 		return 0;		
 
@@ -169,9 +172,6 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		data->client_port = trace_get_source_port(packet);
 	}
 
-	if (data->trans_proto == 0)
-		data->trans_proto = proto;
-	
 	if (proto == 6) {
 		if (!tcp)
 			return 0;
@@ -273,13 +273,13 @@ lpi_module_t *lpi_guess_protocol(lpi_data_t *data) {
 			p = guess_protocol(&TCP_protocols, data);
 			if (p == NULL)
 				p = lpi_unknown_tcp;
-			break;
+			return p;
 
 		case TRACE_IPPROTO_UDP:
 			p = guess_protocol(&UDP_protocols, data);
 			if (p == NULL)
 				p = lpi_unknown_udp;
-			break;
+			return p;
 		default:
 			return lpi_unsupported;
 	}

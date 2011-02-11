@@ -47,7 +47,7 @@ static inline bool match_other_ssl(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (data->server_port == 443 || data->client_port == 443)
 		return false;
 
-	return false;
+	return true;
 }
 
 static lpi_module_t lpi_ssl = {

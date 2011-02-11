@@ -36,21 +36,22 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_netbios_req(uint32_t payload, uint32_t len) {
+static inline bool match_netbios_name_req(uint32_t payload, uint32_t len) {
 
-        if (MATCH(payload, 0x80, 0xb0, 0x00, 0x00)) {
+        if (MATCH(payload, ANY, ANY, 0x00, 0x00)) {
                 if (len == 50)
                         return true;
                 if (len == 20)
                         return true;
         }
-
-        if (MATCH(payload, 0x80, 0x94, 0x00, 0x00)) {
+        
+        if (MATCH(payload, ANY, ANY, 0x01, 0x00)) {
                 if (len == 50)
                         return true;
+
         }
 
-        /* Broadcast traffic observed on our Uni network :/ */
+        /* Broadcast traffic */
         if (MATCH(payload, ANY, ANY, 0x01, 0x10)) {
                 if (len == 50)
                         return true;
@@ -60,17 +61,44 @@ static inline bool match_netbios_req(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_netbios_datagram(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0x11, 0x02, ANY, ANY))
+		return true;
+
+	return false;
+}
 
 static inline bool match_netbios_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Haven't yet seen an actual response to Netbios lookups */
 
-        if (match_netbios_req(data->payload[0], data->payload_len[0])) {
+        if (match_netbios_name_req(data->payload[0], data->payload_len[0])) {
+		if (data->server_port != 137 && data->client_port != 137)
+			return false;
+
                 if (data->payload_len[1] == 0)
                         return true;
         }
 
-        if (match_netbios_req(data->payload[1], data->payload_len[1])) {
+        if (match_netbios_name_req(data->payload[1], data->payload_len[1])) {
+		if (data->server_port != 137 && data->client_port != 137)
+			return false;
+                if (data->payload_len[0] == 0)
+                        return true;
+        }
+
+        if (match_netbios_datagram(data->payload[0], data->payload_len[0])) {
+		if (data->server_port != 138 && data->client_port != 138)
+			return false;
+
+                if (data->payload_len[1] == 0)
+                        return true;
+        }
+
+        if (match_netbios_datagram(data->payload[1], data->payload_len[1])) {
+		if (data->server_port != 138 && data->client_port != 138)
+			return false;
                 if (data->payload_len[0] == 0)
                         return true;
         }
@@ -83,7 +111,7 @@ static lpi_module_t lpi_netbios_udp = {
 	LPI_PROTO_UDP_NETBIOS,
 	LPI_CATEGORY_SERVICES,
 	"NetBIOS_UDP",
-	3,
+	5,
 	match_netbios_udp
 };
 

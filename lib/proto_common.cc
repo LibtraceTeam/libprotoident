@@ -447,20 +447,46 @@ static bool dns_req(uint32_t payload) {
 
         /* The flags / rcode on requests are usually all zero.
          *
-         * Exceptions: CB and RD may be set 
+         * Exceptions: CD and RD may be set 
          *
          * Remember BYTE ORDER!
          */
 
         if ((payload & 0xffff0000) == 0x00000000)
                 return true;
-        if ((payload & 0xffff0000) == 0x10000000)
+        
+	
+	/* Check for CD */
+	if ((payload & 0xffff0000) == 0x10000000)
                 return true;
-        if ((payload & 0xffff0000) == 0x00010000)
+        
+	/* Check for RD */
+	if ((payload & 0xffff0000) == 0x00010000)
                 return true;
 
         return false;
 
+}
+
+static bool dns_backscatter(uint32_t payload) {
+
+	/* Let's see if we can identify unsolicited DNS responses */
+
+	/* Last byte seems to be always 0x00 - third is either 0x84 or 0x85 */
+
+	if ((payload & 0xffff0000) == 0x00850000)
+		return true;
+	if ((payload & 0xffff0000) == 0x00840000)
+		return true;
+	if ((payload & 0xffff0000) == 0x80840000)
+		return true;
+	if ((payload & 0xffff0000) == 0x83840000)
+		return true;
+	if ((payload & 0xffff0000) == 0x03840000)
+		return true;
+	if ((payload & 0xffff0000) == 0x00800000)
+		return true;
+	return false;
 }
 
 bool match_dns(lpi_data_t *data) {
@@ -476,6 +502,12 @@ bool match_dns(lpi_data_t *data) {
                 if (data->payload_len[0] > 12 && dns_req(data->payload[0]))
                         return true;
                 if (data->payload_len[1] > 12 && dns_req(data->payload[1]))
+                        return true;
+                if (data->payload_len[0] > 12 && 
+				dns_backscatter(data->payload[0]))
+                        return true;
+                if (data->payload_len[1] > 12 && 
+				dns_backscatter(data->payload[1]))
                         return true;
 
                 return false;
