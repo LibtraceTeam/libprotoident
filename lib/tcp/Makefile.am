@@ -46,6 +46,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_msnc.cc \
 	lpi_msnv.cc \
 	lpi_mysql.cc \
+	lpi_mystery_443.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_9000.cc \
 	lpi_mystery_conn.cc \

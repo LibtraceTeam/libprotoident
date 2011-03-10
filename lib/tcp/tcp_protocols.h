@@ -49,6 +49,7 @@ void register_msn(LPIModuleMap *mod_map);
 void register_msnc(LPIModuleMap *mod_map);
 void register_msnv(LPIModuleMap *mod_map);
 void register_mysql(LPIModuleMap *mod_map);
+void register_mystery_443(LPIModuleMap *mod_map);
 void register_mystery_8000(LPIModuleMap *mod_map);
 void register_mystery_9000(LPIModuleMap *mod_map);
 void register_mystery_conn(LPIModuleMap *mod_map);
