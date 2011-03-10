@@ -93,6 +93,14 @@ int lpi_init_library() {
 
 }
 
+void lpi_free_library() {
+
+	free_protocols(&TCP_protocols);
+	free_protocols(&UDP_protocols);
+
+	init_called = false;
+}
+
 void lpi_init_data(lpi_data_t *data) {
 
 	data->payload[0] = 0;
@@ -111,6 +119,47 @@ void lpi_init_data(lpi_data_t *data) {
 
 }
 
+static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
+		uint32_t rem) {
+	uint32_t seq = 0;
+
+	if (rem < sizeof(libtrace_tcp_t))
+		return 0;
+	if (tcp->rst)
+		return 0;
+	
+	if (data->server_port == 0) {
+		data->server_port = ntohs(tcp->dest);
+		data->client_port = ntohs(tcp->source);
+	}
+
+	seq = ntohl(tcp->seq);
+
+	if (tcp->syn && data->payload_len[dir] == 0) {
+		data->seqno[dir] = seq + 1;
+	}
+
+	if (seq_cmp(seq, data->seqno[dir]) > 0)
+		return 0;
+	//data->seqno[dir] = seq;
+
+	return 1;
+}
+
+static int update_udp_flow(lpi_data_t *data, libtrace_udp_t *udp,
+		uint32_t rem) {
+
+	if (rem < sizeof(libtrace_udp_t))
+		return 0;
+	
+	if (data->server_port == 0) {
+		data->server_port = ntohs(udp->dest);
+		data->client_port = ntohs(udp->source);
+	}
+
+	return 1;
+}
+
 int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 	char *payload = NULL;
@@ -120,10 +169,8 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	void *transport;
 	uint32_t four_bytes;
 	libtrace_ip_t *ip = NULL;
-	libtrace_tcp_t *tcp = NULL;
-	uint32_t seq = 0;
 
-	tcp = trace_get_tcp(packet);
+	//tcp = trace_get_tcp(packet);
 	psize = trace_get_payload_length(packet);
 
 	/* Don't bother if we've observed 32k of data - the first packet must
@@ -134,32 +181,11 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	
 	data->observed[dir] += psize;
 	
-	/* Attempt to deal with reordered TCP segments */
-	if (tcp) {
-		seq = ntohl(tcp->seq);
-
-		if (data->payload_len[dir] != 0 && seq_cmp(seq, 
-				data->seqno[dir]) > 0)
-			return 0;
-		data->seqno[dir] = seq;
-	} else {
-
-		if (data->payload_len[dir] != 0)
-			return 0;
-	}
+	/* If we're TCP, we have to wait to check that we haven't been
+	 * reordered */
+	if (data->trans_proto != 6 && data->payload_len[dir] != 0)
+		return 0;
 	
-	ip = trace_get_ip(packet);
-	
-	if (ip != NULL && data->ips[0] == 0) {
-		if (dir == 0) {
-			data->ips[0] = ip->ip_src.s_addr;
-			data->ips[1] = ip->ip_dst.s_addr;
-		} else {
-			data->ips[1] = ip->ip_src.s_addr;
-			data->ips[0] = ip->ip_dst.s_addr;
-		}
-	}
-
 	transport = trace_get_transport(packet, &proto, &rem);
 	if (data->trans_proto == 0)
 		data->trans_proto = proto;
@@ -167,25 +193,22 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	if (transport == NULL || rem == 0)
 		return 0;		
 
-	if (data->server_port == 0) {
-		data->server_port = trace_get_destination_port(packet);
-		data->client_port = trace_get_source_port(packet);
-	}
-
 	if (proto == 6) {
-		if (!tcp)
+		if (update_tcp_flow(data, (libtrace_tcp_t *)transport, dir, rem) == 0) 
 			return 0;
-		if (tcp->rst)
-			return 0;
-		payload = (char *)trace_get_payload_from_tcp(tcp, &rem);
-	}
+		payload = (char *)trace_get_payload_from_tcp(
+				(libtrace_tcp_t *)transport, &rem);
+	} 
 
 	if (proto == 17) {
-		libtrace_udp_t *udp = (libtrace_udp_t *)transport;
-		payload = (char *)trace_get_payload_from_udp(udp, &rem);
+		if (update_udp_flow(data, (libtrace_udp_t *)transport, rem) == 0)
+			return 0;
+		payload = (char *)trace_get_payload_from_udp(
+				(libtrace_udp_t *)transport, &rem);
 	}
 
-
+	ip = trace_get_ip(packet);
+	
 	if (payload == NULL)
 		return 0;
 	if (psize <= 0)
@@ -200,6 +223,16 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 	data->payload[dir] = htonl(four_bytes);
 	data->payload_len[dir] = psize;
+
+	if (ip != NULL && data->ips[0] == 0) {
+		if (dir == 0) {
+			data->ips[0] = ip->ip_src.s_addr;
+			data->ips[1] = ip->ip_dst.s_addr;
+		} else {
+			data->ips[1] = ip->ip_src.s_addr;
+			data->ips[0] = ip->ip_dst.s_addr;
+		}
+	}
 
 	return 1;
 

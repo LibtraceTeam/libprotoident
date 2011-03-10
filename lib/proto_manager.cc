@@ -25,6 +25,19 @@ void register_protocol(lpi_module_t *mod, LPIModuleMap *mod_map) {
 
 }
 
+void free_protocols(LPIModuleMap *mod_map) {
+
+	LPIModuleMap::iterator it;
+	LPIModuleList *ml;
+
+	for (it = mod_map->begin(); it != mod_map->end(); it ++) {
+		ml = it->second;
+
+		ml->clear();
+		delete(ml);
+	}
+}
+
 int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 	register_afp(mod_map);
@@ -73,6 +86,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_msnc(mod_map);
 	register_msnv(mod_map);
 	register_mysql(mod_map);
+	register_mystery_443(mod_map);
 	register_mystery_8000(mod_map);
 	register_mystery_9000(mod_map);
 	register_mystery_conn(mod_map);

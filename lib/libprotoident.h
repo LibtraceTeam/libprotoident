@@ -293,6 +293,7 @@ typedef enum {
 	LPI_PROTO_MYSTERY_8000,
 	LPI_PROTO_MYSTERY_IG,
 	LPI_PROTO_MYSTERY_CONN,
+	LPI_PROTO_MYSTERY_443,
 	
 	LPI_PROTO_UDP_EMULE_MYSTERY,	/* Possible emule-related protocol */
 	LPI_PROTO_UDP_MYSTERY_0D,	
@@ -342,6 +343,7 @@ struct lpi_module {
 };
 
 int lpi_init_library(void);
+void lpi_free_library(void);
 
 /** Initialises an LPI data structure, setting all the members to appropriate
  *  starting values.

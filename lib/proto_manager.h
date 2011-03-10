@@ -17,6 +17,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map);
 int register_udp_protocols(LPIModuleMap *mod_map);
 void register_names(LPIModuleMap *mod_map, LPINameMap *name_map);
 void init_other_protocols(LPINameMap *name_map);
+void free_protocols(LPIModuleMap *mod_map);
 
 
 //int register_protocols(LPIModuleMap *mod_list, char *location);
