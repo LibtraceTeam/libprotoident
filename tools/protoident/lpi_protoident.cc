@@ -443,6 +443,7 @@ int main(int argc, char *argv[]) {
 
         trace_destroy_packet(packet);
         expire_ident_flows(ts, true);
+	lpi_free_library();
 
         return 0;
 
