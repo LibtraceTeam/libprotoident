@@ -1,0 +1,36 @@
+Version 2.0.0
+ * Massive code restructure - each protocol has its own source file, making it 
+   easier to add new protocols and examine and edit existing ones. Each 
+   protocol has a priority level which determines the order that each set of 
+   protocol rules will be matched by libprotoident. Stronger rules are given 
+   higher priority than weaker ones (there are also instances where more common 
+   protocols are given higher priority than less common ones where the rules
+   are of similar strength).
+
+ * To accommodate this change, the API has changed slightly:
+   	* lpi_guess_protocol now returns a pointer to an lpi_module_t rather 
+	  than an lpi_protocol_t. The lpi_module_t structure contains all the
+	  info about the protocol that was matched, including the 
+	  lpi_protocol_t for the matched protocol and the name string.
+	* Added functions lpi_init_library(void) and lpi_free_library(void)
+	  which initialise and destroy the protocol modules respectively. You
+	  will need to call lpi_init_library before using any other 
+	  libprotoident functions, and should call lpi_free_library when you 
+	  are finished. See the tools if you need an example.
+
+ * XML and AR files are no longer separate protocols - they now fall under the 
+   file header category.
+ 
+ * Improved rules for the following protocols:
+ 	MMS
+	UDP Netbios
+	TeamSpeak
+	Quake
+	DNS
+	IRC
+ 
+ * Added new protocols:
+ 	CVS
+	Cisco VPN (TCP) 
+
+ 
