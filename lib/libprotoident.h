@@ -331,18 +331,28 @@ typedef struct lpi {
 
 typedef struct lpi_module lpi_module_t;
 
+/* This structure describes an individual LPI module - i.e. a protocol 
+ * supported by libprotoident */
 struct lpi_module {
-        //void *dlhandle;
-        lpi_protocol_t protocol;
-        lpi_category_t category;
-        const char *name;
-        uint8_t priority;
+        lpi_protocol_t protocol;	/* The protocol ID */
+        lpi_category_t category;	/* The category for this protocol */
+        const char *name;		/* The protocol name, as a string */
+        uint8_t priority;		/* The relative priority for matching
+					   this protocol */
 
+	/* The callback function for testing whether a given set of LPI
+	 * data matches the ruleset for this protocol */
         bool (*lpi_callback) (lpi_data_t *proto_d, lpi_module_t *module);
 
 };
 
+/* Initialises the LPI library, by registering all the protocol modules.
+ *
+ * @return 1 if initialisation succeeded, 0 otherwise 
+ */
 int lpi_init_library(void);
+
+/* Shuts down the LPI library, by de-registering all the protocol modules */
 void lpi_free_library(void);
 
 /** Initialises an LPI data structure, setting all the members to appropriate
@@ -401,9 +411,10 @@ const char *lpi_print_category(lpi_category_t category);
  *
  *  @param data	The LPI data to use when determining the protocol.
  *
- *  @return The application protocol that matches the profile described by the
- *  given LPI data. If no protocol matches, LPI_UNKNOWN or LPI_UNKNOWN_UDP will
- *  be returned (depending on the transport protocol).
+ *  @return The LPI module for the protocol that matches the profile described
+ *  by the given LPI data. If no protocol matches, the module for either
+ *  LPI_UNKNOWN or LPI_UNKNOWN_UDP will be returned, depending on the transport
+ *  protocol.
  */
 lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
 
