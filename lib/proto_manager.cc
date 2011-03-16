@@ -68,6 +68,7 @@ void free_protocols(LPIModuleMap *mod_map) {
 		ml->clear();
 		delete(ml);
 	}
+	mod_map->clear();
 }
 
 int register_tcp_protocols(LPIModuleMap *mod_map) {
