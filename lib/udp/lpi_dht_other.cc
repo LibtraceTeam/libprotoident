@@ -288,7 +288,8 @@ static lpi_module_t lpi_dht_other = {
 	LPI_PROTO_UDP_BTDHT,
 	LPI_CATEGORY_P2P_STRUCTURE,
 	"BitTorrent_UDP",
-	6,
+	12,	/* Need to be lower priority than DNS, at least in cases 
+		 * where traffic is one-way only */
 	match_dht_other
 };
 

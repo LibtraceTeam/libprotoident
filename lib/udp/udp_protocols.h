@@ -46,6 +46,7 @@ void register_mystery_45(LPIModuleMap *mod_map);
 void register_mystery_8000_udp(LPIModuleMap *mod_map);
 void register_mystery_99(LPIModuleMap *mod_map);
 void register_mystery_e9(LPIModuleMap *mod_map);
+void register_mystery_bt_udp(LPIModuleMap *mod_map);
 void register_mystery_emule(LPIModuleMap *mod_map);
 void register_mystery_fe(LPIModuleMap *mod_map);
 void register_netbios_udp(LPIModuleMap *mod_map);

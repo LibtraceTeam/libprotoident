@@ -44,11 +44,11 @@ static inline bool match_telnet_pattern(uint32_t payload, uint32_t len) {
          */
 
         if (len >= 4) {
-                if ((payload & 0xff0000ff) != (0xff0000ff))
+                if ((ntohl(payload) & 0xff0000ff) != (0xff0000ff))
                         return false;
         }
         else if (len == 3) {
-                if ((payload & 0xff000000) != (0xff000000))
+                if ((ntohl(payload) & 0xff000000) != (0xff000000))
                         return false;
         }
         else

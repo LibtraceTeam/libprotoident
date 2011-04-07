@@ -39,13 +39,47 @@
 /* Separate modules for dictionary-style DHT (which has a much stronger rule)
  * and Vuze DHTs (which are not so strong) */
 
+static inline bool match_dict_query(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 'd', '1', ':', 'a'))
+		return true;
+	if (MATCH(payload, 'd', '1', ':', 'e'))
+		return true;
+	if (MATCH(payload, 'd', '1', ANY, ':'))
+		return true;
+	
+	return false;
+
+}
+
+static inline bool match_dict_reply(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (MATCH(payload, 'd', '1', ':', 'r'))
+		return true;
+	if (MATCH(payload, 'd', '1', ':', 'e'))
+		return true;
+	if (MATCH(payload, 'd', '1', ANY, ':'))
+		return true;
+	
+	return false;
+
+}
+
 static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_dict_query(data->payload[0], data->payload_len[0])) {
+		if (match_dict_reply(data->payload[1], data->payload_len[1]))
+			return true;
+	}
 	
-	if (match_chars_either(data, 'd', '1', ':', ANY))
-		return true;
-	if (match_chars_either(data, 'd', '1', ANY, ':'))
-		return true;
-	
+	if (match_dict_query(data->payload[0], data->payload_len[0])) {
+		if (match_dict_reply(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
 	return false;
 }
 

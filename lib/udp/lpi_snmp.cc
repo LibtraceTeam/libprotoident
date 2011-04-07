@@ -43,6 +43,9 @@ static inline bool match_snmp_payload(uint32_t payload, uint32_t len) {
         uint8_t *byte;
         int i;
 
+	if (len == 0)
+		return true;
+
         /* Must be a SEQUENCE */
         if (!MATCH(payload, 0x30, ANY, ANY, ANY))
                 return false;

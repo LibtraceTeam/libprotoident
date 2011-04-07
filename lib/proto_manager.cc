@@ -220,6 +220,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_8000_udp(mod_map);
 	register_mystery_99(mod_map);
 	register_mystery_e9(mod_map);
+	register_mystery_bt_udp(mod_map);
 	register_mystery_emule(mod_map);
 	register_mystery_fe(mod_map);
 	register_netbios_udp(mod_map);

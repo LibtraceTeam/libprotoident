@@ -40,12 +40,17 @@ static inline bool match_flash(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Flash player stuff - cross-domain policy etc. */
 	
-	if (!match_str_either(data, "<cro"))
-		return false;
-	if (match_str_either(data, "<msg"))
-		return true;
-	if (match_str_either(data, "<pol"))
-		return true;
+	if (match_str_either(data, "<cro")) {
+		if (match_str_either(data, "<msg"))
+			return true;
+		if (match_str_either(data, "<pol"))
+			return true;
+	}
+
+	if (match_str_either(data, "<?xm")) {
+		if (match_str_either(data, "<pol"))
+			return true;
+	}
 
 	return false;
 }

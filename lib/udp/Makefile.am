@@ -43,6 +43,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_8000.cc \
 	lpi_mystery_99.cc \
 	lpi_mystery_e9.cc \
+	lpi_mystery_bt_udp.cc \
 	lpi_mystery_emule.cc \
 	lpi_mystery_fe.cc \
 	lpi_netbios.cc \
