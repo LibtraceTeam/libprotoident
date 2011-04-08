@@ -38,6 +38,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid_http.cc \
 	lpi_invalid_smtp.cc \
 	lpi_irc.cc \
+	lpi_ldap.cc \
 	lpi_message4u.cc \
 	lpi_mitglieder.cc \
 	lpi_mms.cc \

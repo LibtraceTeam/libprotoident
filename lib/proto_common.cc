@@ -336,6 +336,10 @@ static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x16, 0x03, 0x01, ANY))
                 return true;
+        if (MATCH(payload, 0x16, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x16, 0x03, 0x03, ANY))
+                return true;
         return false;
 }
 
@@ -417,10 +421,12 @@ bool match_ssl(lpi_data_t *data) {
         /* Some HTTPS servers respond with unencrypted content, presumably
          * when somebody invalid attempts a connection */
         if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
-                        MATCHSTR(data->payload[1], "<!DO"))
+                        MATCHSTR(data->payload[1], "<!DO") &&
+			data->payload_len[0] != 0)
                 return true;
         if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
-                        MATCHSTR(data->payload[0], "<!DO"))
+                        MATCHSTR(data->payload[0], "<!DO") &&
+			data->payload_len[1] != 0)
                 return true;
 
 

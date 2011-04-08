@@ -183,6 +183,37 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_mystery_emule(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+        /* These particular patterns occur frequently on port 4672, making
+         * me think they're some sort of emule traffic but there is no
+         * obvious documentation. The payloads appear to be random, which
+         * is unlike all other emule traffic. The flows tend to consist of
+         * only one or two packets in each direction.
+	 *
+	 * XXX Comparison with DPI tools suggest that this is indeed eMule!
+	 *
+         */
+
+        if (data->payload_len[0] == 44 && data->payload_len[1] >= 38 &&
+                        data->payload_len[1] <= 50)
+                return true;
+        if (data->payload_len[1] == 44 && data->payload_len[0] >= 38 &&
+                        data->payload_len[0] <= 50)
+                return true;
+
+        if (data->payload_len[0] == 51 && (data->payload_len[1] == 135 ||
+                        data->payload_len[1] == 85 ||
+                        data->payload_len[1] == 310))
+                return true;
+        if (data->payload_len[1] == 51 && (data->payload_len[0] == 135 ||
+                        data->payload_len[0] == 85 ||
+                        data->payload_len[0] == 310))
+                return true;
+
+
+        return false;
+}
+
 
 static inline bool match_emule_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -203,6 +234,9 @@ static inline bool match_emule_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         is_emule_udp(data->payload[1], data->payload_len[1]))
                 return true;
 
+	if (match_mystery_emule(data, NULL))
+		return true;
+
 	return false;
 }
 
@@ -210,7 +244,7 @@ static lpi_module_t lpi_emule_udp = {
 	LPI_PROTO_UDP_EMULE,
 	LPI_CATEGORY_P2P_STRUCTURE,
 	"eMule_UDP",
-	10,
+	12,
 	match_emule_udp
 };
 

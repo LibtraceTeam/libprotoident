@@ -43,6 +43,8 @@ static inline bool match_dict_query(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 'd', '1', ':', 'a'))
 		return true;
+	if (MATCH(payload, 'd', '1', ':', 'r'))
+		return true;
 	if (MATCH(payload, 'd', '1', ':', 'e'))
 		return true;
 	if (MATCH(payload, 'd', '1', ANY, ':'))
@@ -57,6 +59,8 @@ static inline bool match_dict_reply(uint32_t payload, uint32_t len) {
 	if (len == 0)
 		return true;
 
+	if (MATCH(payload, 'd', '1', ':', 'a'))
+		return true;
 	if (MATCH(payload, 'd', '1', ':', 'r'))
 		return true;
 	if (MATCH(payload, 'd', '1', ':', 'e'))
@@ -75,8 +79,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 	
-	if (match_dict_query(data->payload[0], data->payload_len[0])) {
-		if (match_dict_reply(data->payload[1], data->payload_len[1]))
+	if (match_dict_query(data->payload[1], data->payload_len[1])) {
+		if (match_dict_reply(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 

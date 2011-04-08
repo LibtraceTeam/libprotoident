@@ -56,11 +56,11 @@ static inline bool match_skype_rule1(lpi_data_t *data) {
          * packet having 0x02 as the third byte is not small, so we'll try
          * and filter on packet size too */
 
-        if (data->payload_len[0] >= 28 && data->payload_len[0] <= 130 ) {
+        if (data->payload_len[0] >= 18 && data->payload_len[0] <= 137 ) {
                 if ((data->payload[0] & 0x00ff0000) == 0x00020000)
                         return true;
         }
-        if (data->payload_len[1] >= 28 && data->payload_len[1] <= 130 ) {
+        if (data->payload_len[1] >= 18 && data->payload_len[1] <= 137 ) {
                 if ((data->payload[1] & 0x00ff0000) == 0x00020000)
                         return true;
         }
@@ -71,7 +71,7 @@ static inline bool match_skype_rule1(lpi_data_t *data) {
 
 static inline bool match_skype_U1(uint32_t payload, uint32_t len) {
 
-        if (len < 18 || len > 27)
+        if (len < 18)
                 return false;
         if ((payload & 0x00ff0000) == 0x00020000)
                 return true;
@@ -106,7 +106,7 @@ static inline bool match_skype_rule2(lpi_data_t *data) {
          *
          * The length of U2 is always 11 bytes.
          *
-         * The length of U1 is always between 18 and 27 bytes.
+         * The length of U1 is always between 18 and 31 bytes.
          */
 
         if ((data->payload[0] & 0x0000ffff) != (data->payload[1] & 0x0000ffff))

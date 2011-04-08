@@ -111,6 +111,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_http(mod_map);
 	register_invalid_smtp(mod_map);
 	register_irc(mod_map);
+	register_ldap(mod_map);
 	register_message4u(mod_map);
 	register_mitglieder(mod_map);
 	register_mms(mod_map);
@@ -207,6 +208,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_jedi(mod_map);
 	register_kademlia(mod_map);
 	register_kazaa(mod_map);
+	register_ldap_ad(mod_map);
 	register_linkproof(mod_map);
 	register_moh(mod_map);
 	register_mp2p_udp(mod_map);
@@ -221,7 +223,6 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_99(mod_map);
 	register_mystery_e9(mod_map);
 	register_mystery_bt_udp(mod_map);
-	register_mystery_emule(mod_map);
 	register_mystery_fe(mod_map);
 	register_netbios_udp(mod_map);
 	register_newerth(mod_map);

@@ -30,6 +30,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_jedi.cc \
 	lpi_kademlia.cc \
 	lpi_kazaa.cc \
+	lpi_ldap_ad.cc \
 	lpi_linkproof.cc \
 	lpi_moh.cc \
 	lpi_mp2p.cc \
@@ -44,7 +45,6 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_99.cc \
 	lpi_mystery_e9.cc \
 	lpi_mystery_bt_udp.cc \
-	lpi_mystery_emule.cc \
 	lpi_mystery_fe.cc \
 	lpi_netbios.cc \
 	lpi_newerth.cc \

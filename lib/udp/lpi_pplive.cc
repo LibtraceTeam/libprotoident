@@ -36,6 +36,51 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool obs_pplive_req(uint32_t len) {
+	/* There's always a 94 byte packet involved */
+	if (len == 94)
+		return true;
+	return false;
+}
+
+static inline bool obs_pplive_resp(uint32_t len) {
+	if (len == 0)
+		return true;
+	if (len == 94)
+		return true;
+	if (len == 49)
+		return true;
+	return false;
+}
+
+
+static inline bool match_obscure_pplive(lpi_data_t *data) {
+
+	/* This is pretty tough stuff to match - the 4 bytes of payload
+	 * is random, but the packet sizes seem consistent. It also seems to
+	 * only occur on certain ports.
+	 *
+	 * DPI tools suggest this traffic is pplive, so we'll go with that
+	 * in the absence of any other documentation :/
+	 */
+
+	/* Port 5041 and 8303 are the ports that this traffic is
+	 * typically seen on  */
+	if (data->server_port != 5041 && data->server_port != 8303 &&
+			data->client_port != 5041 && data->client_port != 8303)
+		return false;
+
+	if (obs_pplive_req(data->payload_len[0]) && 
+			obs_pplive_resp(data->payload_len[1]))
+		return true;
+	if (obs_pplive_req(data->payload_len[1]) && 
+			obs_pplive_resp(data->payload_len[0]))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_pplive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_str_both(data, "\xe9\x03\x41\x01", "\xe9\x03\x42\x01"))
@@ -52,6 +97,10 @@ static inline bool match_pplive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
          * for PPLive */
         if (match_str_both(data, "\x1c\x1c\x32\x01", "\x1c\x1c\x32\x01"))
                 return true;
+
+	if (match_obscure_pplive(data)) {
+		return true;
+	}
 
 
 	return false;

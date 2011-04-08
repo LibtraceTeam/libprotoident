@@ -561,7 +561,6 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
 		case LPI_PROTO_UDP_PANDO:
 		case LPI_PROTO_UDP_GNUTELLA2:
 		case LPI_PROTO_UDP_DC:
-		case LPI_PROTO_UDP_EMULE_MYSTERY:
 		case LPI_PROTO_UDP_KAZAA:
 			return LPI_CATEGORY_P2P_STRUCTURE;
                 

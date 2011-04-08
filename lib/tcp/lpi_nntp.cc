@@ -59,7 +59,7 @@ static lpi_module_t lpi_nntp = {
 	LPI_PROTO_NNTP,
 	LPI_CATEGORY_NEWS,
 	"NNTP",
-	2,
+	4,
 	match_nntp
 };
 

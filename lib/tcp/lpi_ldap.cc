@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_ldap.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,35 +36,45 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ldap_payload(uint32_t payload, uint32_t len) {
+	
+	uint8_t *byte = ((uint8_t *)&payload);
 
-	/* Haven't actually seen any legit 2-way SecondLife exchanges, so
-	 * only speculating based on my interpretation of the specs
-	 *
-	 * http://wiki.secondlife.com/wiki/Packet_Layout
-	 */
-
-	if (match_str_both(data, "\x40\x00\x00\x00", "\x50\x00\x00\x00"))
+	if (len == 0)
 		return true;
-	if (match_str_either(data, "\x40\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
 
-	return false;
+	if (len > 255)
+		return false;
+	if (!MATCH(payload, 0x30, ANY, 0x02, 0x01))
+		return false;
+	
+	byte ++;
+	if (*byte != len - 2)
+		return false;
+
+	return true;
+
 }
 
-static lpi_module_t lpi_second_life = {
-	LPI_PROTO_UDP_SECONDLIFE,
-	LPI_CATEGORY_GAMING,
-	"SecondLife",
-	6,
-	match_second_life
+static inline bool match_ldap(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (!match_ldap_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_ldap_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+}
+
+static lpi_module_t lpi_ldap = {
+	LPI_PROTO_LDAP,
+	LPI_CATEGORY_SERVICES,
+	"LDAP",
+	3,
+	match_ldap
 };
 
-void register_second_life(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_second_life, mod_map);
+void register_ldap(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ldap, mod_map);
 }
 

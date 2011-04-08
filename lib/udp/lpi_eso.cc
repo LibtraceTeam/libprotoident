@@ -69,7 +69,7 @@ static lpi_module_t lpi_eso = {
 	LPI_PROTO_UDP_ESO,
 	LPI_CATEGORY_GAMING,
 	"EnsembleOnline",
-	5,
+	12,
 	match_eso
 };
 

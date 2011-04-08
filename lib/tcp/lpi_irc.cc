@@ -44,6 +44,8 @@ static inline bool match_irc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		return true;
 	if (match_str_both(data, ":irc", "USER"))
 		return true;
+	if (match_str_both(data, ":loc", "MODE"))
+		return true;
 
 	return false;
 }

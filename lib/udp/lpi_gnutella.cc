@@ -199,9 +199,11 @@ static inline bool match_gnutella_maint(lpi_data_t *data) {
                 return true;
 
         /* Same for 31 bytes */
-        if (data->payload_len[0] == 31 && data->payload_len[1] < 200)
+        if (data->payload_len[0] == 31 && data->payload_len[1] < 200 &&
+			data->payload_len[1] >= 40)
                 return true;
-        if (data->payload_len[1] == 31 && data->payload_len[0] < 200)
+        if (data->payload_len[1] == 31 && data->payload_len[0] < 200 &&
+			data->payload_len[0] >= 40)
                 return true;
 
         return false;

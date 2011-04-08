@@ -41,6 +41,7 @@ void register_invalid_bittorrent(LPIModuleMap *mod_map);
 void register_invalid_http(LPIModuleMap *mod_map);
 void register_invalid_smtp(LPIModuleMap *mod_map);
 void register_irc(LPIModuleMap *mod_map);
+void register_ldap(LPIModuleMap *mod_map);
 void register_message4u(LPIModuleMap *mod_map);
 void register_mitglieder(LPIModuleMap *mod_map);
 void register_mms(LPIModuleMap *mod_map);

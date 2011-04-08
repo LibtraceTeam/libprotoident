@@ -50,6 +50,12 @@ static inline bool match_netbios_name_req(uint32_t payload, uint32_t len) {
                         return true;
 
         }
+        
+	if (MATCH(payload, ANY, ANY, 0x40, 0x00)) {
+                if (len == 68)
+                        return true;
+
+        }
 
         /* Broadcast traffic */
         if (MATCH(payload, ANY, ANY, 0x01, 0x10)) {
@@ -64,6 +70,8 @@ static inline bool match_netbios_name_req(uint32_t payload, uint32_t len) {
 static inline bool match_netbios_datagram(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0x11, 0x02, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0x11, 0x06, ANY, ANY))
 		return true;
 
 	return false;

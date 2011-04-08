@@ -36,12 +36,22 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool xunlei_32(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+
+	if (!MATCH(payload, 0x32, 0x00, 0x00, 0x00))
+		return false;
+
+	if (len == 29)
+		return true;
+	if (len == 31)
+		return true;
+	return false;
+}
+
 static inline bool match_xunlei_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* Require port 3076 for now, as all these rules are based on
-         * traffic seen on port 3076 */
-        if (data->server_port != 3076 && data->client_port != 3076)
-                return false;
 
         if (match_str_both(data, "\x36\x00\x00\x00", "\x36\x00\x00\x00"))
                 return true;
@@ -57,16 +67,18 @@ static inline bool match_xunlei_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) 
                 return true;
         if (match_str_both(data, "\x33\x00\x00\x00", "\x33\x00\x00\x00"))
                 return true;
-        if (match_str_both(data, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
-                return true;
 
+	if (xunlei_32(data->payload[0], data->payload_len[0])) {
+		if (xunlei_32(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	/* Require port 3076 for now, as all these rules are based on
+         * traffic seen on port 3076 */
+        if (data->server_port != 3076 && data->client_port != 3076)
+                return false;
+
+	
         if (match_str_either(data, "\x36\x00\x00\x00")) {
-                if (data->payload_len[0] == 0)
-                        return true;
-                if (data->payload_len[1] == 0)
-                        return true;
-        }
-        if (match_str_either(data, "\x32\x00\x00\x00")) {
                 if (data->payload_len[0] == 0)
                         return true;
                 if (data->payload_len[1] == 0)
@@ -96,8 +108,6 @@ static inline bool match_xunlei_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) 
                 if (data->payload_len[1] == 0)
                         return true;
         }
-
-	return false;	
 
 	return false;
 }

@@ -37,7 +37,7 @@
 #include "proto_common.h"
 
 static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
-                uint32_t other_len) {
+                uint32_t other_len, lpi_data_t *data) {
 
         /* This is almost all based on observing traffic on port 3074. Not
          * very scientific, but seems more or less right */
@@ -77,6 +77,10 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
         }
 
         if (len == 24) {
+		/* Employ port number restriction because these rules are weak
+		 */
+		if (data->server_port != 3074 && data->client_port != 3074)
+			return false;
                 if (MATCH(payload, 0x0d, ANY, ANY, ANY))
                         return true;
                 if (MATCH(payload, 0x80, ANY, ANY, ANY))
@@ -100,6 +104,11 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 
 
 static inline bool match_xlsp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	/* Had a few false matches against DNS traffic in the past, so
+	 * rule out port 53 traffic */
+	if (data->server_port == 53 || data->client_port == 53)
+		return false;
 
         /* Commonly observed request/response pattern */
         if (match_chars_either(data, 0x0d, 0x02, 0x00, ANY)) {
@@ -177,10 +186,10 @@ static inline bool match_xlsp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
          * closely to make sure it isn't overmatching */
 
         if (!match_xlsp_payload(data->payload[0], data->payload_len[0],
-                        data->payload_len[1]))
+                        data->payload_len[1], data))
                 return false;
         if (!match_xlsp_payload(data->payload[1], data->payload_len[1],
-                        data->payload_len[0]))
+                        data->payload_len[0], data))
                 return false;
 
         return true;
@@ -192,7 +201,7 @@ static lpi_module_t lpi_xlsp = {
 	LPI_PROTO_UDP_XLSP,
 	LPI_CATEGORY_GAMING,
 	"XboxLive_UDP",
-	4,
+	6,
 	match_xlsp
 };
 

@@ -38,6 +38,11 @@
 
 static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* As loath as I am to do this, we probably shouldn't allow any DNS
+	 * on ports other than 53 */
+	if (data->server_port != 53 && data->client_port != 53)
+		return false;
+
 	if (match_dns(data))
 		return true;
 

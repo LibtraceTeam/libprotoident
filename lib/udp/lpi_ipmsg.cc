@@ -55,7 +55,7 @@ static inline bool match_ipmsg(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_chars_either(data, '1', ':', '8', '0'))
                 return true;
 
-        return true;
+        return false;
 }
 
 static lpi_module_t lpi_ipmsg = {
