@@ -36,6 +36,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid.cc \
 	lpi_invalid_bittorrent.cc \
 	lpi_invalid_http.cc \
+	lpi_invalid_pop.cc \
 	lpi_invalid_smtp.cc \
 	lpi_irc.cc \
 	lpi_ldap.cc \
@@ -85,6 +86,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_steam.cc \
 	lpi_svn.cc \
 	lpi_tds.cc \
+	lpi_teamviewer.cc \
 	lpi_telecomkey.cc \
 	lpi_telnet.cc \
 	lpi_tip.cc \

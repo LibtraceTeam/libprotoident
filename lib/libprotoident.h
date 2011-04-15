@@ -202,6 +202,8 @@ typedef enum {
 				   using non-HTTP */
 	LPI_PROTO_CVS,
 	LPI_PROTO_LDAP,		/* LDAP */
+	LPI_PROTO_INVALID_POP3,	/* POP commands send to an SMTP server */
+	LPI_PROTO_TEAMVIEWER,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -287,6 +289,7 @@ typedef enum {
 	LPI_PROTO_UDP_SOPCAST,
 	LPI_PROTO_UDP_SERIALNUMBERD,
 	LPI_PROTO_UDP_LDAP_AD,
+	LPI_PROTO_UDP_RTMFP,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -305,7 +308,9 @@ typedef enum {
 	LPI_PROTO_UDP_MYSTERY_45,
 	LPI_PROTO_UDP_MYSTERY_0660,
 	LPI_PROTO_UDP_MYSTERY_E9,
-	LPI_PROTO_UDP_MYSTERY_BT,
+	LPI_PROTO_UDP_MYSTERY_QQ,
+	LPI_PROTO_UDP_MYSTERY_61_72,
+	LPI_PROTO_UDP_MYSTERY_05,
 
 	LPI_PROTO_ICMP,
 

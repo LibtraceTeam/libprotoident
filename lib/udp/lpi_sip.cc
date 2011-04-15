@@ -41,10 +41,16 @@ static inline bool match_sip_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (match_chars_either(data, 'S', 'I', 'P', ANY))
                 return true;
 
+	if (match_str_either(data, "BYE "))
+		return true;
+
         if (match_str_either(data, "OPTI") &&
                         (data->payload_len[0] == 0 ||
                         data->payload_len[1] == 0))
                 return true;
+
+	if (match_str_both(data, "OPTI", "REGI"))
+		return true;
 
 	return false;
 }

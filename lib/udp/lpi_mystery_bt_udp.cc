@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_mystery_4102.cc 60 2011-02-02 04:07:52Z salcock $
+ * $Id$
  */
 
 #include <string.h>
@@ -46,7 +46,7 @@ static inline bool match_2102_response(uint32_t payload, uint32_t other,
 
 	if (len == 0)
 		return true;
-	if (len != 30)
+	if (len != 30 && len != 20)
 		return false;
 
 	/* Check that the last two bytes match for both directions 
@@ -56,12 +56,62 @@ static inline bool match_2102_response(uint32_t payload, uint32_t other,
 	if ((payload & 0xffff0000) != (other & 0xffff0000))
 		return false;
 	
-	if (!MATCH(payload, 0x21, 0x02, ANY, ANY))
-		return false;
+	if (MATCH(payload, 0x21, 0x02, ANY, ANY) && len == 30)
+		return true;
+	if (MATCH(payload, 0x21, 0x00, ANY, ANY) && len == 20)
+		return true;
 	
 
-	return true;
+	return false;
 
+
+}
+
+static inline bool match_3102_response(uint32_t payload, uint32_t other,
+		uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (len != 30 && len != 20)
+		return false;
+
+	/* Check that the last two bytes match for both directions 
+	 * 
+	 * Remember byte-ordering! 
+	 */
+	if ((payload & 0xffff0000) != (other & 0xffff0000))
+		return false;
+	
+	if (MATCH(payload, 0x31, 0x02, ANY, ANY) && len == 30)
+		return true;
+	if (MATCH(payload, 0x31, 0x00, ANY, ANY) && len == 20)
+		return true;
+	
+
+	return false;
+
+
+}
+
+static inline bool match_4102_response(uint32_t payload, uint32_t other,
+		uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (len != 33)
+		return false;
+
+ 	/* Check that the last two bytes match for both directions 
+         * 
+         * Remember byte-ordering! 
+         */
+        if ((payload & 0xffff0000) != (other & 0xffff0000))
+                return false;
+
+        if (!MATCH(payload, 0x41, 0x02, ANY, ANY))
+                return false;
+
+	return true;	
 
 }
 
@@ -81,11 +131,37 @@ static inline bool match_dict(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_0100_request(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0x01, 0x00, ANY, ANY) && len > 500)
+		return true;
+	return false;
+
+}
+
+static inline bool match_2102_request(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0x21, 0x02, ANY, ANY) && len == 30)
+		return true;
+	if (MATCH(payload, 0x21, 0x00, ANY, ANY) && len == 20)
+		return true;
+	return false;
+
+}
+static inline bool match_3102_request(uint32_t payload, uint32_t len) {
+
+	if (MATCH(payload, 0x31, 0x02, ANY, ANY) && len == 30)
+		return true;
+	if (MATCH(payload, 0x31, 0x00, ANY, ANY) && len == 20)
+		return true;
+	return false;
+
+}
 static inline bool match_4102_request(uint32_t payload, uint32_t len) {
 
-	if (len != 30)
-		return false;
-	if (MATCH(payload, 0x41, 0x02, ANY, ANY))
+	if (MATCH(payload, 0x41, 0x02, ANY, ANY) && len == 30)
+		return true;
+	if (MATCH(payload, 0x41, 0x00, ANY, ANY) && len == 20)
 		return true;
 	return false;
 
@@ -98,6 +174,9 @@ static inline bool match_mystery_bt_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 		if (match_2102_response(data->payload[1], data->payload[0], 
 				data->payload_len[1]))
 			return true;
+		if (match_4102_response(data->payload[1], data->payload[0], 
+				data->payload_len[1]))
+			return true;
 		if (match_dict(data->payload[1], data->payload_len[1]))
 			return true;
 	}
@@ -106,9 +185,61 @@ static inline bool match_mystery_bt_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 		if (match_2102_response(data->payload[0], data->payload[1], 
 				data->payload_len[0]))
 			return true;
+		if (match_4102_response(data->payload[0], data->payload[1], 
+				data->payload_len[0]))
+			return true;
 		if (match_dict(data->payload[0], data->payload_len[0]))
 			return true;
 	}
+
+	if (match_2102_request(data->payload[0], data->payload_len[0])) {
+		if (match_3102_response(data->payload[1], data->payload[0], 
+				data->payload_len[1]))
+			return true;
+	}
+
+	if (match_2102_request(data->payload[1], data->payload_len[1])) {
+		if (match_3102_response(data->payload[0], data->payload[1], 
+				data->payload_len[0]))
+			return true;
+	}
+	
+	if (match_0100_request(data->payload[0], data->payload_len[0])) {
+		if (match_3102_response(data->payload[1], data->payload[0], 
+				data->payload_len[1]))
+			return true;
+	}
+
+	if (match_0100_request(data->payload[1], data->payload_len[1])) {
+		if (match_3102_response(data->payload[0], data->payload[1], 
+				data->payload_len[0]))
+			return true;
+	}
+
+	if (match_3102_request(data->payload[0], data->payload_len[0])) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	if (match_3102_request(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+	
+
+	
+	if (match_dict(data->payload[0], data->payload_len[0])) {
+		if (match_2102_response(data->payload[1], data->payload[0], 
+				data->payload_len[1]))
+			return true;
+	}	
+
+	if (match_dict(data->payload[1], data->payload_len[1])) {
+		if (match_2102_response(data->payload[0], data->payload[1], 
+				data->payload_len[0]))
+			return true;
+	}	
+
 	return false;
 }
 

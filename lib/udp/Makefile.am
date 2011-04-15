@@ -38,14 +38,16 @@ libprotoident_udp_la_SOURCES = \
 	lpi_msn_video.cc \
 	lpi_mta.cc \
 	lpi_mystery_02_36.cc \
+	lpi_mystery_05.cc \
 	lpi_mystery_0660.cc \
 	lpi_mystery_0d.cc \
 	lpi_mystery_45.cc \
+	lpi_mystery_61_72.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_99.cc \
 	lpi_mystery_e9.cc \
-	lpi_mystery_bt_udp.cc \
 	lpi_mystery_fe.cc \
+	lpi_mystery_qq.cc \
 	lpi_netbios.cc \
 	lpi_newerth.cc \
 	lpi_nopayload.cc \
@@ -63,6 +65,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_quake.cc \
 	lpi_real.cc \
 	lpi_rtcp.cc \
+	lpi_rtmfp.cc \
 	lpi_rtp.cc \
 	lpi_second_life.cc \
 	lpi_serialnumberd.cc \

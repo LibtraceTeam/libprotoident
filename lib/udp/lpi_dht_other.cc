@@ -107,7 +107,7 @@ static inline bool match_vuze_dht_request(uint32_t payload, uint32_t len,
         }
 
 
-        if (len == 42) {
+        if (len == 42 || len == 51) {
                 return true;
         }
 
@@ -238,6 +238,12 @@ static inline bool match_vuze_dht(lpi_data_t *data) {
                         return true;
         }
 
+	/* Apparently, we can also see requests both ways, which is a bit
+	 * less than ideal....
+	 */
+	if (match_vuze_dht_request(data->payload[0], data->payload_len[0], true) && match_vuze_dht_request(data->payload[1], data->payload_len[1], true))
+		return true;
+	
 
         if (match_vuze_dht_alt(data))
                 return true;

@@ -53,6 +53,8 @@ static inline bool xunlei_32(uint32_t payload, uint32_t len) {
 static inline bool match_xunlei_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 
+        if (match_str_both(data, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
+                return true;
         if (match_str_both(data, "\x36\x00\x00\x00", "\x36\x00\x00\x00"))
                 return true;
         if (match_str_both(data, "\x35\x00\x00\x00", "\x35\x00\x00\x00"))

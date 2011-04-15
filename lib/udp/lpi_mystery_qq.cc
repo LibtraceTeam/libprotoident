@@ -36,25 +36,46 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_pop3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_qq_payload(uint32_t payload, uint32_t len) {
 
-	if (match_chars_either(data, '+', 'O', 'K', ANY))
+	if (len == 0)
 		return true;
-	if (match_chars_either(data, '-', 'E', 'R', 'R'))
+	if (len != 24)
+		return false;
+	if (MATCH(payload, 0x51, 0x51, 0x05, 0x00))
 		return true;
 	return false;
 
 }
 
-static lpi_module_t lpi_pop3 = {
-	LPI_PROTO_POP3,
-	LPI_CATEGORY_MAIL,
-	"POP3",
+static inline bool match_mystery_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	/* Not to be confused with Tencent QQ.
+	 *
+	 * This is almost certainly a gaming protocol related to the
+	 * PlayStation (based on port number).
+	 */
+
+	if (data->server_port != 3658 && data->client_port != 3658) 
+		return false;
+
+	if (match_qq_payload(data->payload[0], data->payload_len[0])) {
+		if (match_qq_payload(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	return false;
+}
+
+static lpi_module_t lpi_mystery_qq = {
+	LPI_PROTO_UDP_MYSTERY_QQ,
+	LPI_CATEGORY_NO_CATEGORY,
+	"Mystery_QQ",
 	2,
-	match_pop3
+	match_mystery_qq
 };
 
-void register_pop3(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_pop3, mod_map);
+void register_mystery_qq(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_mystery_qq, mod_map);
 }
 

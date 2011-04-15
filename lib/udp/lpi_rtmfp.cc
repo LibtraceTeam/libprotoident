@@ -36,25 +36,44 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_pop3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_rtmfp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_chars_either(data, '+', 'O', 'K', ANY))
+	/* RTMFP is Adobe's proprietary P2P streaming protocol. There are two
+	 * stages - communicating with the Stratus servers and then talking
+	 * to the peers themselves */
+
+	/* Basically we're matching pairs of packet sizes here - not very
+	 * reliable at all. Could be lots of false positives! */
+
+	/* Hitting the Stratus servers */
+	if (data->payload_len[0] == 100 && data->payload_len[1] == 180)
 		return true;
-	if (match_chars_either(data, '-', 'E', 'R', 'R'))
+	if (data->payload_len[1] == 100 && data->payload_len[0] == 180)
 		return true;
+
+	/* P2P */
+	if (data->payload_len[0] == 228 && data->payload_len[1] == 68)
+		return true;
+	if (data->payload_len[1] == 228 && data->payload_len[0] == 68)
+		return true;
+	if (data->payload_len[0] == 68 && data->payload_len[1] == 68)
+		return true;
+	if (data->payload_len[1] == 68 && data->payload_len[0] == 68)
+		return true;
+	
+
 	return false;
-
 }
 
-static lpi_module_t lpi_pop3 = {
-	LPI_PROTO_POP3,
-	LPI_CATEGORY_MAIL,
-	"POP3",
-	2,
-	match_pop3
+static lpi_module_t lpi_rtmfp = {
+	LPI_PROTO_UDP_RTMFP,
+	LPI_CATEGORY_STREAMING,
+	"RTFMP",
+	12,
+	match_rtmfp
 };
 
-void register_pop3(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_pop3, mod_map);
+void register_rtmfp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rtmfp, mod_map);
 }
 

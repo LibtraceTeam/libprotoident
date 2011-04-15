@@ -36,25 +36,28 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_pop3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_invalid_pop(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_chars_either(data, '+', 'O', 'K', ANY))
+	/* This basically covers cases where idiots run SMTP servers on the
+	 * POP port, so we get SMTP responses to valid POP commands */
+	if (match_str_both(data, "USER", "421 "))
 		return true;
-	if (match_chars_either(data, '-', 'E', 'R', 'R'))
+	if (match_str_both(data, "QUIT", "421 "))
 		return true;
+	
+
 	return false;
-
 }
 
-static lpi_module_t lpi_pop3 = {
-	LPI_PROTO_POP3,
+static lpi_module_t lpi_invalid_pop = {
+	LPI_PROTO_INVALID_POP3,
 	LPI_CATEGORY_MAIL,
-	"POP3",
-	2,
-	match_pop3
+	"Invalid_POP3",
+	200,
+	match_invalid_pop
 };
 
-void register_pop3(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_pop3, mod_map);
+void register_invalid_pop(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_invalid_pop, mod_map);
 }
 

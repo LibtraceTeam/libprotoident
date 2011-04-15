@@ -39,9 +39,13 @@
 static inline bool match_rtcp_payload(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
-        if (MATCH(payload, 0x81, 0xc8, 0x00, 0x0c))
+        if (MATCH(payload, 0x81, 0xc8, 0x00, ANY))
                 return true;
-        if (MATCH(payload, 0x80, 0xc9, 0x00, 0x01))
+        if (MATCH(payload, 0x81, 0xc9, 0x00, ANY))
+                return true;
+        if (MATCH(payload, 0x80, 0xc9, 0x00, ANY))
+                return true;
+        if (MATCH(payload, 0x80, 0xc8, 0x00, ANY))
                 return true;
         return false;
 }

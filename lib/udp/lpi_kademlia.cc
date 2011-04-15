@@ -47,6 +47,8 @@ static bool is_kad_e9_payload(uint32_t payload, uint32_t len) {
          * 0x56 is a response to 0x55
          * 0x61 is a response to 0x60
          * 0x76 is a kind of FIN packet, it also responds to 0x75
+	 *
+	 * 0x92 seems to be a valid response to unsolicited 0x56 or 0x61 ??
          *
          * There are also packets that seem to begin with 0xea 0x75 0x78 0x9c.
          */
@@ -62,6 +64,8 @@ static bool is_kad_e9_payload(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0xe9, 0x76, ANY, ANY) && len == 18)
                 return true;
         if (MATCH(payload, 0xe9, 0x75, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0xe9, 0x92, ANY, ANY) && len == 3)
                 return true;
 
 

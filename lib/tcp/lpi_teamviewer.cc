@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_teamviewer.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,25 +36,41 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_pop3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_teamviewer_payload(uint32_t payload, uint32_t len) {
 
-	if (match_chars_either(data, '+', 'O', 'K', ANY))
+	if (len == 0)
 		return true;
-	if (match_chars_either(data, '-', 'E', 'R', 'R'))
+	if (len != 37)
+		return false;
+	if (MATCH(payload, 0x17, 0x24, 0x0a, 0x20))
 		return true;
 	return false;
+	
 
 }
 
-static lpi_module_t lpi_pop3 = {
-	LPI_PROTO_POP3,
-	LPI_CATEGORY_MAIL,
-	"POP3",
-	2,
-	match_pop3
+static inline bool match_teamviewer(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	/* This traffic must also be on port 5938 if we need to get
+	 * stricter */
+
+	if (!match_teamviewer_payload(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_teamviewer_payload(data->payload[1], data->payload_len[1]))
+		return false;
+
+	return true;
+}
+
+static lpi_module_t lpi_teamviewer = {
+	LPI_PROTO_TEAMVIEWER,
+	LPI_CATEGORY_REMOTE,
+	"Teamviewer",
+	4,
+	match_teamviewer
 };
 
-void register_pop3(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_pop3, mod_map);
+void register_teamviewer(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_teamviewer, mod_map);
 }
 

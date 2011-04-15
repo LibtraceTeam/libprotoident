@@ -69,9 +69,9 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
                         return true;
                 if (len == 0 && other_len != 0)
                         return true;
-                if (len == 90 && other_len == 138)
+                if ((len == 90 || len == 172) && other_len == 138)
                         return true;
-                if (len == 138 && other_len == 90)
+                if (len == 138 && (other_len == 90 || other_len == 172))
                         return true;
 
         }
@@ -88,10 +88,44 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 
         }
 
+	if (len == 16) {
+		if (MATCH(payload, 0x01, 0x02, 0x00, 0x00))
+			return true;
+	}
+	
+	if (len == 32) {
+		/* Employ port number restriction because these rules are weak
+		 */
+		if (data->server_port != 3074 && data->client_port != 3074)
+			return false;
+		if (MATCH(payload, 0x06, 0x02, ANY, ANY))
+			return true;
+		if (MATCH(payload, 0xcd, ANY, ANY, ANY))
+			return true;
+	}
+
+	if (len == 17) {
+		/* Employ port number restriction because these rules are weak
+		 */
+		if (data->server_port != 3074 && data->client_port != 3074)
+			return false;
+		if (MATCH(payload, 0x28, ANY, ANY, ANY))
+			return true;
+	}
+			
+	if (len == 26) {
+		if (MATCH(payload, 0x29, ANY, 0x00, 0x00))
+			return true;
+	}
+
         if (len == 29) {
-                if (MATCH(payload, 0x0c, 0x02, 0x00, ANY))
+                if (MATCH(payload, 0x0a, 0x02, 0x00, ANY))
                         return true;
                 if (MATCH(payload, 0x0b, 0x02, 0x00, ANY))
+                        return true;
+                if (MATCH(payload, 0x0c, 0x02, 0x00, ANY))
+                        return true;
+                if (MATCH(payload, 0x0d, 0x02, 0x00, ANY))
                         return true;
                 if (MATCH(payload, 0x0e, 0x02, 0x00, ANY))
                         return true;
@@ -109,22 +143,6 @@ static inline bool match_xlsp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	 * rule out port 53 traffic */
 	if (data->server_port == 53 || data->client_port == 53)
 		return false;
-
-        /* Commonly observed request/response pattern */
-        if (match_chars_either(data, 0x0d, 0x02, 0x00, ANY)) {
-                if (data->payload_len[0] == 0 && data->payload_len[1] == 29)
-                        return true;
-                if (data->payload_len[1] == 0 && data->payload_len[0] == 29)
-                        return true;
-                if (data->payload_len[0] != 29 || data->payload_len[1] != 29)
-                        return false;
-                if (match_chars_either(data, 0x0c, 0x02, 0x00, ANY))
-                        return true;
-                if (MATCH(data->payload[0], 0x0d, 0x02, 0x00, ANY) &&
-                                MATCH(data->payload[1], 0x0d, 0x02, 0x00, ANY))
-                        return true;
-                return false;
-        }
 
         /* Unlike other combos, 1336 and 287 (or rarely 286) only go with
          * each other 

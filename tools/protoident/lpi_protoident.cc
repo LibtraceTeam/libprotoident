@@ -229,8 +229,8 @@ void per_packet(libtrace_packet_t *packet) {
 
         /* Ignore packets where the IP addresses are the same - something is
          * probably screwy and it's REALLY hard to determine direction */
-        if (ip->ip_src.s_addr == ip->ip_dst.s_addr)
-                return;
+        //if (ip->ip_src.s_addr == ip->ip_dst.s_addr)
+        //        return;
 
 
         /* Match the packet to a Flow - this will create a new flow if
