@@ -1,4 +1,4 @@
-libprotoident 2.0.0
+libprotoident 2.0.1
 
 ---------------------------------------------------------------------------
 Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
@@ -11,6 +11,9 @@ research group. For further information please see http://www.wand.net.nz/.
 See the file COPYING for full licensing details for this software.
 
 Report and bugs, questions or comments to contact@wand.net.nz
+
+NEW: You can now lodge bugs by filing a ticket in the libprotoident trac:
+http://wand.net.nz/trac/libprotoident/wiki
 
 Authors:
 	Shane Alcock
@@ -54,9 +57,8 @@ The libprotoident tools are built by default - this can be changed by using the
 
 Protocols Supported
 ===================
-Over 150 different TCP and UDP protocols. Listing them all here would be a bit 
-unwieldy - the list of protocols specified in lib/libprotoident.h is a 
-comprehensive list.
+A full list of supported protocols can be found at 
+http://wand.net.nz/trac/libprotoident/wiki/SupportedProtocols
 
 Libprotoident also currently has rules for several "mystery" protocols. These
 are patterns that commonly occur in our trace sets that we cannot tie to an
@@ -157,6 +159,9 @@ Usage of libprotoident itself is through functions beginning with 'lpi_'.
 
 The libprotoident API functions themselves are documented in 
 lib/libprotoident.h if you need further guidance.
+
+Further documentation of the API can also be found at 
+http://wand.net.nz/trac/libprotoident/wiki/DeveloperDocs
 
 If all else fails, drop us a line at contact@wand.net.nz.	
 
