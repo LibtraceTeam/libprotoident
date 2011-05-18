@@ -39,13 +39,17 @@
 static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
 
         uint8_t first;
+	uint8_t *ptr;
         uint8_t version;
         uint8_t mode;
 
         if (len != 48 && len != 68)
                 return false;
 
-        first = (uint8_t) (payload);
+	ptr = (uint8_t *)&payload;
+	first = *ptr;
+
+        //first = (uint8_t) (payload);
 
         version = (first & 0x38) >> 3;
         mode = (first & 0x07);

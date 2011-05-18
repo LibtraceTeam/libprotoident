@@ -44,10 +44,14 @@ static inline bool match_skype_rule1(lpi_data_t *data) {
         /* The third byte is always 0x02 in Skype UDP traffic - if we have
          * payload in both directions we can probably match on that alone */
 
+	uint32_t payload0 = ntohl(data->payload[0]);
+	uint32_t payload1 = ntohl(data->payload[1]);
+
+
         if (data->payload_len[0] > 0 && data->payload_len[1] > 0) {
-                if ((data->payload[0] & 0x00ff0000) != 0x00020000)
+                if ((payload0 & 0x0000ff00) != 0x00000200)
                         return false;
-                if ((data->payload[1] & 0x00ff0000) != 0x00020000)
+                if ((payload1 & 0x0000ff00) != 0x00000200)
                         return false;
                 return true;
         }
@@ -57,11 +61,11 @@ static inline bool match_skype_rule1(lpi_data_t *data) {
          * and filter on packet size too */
 
         if (data->payload_len[0] >= 18 && data->payload_len[0] <= 137 ) {
-                if ((data->payload[0] & 0x00ff0000) == 0x00020000)
+                if ((payload0 & 0x0000ff00) == 0x00000200)
                         return true;
         }
         if (data->payload_len[1] >= 18 && data->payload_len[1] <= 137 ) {
-                if ((data->payload[1] & 0x00ff0000) == 0x00020000)
+                if ((payload1 & 0x0000ff00) == 0x00000200)
                         return true;
         }
 
@@ -73,7 +77,7 @@ static inline bool match_skype_U1(uint32_t payload, uint32_t len) {
 
         if (len < 18)
                 return false;
-        if ((payload & 0x00ff0000) == 0x00020000)
+        if ((ntohl(payload) & 0x0000ff00) == 0x00000200)
                 return true;
 
         return false;
@@ -84,9 +88,9 @@ static inline bool match_skype_U2(uint32_t payload, uint32_t len) {
 
         if (len != 11)
                 return false;
-        if ((payload & 0x000f0000) == 0x00050000)
+        if ((ntohl(payload) & 0x00000f00) == 0x00000500)
                 return true;
-        if ((payload & 0x000f0000) == 0x00070000)
+        if ((ntohl(payload) & 0x00000f00) == 0x00000700)
                 return true;
         return false;
 }

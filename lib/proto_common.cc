@@ -458,17 +458,17 @@ static bool dns_req(uint32_t payload) {
          * Remember BYTE ORDER!
          */
 
-        if ((payload & 0xffff0000) == 0x00000000)
-                return true;
-        
-	
+	payload = htonl(payload);
+
+	if ((payload & 0x0000ffff) == 0x00000000)
+		return true;
 	/* Check for CD */
-	if ((payload & 0xffff0000) == 0x10000000)
-                return true;
-        
+	if ((payload & 0x0000ffff) == 0x00000010)
+		return true;
 	/* Check for RD */
-	if ((payload & 0xffff0000) == 0x00010000)
-                return true;
+	if ((payload & 0x0000ffff) == 0x00000100)
+		return true;
+
 
         return false;
 
@@ -480,18 +480,21 @@ static bool dns_backscatter(uint32_t payload) {
 
 	/* Last byte seems to be always 0x00 - third is either 0x84 or 0x85 */
 
-	if ((payload & 0xffff0000) == 0x00850000)
+	payload = htonl(payload);
+
+	if ((payload & 0x0000ffff) == 0x00008500)
 		return true;
-	if ((payload & 0xffff0000) == 0x00840000)
+	if ((payload & 0x0000ffff) == 0x00008400)
 		return true;
-	if ((payload & 0xffff0000) == 0x80840000)
+	if ((payload & 0x0000ffff) == 0x00008480)
 		return true;
-	if ((payload & 0xffff0000) == 0x83840000)
+	if ((payload & 0x0000ffff) == 0x00008483)
 		return true;
-	if ((payload & 0xffff0000) == 0x03840000)
+	if ((payload & 0x0000ffff) == 0x00008403)
 		return true;
-	if ((payload & 0xffff0000) == 0x00800000)
+	if ((payload & 0x0000ffff) == 0x00008000)
 		return true;
+
 	return false;
 }
 
@@ -519,10 +522,12 @@ bool match_dns(lpi_data_t *data) {
                 return false;
         }
 
-        if ((data->payload[0] & 0x0078ffff) != (data->payload[1] & 0x0078ffff))
+        if (((htonl(data->payload[0])) & 0xffff7800) != 
+			((htonl(data->payload[1])) & 0xffff7800))
                 return false;
 
-        if ((data->payload[0] & 0x00800000) == (data->payload[1] & 0x00800000))
+        if ((htonl(data->payload[0]) & 0x00008000) == 
+		(htonl(data->payload[1]) & 0x00008000))
                 return false;
 
         return true;
