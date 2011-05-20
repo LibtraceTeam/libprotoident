@@ -57,6 +57,7 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h s
 
 AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile 
 		tools/find_unknown/Makefile tools/protoident/Makefile
+		tools/live/Makefile
 		lib/udp/Makefile lib/tcp/Makefile])
 
 if test "$trace_found" = 0; then
