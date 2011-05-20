@@ -70,6 +70,11 @@ static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
 int lpi_init_library() {
 
+	if (init_called) {
+		fprintf(stderr, "WARNING: lpi_init_library has already been called\n");
+		return 0;
+	}
+	
 	if (register_tcp_protocols(&TCP_protocols) == -1) 
 		return -1;
 	
