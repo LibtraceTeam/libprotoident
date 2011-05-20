@@ -113,7 +113,8 @@ static inline bool match_skype_rule2(lpi_data_t *data) {
          * The length of U1 is always between 18 and 31 bytes.
          */
 
-        if ((data->payload[0] & 0x0000ffff) != (data->payload[1] & 0x0000ffff))
+        if ((ntohl(data->payload[0]) & 0xffff0000) != 
+			(ntohl(data->payload[1]) & 0xffff0000))
                 return false;
 
         if (match_skype_U1(data->payload[0], data->payload_len[0])) {
