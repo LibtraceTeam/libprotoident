@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_protoident.cc 77 2011-04-15 04:54:37Z salcock $
+ * $Id$
  */
 
 #define __STDC_FORMAT_MACROS
@@ -104,6 +104,15 @@ static inline FILE *open_fd(const char *fname) {
 		perror("fopen");
 		exit(1);
 	}
+	
+	fprintf(fd, "TS ");
+
+	for (int i = 0; i < LPI_PROTO_LAST; i++) {
+		fprintf(fd, "%s ", lpi_print((lpi_protocol_t)i));
+	}
+
+	fprintf(fd, "\n");
+	
 	return fd;
 }
 
