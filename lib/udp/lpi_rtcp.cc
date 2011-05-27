@@ -53,6 +53,12 @@ static inline bool match_rtcp_payload(uint32_t payload, uint32_t len) {
 
 static inline bool match_rtcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* Watch out for one-way DNS... */
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (data->server_port == 53 || data->client_port == 53)
+			return false;
+	}
+
 	if (!match_rtcp_payload(data->payload[0], data->payload_len[0]))
                 return false;
         if (!match_rtcp_payload(data->payload[1], data->payload_len[1]))

@@ -61,7 +61,12 @@ static inline bool match_mp2p_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 
         /* Seeing a lot of these in flows using port 41170 both ways */
-        if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00) &&
+
+	/* Watch out for one-way DNS again */
+        if (data->server_port == 53 || data->client_port == 53)
+		return false;
+	
+	if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00) &&
                         data->payload_len[0] != 0) {
                 if (data->payload_len[1] != 0)
                         return false;

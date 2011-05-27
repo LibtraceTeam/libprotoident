@@ -45,8 +45,12 @@ static inline bool match_ipv6_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         }
 
+	/* One-way DNS check */	
+	if (data->server_port == 53 || data->client_port == 53)
+		return false;
+
         if (MATCHSTR(data->payload[0], "\x60\x00\x00\x00")) {
-                if (data->payload_len[1] == 0) {
+		if (data->payload_len[1] == 0) {
                         return true;
                 }
         }

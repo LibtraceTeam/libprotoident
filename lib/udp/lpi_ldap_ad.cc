@@ -47,6 +47,12 @@ static inline bool match_ldap_ad_payload(uint32_t payload, uint32_t len) {
 
 static inline bool match_ldap_ad(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* Rule out one-way DNS, which could look like our LDAP AD payload */
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (data->server_port == 53 || data->client_port == 53)
+			return false;
+	}
+
 	if (!match_ldap_ad_payload(data->payload[0], data->payload_len[0]))
 		return false;	
 	if (!match_ldap_ad_payload(data->payload[1], data->payload_len[1]))

@@ -217,7 +217,7 @@ bool match_file_header(uint32_t payload) {
                 return true;
 
         /* gzip  - may need to replace last two bytes with ANY */
-        if (MATCH(payload, 0x1f, 0x8b, 0x08, 0x00))
+        if (MATCH(payload, 0x1f, 0x8b, 0x08, ANY))
                 return true;
 
         /* XML */

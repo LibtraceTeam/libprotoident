@@ -73,6 +73,8 @@ static inline bool match_netbios_datagram(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCH(payload, 0x11, 0x06, ANY, ANY))
 		return true;
+	if (MATCH(payload, 0x11, 0x0e, ANY, ANY))
+		return true;
 
 	return false;
 }

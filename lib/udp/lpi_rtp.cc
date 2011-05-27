@@ -42,21 +42,25 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         match_str_either(data, "\x00\x01\x00\x08"))
                 return true;
 
+	/* All two-way traffic must match the above rule */
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;
+
+	/* Watch out for one-way DNS... */
+	if (data->client_port == 53 || data->client_port == 53)
+		return false;
+
         /* 96 and 97 are the first two dynamic payload types */
-        if (match_chars_either(data, 0x80, 0x60, ANY, ANY) &&
-                        (data->payload_len[0] == 0 || data->payload_len[1]==0))
+        if (match_chars_either(data, 0x80, 0x60, ANY, ANY))
                 return true;
-        if (match_chars_either(data, 0x80, 0x61, ANY, ANY) &&
-                        (data->payload_len[0] == 0 || data->payload_len[1]==0))
+        if (match_chars_either(data, 0x80, 0x61, ANY, ANY)) 
                 return true;
 
 
         /* If the MSB in the second byte is set, this is a "marker" packet */
-        if (match_chars_either(data, 0x80, 0xe0, ANY, ANY) &&
-                        (data->payload_len[0] == 0 || data->payload_len[1]==0))
+        if (match_chars_either(data, 0x80, 0xe0, ANY, ANY))
                 return true;
-        if (match_chars_either(data, 0x80, 0xe1, ANY, ANY) &&
-                        (data->payload_len[0] == 0 || data->payload_len[1]==0))
+        if (match_chars_either(data, 0x80, 0xe1, ANY, ANY))
                 return true;
 
 

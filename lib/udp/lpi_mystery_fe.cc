@@ -71,6 +71,11 @@ static inline bool match_mystery_fe(lpi_data_t *data, lpi_module_t *mod UNUSED) 
          * length field
          */
 
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
+		if (data->server_port == 53 || data->client_port == 53)
+			return false;
+	}
+
         if (!match_mys_fe_payload(data->payload[0], data->payload_len[0]))
                 return false;
         if (!match_mys_fe_payload(data->payload[1], data->payload_len[1]))
