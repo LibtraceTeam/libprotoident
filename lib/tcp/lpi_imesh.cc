@@ -44,6 +44,8 @@ static inline bool match_imesh_payload(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 10 && MATCH(payload, 0x06, 0x00, 0x04, 0x00))
                 return true;
+        if (len == 6 && MATCH(payload, 0x06, 0x00, 0x04, 0x00))
+                return true;
         if (len == 12 && MATCH(payload, 0x06, 0x00, 0x06, 0x00))
                 return true;
         return false;

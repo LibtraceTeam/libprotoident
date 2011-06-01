@@ -1,4 +1,4 @@
-libprotoident 2.0.1
+libprotoident 2.0.2
 
 ---------------------------------------------------------------------------
 Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
@@ -72,7 +72,7 @@ POP3 and IMAP are part of the Mail category.
 
 Tools
 =====
-There are currently two tools included with libprotoident.
+There are currently three tools included with libprotoident.
 
  * lpi_protoident
  
@@ -83,7 +83,7 @@ There are currently two tools included with libprotoident.
 	expired, so it is not very effective for real-time applications. 
 
    Usage: 
-	./lpi_protoident <input trace URI>
+	lpi_protoident <input trace URI>
 
 	The input trace must be a valid libtrace URI.
 
@@ -121,7 +121,7 @@ There are currently two tools included with libprotoident.
 	identifiers.
 	
    Usage: 
-	./lpi_find_unknown <input trace URI>
+	lpi_find_unknown <input trace URI>
 
 	The input trace must be a valid libtrace URI.
 
@@ -144,7 +144,39 @@ There are currently two tools included with libprotoident.
 	 * First four bytes of payload sent from second endpoint (in hex)
 	 * First four bytes of payload sent from second endpoint (ASCII)
 	 * Size of first payload-bearing packet sent from second endpoint
-		
+	
+ * lpi_live
+  
+   Description:
+   	This tool reports byte and packet counts (both inbound and outbound)
+	for each identified protocol in real-time. Identification of a flow 
+	occurs as soon as possible, so that the statistics reported are as
+	up-to-date as possible.
+
+   Usage:
+   	lpi_live <options> <input URI>
+
+	The input URI must be a valid libtrace URI.
+
+   Options:
+        -f <filterstring> : Specifies a BPF filter to be applied to the input.
+	-R : ignore traffic to or from RFC1918 private addresses.
+	-i <secs>: Specifies the reporting interval (in seconds).
+
+   Output:
+      	lpi_live creates four output files called packets_in, packets_out, 
+	bytes_in and bytes_out. Each line in those files describes the amount
+	of traffic observed for each supported protocol during the reporting
+	interval beginning from the timestamp given as the first field of the
+	line.
+
+	The first line in each file is a header which describes the mapping of
+	protocols to columns in the output file.
+
+	The bytes_in and bytes_out files report the traffic in kilobits per
+	seconds. The packets_in and packets_out files simply contain raw
+	packet counts.
+	
 API
 ===
 

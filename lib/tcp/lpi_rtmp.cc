@@ -47,6 +47,11 @@ static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         }
 	
+        if (MATCH(data->payload[0], 0x06, ANY, ANY, ANY) &&
+                        MATCH(data->payload[1], 0x06, ANY, ANY, ANY)) {
+
+                return true;
+        }
 
 	return false;
 }

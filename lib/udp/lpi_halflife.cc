@@ -38,11 +38,11 @@
 
 static inline bool match_halflife(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!MATCH(data->payload[0], 0xff, 0xff, 0xff, 0xff)) {
+	if (!MATCHSTR(data->payload[0], "\xff\xff\xff\xff")) {
                 if (data->payload_len[0] != 0)
                         return false;
         }
-        if (!MATCH(data->payload[1], 0xff, 0xff, 0xff, 0xff)) {
+        if (!MATCHSTR(data->payload[1], "\xff\xff\xff\xff")) {
                 if (data->payload_len[1] != 0)
                         return false;
         }

@@ -112,6 +112,18 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
 		if (MATCH(payload, 0x28, ANY, ANY, ANY))
 			return true;
 	}
+	
+	if (len == 287 || len == 1336 || len == 1011)  {
+		/* Employ port number restriction because these rules are weak
+		 */
+		if (data->server_port != 3074 && data->client_port != 3074)
+			return false;
+		if (other_len != 0)
+			return false;
+		if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+			return true;
+
+	}
 			
 	if (len == 26) {
 		if (MATCH(payload, 0x29, ANY, 0x00, 0x00))

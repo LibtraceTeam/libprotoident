@@ -36,20 +36,40 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+
+static inline bool match_imesh_req(uint32_t data, uint32_t len) {
+
+	if (len != 36 && len != 32)
+		return false;
+	
+        if (MATCH(data, 0x02, 0x00, 0x00, 0x00))
+                return true;
+
+	return false;
+}
+
+static inline bool match_imesh_resp(uint32_t data, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (len != 36 && len != 32)
+		return false;
+	
+	if (MATCH(data, 0x02, 0x00, ANY, ANY))
+		return true;
+	return false;
+}
 /* XXX Not really sure on this one - based on the code from OpenDPI but I
  * can't find any documentation that confirms this */
 static inline bool match_imesh_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* The recipient does not reply */
-        if (data->payload_len[0] > 0 && data->payload_len[1] > 0)
-                return false;
-
-        /* All packets are 36 bytes */
-        if (data->payload_len[0] != 36 && data->payload_len[1] != 36)
-                return false;
-
-        if (match_chars_either(data, 0x02, 0x00, 0x00, 0x00))
-                return true;
+	if (match_imesh_req(data->payload[0], data->payload_len[0])) {
+		if (match_imesh_resp(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	if (match_imesh_req(data->payload[1], data->payload_len[1])) {
+		if (match_imesh_resp(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
 	return false;
 }
