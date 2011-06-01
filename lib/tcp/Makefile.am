@@ -97,6 +97,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_weblogic.cc \
 	lpi_winmx.cc \
 	lpi_wow.cc \
+	lpi_xmpp.cc \
 	lpi_xunlei.cc \
 	lpi_yahoo.cc \
 	lpi_yahoo_error.cc \

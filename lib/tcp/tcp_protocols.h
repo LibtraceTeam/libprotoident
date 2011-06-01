@@ -100,6 +100,7 @@ void register_web_junk(LPIModuleMap *mod_map);
 void register_weblogic(LPIModuleMap *mod_map);
 void register_winmx(LPIModuleMap *mod_map);
 void register_wow(LPIModuleMap *mod_map);
+void register_xmpp(LPIModuleMap *mod_map);
 void register_xunlei(LPIModuleMap *mod_map);
 void register_yahoo(LPIModuleMap *mod_map);
 void register_yahoo_error(LPIModuleMap *mod_map);

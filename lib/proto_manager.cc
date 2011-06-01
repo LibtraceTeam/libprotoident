@@ -170,6 +170,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_weblogic(mod_map);
 	register_winmx(mod_map);
 	register_wow(mod_map);
+	register_xmpp(mod_map);
 	register_xunlei(mod_map);
 	register_yahoo(mod_map);
 	register_yahoo_error(mod_map);
@@ -210,6 +211,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_jedi(mod_map);
 	register_kademlia(mod_map);
 	register_kazaa(mod_map);
+	register_l2tp(mod_map);
 	register_ldap_ad(mod_map);
 	register_linkproof(mod_map);
 	register_moh(mod_map);

@@ -420,6 +420,7 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
 		case LPI_PROTO_UDP_CISCO_VPN:
 		case LPI_PROTO_SOCKS5:
 		case LPI_PROTO_SOCKS4:
+		case LPI_PROTO_UDP_L2TP:
 			return LPI_CATEGORY_TUNNELLING;
 
 		case LPI_PROTO_UDP_PYZOR:
@@ -548,6 +549,7 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
                 case LPI_PROTO_MZINGA:
 		case LPI_PROTO_UDP_QQ:
 		case LPI_PROTO_UDP_IPMSG:
+		case LPI_PROTO_XMPP:
 			return LPI_CATEGORY_CHAT;
 
 		case LPI_PROTO_SSH:

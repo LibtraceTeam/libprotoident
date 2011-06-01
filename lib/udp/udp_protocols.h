@@ -33,6 +33,7 @@ void register_isakmp(LPIModuleMap *mod_map);
 void register_jedi(LPIModuleMap *mod_map);
 void register_kademlia(LPIModuleMap *mod_map);
 void register_kazaa(LPIModuleMap *mod_map);
+void register_l2tp(LPIModuleMap *mod_map);
 void register_ldap_ad(LPIModuleMap *mod_map);
 void register_linkproof(LPIModuleMap *mod_map);
 void register_moh(LPIModuleMap *mod_map);

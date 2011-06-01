@@ -30,6 +30,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_jedi.cc \
 	lpi_kademlia.cc \
 	lpi_kazaa.cc \
+	lpi_l2tp.cc \
 	lpi_ldap_ad.cc \
 	lpi_linkproof.cc \
 	lpi_moh.cc \
