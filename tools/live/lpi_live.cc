@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <string.h>
 
 #include <libtrace.h>
 #include <libflowmanager.h>
