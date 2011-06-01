@@ -406,7 +406,7 @@ int main(int argc, char *argv[]) {
 
 	double next_report = 0.0;
 
-	uint32_t max_reports = 15;
+	uint32_t max_reports = 0;
 	uint32_t reports_done = 0;
 
         packet = trace_create_packet();
