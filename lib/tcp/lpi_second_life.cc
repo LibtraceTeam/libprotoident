@@ -36,31 +36,40 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_shoutcast(lpi_data_t *data, lpi_module_t *mod UNUSED) 
-{
-	if (match_str_both(data, "GET ", "ICY "))
-		return true;
-	if (match_chars_either(data, 'O', 'K', '2', 0x0d))
-		return true;
-	if (match_chars_either(data, 'I', 'C', 'Y', ' ')) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-	return false;
+static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	/* SecondLife uses SSL over port 12043 and HTTP over port 12046 */
+
+	if (data->server_port == 12043 || data->client_port == 12043) {
+		if (match_ssl(data))
+			return true;
+
+	}
+	
+	if (data->server_port == 12046 || data->client_port == 12046) {
+		if (match_str_both(data, "GET ", "HTTP"))
+			return true;
+		if (match_str_either(data, "GET ")) {
+			if (data->payload_len[0] == 0)
+				return true;
+			if (data->payload_len[1] == 0)
+				return true;
+		}
+	}
+	
+
+	return false;
 }
 
-static lpi_module_t lpi_shoutcast = {
-	LPI_PROTO_SHOUTCAST,
-	LPI_CATEGORY_STREAMING,
-	"Shoutcast",
-	1, /* Should be ahead of HTTP, due to "GET" */
-	match_shoutcast
+static lpi_module_t lpi_second_life = {
+	LPI_PROTO_SECONDLIFE,
+	LPI_CATEGORY_GAMING,
+	"SecondLife",
+	6,
+	match_second_life
 };
 
-void register_shoutcast(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_shoutcast, mod_map);
+void register_second_life(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_second_life, mod_map);
 }
 

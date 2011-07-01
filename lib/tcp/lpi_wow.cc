@@ -66,6 +66,19 @@ static inline bool match_wow_response(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_wow_s2c(uint32_t payload, uint32_t len) {
+	/* WoW seems to have changed the server to client protocol recently,
+	 * possibly with the new expansion Cataclysm */
+
+	if (len == 0)
+		return true;
+	if (!MATCH(payload, 0x00, 0x30, 0x57, 0x4f))
+		return false;
+	if (len != 50)
+		return false;
+	return true;
+}
+
 
 static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -78,6 +91,11 @@ static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_wow_response(data->payload[0], data->payload_len[0]))
                         return true;
         }
+
+	if (match_wow_s2c(data->payload[0], data->payload_len[0])) {
+		if (match_wow_s2c(data->payload[1], data->payload_len[1]))
+			return true;
+	}
 	
 	return false;
 }

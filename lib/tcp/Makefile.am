@@ -39,6 +39,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid_pop.cc \
 	lpi_invalid_smtp.cc \
 	lpi_irc.cc \
+	lpi_kaseya.cc \
 	lpi_ldap.cc \
 	lpi_message4u.cc \
 	lpi_mitglieder.cc \
@@ -75,6 +76,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_rsync.cc \
 	lpi_rtmp.cc \
 	lpi_rtsp.cc \
+	lpi_second_life.cc \
 	lpi_shoutcast.cc \
 	lpi_sip.cc \
 	lpi_smb.cc \

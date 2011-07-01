@@ -41,24 +41,38 @@
  * to confirm this :/
  */
 
+static inline bool payload_check(uint32_t a, uint32_t b) {
+
+	/* In most cases, the last two bytes must match but I've also seen
+	 * instances where one of the bytes is one greater than the other
+	 *
+	 * No idea what is actually going on though :/ */
+
+	if (a == b)
+		return true;
+	if (a - 1 == b)
+		return true;
+	if (a + 1 == b)
+		return true;
+	return false;
+
+}
+
 static inline bool match_2102_response(uint32_t payload, uint32_t other,
 		uint32_t len) {
 
 	if (len == 0)
 		return true;
-	if (len != 30 && len != 20)
+
+	if (!payload_check(htonl(payload) & 0x0000ffff, 
+				htonl(other) & 0x0000ffff))
 		return false;
 
-	/* Check that the last two bytes match for both directions 
-	 * 
-	 * Remember byte-ordering! 
-	 */
-	if ((payload & 0xffff0000) != (other & 0xffff0000))
-		return false;
-	
 	if (MATCH(payload, 0x21, 0x02, ANY, ANY) && len == 30)
 		return true;
 	if (MATCH(payload, 0x21, 0x00, ANY, ANY) && len == 20)
+		return true;
+	if (MATCH(payload, 0x21, 0x01, ANY, ANY) && len == 26)
 		return true;
 	
 
@@ -75,11 +89,8 @@ static inline bool match_3102_response(uint32_t payload, uint32_t other,
 	if (len != 30 && len != 20)
 		return false;
 
-	/* Check that the last two bytes match for both directions 
-	 * 
-	 * Remember byte-ordering! 
-	 */
-	if ((payload & 0xffff0000) != (other & 0xffff0000))
+	if (!payload_check(htonl(payload) & 0x0000ffff, 
+				htonl(other) & 0x0000ffff))
 		return false;
 	
 	if (MATCH(payload, 0x31, 0x02, ANY, ANY) && len == 30)
@@ -101,12 +112,9 @@ static inline bool match_4102_response(uint32_t payload, uint32_t other,
 	if (len != 33)
 		return false;
 
- 	/* Check that the last two bytes match for both directions 
-         * 
-         * Remember byte-ordering! 
-         */
-        if ((payload & 0xffff0000) != (other & 0xffff0000))
-                return false;
+	if (!payload_check(htonl(payload) & 0x0000ffff, 
+				htonl(other) & 0x0000ffff))
+		return false;
 
         if (!MATCH(payload, 0x41, 0x02, ANY, ANY))
                 return false;
@@ -144,6 +152,8 @@ static inline bool match_2102_request(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0x21, 0x02, ANY, ANY) && len == 30)
 		return true;
 	if (MATCH(payload, 0x21, 0x00, ANY, ANY) && len == 20)
+		return true;
+	if (MATCH(payload, 0x21, 0x01, ANY, ANY) && len == 26)
 		return true;
 	return false;
 
@@ -208,10 +218,16 @@ static inline bool match_mystery_bt_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 		if (match_3102_response(data->payload[1], data->payload[0], 
 				data->payload_len[1]))
 			return true;
+		if (match_2102_response(data->payload[1], data->payload[0], 
+				data->payload_len[1]))
+			return true;
 	}
 
 	if (match_0100_request(data->payload[1], data->payload_len[1])) {
 		if (match_3102_response(data->payload[0], data->payload[1], 
+				data->payload_len[0]))
+			return true;
+		if (match_2102_response(data->payload[0], data->payload[1], 
 				data->payload_len[0]))
 			return true;
 	}

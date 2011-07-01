@@ -112,6 +112,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
 	register_irc(mod_map);
+	register_kaseya(mod_map);
 	register_ldap(mod_map);
 	register_message4u(mod_map);
 	register_mitglieder(mod_map);
@@ -148,6 +149,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_rsync(mod_map);
 	register_rtmp(mod_map);
 	register_rtsp(mod_map);
+	register_second_life(mod_map);
 	register_shoutcast(mod_map);
 	register_sip(mod_map);
 	register_smb(mod_map);
@@ -219,7 +221,6 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_msn_cache(mod_map);
 	register_msn_video(mod_map);
 	register_mta(mod_map);
-	register_mystery_02_36(mod_map);
 	register_mystery_05(mod_map);
 	register_mystery_0660(mod_map);
 	register_mystery_0d(mod_map);
@@ -248,7 +249,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
 	register_rtp(mod_map);
-	register_second_life(mod_map);
+	register_second_life_udp(mod_map);
 	register_serialnumberd(mod_map);
 	register_sip_udp(mod_map);
 	register_skype(mod_map);

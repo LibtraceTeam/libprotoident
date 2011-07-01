@@ -41,6 +41,12 @@ static inline bool match_zynga(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (match_str_both(data, "pres", "3 se"))
 		return true;
 
+	/* Flash facebook games */
+	if (match_str_both(data, "<msg", "<?xm")) {
+		if (data->server_port == 9339 || data->client_port == 9339)
+			return true;
+	}
+
 	return false;
 }
 

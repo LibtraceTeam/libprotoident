@@ -38,7 +38,7 @@
 
 static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (data->payload_len[0] < 4 && data->payload_len[1] < 4)
+	if (data->payload_len[0] < 4 || data->payload_len[1] < 4)
                 return false;
 
         if (MATCH(data->payload[0], 0x03, ANY, ANY, ANY) &&

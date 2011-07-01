@@ -59,7 +59,7 @@ static lpi_module_t lpi_flash = {
 	LPI_PROTO_FLASH,
 	LPI_CATEGORY_STREAMING,
 	"Flash_Player",
-	2,
+	6,
 	match_flash
 };
 

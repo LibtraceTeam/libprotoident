@@ -37,7 +37,7 @@
 #include "proto_common.h"
 
 static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
-        uint16_t rep_len;
+        uint16_t rep_len = 0;
 
         if (len == 0)
                 return true;

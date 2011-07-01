@@ -36,31 +36,58 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_shoutcast(lpi_data_t *data, lpi_module_t *mod UNUSED) 
-{
-	if (match_str_both(data, "GET ", "ICY "))
+static inline bool match_kaseya_req(uint32_t payload, uint32_t len) {
+
+	if (!MATCH(payload, 0x4a, 0x5e, 0x7a, 0x04))
+		return false;
+	if (len == 48)
 		return true;
-	if (match_chars_either(data, 'O', 'K', '2', 0x0d))
+	if (len == 52)
 		return true;
-	if (match_chars_either(data, 'I', 'C', 'Y', ' ')) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-	return false;
+	if (len == 25)
+		return true;
+	return false;		
 
 }
 
-static lpi_module_t lpi_shoutcast = {
-	LPI_PROTO_SHOUTCAST,
-	LPI_CATEGORY_STREAMING,
-	"Shoutcast",
-	1, /* Should be ahead of HTTP, due to "GET" */
-	match_shoutcast
+static inline bool match_kaseya_resp(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (!MATCH(payload, 0x4a, 0x5e, 0x7a, 0x04))
+		return false;
+
+	if (len < 200)
+		return false;
+	
+	return true;
+}
+
+static inline bool match_kaseya(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_kaseya_req(data->payload[0], data->payload_len[0])) {
+		if (match_kaseya_resp(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	
+	if (match_kaseya_req(data->payload[1], data->payload_len[1])) {
+		if (match_kaseya_resp(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
+}
+
+static lpi_module_t lpi_kaseya = {
+	LPI_PROTO_KASEYA,
+	LPI_CATEGORY_REMOTE,
+	"Kaseya",
+	3,
+	match_kaseya
 };
 
-void register_shoutcast(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_shoutcast, mod_map);
+void register_kaseya(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_kaseya, mod_map);
 }
 

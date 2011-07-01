@@ -38,7 +38,6 @@ libprotoident_udp_la_SOURCES = \
 	lpi_msn_cache.cc \
 	lpi_msn_video.cc \
 	lpi_mta.cc \
-	lpi_mystery_02_36.cc \
 	lpi_mystery_05.cc \
 	lpi_mystery_0660.cc \
 	lpi_mystery_0d.cc \

@@ -64,7 +64,7 @@ static lpi_module_t lpi_second_life = {
 	match_second_life
 };
 
-void register_second_life(LPIModuleMap *mod_map) {
+void register_second_life_udp(LPIModuleMap *mod_map) {
 	register_protocol(&lpi_second_life, mod_map);
 }
 
