@@ -617,3 +617,18 @@ bool match_emule(lpi_data_t *data) {
         return false;
 }
 
+bool match_kaspersky(lpi_data_t *data) {
+
+	/* Traffic is either on TCP port 443 or UDP port 2001.
+	 *
+	 * One of the endpoints is always in either a Kaspersky range or
+	 * an old PSInet range */
+
+	if (match_str_both(data, "KS\x00\x00", "KS\x00\x00"))
+		return true;
+	if (match_str_both(data, "PI\x00\x00", "PI\x00\x00")) {
+		if (data->payload_len[0] == 2 && data->payload_len[1] == 2)
+			return true;
+	}
+	return false;
+}

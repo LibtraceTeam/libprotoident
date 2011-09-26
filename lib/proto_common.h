@@ -74,4 +74,5 @@ bool match_dns(lpi_data_t *data);
 bool match_tds_request(uint32_t payload, uint32_t len);
 bool match_8000_payload(uint32_t payload, uint32_t len);
 bool match_emule(lpi_data_t *data);
+bool match_kaspersky(lpi_data_t *data);
 #endif

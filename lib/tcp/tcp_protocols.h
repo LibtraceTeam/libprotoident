@@ -43,6 +43,7 @@ void register_invalid_pop(LPIModuleMap *mod_map);
 void register_invalid_smtp(LPIModuleMap *mod_map);
 void register_irc(LPIModuleMap *mod_map);
 void register_kaseya(LPIModuleMap *mod_map);
+void register_kaspersky(LPIModuleMap *mod_map);
 void register_ldap(LPIModuleMap *mod_map);
 void register_message4u(LPIModuleMap *mod_map);
 void register_mitglieder(LPIModuleMap *mod_map);

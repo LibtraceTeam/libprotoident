@@ -376,6 +376,7 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
 		case LPI_PROTO_UDP_TRACEROUTE:
 		case LPI_PROTO_UDP_SNMP:
 		case LPI_PROTO_UDP_LINKPROOF:
+		case LPI_PROTO_UDP_AKAMAI:
                		return LPI_CATEGORY_MONITORING;
 
                 case LPI_PROTO_RPC_SCAN:
@@ -391,6 +392,8 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
 		case LPI_PROTO_UDP_BACKWEB:
 		case LPI_PROTO_UDP_NORTON:
 		case LPI_PROTO_UDP_FORTINET:
+		case LPI_PROTO_KASPERSKY:
+		case LPI_PROTO_UDP_KASPERSKY:
 			return LPI_CATEGORY_SECURITY;
 
 		case LPI_PROTO_SVN:
@@ -421,6 +424,7 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
 		case LPI_PROTO_SOCKS5:
 		case LPI_PROTO_SOCKS4:
 		case LPI_PROTO_UDP_L2TP:
+		case LPI_PROTO_UDP_HAMACHI:
 			return LPI_CATEGORY_TUNNELLING;
 
 		case LPI_PROTO_UDP_PYZOR:
@@ -558,6 +562,8 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
                 case LPI_PROTO_RDP:
                 case LPI_PROTO_ICA:
                 case LPI_PROTO_NOTES_RPC:
+		case LPI_PROTO_UDP_RADIUS:
+		case LPI_PROTO_KASEYA:
 			return LPI_CATEGORY_REMOTE;
 		
                 case LPI_PROTO_UDP_BTDHT:
@@ -577,6 +583,12 @@ lpi_category_t lpi_categorise(lpi_module_t *module) {
 
 		case LPI_PROTO_TIP:
 			return LPI_CATEGORY_ECOMMERCE;
+	
+		case LPI_PROTO_UDP_SYSLOG:
+			return LPI_CATEGORY_LOGGING;
+
+		case LPI_PROTO_UDP_BJNP:
+			return LPI_CATEGORY_PRINTING;
 	}
 	if (module == NULL)
 		return LPI_CATEGORY_NO_CATEGORY;
@@ -635,6 +647,10 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "P2PTV";
 		case LPI_CATEGORY_RCS:
 			return "Revision_Control";
+		case LPI_CATEGORY_LOGGING:
+			return "Logging";
+		case LPI_CATEGORY_PRINTING:
+			return "Printing";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:

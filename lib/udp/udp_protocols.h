@@ -3,8 +3,10 @@
 
 #include "proto_manager.h"
 
+void register_akamai(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);
+void register_bjnp(LPIModuleMap *mod_map);
 void register_callofduty(LPIModuleMap *mod_map);
 void register_checkpoint_rdp(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
@@ -26,12 +28,14 @@ void register_garena(LPIModuleMap *mod_map);
 void register_gnutella_udp(LPIModuleMap *mod_map);
 void register_gnutella2_udp(LPIModuleMap *mod_map);
 void register_halflife(LPIModuleMap *mod_map);
+void register_hamachi_udp(LPIModuleMap *mod_map);
 void register_imesh_udp(LPIModuleMap *mod_map);
 void register_ipmsg(LPIModuleMap *mod_map);
 void register_ipv6_udp(LPIModuleMap *mod_map);
 void register_isakmp(LPIModuleMap *mod_map);
 void register_jedi(LPIModuleMap *mod_map);
 void register_kademlia(LPIModuleMap *mod_map);
+void register_kaspersky_udp(LPIModuleMap *mod_map);
 void register_kazaa(LPIModuleMap *mod_map);
 void register_l2tp(LPIModuleMap *mod_map);
 void register_ldap_ad(LPIModuleMap *mod_map);
@@ -65,6 +69,7 @@ void register_psn(LPIModuleMap *mod_map);
 void register_pyzor(LPIModuleMap *mod_map);
 void register_qq(LPIModuleMap *mod_map);
 void register_quake(LPIModuleMap *mod_map);
+void register_radius(LPIModuleMap *mod_map);
 void register_real(LPIModuleMap *mod_map);
 void register_rtcp(LPIModuleMap *mod_map);
 void register_rtmfp(LPIModuleMap *mod_map);
@@ -84,6 +89,7 @@ void register_steamfriends(LPIModuleMap *mod_map);
 void register_steam_udp(LPIModuleMap *mod_map);
 void register_storm_worm(LPIModuleMap *mod_map);
 void register_stun(LPIModuleMap *mod_map);
+void register_syslog(LPIModuleMap *mod_map);
 void register_teamspeak(LPIModuleMap *mod_map);
 void register_teredo(LPIModuleMap *mod_map);
 void register_tftp(LPIModuleMap *mod_map);

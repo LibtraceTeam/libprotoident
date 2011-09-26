@@ -36,25 +36,25 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Harveys - a seemingly custom protocol used by Harveys Real
- * Estate to transfer photos. Common in ISP C traces */
+static inline bool match_bjnp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_harveys(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	/* Could strengthen this by requiring 16 byte packets too if needed */
 
-	if (match_str_both(data, "77;T", "47;T"))
+	if (match_str_either(data, "BJNP"))
 		return true;
+
 	return false;
 }
 
-static lpi_module_t lpi_harveys = {
-	LPI_PROTO_HARVEYS,
-	LPI_CATEGORY_FILES,
-	"Harveys",
+static lpi_module_t lpi_bjnp = {
+	LPI_PROTO_UDP_BJNP,
+	LPI_CATEGORY_PRINTING,
+	"Canon_BJNP",
 	3,
-	match_harveys
+	match_bjnp
 };
 
-void register_harveys(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_harveys, mod_map);
+void register_bjnp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_bjnp, mod_map);
 }
 

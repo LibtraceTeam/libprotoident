@@ -36,25 +36,32 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Harveys - a seemingly custom protocol used by Harveys Real
- * Estate to transfer photos. Common in ISP C traces */
+static inline bool match_hamachi(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_harveys(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	/* Based on traffic observed on port 17771 where one endpoint is in
+	 * an IP range owned by LogMeIn */
 
-	if (match_str_both(data, "77;T", "47;T"))
-		return true;
-	return false;
+	if (!MATCH(data->payload[0], 0x00, 0x00, 0x00, 0x00))
+		return false;
+	if (!MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x00))
+		return false;
+	if (data->payload_len[0] != 76)
+		return false;
+	if (data->payload_len[1] != 76)
+		return false;
+
+	return true;
 }
 
-static lpi_module_t lpi_harveys = {
-	LPI_PROTO_HARVEYS,
-	LPI_CATEGORY_FILES,
-	"Harveys",
-	3,
-	match_harveys
+static lpi_module_t lpi_hamachi = {
+	LPI_PROTO_UDP_HAMACHI,
+	LPI_CATEGORY_TUNNELLING,
+	"Hamachi",
+	8,
+	match_hamachi
 };
 
-void register_harveys(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_harveys, mod_map);
+void register_hamachi_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_hamachi, mod_map);
 }
 

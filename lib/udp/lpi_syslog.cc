@@ -36,25 +36,48 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Harveys - a seemingly custom protocol used by Harveys Real
- * Estate to transfer photos. Common in ISP C traces */
+static inline bool match_syslog_payload(uint32_t pload) {
 
-static inline bool match_harveys(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	/* Syslog starts with <PRI>, where PRI is a number between 0 and 191 */
 
-	if (match_str_both(data, "77;T", "47;T"))
+	if (MATCH(pload, '<', ANY, '>', ANY))
 		return true;
+	if (MATCH(pload, '<', ANY, ANY, '>'))
+		return true;
+	if (MATCH(pload, '<', '1', ANY, ANY))
+		return true;
+
+	return false;
+	
+
+}
+
+static inline bool match_syslog(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (data->server_port != 514 && data->client_port != 514)
+		return false;
+
+	if (data->payload_len[0] == 0) {
+		if (match_syslog_payload(data->payload[1]))
+			return true;
+	}
+
+	if (data->payload_len[1] == 0) {
+		if (match_syslog_payload(data->payload[0]))
+			return true;
+	}
 	return false;
 }
 
-static lpi_module_t lpi_harveys = {
-	LPI_PROTO_HARVEYS,
-	LPI_CATEGORY_FILES,
-	"Harveys",
-	3,
-	match_harveys
+static lpi_module_t lpi_syslog = {
+	LPI_PROTO_UDP_SYSLOG,
+	LPI_CATEGORY_LOGGING,
+	"Syslog",
+	6,
+	match_syslog
 };
 
-void register_harveys(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_harveys, mod_map);
+void register_syslog(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_syslog, mod_map);
 }
 

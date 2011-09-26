@@ -36,25 +36,24 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Harveys - a seemingly custom protocol used by Harveys Real
- * Estate to transfer photos. Common in ISP C traces */
+static inline bool match_kaspersky_udp(lpi_data_t *data, 
+		lpi_module_t *mod UNUSED) {
 
-static inline bool match_harveys(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	if (data->server_port != 2001 && data->client_port != 2001)
+		return false;
 
-	if (match_str_both(data, "77;T", "47;T"))
-		return true;
-	return false;
+	return match_kaspersky(data);
 }
 
-static lpi_module_t lpi_harveys = {
-	LPI_PROTO_HARVEYS,
-	LPI_CATEGORY_FILES,
-	"Harveys",
+static lpi_module_t lpi_kaspersky = {
+	LPI_PROTO_UDP_KASPERSKY,
+	LPI_CATEGORY_SECURITY,
+	"Kaspersky_UDP",
 	3,
-	match_harveys
+	match_kaspersky_udp
 };
 
-void register_harveys(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_harveys, mod_map);
+void register_kaspersky_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_kaspersky, mod_map);
 }
 

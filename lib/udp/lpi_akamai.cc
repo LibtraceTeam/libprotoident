@@ -36,25 +36,46 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Harveys - a seemingly custom protocol used by Harveys Real
- * Estate to transfer photos. Common in ISP C traces */
+static inline bool match_akamai(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_harveys(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+	/* This appears to be some sort of protocol used by Akamai nodes
+	 * to talk to one another - probably the monitoring for the Akamai
+	 * network */
 
-	if (match_str_both(data, "77;T", "47;T"))
+	/* All messages begin with 8 bytes of zeroes */
+	if (data->payload[0] != 0 || data->payload[1] != 0)
+		return false;
+
+	if (data->payload_len[0] == 1080 && data->payload_len[1] == 0)
 		return true;
+	if (data->payload_len[1] == 1080 && data->payload_len[0] == 0)
+		return true;
+
+	if (data->payload_len[0] == 1032) {
+		if (data->payload_len[1] == 0)
+			return true;
+		if (data->payload_len[1] == 1032)
+			return true;
+	}
+
+	if (data->payload_len[1] == 1032) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
+
 	return false;
 }
 
-static lpi_module_t lpi_harveys = {
-	LPI_PROTO_HARVEYS,
-	LPI_CATEGORY_FILES,
-	"Harveys",
-	3,
-	match_harveys
+static lpi_module_t lpi_akamai = {
+	LPI_PROTO_UDP_AKAMAI,
+	LPI_CATEGORY_MONITORING,
+	"Akamai",
+	5,
+	match_akamai
 };
 
-void register_harveys(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_harveys, mod_map);
+void register_akamai(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_akamai, mod_map);
 }
 

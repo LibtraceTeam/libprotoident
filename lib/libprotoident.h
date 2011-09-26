@@ -90,6 +90,8 @@ typedef enum {
 					   SMS protocols */
 	LPI_CATEGORY_P2PTV,		/* P2P TV, e.g. PPLive */
 	LPI_CATEGORY_RCS,		/* Revision Control */
+	LPI_CATEGORY_LOGGING,		/* Logging */
+	LPI_CATEGORY_PRINTING,		/* Network printing */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -207,6 +209,7 @@ typedef enum {
 	LPI_PROTO_XMPP,		/* a.k.a. Jabber */
 	LPI_PROTO_SECONDLIFE,	/* SecondLife over TCP */
 	LPI_PROTO_KASEYA,
+	LPI_PROTO_KASPERSKY,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -294,6 +297,12 @@ typedef enum {
 	LPI_PROTO_UDP_LDAP_AD,
 	LPI_PROTO_UDP_RTMFP,
 	LPI_PROTO_UDP_L2TP,
+	LPI_PROTO_UDP_SYSLOG,
+	LPI_PROTO_UDP_AKAMAI,
+	LPI_PROTO_UDP_RADIUS,
+	LPI_PROTO_UDP_HAMACHI,
+	LPI_PROTO_UDP_BJNP,	/* Canon BJNP printing protocol */
+	LPI_PROTO_UDP_KASPERSKY,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
