@@ -36,40 +36,26 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_jedi(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_jedi_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* Pretty rare, but we can write a rule for it */
-        if (match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff")) {
-                /* Server browsing */
-                if (data->payload_len[0] == 65 && data->payload_len[1] == 181)
-                        return true;
-                if (data->payload_len[0] == 66 && data->payload_len[1] == 182)
-                        return true;
-                if (data->payload_len[1] == 65 && data->payload_len[0] == 181)
-                        return true;
-                if (data->payload_len[1] == 66 && data->payload_len[0] == 182)
-                        return true;
+	/* Citrix have a protocol called JEDI which is used for streaming
+	 * in products like GoToMyPC */
 
-                /* Actual gameplay */
-                if (data->payload_len[0] == 16 && data->payload_len[1] == 32)
-                        return true;
-                if (data->payload_len[1] == 16 && data->payload_len[0] == 32)
-                        return true;
-        }
-
+	if (match_str_both(data, "JEDI", "JEDI"))
+		return true;
 
 	return false;
 }
 
 static lpi_module_t lpi_jedi = {
 	LPI_PROTO_UDP_JEDI,
-	LPI_CATEGORY_GAMING,
-	"JediAcademy",
-	5,
-	match_jedi
+	LPI_CATEGORY_REMOTE,
+	"Citrix_Jedi",
+	3,
+	match_jedi_udp
 };
 
-void register_jedi(LPIModuleMap *mod_map) {
+void register_jedi_udp(LPIModuleMap *mod_map) {
 	register_protocol(&lpi_jedi, mod_map);
 }
 

@@ -78,6 +78,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
+	register_cgp(mod_map);
 	register_cisco_vpn(mod_map);
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
@@ -112,6 +113,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
 	register_irc(mod_map);
+	register_jedi(mod_map);
 	register_kaseya(mod_map);
 	register_kaspersky(mod_map);
 	register_ldap(mod_map);
@@ -122,6 +124,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_msn(mod_map);
 	register_msnc(mod_map);
 	register_msnv(mod_map);
+	register_munin(mod_map);
 	register_mysql(mod_map);
 	register_mystery_443(mod_map);
 	register_mystery_8000(mod_map);
@@ -129,6 +132,8 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_conn(mod_map);
 	register_mystery_iG(mod_map);
 	register_mystery_pspr(mod_map);
+	register_mystery_rxxf(mod_map);
+	register_mystery_symantec(mod_map);
 	register_mzinga(mod_map);
 	register_ncsoft(mod_map);
 	register_netbios(mod_map);
@@ -160,6 +165,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ssh(mod_map);
 	register_ssl(mod_map);
 	register_steam(mod_map);
+	register_stun_tcp(mod_map);
 	register_svn(mod_map);
 	register_tds(mod_map);
 	register_teamviewer(mod_map);
@@ -175,9 +181,11 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_wow(mod_map);
 	register_xmpp(mod_map);
 	register_xunlei(mod_map);
+	register_xymon(mod_map);
 	register_yahoo(mod_map);
 	register_yahoo_error(mod_map);
 	register_yahoo_webcam(mod_map);
+	register_youku_tcp(mod_map);
 	register_zynga(mod_map);
 	return 0;
 }
@@ -208,13 +216,15 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_garena(mod_map);
 	register_gnutella_udp(mod_map);
 	register_gnutella2_udp(mod_map);
+	register_gsm(mod_map);
 	register_halflife(mod_map);
 	register_hamachi_udp(mod_map);
 	register_imesh_udp(mod_map);
 	register_ipmsg(mod_map);
 	register_ipv6_udp(mod_map);
 	register_isakmp(mod_map);
-	register_jedi(mod_map);
+	register_jedi_academy(mod_map);
+	register_jedi_udp(mod_map);
 	register_kademlia(mod_map);
 	register_kaspersky_udp(mod_map);
 	register_kazaa(mod_map);
@@ -287,6 +297,8 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_xfire_p2p(mod_map);
 	register_xlsp(mod_map);
 	register_xunlei_udp(mod_map);
+	register_youdao_dict(mod_map);
+	register_youku_udp(mod_map);
 	return 0;
 }
 

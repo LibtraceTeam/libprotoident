@@ -35,52 +35,29 @@
 #include "libprotoident.h"
 #include "proto_manager.h"
 #include "proto_common.h"
-#include <stdio.h>
 
-static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
-        uint16_t rep_len = 0;
-	uint32_t swap = ntohl(payload);
+static inline bool match_gsm(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (len == 0)
-                return true;
+	/* There are other commands but these are the only ones I've seen in
+	 * the wild so far */
 
-        if (!MATCH(payload, ANY, ANY, 0x43, 0x00))
-                return false;
+	if (match_str_either(data, "+CSQ"))
+		return true;
+	if (match_str_either(data, "+CIM"))
+		return true;
 
-        /* First two bytes are either len or len - 4 */
-
-	rep_len = ntohs((uint16_t)(swap >> 16));
-	
-        if (rep_len == len)
-                return true;
-        if (rep_len == len - 4)
-                return true;
-
-        return false;
+	return false;
 }
 
-
-static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_ppstream_payload(data->payload[1], data->payload_len[1]))
-                return false;
-
-        return true;
-
-
-}
-
-static lpi_module_t lpi_ppstream = {
-	LPI_PROTO_UDP_PPSTREAM,
-	LPI_CATEGORY_P2PTV,
-	"PPStream",
-	5,
-	match_ppstream
+static lpi_module_t lpi_gsm = {
+	LPI_PROTO_UDP_GSM,
+	LPI_CATEGORY_MONITORING,
+	"GSM",
+	3,
+	match_gsm
 };
 
-void register_ppstream(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ppstream, mod_map);
+void register_gsm(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_gsm, mod_map);
 }
 

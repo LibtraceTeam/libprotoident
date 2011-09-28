@@ -24,6 +24,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_garena.cc \
 	lpi_gnutella.cc \
 	lpi_gnutella2.cc \
+	lpi_gsm.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
 	lpi_imesh.cc \
@@ -31,6 +32,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ipv6.cc \
 	lpi_isakmp.cc \
 	lpi_jedi.cc \
+	lpi_jedi_academy.cc \
 	lpi_kademlia.cc \
 	lpi_kaspersky.cc \
 	lpi_kazaa.cc \
@@ -102,7 +104,9 @@ libprotoident_udp_la_SOURCES = \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
 	lpi_xlsp.cc \
-	lpi_xunlei.cc
+	lpi_xunlei.cc \
+	lpi_youdao_dict.cc \
+	lpi_youku.cc
 
 EXTRA_DIST=udp_protocols.h
 

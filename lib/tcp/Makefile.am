@@ -5,6 +5,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
+	lpi_cgp.cc \
 	lpi_cisco_vpn.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
@@ -39,6 +40,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid_pop.cc \
 	lpi_invalid_smtp.cc \
 	lpi_irc.cc \
+	lpi_jedi.cc \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
 	lpi_ldap.cc \
@@ -49,6 +51,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_msn.cc \
 	lpi_msnc.cc \
 	lpi_msnv.cc \
+	lpi_munin.cc \
 	lpi_mysql.cc \
 	lpi_mystery_443.cc \
 	lpi_mystery_8000.cc \
@@ -56,6 +59,8 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_mystery_conn.cc \
 	lpi_mystery_iG.cc \
 	lpi_mystery_pspr.cc \
+	lpi_mystery_rxxf.cc \
+	lpi_mystery_symantec.cc \
 	lpi_mzinga.cc \
 	lpi_ncsoft.cc \
 	lpi_netbios.cc \
@@ -87,6 +92,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ssh.cc \
 	lpi_ssl.cc \
 	lpi_steam.cc \
+	lpi_stun.cc \
 	lpi_svn.cc \
 	lpi_tds.cc \
 	lpi_teamviewer.cc \
@@ -102,9 +108,11 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_wow.cc \
 	lpi_xmpp.cc \
 	lpi_xunlei.cc \
+	lpi_xymon.cc \
 	lpi_yahoo.cc \
 	lpi_yahoo_error.cc \
 	lpi_yahoo_webcam.cc \
+	lpi_youku.cc \
 	lpi_zynga.cc 
 
 EXTRA_DIST=tcp_protocols.h

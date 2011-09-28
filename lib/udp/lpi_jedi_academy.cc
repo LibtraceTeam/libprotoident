@@ -35,52 +35,42 @@
 #include "libprotoident.h"
 #include "proto_manager.h"
 #include "proto_common.h"
-#include <stdio.h>
 
-static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
-        uint16_t rep_len = 0;
-	uint32_t swap = ntohl(payload);
+static inline bool match_jedi_academy(lpi_data_t *data, 
+		lpi_module_t *mod UNUSED) {
 
-        if (len == 0)
-                return true;
+	/* Pretty rare, but we can write a rule for it */
+        if (match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff")) {
+                /* Server browsing */
+                if (data->payload_len[0] == 65 && data->payload_len[1] == 181)
+                        return true;
+                if (data->payload_len[0] == 66 && data->payload_len[1] == 182)
+                        return true;
+                if (data->payload_len[1] == 65 && data->payload_len[0] == 181)
+                        return true;
+                if (data->payload_len[1] == 66 && data->payload_len[0] == 182)
+                        return true;
 
-        if (!MATCH(payload, ANY, ANY, 0x43, 0x00))
-                return false;
+                /* Actual gameplay */
+                if (data->payload_len[0] == 16 && data->payload_len[1] == 32)
+                        return true;
+                if (data->payload_len[1] == 16 && data->payload_len[0] == 32)
+                        return true;
+        }
 
-        /* First two bytes are either len or len - 4 */
 
-	rep_len = ntohs((uint16_t)(swap >> 16));
-	
-        if (rep_len == len)
-                return true;
-        if (rep_len == len - 4)
-                return true;
-
-        return false;
+	return false;
 }
 
-
-static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_ppstream_payload(data->payload[1], data->payload_len[1]))
-                return false;
-
-        return true;
-
-
-}
-
-static lpi_module_t lpi_ppstream = {
-	LPI_PROTO_UDP_PPSTREAM,
-	LPI_CATEGORY_P2PTV,
-	"PPStream",
+static lpi_module_t lpi_jedi = {
+	LPI_PROTO_UDP_JEDI_ACADEMY,
+	LPI_CATEGORY_GAMING,
+	"JediAcademy",
 	5,
-	match_ppstream
+	match_jedi_academy
 };
 
-void register_ppstream(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ppstream, mod_map);
+void register_jedi_academy(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_jedi, mod_map);
 }
 

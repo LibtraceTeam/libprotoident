@@ -92,6 +92,7 @@ typedef enum {
 	LPI_CATEGORY_RCS,		/* Revision Control */
 	LPI_CATEGORY_LOGGING,		/* Logging */
 	LPI_CATEGORY_PRINTING,		/* Network printing */
+	LPI_CATEGORY_TRANSLATION,	/* Language translation */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -210,6 +211,12 @@ typedef enum {
 	LPI_PROTO_SECONDLIFE,	/* SecondLife over TCP */
 	LPI_PROTO_KASEYA,
 	LPI_PROTO_KASPERSKY,
+	LPI_PROTO_JEDI,		/* Citrix Jedi */
+	LPI_PROTO_CGP,		/* Citrix CGP */
+	LPI_PROTO_YOUKU,
+	LPI_PROTO_STUN,
+	LPI_PROTO_XYMON,
+	LPI_PROTO_MUNIN,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -271,7 +278,7 @@ typedef enum {
 	LPI_PROTO_UDP_VENTRILO,	/* Ventrilo VoiceChat */
 	LPI_PROTO_UDP_MTA,	/* Multitheftauto */
 	LPI_PROTO_UDP_PPLIVE,
-	LPI_PROTO_UDP_JEDI,	/* Jedi Academy game */
+	LPI_PROTO_UDP_JEDI_ACADEMY,	/* Jedi Academy game */
 	LPI_PROTO_UDP_MOH,	/* Medal of Honor game */
 	LPI_PROTO_UDP_TREMULOUS, /* Tremulous - free OSS FPS */
 	LPI_PROTO_UDP_VIVOX,	/* Vivox voice chat */
@@ -303,6 +310,10 @@ typedef enum {
 	LPI_PROTO_UDP_HAMACHI,
 	LPI_PROTO_UDP_BJNP,	/* Canon BJNP printing protocol */
 	LPI_PROTO_UDP_KASPERSKY,
+	LPI_PROTO_UDP_GSM,
+	LPI_PROTO_UDP_JEDI,	/* Citrix Jedi */
+	LPI_PROTO_UDP_YOUKU,
+	LPI_PROTO_UDP_YOUDAO_DICT,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -312,6 +323,8 @@ typedef enum {
 	LPI_PROTO_MYSTERY_IG,
 	LPI_PROTO_MYSTERY_CONN,
 	LPI_PROTO_MYSTERY_443,
+	LPI_PROTO_MYSTERY_SYMANTEC,
+	LPI_PROTO_MYSTERY_RXXF,
 	
 	LPI_PROTO_UDP_MYSTERY_0D,	
 	LPI_PROTO_UDP_MYSTERY_FE,

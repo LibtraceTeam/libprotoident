@@ -89,6 +89,8 @@ static inline bool match_dict_query(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCH(payload, 'd', '1', ':', 'e'))
 		return true;
+	if (MATCH(payload, 'd', '1', ':', 'q'))
+		return true;
 	if (MATCH(payload, 'd', '1', ':', 't'))
 		return true;
 	if (MATCH(payload, 'd', '1', ANY, ':'))

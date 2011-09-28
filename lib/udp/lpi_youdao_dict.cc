@@ -35,52 +35,29 @@
 #include "libprotoident.h"
 #include "proto_manager.h"
 #include "proto_common.h"
-#include <stdio.h>
 
-static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
-        uint16_t rep_len = 0;
-	uint32_t swap = ntohl(payload);
+static inline bool match_youdao_dict(lpi_data_t *data, 
+		lpi_module_t *mod UNUSED) {
 
-        if (len == 0)
-                return true;
+	/* All signs point to this being the protocol used by Youdao 
+	 * Dictionary software
+	 *
+	 * Can force a check for port 2000 if need be */
+	if (match_str_both(data, "type", "\x1f\x8b\x08\x00"))
+		return true;
 
-        if (!MATCH(payload, ANY, ANY, 0x43, 0x00))
-                return false;
-
-        /* First two bytes are either len or len - 4 */
-
-	rep_len = ntohs((uint16_t)(swap >> 16));
-	
-        if (rep_len == len)
-                return true;
-        if (rep_len == len - 4)
-                return true;
-
-        return false;
+	return false;
 }
 
-
-static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_ppstream_payload(data->payload[1], data->payload_len[1]))
-                return false;
-
-        return true;
-
-
-}
-
-static lpi_module_t lpi_ppstream = {
-	LPI_PROTO_UDP_PPSTREAM,
-	LPI_CATEGORY_P2PTV,
-	"PPStream",
-	5,
-	match_ppstream
+static lpi_module_t lpi_youdao_dict = {
+	LPI_PROTO_UDP_YOUDAO_DICT,
+	LPI_CATEGORY_TRANSLATION,
+	"YoudaoDict",
+	10,
+	match_youdao_dict
 };
 
-void register_ppstream(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ppstream, mod_map);
+void register_youdao_dict(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_youdao_dict, mod_map);
 }
 

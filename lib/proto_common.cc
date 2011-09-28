@@ -632,3 +632,17 @@ bool match_kaspersky(lpi_data_t *data) {
 	}
 	return false;
 }
+
+bool match_youku_payload(uint32_t pload, uint32_t len) {
+
+	if (len == 0)
+                return true;
+        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x01) && len == 16)
+                return true;
+        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x03))
+                return true;
+        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x04))
+                return true;
+        return false;
+
+}

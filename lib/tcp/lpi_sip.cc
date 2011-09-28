@@ -46,6 +46,11 @@ static inline bool match_sip(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 
+	if (match_str_either(data, "REGI") && 
+			(data->payload_len[0] == 0 || 
+			data->payload_len[1] == 0))
+		return true;
+
 	return false;
 }
 
