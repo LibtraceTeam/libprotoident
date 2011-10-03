@@ -47,6 +47,16 @@
 #include <libflowmanager.h>
 #include <libprotoident.h>
 
+#include "../tools_common.h"
+
+enum {
+	DIR_METHOD_TRACE,
+	DIR_METHOD_MAC,
+	DIR_METHOD_PORT
+};
+
+int dir_method = DIR_METHOD_PORT;
+
 bool only_dir0 = false;
 bool only_dir1 = false;
 
@@ -54,6 +64,9 @@ bool require_both = false;
 bool nat_hole = false;
 
 static volatile int done = 0;
+
+char *local_mac = NULL;
+uint8_t mac_bytes[6];
 
 /* This data structure is used to demonstrate how to use the 'extension' 
  * pointer to store custom data for a flow */
@@ -116,6 +129,7 @@ void display_unknown(Flow *f, UnknownFlow *unk) {
         char str[1000];
         struct in_addr in;
 
+
 	if (only_dir0 && unk->init_dir == 1)
 		return;
 	if (only_dir1 && unk->init_dir == 0)
@@ -170,11 +184,11 @@ void expire_unknown_flows(double ts, bool exp_flag) {
                 UnknownFlow *unk = (UnknownFlow *)expired->extension;
 		
 		proto = lpi_guess_protocol(&unk->lpi);
-		
+	
 		if (proto->protocol == LPI_PROTO_UNKNOWN || 
 				proto->protocol == LPI_PROTO_UDP) {
 			display_unknown(expired, unk);
-		}	
+		}
 
 		/* Don't forget to free our custom data structure */
                 free(unk);
@@ -199,45 +213,30 @@ void per_packet(libtrace_packet_t *packet) {
 
         uint16_t l3_type;
 
-	uint16_t src_port;
-	uint16_t dst_port;
-
         /* Libflowmanager only deals with IP traffic, so ignore anything
 	 * that does not have an IP header */
         ip = (libtrace_ip_t *)trace_get_layer3(packet, &l3_type, NULL);
-        if (l3_type != 0x0800) return;
+        if (l3_type != TRACE_ETHERTYPE_IP) return;
         if (ip == NULL) return;
 
 	/* Expire all suitably idle flows */
         ts = trace_get_seconds(packet);
         expire_unknown_flows(ts, false);
 
-	/* Many trace formats do not support direction tagging (e.g. PCAP), so
-	 * using trace_get_direction() is not an ideal approach. The one we
-	 * use here is not the nicest, but it is pretty consistent and 
-	 * reliable. Feel free to replace this with something more suitable
-	 * for your own needs!.
-	 */
-
-        /* Ignore packets where the IP addresses are the same - something is
-         * probably screwy and it's REALLY hard to determine direction */
-        if (ip->ip_src.s_addr == ip->ip_dst.s_addr)
-                return;
-
-	src_port = trace_get_source_port(packet);
-	dst_port = trace_get_destination_port(packet);
-
-	if (src_port == dst_port) {
-		if (ip->ip_src.s_addr < ip->ip_dst.s_addr)
-			dir = 0;
-		else
-			dir = 1;
-	} else {
-		if (trace_get_server_port(ip->ip_p, src_port, dst_port) == USE_SOURCE)
-			dir = 0;
-		else
-			dir = 1;
+	/* Determine packet direction */
+	if (dir_method == DIR_METHOD_TRACE) {
+		dir = trace_get_direction(packet);
 	}
+	if (dir_method == DIR_METHOD_MAC) {
+		dir = mac_get_direction(packet, mac_bytes);
+	}
+	if (dir_method == DIR_METHOD_PORT) {
+		dir = port_get_direction(packet);
+	}
+
+
+	if (dir != 0 && dir != 1)
+		return;
 
         /* Match the packet to a Flow - this will create a new flow if
 	 * there is no matching flow already in the Flow map and set the
@@ -247,7 +246,7 @@ void per_packet(libtrace_packet_t *packet) {
 	/* Libflowmanager did not like something about that packet - best to
 	 * just ignore it and carry on */
         if (f == NULL) {
-                return;
+		return;
 	}
 
         tcp = trace_get_tcp(packet);
@@ -299,8 +298,10 @@ static void cleanup_signal(int sig) {
 static void usage(char *prog) {
 
 	printf("Usage details for %s\n\n", prog);
-	printf("%s [-b] [-d <dir>] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
+	printf("%s [-l <mac>] [-T] [-b] [-d <dir>] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
 	printf("Options:\n");
+	printf("  -l <mac>	Determine direction based on <mac> representing the 'inside' \n			portion of the network\n");
+	printf("  -T		Use trace direction tags to determine direction\n");
 	printf("  -b		Ignore flows that do not send data in both directions \n");
 	printf("  -d <dir>	Ignore flows where the initial packet does not match the given \n   		direction\n");
 	printf("  -f <filter>	Ignore flows that do not match the given BPF filter\n");
@@ -332,8 +333,12 @@ int main(int argc, char *argv[]) {
                 return -1;
         }
 
-	while ((opt = getopt(argc, argv, "bHd:f:Rh")) != EOF) {
+	while ((opt = getopt(argc, argv, "l:bHd:f:RhT")) != EOF) {
                 switch (opt) {
+			case 'l':
+				local_mac = optarg;
+				dir_method = DIR_METHOD_MAC;
+				break;
 			case 'b':
 				require_both = true;
 				break;
@@ -353,6 +358,9 @@ int main(int argc, char *argv[]) {
 			case 'H':
 				nat_hole = true;
 				break;
+			case 'T':
+				dir_method = DIR_METHOD_TRACE;
+				break;
                 	case 'h':
 			default:
 				usage(argv[0]);
@@ -364,6 +372,12 @@ int main(int argc, char *argv[]) {
                 filter = trace_create_filter(filterstring);
         }
 
+	if (local_mac != NULL) {
+                if (convert_mac_string(local_mac, mac_bytes) < 0) {
+                        fprintf(stderr, "Invalid MAC: %s\n", local_mac);
+                        return 1;
+                }
+        }	
 
 	/* This tells libflowmanager to ignore any flows where an RFC1918
 	 * private IP address is involved */
