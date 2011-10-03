@@ -280,16 +280,15 @@ void per_packet(libtrace_packet_t *packet) {
         bool is_new = false;
 
         libtrace_tcp_t *tcp = NULL;
-        libtrace_ip_t *ip = NULL;
-        double ts;
+        void *l3;
+	double ts;
 
         uint16_t l3_type;
 
-        /* Libflowmanager only deals with IP traffic, so ignore anything
-	 * that does not have an IP header */
-        ip = (libtrace_ip_t *)trace_get_layer3(packet, &l3_type, NULL);
-        if (l3_type != 0x0800) return;
-        if (ip == NULL) return;
+        l3 = trace_get_layer3(packet, &l3_type, NULL);
+        if (l3_type != TRACE_ETHERTYPE_IP && l3_type != TRACE_ETHERTYPE_IPV6) 
+		return;
+        if (l3 == NULL) return;
 
 	/* Expire all suitably idle flows */
         ts = trace_get_seconds(packet);

@@ -125,9 +125,9 @@ void dump_payload(lpi_data_t lpi, uint8_t dir) {
 
 void display_ident(Flow *f, IdentFlow *ident) {
 
-        char ip[50];
+        char s_ip[500];
+	char c_ip[500];
         char str[1000];
-        struct in_addr in;
 	lpi_module_t *proto;
 
 	if (only_dir0 && ident->init_dir == 1)
@@ -150,12 +150,11 @@ void display_ident(Flow *f, IdentFlow *ident) {
 	
 	proto = lpi_guess_protocol(&ident->lpi);
 	
-        in.s_addr = f->id.get_server_ip();
-        snprintf(ip, 50, "%s", inet_ntoa(in));
+	f->id.get_server_ip_str(s_ip);
+	f->id.get_client_ip_str(c_ip);
 
-        in.s_addr = f->id.get_client_ip();
         snprintf(str, 1000, "%s %s %s %u %u %u %.3f %" PRIu64 " %" PRIu64, 
-			proto->name, ip, inet_ntoa(in),
+			proto->name, s_ip, c_ip,
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), ident->start_ts,
 			ident->out_bytes, ident->in_bytes);
@@ -203,16 +202,17 @@ void per_packet(libtrace_packet_t *packet) {
         bool is_new = false;
 
         libtrace_tcp_t *tcp = NULL;
-        libtrace_ip_t *ip = NULL;
-        double ts;
+        void *l3;
+	double ts;
 
         uint16_t l3_type;
 
         /* Libflowmanager only deals with IP traffic, so ignore anything
 	 * that does not have an IP header */
-        ip = (libtrace_ip_t *)trace_get_layer3(packet, &l3_type, NULL);
-        if (l3_type != TRACE_ETHERTYPE_IP) return;
-        if (ip == NULL) return;
+        l3 = trace_get_layer3(packet, &l3_type, NULL);
+        if (l3_type != TRACE_ETHERTYPE_IP && l3_type != TRACE_ETHERTYPE_IPV6) 
+		return;
+        if (l3 == NULL) return;
 
 	/* Expire all suitably idle flows */
         ts = trace_get_seconds(packet);
