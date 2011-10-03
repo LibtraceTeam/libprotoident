@@ -85,6 +85,7 @@ static inline bool match_gnutella_maint(lpi_data_t *data) {
                 return true;
         if (data->payload_len[1] == 727 && (data->payload_len[0] == 81 ||
                         data->payload_len[0] == 86))
+		return true;
 
         /* 72 and (61 or 81 or 86) byte packets seem to go together */
         if (data->payload_len[0] == 72) {
