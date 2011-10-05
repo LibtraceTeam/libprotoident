@@ -66,6 +66,8 @@ uint64_t in_pkt_count[LPI_PROTO_LAST];
 uint64_t out_pkt_count[LPI_PROTO_LAST];
 uint64_t in_byte_count[LPI_PROTO_LAST];
 uint64_t out_byte_count[LPI_PROTO_LAST];
+uint64_t in_flow_count[LPI_PROTO_LAST];
+uint64_t out_flow_count[LPI_PROTO_LAST];
 	
 uint32_t report_freq = 60;
 
@@ -109,23 +111,38 @@ void reset_counters() {
 	memset(out_pkt_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
 	memset(in_byte_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
 	memset(out_byte_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+	memset(in_flow_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+	memset(out_flow_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
 
 }
 
 static inline FILE *open_fd(const char *fname) {
-	FILE *fd = fopen(fname, "w");
+	char buf[10];
+	
+	FILE *fd = fopen(fname, "a+");
 	if (!fd) {
 		perror("fopen");
 		exit(1);
 	}
 	
-	fprintf(fd, "TS ");
+	/* The file is empty, i.e. newly created, we need to write our
+	 * header at the start of the file */ 
+	if (fread(buf, 1, 10, fd) != 10) {
+		if (ferror(fd)) {
+			perror("fread");
+			exit(1);
+		}
+		assert(feof(fd));
 
-	for (int i = 0; i < LPI_PROTO_LAST; i++) {
-		fprintf(fd, "%s ", lpi_print((lpi_protocol_t)i));
+
+		fprintf(fd, "TS ");
+
+		for (int i = 0; i < LPI_PROTO_LAST; i++) {
+			fprintf(fd, "%s ", lpi_print((lpi_protocol_t)i));
+		}
+
+		fprintf(fd, "\n");
 	}
-
-	fprintf(fd, "\n");
 	
 	return fd;
 }
@@ -157,6 +174,8 @@ void dump_counters(double ts) {
 	static FILE *out_pkt_fd = NULL;
 	static FILE *in_byte_fd = NULL;
 	static FILE *out_byte_fd = NULL;
+	static FILE *in_flow_fd = NULL;
+	static FILE *out_flow_fd = NULL;
 
 	if (in_pkt_fd == NULL) {
 		in_pkt_fd = open_fd("packets_in");
@@ -170,11 +189,19 @@ void dump_counters(double ts) {
 	if (out_byte_fd == NULL) {
 		out_byte_fd = open_fd("bytes_out");
 	}
+	if (in_flow_fd == NULL) {
+		in_flow_fd = open_fd("flows_in");
+	}
+	if (out_flow_fd == NULL) {
+		out_flow_fd = open_fd("flows_out");
+	}
 
 	dump_counter_array(ts, in_pkt_fd, in_pkt_count, false);
 	dump_counter_array(ts, out_pkt_fd, out_pkt_count, false);
 	dump_counter_array(ts, in_byte_fd, in_byte_count, true);
 	dump_counter_array(ts, out_byte_fd, out_byte_count, true);
+	dump_counter_array(ts, in_flow_fd, in_flow_count, false);
+	dump_counter_array(ts, out_flow_fd, out_flow_count, false);
 
 }
 
@@ -212,8 +239,12 @@ void update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen,
 			in_pkt_count[live->proto->protocol] += 1;
 		}
 	} else if (old_proto == NULL) {
-	
 		
+		if (live->init_dir == 0)
+			out_flow_count[live->proto->protocol] += 1;
+		else
+			in_flow_count[live->proto->protocol] += 1;
+			
 		out_byte_count[live->proto->protocol] += live->out_wbytes;
 		out_pkt_count[live->proto->protocol] += live->out_pkts;
 		in_byte_count[live->proto->protocol] += live->in_wbytes;
@@ -224,6 +255,15 @@ void update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen,
 		/* Protocol has "changed" - subtract whatever we would have
 		 * inserted into the previous protocol counter and shift those
 		 * values into the new one */
+
+		if (live->init_dir == 0) {
+			out_flow_count[old_proto->protocol] --;
+			out_flow_count[live->proto->protocol] ++;
+		} else {
+			in_flow_count[old_proto->protocol] --;
+			in_flow_count[live->proto->protocol] ++;
+		}
+
 
 		if (dir == 0) {
 
