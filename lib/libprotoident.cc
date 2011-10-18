@@ -39,6 +39,9 @@
 #include <inttypes.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <signal.h>
 
 #include "libprotoident.h"
 #include "proto_manager.h"
@@ -55,6 +58,17 @@ lpi_module_t *lpi_unknown_udp = NULL;
 
 static LPINameMap lpi_names;
 
+int maxthreads = DEFAULT_MAXTHREADS;
+int current_threads = 0;
+int use_threads = 0;
+pthread_t *lpi_threads;
+lpi_thread_t *thread_data;
+pthread_cond_t *thread_ready;
+pthread_mutex_t *thread_run_mutex;
+
+pthread_barrier_t barrier;
+pthread_mutex_t barrier_mutex;
+
 static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
         if (seq_a == seq_b) return 0;
@@ -65,6 +79,47 @@ static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
         else
                 /* WRAPPING */
                 return (int)(UINT32_MAX - ((seq_b - seq_a) - 1));
+
+}
+
+static void *lpi_match_thread(void *data) {
+
+	sigset_t mask;
+	lpi_module_t *ret;
+	bool result = NULL;
+	lpi_thread_t *th_data = (lpi_thread_t *)data;
+
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGINT);
+	sigaddset(&mask, SIGTERM);
+
+	pthread_sigmask(SIG_BLOCK, &mask, NULL);
+
+	assert(th_data->index >= 0 && th_data->index < maxthreads);
+
+	pthread_mutex_lock(&thread_run_mutex[th_data->index]);
+
+	while (1) {	
+
+		pthread_cond_wait(&thread_ready[th_data->index], 
+				&thread_run_mutex[th_data->index]);
+
+		/* As soon as we come out of wait, we have a module to test */
+		result = th_data->module->lpi_callback(th_data->data,
+				th_data->module);
+		if (result)
+			th_data->result = true;
+		else
+			th_data->result = false;
+
+		pthread_mutex_lock(&barrier_mutex);
+		pthread_mutex_unlock(&barrier_mutex);	
+		pthread_barrier_wait(&barrier);
+
+	}
+
+	pthread_mutex_unlock(&thread_run_mutex[th_data->index]);
+	pthread_exit(NULL);
 
 }
 
@@ -85,7 +140,26 @@ int lpi_init_library() {
 
 	register_names(&TCP_protocols, &lpi_names);
 	register_names(&UDP_protocols, &lpi_names);
+
+	if (use_threads) {
 	
+		lpi_threads = (pthread_t *)malloc(sizeof(pthread_t) * maxthreads);
+		thread_data = (lpi_thread_t *)malloc(sizeof(lpi_thread_t) * maxthreads);
+		thread_ready = (pthread_cond_t *)malloc(sizeof(pthread_cond_t) * maxthreads);
+		thread_run_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * maxthreads);
+
+		pthread_mutex_init(&barrier_mutex, NULL);
+	
+		for (int i = 0; i < maxthreads; i++) {
+			pthread_mutex_init(&thread_run_mutex[i], NULL);
+			pthread_cond_init(&thread_ready[i], NULL);
+			thread_data[i].index = i;
+			pthread_create(&(lpi_threads[i]), NULL,
+					lpi_match_thread, 
+					&(thread_data[i]));
+		}
+	}
+
 	init_called = true;
 
 	if (TCP_protocols.empty() && UDP_protocols.empty()) {
@@ -99,6 +173,23 @@ int lpi_init_library() {
 }
 
 void lpi_free_library() {
+
+	if (use_threads) {
+
+		for (int i = 0; i < current_threads; i++) {
+			pthread_cancel(lpi_threads[i]);
+			pthread_mutex_destroy(&thread_run_mutex[i]);
+			pthread_cond_destroy(&thread_ready[i]);
+		}
+
+		pthread_mutex_destroy(&barrier_mutex);
+
+		current_threads = 0;
+		free(lpi_threads);
+		free(thread_data);
+		free(thread_run_mutex);
+		free(thread_ready);
+	}
 
 	free_protocols(&TCP_protocols);
 	free_protocols(&UDP_protocols);
@@ -243,6 +334,86 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 
 }
 
+static void harvest_results(ProtoMatchList *matches) {
+	int i;
+	for (i = 0; i < current_threads; i++) {
+		if (thread_data[i].result) {
+			matches->push_back(thread_data[i].module);
+		}
+	}
+}
+
+static lpi_module_t *test_protocol_list_threaded(LPIModuleList *ml, 
+		lpi_data_t *data) {
+
+	LPIModuleList::iterator l_it;
+	LPIModuleList matches;
+
+	l_it = ml->begin();
+	
+	current_threads = 0;
+	pthread_mutex_lock(&barrier_mutex);
+
+	while (l_it != ml->end()) {
+		lpi_module_t *module = *l_it;
+		pthread_t producer;
+		
+		lpi_thread_t lpi_th;
+		lpi_th.data = data;
+		lpi_th.module = module;
+		lpi_th.result = false;
+
+		if (current_threads == maxthreads) {
+			pthread_barrier_init(&barrier, NULL, current_threads + 1);
+			pthread_mutex_unlock(&barrier_mutex);
+			pthread_barrier_wait(&barrier);	
+			pthread_barrier_destroy(&barrier);
+			harvest_results(&matches);
+			current_threads = 0;
+			pthread_mutex_lock(&barrier_mutex);
+			
+		}
+		lpi_th.index = current_threads;
+		thread_data[current_threads] = lpi_th;
+
+		pthread_mutex_lock(&thread_run_mutex[current_threads]);
+		pthread_cond_signal(&thread_ready[current_threads]);
+		pthread_mutex_unlock(&thread_run_mutex[current_threads]);
+		current_threads ++;
+		l_it ++;
+	}
+
+	while (current_threads != 0) {
+		
+		pthread_barrier_init(&barrier, NULL, current_threads + 1);
+		pthread_mutex_unlock(&barrier_mutex);
+		pthread_barrier_wait(&barrier);	
+		pthread_barrier_destroy(&barrier);
+		harvest_results(&matches);
+		current_threads = 0;
+	
+	}
+	
+
+	if (matches.empty())
+		return NULL;
+
+	/*	
+	if (matches.size() != 1) {
+		LPIModuleList::iterator p;
+		fprintf(stderr, "MATCHES: ");
+		for (p = matches.begin(); p != matches.end(); p++) {
+			fprintf(stderr, "%s ", (*p)->name);
+		}
+		fprintf(stderr, "\n");
+		assert(0);
+	
+	}
+	*/
+
+	return matches.front();
+}
+
 static lpi_module_t *test_protocol_list(LPIModuleList *ml, lpi_data_t *data) {
 
 	LPIModuleList::iterator l_it;
@@ -269,7 +440,6 @@ static lpi_module_t *test_protocol_list(LPIModuleList *ml, lpi_data_t *data) {
 
 	return NULL;
 }
-
 static lpi_module_t *guess_protocol(LPIModuleMap *modmap, lpi_data_t *data) {
 
 	lpi_module_t *proto = NULL;
@@ -282,10 +452,11 @@ static lpi_module_t *guess_protocol(LPIModuleMap *modmap, lpi_data_t *data) {
 	
 	for (m_it = modmap->begin(); m_it != modmap->end(); m_it ++) {
 		LPIModuleList *ml = m_it->second;
-		//fprintf(stderr, "Testing protocols at priority level %u\n",
-		//		m_it->first);
 		
-		proto = test_protocol_list(ml, data);
+		if (!use_threads)
+			proto = test_protocol_list(ml, data);
+		else
+			proto = test_protocol_list_threaded(ml, data);
 
 		if (proto != NULL)
 			break;

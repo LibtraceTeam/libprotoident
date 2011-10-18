@@ -207,6 +207,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_directconnect_udp(mod_map);
 	register_dns_udp(mod_map);
 	register_emule_udp(mod_map);
+	register_emule_weak_udp(mod_map);
 	register_eso(mod_map);
 	register_esp_encap(mod_map);
 	register_eye_udp(mod_map);

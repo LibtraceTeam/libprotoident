@@ -35,6 +35,8 @@
 #define LIBPROTOIDENT_H_
 
 #include <libtrace.h>
+#include <pthread.h>
+#include <list>
 
 #if __GNUC__ >= 3 
 #  define DEPRECATED __attribute__((deprecated))
@@ -50,6 +52,7 @@
 #  define PRINTF(formatpos,argpos) 
 #endif
 
+#define DEFAULT_MAXTHREADS 10
 
 #ifdef __cplusplus 
 extern "C" {
@@ -377,6 +380,17 @@ struct lpi_module {
         bool (*lpi_callback) (lpi_data_t *proto_d, lpi_module_t *module);
 
 };
+
+typedef std::list<lpi_module_t *> ProtoMatchList;
+
+typedef struct lpi_thread {
+	int index;
+	lpi_module_t *module;
+	lpi_data_t *data;
+	bool result;
+} lpi_thread_t;
+
+typedef std::list<pthread_t> ThreadList;
 
 /* Initialises the LPI library, by registering all the protocol modules.
  *

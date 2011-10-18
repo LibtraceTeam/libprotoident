@@ -438,8 +438,9 @@ int main(int argc, char *argv[]) {
                 while (trace_read_packet(trace, packet) > 0) {
                         ts = trace_get_seconds(packet);
 			per_packet(packet);
-			if (done)
+			if (done) {
 				break;
+			}
 
                 }
 
@@ -457,7 +458,8 @@ int main(int argc, char *argv[]) {
         }
 
         trace_destroy_packet(packet);
-        expire_ident_flows(ts, true);
+        if (!done)
+		expire_ident_flows(ts, true);
 	lpi_free_library();
 
         return 0;

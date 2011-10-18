@@ -65,7 +65,7 @@ static lpi_module_t lpi_web_junk = {
 	LPI_PROTO_WEB_JUNK,
 	LPI_CATEGORY_MIXED,
 	"Web_Junk",
-	200,
+	210,
 	match_web_junk
 };
 

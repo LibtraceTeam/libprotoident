@@ -100,7 +100,7 @@ static lpi_module_t lpi_ftpcontrol = {
 	LPI_PROTO_FTP_CONTROL,
 	LPI_CATEGORY_FILES,
 	"FTP_Control",
-	2,
+	3,
 	match_ftp_control
 };
 

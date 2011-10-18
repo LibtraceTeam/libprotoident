@@ -146,7 +146,7 @@ static lpi_module_t lpi_skype = {
 	LPI_PROTO_UDP_SKYPE,
 	LPI_CATEGORY_VOIP,
 	"Skype",
-	10,	/* The Skype rules aren't strong, so have a low priority */
+	15,	/* The Skype rules aren't strong, so have a low priority */
 	match_skype
 };
 

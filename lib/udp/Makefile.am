@@ -15,6 +15,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_emule.cc \
+	lpi_emule_weak.cc \
 	lpi_eso.cc \
 	lpi_esp_encap.cc \
 	lpi_eye.cc \
