@@ -17,6 +17,7 @@ void register_dht_other(LPIModuleMap *mod_map);
 void register_diablo2(LPIModuleMap *mod_map);
 void register_directconnect_udp(LPIModuleMap *mod_map);
 void register_dns_udp(LPIModuleMap *mod_map);
+void register_driveshare(LPIModuleMap *mod_map);
 void register_emule_udp(LPIModuleMap *mod_map);
 void register_emule_weak_udp(LPIModuleMap *mod_map);
 void register_eso(LPIModuleMap *mod_map);

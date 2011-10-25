@@ -317,6 +317,7 @@ typedef enum {
 	LPI_PROTO_UDP_JEDI,	/* Citrix Jedi */
 	LPI_PROTO_UDP_YOUKU,
 	LPI_PROTO_UDP_YOUDAO_DICT,
+	LPI_PROTO_UDP_DRIVESHARE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
