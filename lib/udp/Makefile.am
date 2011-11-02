@@ -5,6 +5,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
 	lpi_checkpoint_rdp.cc \
+	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cod.cc \
 	lpi_demonware.cc \

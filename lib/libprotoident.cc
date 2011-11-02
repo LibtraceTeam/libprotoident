@@ -310,14 +310,14 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	if (psize <= 0)
 		return 0;
 
-	four_bytes = ntohl((*(uint32_t *)payload));
+	four_bytes = (*(uint32_t *)payload);
 	
 	if (psize < 4) {
-		four_bytes = four_bytes >> (8 * (4 - psize));		
-		four_bytes = four_bytes << (8 * (4 - psize));		
+		four_bytes = (ntohl(four_bytes)) >> (8 * (4 - psize));		
+		four_bytes = htonl(four_bytes << (8 * (4 - psize)));		
 	}
 
-	data->payload[dir] = htonl(four_bytes);
+	data->payload[dir] = four_bytes;
 	data->payload_len[dir] = psize;
 
 	if (ip != NULL && data->ips[0] == 0) {

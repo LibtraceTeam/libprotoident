@@ -104,6 +104,19 @@ static inline bool match_ntp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+	/* OK, turns out we can have NTP servers that keep sending responses
+	 * without a specific request from the client */
+	if (match_ntp_response(data->payload[0], data->payload_len[0]) &&
+			data->payload_len[0] == 48 &&
+			data->payload_len[1] == 0) {
+		return true;
+	}
+	if (match_ntp_response(data->payload[1], data->payload_len[1]) &&
+			data->payload_len[1] == 48 &&
+			data->payload_len[0] == 0) {
+		return true;
+	}
+
 	return false;
 }
 

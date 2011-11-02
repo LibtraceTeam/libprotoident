@@ -36,6 +36,16 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_ea_traceroute(uint32_t payload, uint32_t len) {
+
+	if (len != 42)
+		return false;
+	if (!MATCH(payload, 'P', 'a', 't', 'h'))
+		return false;
+	return true;
+
+}
+
 static inline bool match_traceroute(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* The iVMG people put payload in their traceroute packets that
@@ -44,13 +54,21 @@ static inline bool match_traceroute(lpi_data_t *data, lpi_module_t *mod UNUSED) 
         if (match_str_either(data, "iVMG"))
                 return true;
 
-	/* This seems to be part of some traceroute-like behaviour - the
-	 * port is never incremented and the destination address is always
-	 * X.X.X.1 */
+	/* Spammy traceroute observed coming from EA servers */
+	if (match_ea_traceroute(data->payload[0], data->payload_len[0])) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	
+	if (match_ea_traceroute(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
 	if (data->payload_len[0] == 0) {
 		if (!MATCH(data->payload[1], ANY, ANY, 0x00, 0x00))
 			return false;
-		if (data->payload_len[1] != 16)
+		if (data->payload_len[1] != 16 && data->payload_len[1] != 8)
 			return false;
 		if (data->server_port != 33435 && data->client_port != 33435)
 			return false;
@@ -60,7 +78,7 @@ static inline bool match_traceroute(lpi_data_t *data, lpi_module_t *mod UNUSED) 
 	if (data->payload_len[1] == 0) {
 		if (!MATCH(data->payload[0], ANY, ANY, 0x00, 0x00))
 			return false;
-		if (data->payload_len[0] != 16)
+		if (data->payload_len[0] != 16 && data->payload_len[1] != 8)
 			return false;
 		if (data->server_port != 33435 && data->client_port != 33435)
 			return false;

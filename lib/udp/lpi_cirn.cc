@@ -36,38 +36,42 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_fortinet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_cirn_probe(uint32_t payload, uint32_t len) {
+	if (MATCH(payload, 'P', 'a', 't', 'h') && len == 10)
+		return true;
+	return false;
+}
 
-	/* Seems to be part of the Fortinet update system */
+static inline bool match_cirn_response(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	return false;
+}
 
-        if (match_str_both(data, "ihrk", "kow0"))
-                return true;
-        if (match_str_either(data, "ihrk")) {
-                if (data->payload_len[0] == 0)
-                        return true;
-                if (data->payload_len[1] == 0)
-                        return true;
-        }
+static inline bool match_cirn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_str_either(data, "Comm")) {
-		if (data->payload_len[0] == 0)
+	if (match_cirn_probe(data->payload[0], data->payload_len[0])) {
+		if (match_cirn_response(data->payload[1], data->payload_len[1]))
 			return true;
-		if (data->payload_len[1] == 0)
+	}
+	
+	if (match_cirn_probe(data->payload[1], data->payload_len[1])) {
+		if (match_cirn_response(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
 	return false;
 }
 
-static lpi_module_t lpi_fortinet = {
-	LPI_PROTO_UDP_FORTINET,
-	LPI_CATEGORY_SECURITY,
-	"Fortinet",
-	3,
-	match_fortinet
+static lpi_module_t lpi_cirn = {
+	LPI_PROTO_UDP_CIRN,
+	LPI_CATEGORY_MONITORING,
+	"CIRN_Probe",
+	8,
+	match_cirn
 };
 
-void register_fortinet(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_fortinet, mod_map);
+void register_cirn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cirn, mod_map);
 }
 

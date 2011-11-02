@@ -198,6 +198,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_bjnp(mod_map);
 	register_callofduty(mod_map);
 	register_checkpoint_rdp(mod_map);
+	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_demonware(mod_map);
 	register_dhcp(mod_map);

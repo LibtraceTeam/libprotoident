@@ -124,11 +124,8 @@ static inline bool match_callofduty(lpi_data_t *data, lpi_module_t *mod UNUSED) 
                 if (data->payload_len[1] == 13)
                         return true;
                 if (data->payload_len[1] == 0) {
-                        if (data->server_port == 28960)
-                                return true;
-                        if (data->client_port == 28960)
-                                return true;
-                }
+                	return true;
+		}
         }
 
         if (data->payload_len[1] == 16) {
@@ -139,10 +136,7 @@ static inline bool match_callofduty(lpi_data_t *data, lpi_module_t *mod UNUSED) 
                 if (data->payload_len[0] == 13)
                         return true;
                 if (data->payload_len[0] == 0) {
-                        if (data->server_port == 28960)
-                                return true;
-                        if (data->client_port == 28960)
-                                return true;
+                        return true;
                 }
         }
 

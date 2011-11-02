@@ -318,6 +318,7 @@ typedef enum {
 	LPI_PROTO_UDP_YOUKU,
 	LPI_PROTO_UDP_YOUDAO_DICT,
 	LPI_PROTO_UDP_DRIVESHARE,
+	LPI_PROTO_UDP_CIRN,	/* Carpathia Intelligent Routing Network */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

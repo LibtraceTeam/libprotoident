@@ -41,6 +41,8 @@ static inline bool match_e9_payload(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0xe9, 0x82, ANY, ANY)) {
                 if (len == 58)
                         return true;
+                if (len == 28)
+                        return true;
         }
 
         if (MATCH(payload, 0xe9, 0x83, ANY, ANY)) {
@@ -63,7 +65,16 @@ static inline bool match_e9_payload(uint32_t payload, uint32_t len) {
 
 
 static inline bool match_mystery_e9(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-        /* Bytes 3 and 4 of payload should match */
+	if (data->payload_len[1] == 0) {
+		if (match_e9_payload(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+	if (data->payload_len[0] == 0) {
+		if (match_e9_payload(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	
+	/* Bytes 3 and 4 of payload should match */
 
         if ((data->payload[0] & 0xffff0000) != (data->payload[1] & 0xffff0000))
                 return false;
