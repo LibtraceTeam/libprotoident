@@ -36,7 +36,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_mys_fe_payload(uint32_t payload, uint32_t len) {
+static inline bool match_qqlive_payload(uint32_t payload, uint32_t len) {
 
         uint16_t length;
         uint8_t *ptr;
@@ -62,37 +62,30 @@ static inline bool match_mys_fe_payload(uint32_t payload, uint32_t len) {
 }
 
 
-static inline bool match_mystery_fe(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	/* Again, not entirely sure what protocol this is, but we've come up
-         * with a good rule for it. 
-         *
-         * Every packet begins with a 3 byte header - 0xfe followed by a
-         * length field
-         */
+static inline bool match_qqlive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
 		if (data->server_port == 53 || data->client_port == 53)
 			return false;
 	}
 
-        if (!match_mys_fe_payload(data->payload[0], data->payload_len[0]))
+        if (!match_qqlive_payload(data->payload[0], data->payload_len[0]))
                 return false;
-        if (!match_mys_fe_payload(data->payload[1], data->payload_len[1]))
+        if (!match_qqlive_payload(data->payload[1], data->payload_len[1]))
                 return false;
 
         return true;
 }
 
-static lpi_module_t lpi_mystery_fe = {
-	LPI_PROTO_UDP_MYSTERY_FE,
-	LPI_CATEGORY_NO_CATEGORY,
-	"Mystery_FE",
-	250,
-	match_mystery_fe
+static lpi_module_t lpi_qqlive = {
+	LPI_PROTO_UDP_QQLIVE,
+	LPI_CATEGORY_P2PTV,
+	"QQLive",
+	4,
+	match_qqlive
 };
 
-void register_mystery_fe(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_mystery_fe, mod_map);
+void register_qqlive(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_qqlive, mod_map);
 }
 

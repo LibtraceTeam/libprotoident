@@ -36,45 +36,30 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_sip_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_gnutella_weak(lpi_data_t *data, 
+		lpi_module_t *mod UNUSED) {
 
-	if (match_chars_either(data, 'S', 'I', 'P', ANY))
-                return true;
+	/* Not confident in this rule at all in terms of not creating
+	 * false positives. Need to *regularly* check up on this one
+	 * and make sure we're not over-matching */
 
-	if (match_str_either(data, "BYE "))
+	if (data->payload_len[0] == 31 && data->payload_len[1] == 0)
 		return true;
-
-        if (match_str_either(data, "OPTI") &&
-                        (data->payload_len[0] == 0 ||
-                        data->payload_len[1] == 0))
-                return true;
-        
-	if (match_str_either(data, "INVI") &&
-                        (data->payload_len[0] == 0 ||
-                        data->payload_len[1] == 0))
-                return true;
-
-	if (match_str_both(data, "OPTI", "REGI"))
+	if (data->payload_len[1] == 31 && data->payload_len[0] == 1)
 		return true;
-	if (match_str_both(data, "NOTI", "REGI"))
-		return true;
-	if (match_str_either(data, "REGI") && 
-                        (data->payload_len[0] == 0 ||
-                        data->payload_len[1] == 0))
-                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_sip_udp = {
-	LPI_PROTO_UDP_SIP,
-	LPI_CATEGORY_VOIP,
-	"SIP_UDP",
-	2,
-	match_sip_udp
+static lpi_module_t lpi_gnutella_weak = {
+	LPI_PROTO_UDP_GNUTELLA,
+	LPI_CATEGORY_P2P_STRUCTURE,
+	"Gnutella_UDP",
+	220,
+	match_gnutella_weak
 };
 
-void register_sip_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_sip_udp, mod_map);
+void register_gnutella_weak(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_gnutella_weak, mod_map);
 }
 

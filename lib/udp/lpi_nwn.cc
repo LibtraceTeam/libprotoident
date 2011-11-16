@@ -36,45 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_sip_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_nwn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_chars_either(data, 'S', 'I', 'P', ANY))
-                return true;
-
-	if (match_str_either(data, "BYE "))
+	if (match_str_either(data, "BNES"))
 		return true;
-
-        if (match_str_either(data, "OPTI") &&
-                        (data->payload_len[0] == 0 ||
-                        data->payload_len[1] == 0))
-                return true;
-        
-	if (match_str_either(data, "INVI") &&
-                        (data->payload_len[0] == 0 ||
-                        data->payload_len[1] == 0))
-                return true;
-
-	if (match_str_both(data, "OPTI", "REGI"))
-		return true;
-	if (match_str_both(data, "NOTI", "REGI"))
-		return true;
-	if (match_str_either(data, "REGI") && 
-                        (data->payload_len[0] == 0 ||
-                        data->payload_len[1] == 0))
-                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_sip_udp = {
-	LPI_PROTO_UDP_SIP,
-	LPI_CATEGORY_VOIP,
-	"SIP_UDP",
-	2,
-	match_sip_udp
+static lpi_module_t lpi_nwn = {
+	LPI_PROTO_UDP_NEVERWINTER,
+	LPI_CATEGORY_GAMING,
+	"NeverwinterNights",
+	4,
+	match_nwn
 };
 
-void register_sip_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_sip_udp, mod_map);
+void register_nwn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_nwn, mod_map);
 }
 

@@ -44,6 +44,9 @@ static inline bool match_socks4_req(uint32_t payload, uint32_t len) {
          * Octets 3 and 4 contain the port number */
         if (!(MATCH(payload, 0x04, 0x01, 0x00, 0x50)))
                 return false;
+	/* Port 25 */
+        if (!(MATCH(payload, 0x04, 0x01, 0x00, 0x19)))
+                return false;
 
         if (len != 9)
                 return false;

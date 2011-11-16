@@ -27,6 +27,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_garena.cc \
 	lpi_gnutella.cc \
 	lpi_gnutella2.cc \
+	lpi_gnutella_weak.cc \
 	lpi_gsm.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
@@ -55,13 +56,13 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_8000.cc \
 	lpi_mystery_99.cc \
 	lpi_mystery_e9.cc \
-	lpi_mystery_fe.cc \
 	lpi_mystery_qq.cc \
 	lpi_netbios.cc \
 	lpi_newerth.cc \
 	lpi_nopayload.cc \
 	lpi_norton.cc \
 	lpi_ntp.cc \
+	lpi_nwn.cc \
 	lpi_opaserv.cc \
 	lpi_orbit.cc \
 	lpi_pando.cc \
@@ -71,6 +72,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_psn.cc \
 	lpi_pyzor.cc \
 	lpi_qq.cc \
+	lpi_qqlive.cc \
 	lpi_quake.cc \
 	lpi_radius.cc \
 	lpi_real.cc \

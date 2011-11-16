@@ -36,34 +36,61 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_rtp_payload(uint32_t payload, uint32_t len) {
+
+	if (len != 32)
+		return false;
+
+	if (MATCH(payload, 0x80, ANY, ANY, ANY))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_stun_response(uint32_t payload, uint32_t len) {
+
+	/* Many VOIP phones use STUN for NAT traversal, so the response to
+	 * outgoing RDP is often a STUN packet */
+
+	if (!MATCH(payload, 0x00, 0x01, 0x00, 0x08))
+		return false;
+	if (len != 28)
+		return false;
+
+	return true;
+
+}
+
 static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_chars_either(data, 0x80, 0x80, ANY, ANY) &&
-                        match_str_either(data, "\x00\x01\x00\x08"))
-                return true;
-
-	/* All two-way traffic must match the above rule */
-	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
-		return false;
-
 	/* Watch out for one-way DNS... */
-	if (data->client_port == 53 || data->client_port == 53)
-		return false;
+	if (data->client_port == 53 || data->client_port == 53) {
+		if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+			return false;
+	}
 
-        /* 96 and 97 are the first two dynamic payload types */
-        if (match_chars_either(data, 0x80, 0x60, ANY, ANY))
-                return true;
-        if (match_chars_either(data, 0x80, 0x61, ANY, ANY)) 
-                return true;
+	if (match_rtp_payload(data->payload[0], data->payload_len[0])) {
+		if (match_stun_response(data->payload[1], data->payload_len[1]))
+			return true;
+		if (match_rtp_payload(data->payload[1], data->payload_len[1])) {
+			uint32_t a = ntohl(data->payload[0] & 0xffff0000);
+			uint32_t b = ntohl(data->payload[1] & 0xffff0000);
 
+			if (a != b)
+				return false;
+			return true;
+		}
+		if (data->payload_len[1] == 0)
+			return true;
+	}
 
-        /* If the MSB in the second byte is set, this is a "marker" packet */
-        if (match_chars_either(data, 0x80, 0xe0, ANY, ANY))
-                return true;
-        if (match_chars_either(data, 0x80, 0xe1, ANY, ANY))
-                return true;
-
-
+	if (match_rtp_payload(data->payload[1], data->payload_len[1])) {
+		if (match_stun_response(data->payload[0], data->payload_len[0]))
+			return true;
+		if (data->payload_len[0] == 0)
+			return true;
+	}
 	return false;
 }
 

@@ -104,6 +104,7 @@ void register_telnet(LPIModuleMap *mod_map);
 void register_tip(LPIModuleMap *mod_map);
 void register_tor(LPIModuleMap *mod_map);
 void register_trackmania(LPIModuleMap *mod_map);
+void register_trojan_win32_generic_sb(LPIModuleMap *mod_map);
 void register_warcraft3(LPIModuleMap *mod_map);
 void register_web_junk(LPIModuleMap *mod_map);
 void register_weblogic(LPIModuleMap *mod_map);

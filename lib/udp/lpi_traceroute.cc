@@ -46,6 +46,14 @@ static inline bool match_ea_traceroute(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_planetlab_traceroute(uint32_t payload, uint32_t len) {
+	if (len != 82)
+		return false;
+	if (!MATCH(payload, '@', 'A', 'B', 'C'))
+		return false;
+	return true;
+}
+
 static inline bool match_traceroute(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* The iVMG people put payload in their traceroute packets that
@@ -64,6 +72,20 @@ static inline bool match_traceroute(lpi_data_t *data, lpi_module_t *mod UNUSED) 
 		if (data->payload_len[0] == 0)
 			return true;
 	}
+
+	/* This seems to be a traceroute sent from planetlab nodes */
+	if (match_planetlab_traceroute(data->payload[0], data->payload_len[0]))
+	{
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+
+	if (match_planetlab_traceroute(data->payload[1], data->payload_len[1]))
+	{
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
 
 	if (data->payload_len[0] == 0) {
 		if (!MATCH(data->payload[1], ANY, ANY, 0x00, 0x00))

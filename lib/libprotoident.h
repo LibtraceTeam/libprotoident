@@ -220,6 +220,7 @@ typedef enum {
 	LPI_PROTO_STUN,
 	LPI_PROTO_XYMON,
 	LPI_PROTO_MUNIN,
+	LPI_PROTO_TROJAN_WIN32_GENERIC_SB,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -319,6 +320,8 @@ typedef enum {
 	LPI_PROTO_UDP_YOUDAO_DICT,
 	LPI_PROTO_UDP_DRIVESHARE,
 	LPI_PROTO_UDP_CIRN,	/* Carpathia Intelligent Routing Network */
+	LPI_PROTO_UDP_NEVERWINTER,
+	LPI_PROTO_UDP_QQLIVE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -332,7 +335,6 @@ typedef enum {
 	LPI_PROTO_MYSTERY_RXXF,
 	
 	LPI_PROTO_UDP_MYSTERY_0D,	
-	LPI_PROTO_UDP_MYSTERY_FE,
 	LPI_PROTO_UDP_MYSTERY_99,
 	LPI_PROTO_UDP_MYSTERY_8000,
 	LPI_PROTO_UDP_MYSTERY_45,
