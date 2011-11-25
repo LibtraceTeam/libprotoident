@@ -36,42 +36,47 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_xmpp_payload(uint32_t data, uint32_t len) {
+static inline bool match_ares_client(uint32_t payload, uint32_t len) {
 
-	if (MATCHSTR(data, "<?xm"))
-		return true;
-	if (MATCHSTR(data, "<str"))
-		return true;
-	if (MATCHSTR(data, "<pre"))
-		return true;
-
-	if (MATCH(data, 0x20, 0x20, 0x20, 0x20) && len == 147)
-		return true;
-	return false;
-}
-
-static inline bool match_xmpp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	/* If this is overmatching, enforce TCP port 5222 */
-
-	if (!match_xmpp_payload(data->payload[0], data->payload_len[0]))
+	if (len != 3)
 		return false;
-	if (!match_xmpp_payload(data->payload[1], data->payload_len[1]))
+	if (!MATCH(payload, 0x00, ANY, ANY, 0x00))
 		return false;
-	
-
 	return true;
 }
 
-static lpi_module_t lpi_xmpp = {
-	LPI_PROTO_XMPP,
-	LPI_CATEGORY_CHAT,
-	"XMPP",
-	4,
-	match_xmpp
+static inline bool match_ares_peer(uint32_t payload, uint32_t len) {
+
+	if (len != 3)
+		return false;
+	if (!MATCH(payload, 0x01, ANY, ANY, 0x00))
+		return false;
+	return true;
+}
+
+static inline bool match_ares_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_ares_client(data->payload[0], data->payload_len[0])) {
+		if (match_ares_peer(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_ares_client(data->payload[1], data->payload_len[1])) {
+		if (match_ares_peer(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+	return false;
+}
+
+static lpi_module_t lpi_ares_udp = {
+	LPI_PROTO_UDP_ARES,
+	LPI_CATEGORY_P2P_STRUCTURE,
+	"Ares_UDP",
+	9,
+	match_ares_udp
 };
 
-void register_xmpp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_xmpp, mod_map);
+void register_ares_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ares_udp, mod_map);
 }
 

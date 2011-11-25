@@ -48,8 +48,14 @@ static inline bool match_steam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (data->payload_len[0] == 4 && data->payload_len[1] == 1) {
                 return true;
         }
+        if (data->payload_len[0] == 4 && data->payload_len[1] == 5) {
+                return true;
+        }
 
         if (data->payload_len[1] == 4 && data->payload_len[0] == 1) {
+                return true;
+        }
+        if (data->payload_len[1] == 4 && data->payload_len[0] == 5) {
                 return true;
         }
 	

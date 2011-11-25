@@ -40,19 +40,19 @@ static inline bool match_teamviewer_payload(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
 		return true;
-	if (MATCH(payload, 0x17, 0x24, 0x0a, 0x20) && len == 37)
-		return true;
-	if (MATCH(payload, 0x17, 0x24, 0x36, 0x08) && len == 13)
-		return true;
-	return false;
+	if (!MATCH(payload, 0x17, 0x24, ANY, ANY))
+		return false;
+
+	if ((ntohl(payload) & 0xff) != len - 5)
+		return false;
+	
+	return true;
 	
 
 }
 
 static inline bool match_teamviewer(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* This traffic must also be on port 5938 if we need to get
-	 * stricter */
 
 	if (!match_teamviewer_payload(data->payload[0], data->payload_len[0]))
 		return false;

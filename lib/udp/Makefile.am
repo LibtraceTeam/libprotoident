@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libprotoident_udp.la
 libprotoident_udp_la_SOURCES = \
 	lpi_akamai.cc \
+	lpi_ares.cc \
 	lpi_backweb.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
@@ -96,6 +97,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_stun.cc \
 	lpi_syslog.cc \
 	lpi_teamspeak.cc \
+	lpi_teamviewer.cc \
 	lpi_teredo.cc \
 	lpi_tftp.cc \
 	lpi_thq.cc \

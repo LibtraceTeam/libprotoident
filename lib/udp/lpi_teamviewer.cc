@@ -36,42 +36,37 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_xmpp_payload(uint32_t data, uint32_t len) {
+static inline bool match_tv_payload(uint32_t payload, uint32_t len) {
 
-	if (MATCHSTR(data, "<?xm"))
+	if (len == 0)
 		return true;
-	if (MATCHSTR(data, "<str"))
-		return true;
-	if (MATCHSTR(data, "<pre"))
-		return true;
+	if (len != 88)
+		return false;
+	if (!MATCH(payload, ANY, ANY, ANY, 0x17))
+		return false;
+	return true;
 
-	if (MATCH(data, 0x20, 0x20, 0x20, 0x20) && len == 147)
-		return true;
-	return false;
 }
 
-static inline bool match_xmpp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_teamviewer_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* If this is overmatching, enforce TCP port 5222 */
-
-	if (!match_xmpp_payload(data->payload[0], data->payload_len[0]))
+	if (!match_tv_payload(data->payload[0], data->payload_len[0]))
 		return false;
-	if (!match_xmpp_payload(data->payload[1], data->payload_len[1]))
+	if (!match_tv_payload(data->payload[1], data->payload_len[1]))
 		return false;
-	
 
 	return true;
 }
 
-static lpi_module_t lpi_xmpp = {
-	LPI_PROTO_XMPP,
-	LPI_CATEGORY_CHAT,
-	"XMPP",
-	4,
-	match_xmpp
+static lpi_module_t lpi_teamviewer = {
+	LPI_PROTO_UDP_TEAMVIEWER,
+	LPI_CATEGORY_REMOTE,
+	"TeamViewer",
+	10,
+	match_teamviewer_udp
 };
 
-void register_xmpp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_xmpp, mod_map);
+void register_teamviewer_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_teamviewer, mod_map);
 }
 

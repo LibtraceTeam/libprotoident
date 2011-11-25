@@ -36,6 +36,16 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_second_life_req(uint32_t payload, uint32_t len) {
+
+	if (len != 46 && len != 54)
+		return false;
+	if (!MATCH(payload, 0x40, 0x00, 0x00, 0x00))
+		return false;
+	return true;
+
+}
+
 static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Haven't actually seen any legit 2-way SecondLife exchanges, so
@@ -44,15 +54,27 @@ static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED)
 	 * http://wiki.secondlife.com/wiki/Packet_Layout
 	 */
 
-	if (match_str_both(data, "\x40\x00\x00\x00", "\x50\x00\x00\x00"))
-		return true;
-	if (match_str_either(data, "\x40\x00\x00\x00")) {
-		if (data->payload_len[0] == 0)
-			return true;
+	if (match_second_life_req(data->payload[0], data->payload_len[0])) {
 		if (data->payload_len[1] == 0)
 			return true;
+		if (MATCH(data->payload[1], ANY, 0x00, 0x00, 0x00)) {
+			if (data->payload_len[1] < 15)
+				return false;
+			if ((data->payload_len[1] + 1) % 4 == 0)
+				return true;
+		}
 	}
 
+	if (match_second_life_req(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (MATCH(data->payload[0], ANY, 0x00, 0x00, 0x00)) {
+			if (data->payload_len[0] < 15)
+				return false;
+			if ((data->payload_len[0] + 1) % 4 == 0)
+				return true;
+		}
+	}
 	return false;
 }
 

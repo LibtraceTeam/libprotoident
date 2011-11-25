@@ -36,23 +36,59 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_rtmp_server_handshake(uint32_t payload, uint32_t len) {
+
+	if (len < 4)
+		return false;
+
+	/* Standard RTMP handshake types */	
+	if (MATCH(payload, 0x03, ANY, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0x06, ANY, ANY, ANY))
+		return true;
+
+	/* RTMPE handshake type */
+	if (MATCH(payload, 0x09, ANY, ANY, ANY))
+		return true;
+
+	/* New handshake type used by some YouTube videos */
+	if (MATCH(payload, 0x0a, ANY, ANY, ANY))
+		return true;
+
+	return false;
+}
+
+static inline bool match_rtmp_client_handshake(uint32_t payload, uint32_t len) {
+
+	if (len < 4)
+		return false;
+
+	/* Standard RTMP handshake types */	
+	if (MATCH(payload, 0x03, ANY, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0x06, ANY, ANY, ANY))
+		return true;
+
+	return false;
+}
+
 static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (data->payload_len[0] < 4 || data->payload_len[1] < 4)
-                return false;
+	if (match_rtmp_client_handshake(data->payload[0], data->payload_len[0]))
+	{
+		if (match_rtmp_server_handshake(data->payload[1], 
+				data->payload_len[1])) {
+			return true;
+		}
+	}
 
-        if (MATCH(data->payload[0], 0x03, ANY, ANY, ANY) &&
-                        MATCH(data->payload[1], 0x03, ANY, ANY, ANY)) {
-
-                return true;
-        }
-	
-        if (MATCH(data->payload[0], 0x06, ANY, ANY, ANY) &&
-                        MATCH(data->payload[1], 0x06, ANY, ANY, ANY)) {
-
-                return true;
-        }
-
+	if (match_rtmp_client_handshake(data->payload[1], data->payload_len[1]))
+	{
+		if (match_rtmp_server_handshake(data->payload[0], 
+				data->payload_len[0])) {
+			return true;
+		}
+	}
 	return false;
 }
 

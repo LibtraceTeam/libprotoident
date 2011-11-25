@@ -39,7 +39,7 @@
 static bool match_stun_payload(uint32_t payload, uint32_t len) {
 
         if (len == 0)
-                return false;
+                return true;
 
         /* Bytes 3 and 4 are the Message Length - the STUN header 
          *

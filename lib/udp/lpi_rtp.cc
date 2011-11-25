@@ -36,12 +36,21 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_rtp_payload(uint32_t payload, uint32_t len) {
+static inline bool match_rtp_payload(uint32_t payload, uint32_t len, 
+		uint32_t other_len) {
 
-	if (len != 32)
+	if (len < 32)
 		return false;
 
+	/* Be stricter about packet length when looking at one-way flows */
+	if (other_len == 0) {
+		if (len != 32 && len != 92 && len != 172)
+			return false;
+	}
+
 	if (MATCH(payload, 0x80, ANY, ANY, ANY))
+		return true;
+	if (MATCH(payload, 0x90, ANY, ANY, ANY))
 		return true;
 
 	return false;
@@ -70,12 +79,14 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return false;
 	}
 
-	if (match_rtp_payload(data->payload[0], data->payload_len[0])) {
+	if (match_rtp_payload(data->payload[0], data->payload_len[0], 
+			data->payload_len[1])) {
 		if (match_stun_response(data->payload[1], data->payload_len[1]))
 			return true;
-		if (match_rtp_payload(data->payload[1], data->payload_len[1])) {
-			uint32_t a = ntohl(data->payload[0] & 0xffff0000);
-			uint32_t b = ntohl(data->payload[1] & 0xffff0000);
+		if (match_rtp_payload(data->payload[1], data->payload_len[1], 
+				data->payload_len[0])) {
+			uint32_t a = ntohl(data->payload[0]) & 0xffff0000;
+			uint32_t b = ntohl(data->payload[1]) & 0xffff0000;
 
 			if (a != b)
 				return false;
@@ -85,7 +96,8 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 
-	if (match_rtp_payload(data->payload[1], data->payload_len[1])) {
+	if (match_rtp_payload(data->payload[1], data->payload_len[1], 
+			data->payload_len[0])) {
 		if (match_stun_response(data->payload[0], data->payload_len[0]))
 			return true;
 		if (data->payload_len[0] == 0)
@@ -98,7 +110,7 @@ static lpi_module_t lpi_rtp = {
 	LPI_PROTO_UDP_RTP,
 	LPI_CATEGORY_VOIP,
 	"RTP",
-	3,
+	13,
 	match_rtp
 };
 

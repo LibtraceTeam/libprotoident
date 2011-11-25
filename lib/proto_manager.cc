@@ -141,6 +141,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
 	register_openvpn(mod_map);
+	register_paltalk(mod_map);
 	register_pando(mod_map);
 	register_pdbox(mod_map);
 	register_pop3(mod_map);
@@ -194,6 +195,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 int register_udp_protocols(LPIModuleMap *mod_map) {
 
 	register_akamai(mod_map);
+	register_ares_udp(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
@@ -211,7 +213,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_driveshare(mod_map);
 	register_emule_udp(mod_map);
 	register_emule_weak_udp(mod_map);
-	register_eso(mod_map);
+	//register_eso(mod_map);
 	register_esp_encap(mod_map);
 	register_eye_udp(mod_map);
 	register_fortinet(mod_map);
@@ -288,6 +290,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_stun(mod_map);
 	register_syslog(mod_map);
 	register_teamspeak(mod_map);
+	register_teamviewer_udp(mod_map);
 	register_teredo(mod_map);
 	register_tftp(mod_map);
 	register_thq(mod_map);

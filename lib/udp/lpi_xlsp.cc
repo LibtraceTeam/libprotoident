@@ -172,6 +172,10 @@ static inline bool match_xlsp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                                 return true;
                         if (data->payload_len[1] == 1003)
                                 return true;
+                        if (data->payload_len[1] == 1026)
+                                return true;
+                        if (data->payload_len[1] == 1027)
+                                return true;
                 }
                 if (data->payload_len[1] == 1336) {
                         if (data->payload_len[0] == 287)
@@ -183,6 +187,10 @@ static inline bool match_xlsp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         if (data->payload_len[0] == 1010)
                                 return true;
                         if (data->payload_len[0] == 1003)
+                                return true;
+                        if (data->payload_len[0] == 1026)
+                                return true;
+                        if (data->payload_len[0] == 1027)
                                 return true;
                 }
 

@@ -71,6 +71,7 @@ void register_nntp(LPIModuleMap *mod_map);
 void register_notes_rpc(LPIModuleMap *mod_map);
 void register_tcp_no_payload(LPIModuleMap *mod_map);
 void register_openvpn(LPIModuleMap *mod_map);
+void register_paltalk(LPIModuleMap *mod_map);
 void register_pando(LPIModuleMap *mod_map);
 void register_pdbox(LPIModuleMap *mod_map);
 void register_pop3(LPIModuleMap *mod_map);

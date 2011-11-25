@@ -4,6 +4,7 @@
 #include "proto_manager.h"
 
 void register_akamai(LPIModuleMap *mod_map);
+void register_ares_udp(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);
 void register_bjnp(LPIModuleMap *mod_map);
@@ -98,6 +99,7 @@ void register_storm_worm(LPIModuleMap *mod_map);
 void register_stun(LPIModuleMap *mod_map);
 void register_syslog(LPIModuleMap *mod_map);
 void register_teamspeak(LPIModuleMap *mod_map);
+void register_teamviewer_udp(LPIModuleMap *mod_map);
 void register_teredo(LPIModuleMap *mod_map);
 void register_tftp(LPIModuleMap *mod_map);
 void register_thq(LPIModuleMap *mod_map);

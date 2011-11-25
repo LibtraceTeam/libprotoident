@@ -43,6 +43,8 @@ static inline bool match_netbios_name_req(uint32_t payload, uint32_t len) {
                         return true;
                 if (len == 20)
                         return true;
+		if (len == 33)
+			return true;
         }
         
         if (MATCH(payload, ANY, ANY, 0x01, 0x00)) {
@@ -57,6 +59,11 @@ static inline bool match_netbios_name_req(uint32_t payload, uint32_t len) {
 
         }
 
+	if (MATCH(payload, ANY, ANY, 0x29, 0x10)) {
+		if (len == 68)
+			return true;
+	}
+
         /* Broadcast traffic */
         if (MATCH(payload, ANY, ANY, 0x01, 0x10)) {
                 if (len == 50)
@@ -64,6 +71,19 @@ static inline bool match_netbios_name_req(uint32_t payload, uint32_t len) {
 
         }
         return false;
+
+}
+
+static inline bool match_netbios_name_resp(uint32_t resp, uint32_t req) {
+
+	if (!MATCH(resp, ANY, ANY, 0x84, 0x00))
+		return false;
+	
+	/* First two bytes must match */
+	if ((resp & 0x0000ffff) != (req & 0x0000ffff))
+		return false;
+
+	return true;
 
 }
 
@@ -79,14 +99,33 @@ static inline bool match_netbios_datagram(uint32_t payload, uint32_t len) {
 	return false;
 }
 
-static inline bool match_netbios_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_name_resp_only(lpi_data_t *data) {
 
-	/* Haven't yet seen an actual response to Netbios lookups */
+	/* Match the "special" case where only a name response is 
+	 * observed, presumably misdirected traffic */
+
+	if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
+		return false;
+	
+	if (data->server_port != 137 && data->client_port != 137)
+		return false;
+
+	if (!match_chars_either(data, ANY, ANY, 0x84, 0x00))
+		return false;
+
+	return true;
+
+
+}
+
+static inline bool match_netbios_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_netbios_name_req(data->payload[0], data->payload_len[0])) {
 		if (data->server_port != 137 && data->client_port != 137)
 			return false;
 
+		if (match_netbios_name_resp(data->payload[1], data->payload[0]))
+			return true;
                 if (data->payload_len[1] == 0)
                         return true;
         }
@@ -94,6 +133,8 @@ static inline bool match_netbios_udp(lpi_data_t *data, lpi_module_t *mod UNUSED)
         if (match_netbios_name_req(data->payload[1], data->payload_len[1])) {
 		if (data->server_port != 137 && data->client_port != 137)
 			return false;
+		if (match_netbios_name_resp(data->payload[0], data->payload[1]))
+			return true;
                 if (data->payload_len[0] == 0)
                         return true;
         }
@@ -113,6 +154,8 @@ static inline bool match_netbios_udp(lpi_data_t *data, lpi_module_t *mod UNUSED)
                         return true;
         }
 
+	if (match_name_resp_only(data))
+		return true;
 	
 	return false;
 }

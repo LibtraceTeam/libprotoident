@@ -37,6 +37,31 @@
 #include "proto_common.h"
 #include <stdio.h>
 
+static inline bool ppstream_pattern(uint32_t payload) {
+
+	if (MATCH(payload, ANY, ANY, 0x43, 0x00))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x22))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x23))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x32))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x46))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x47))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x49))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x4c))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x43, 0x4d))
+		return true;
+
+	return false;
+
+}
+
 static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
         uint16_t rep_len = 0;
 	uint32_t swap = ntohl(payload);
@@ -44,7 +69,12 @@ static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
 
-        if (!MATCH(payload, ANY, ANY, 0x43, 0x00))
+	/* Seems to be used on start-up to check access to certain
+	 * servers owned by PPStream */
+	if (MATCH(payload, 'e', 'c', 'h', 'o') && len == 5)
+		return true;
+
+        if (!ppstream_pattern(payload)) 
                 return false;
 
         /* First two bytes are either len or len - 4 */

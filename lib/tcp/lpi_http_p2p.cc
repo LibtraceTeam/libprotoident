@@ -62,7 +62,7 @@ static lpi_module_t lpi_http_p2p = {
 	LPI_PROTO_P2P_HTTP,
 	LPI_CATEGORY_P2P,
 	"HTTP_P2P",
-	2,
+	100,
 	match_p2p_http
 };
 

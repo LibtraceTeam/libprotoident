@@ -36,7 +36,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_rdp_payload(uint32_t payload, uint32_t len) {
 
 	uint32_t stated_len = 0;
 
@@ -45,22 +45,42 @@ static inline bool match_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
          * TPKT header is 03 00 + 2 bytes of length (including the TPKT header)
          */
 
-        if ((!MATCH(data->payload[0], 0x03, 0x00, ANY, ANY)) &&
-                (!MATCH(data->payload[1], 0x03, 0x00, ANY, ANY))) {
-                return false;
-        }
-
-        stated_len = ntohl(data->payload[0]) & 0xffff;
-        if (stated_len != data->payload_len[0])
+        if (!MATCH(payload, 0x03, 0x00, ANY, ANY))
                 return false;
 
-        stated_len = ntohl(data->payload[1]) & 0xffff;
-        if (stated_len != data->payload_len[1])
+        stated_len = ntohl(payload) & 0xffff;
+        if (stated_len != len)
                 return false;
-
         return true;
 	
 
+}
+
+static bool match_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_rdp_payload(data->payload[0], data->payload_len[0])) {
+		if (match_rdp_payload(data->payload[1], data->payload_len[1]))
+			return true;
+		
+		/* Some RDP responses seem to be encrypted - not sure if this
+		 * payload length is common to all flows */
+		if (data->payload_len[1] == 309) 
+		{
+			if (data->server_port == 3389)
+				return true;
+			if (data->client_port == 3389) 
+				return true;
+		}
+	}
+	if (match_rdp_payload(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 309) {
+			if (data->server_port == 3389)
+				return true;
+			if (data->client_port == 3389) 
+				return true;
+		}
+	}
+	return false;
 }
 
 static lpi_module_t lpi_rdp = {
