@@ -19,6 +19,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_driveshare.cc \
 	lpi_emule.cc \
 	lpi_emule_weak.cc \
+	lpi_epson.cc \
 	lpi_eso.cc \
 	lpi_esp_encap.cc \
 	lpi_eye.cc \

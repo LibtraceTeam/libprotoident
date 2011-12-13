@@ -51,6 +51,8 @@ static bool match_stun_payload(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x01, 0x01, ANY, ANY))
                 return true;
+        if (MATCH(payload, 0x01, 0x11, ANY, ANY))
+                return true;
         if (MATCH(payload, 0x00, 0x03, ANY, ANY))
                 return true;
         if (MATCH(payload, 0x01, 0x03, ANY, ANY))

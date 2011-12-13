@@ -325,6 +325,7 @@ typedef enum {
 	LPI_PROTO_UDP_QQLIVE,
 	LPI_PROTO_UDP_TEAMVIEWER,
 	LPI_PROTO_UDP_ARES,
+	LPI_PROTO_UDP_EPSON,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -401,7 +402,7 @@ typedef std::list<pthread_t> ThreadList;
 
 /* Initialises the LPI library, by registering all the protocol modules.
  *
- * @return 1 if initialisation succeeded, 0 otherwise 
+ * @return 0 if initialisation succeeded, -1 otherwise 
  */
 int lpi_init_library(void);
 
