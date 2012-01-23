@@ -36,18 +36,50 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
+
+	if (len != 64)
+		return false;
+
+	if (MATCHSTR(payload, "ihrk"))
+		return true;
+	if (MATCHSTR(payload, "ihrh"))
+		return true;
+	if (MATCHSTR(payload, "ihrj"))
+		return true;
+	if (MATCHSTR(payload, "ikro"))
+		return true;
+	if (MATCHSTR(payload, "ikvk"))
+		return true;
+
+	return false;
+
+}
+
+static inline bool match_fortinet_resp(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (len == 36 && MATCHSTR(payload, "kowO"))
+		return true;
+	if (len == 12 && MATCHSTR(payload, "nkwg"))
+		return true;
+	return false;
+
+}
+
 static inline bool match_fortinet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Seems to be part of the Fortinet update system */
+	if (match_fortinet_req(data->payload[0], data->payload_len[0])) {
+		if (match_fortinet_resp(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	if (match_fortinet_req(data->payload[1], data->payload_len[1])) {
+		if (match_fortinet_resp(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
-        if (match_str_both(data, "ihrk", "kow0"))
-                return true;
-        if (match_str_either(data, "ihrk")) {
-                if (data->payload_len[0] == 0)
-                        return true;
-                if (data->payload_len[1] == 0)
-                        return true;
-        }
 
 	if (match_str_either(data, "Comm")) {
 		if (data->payload_len[0] == 0)

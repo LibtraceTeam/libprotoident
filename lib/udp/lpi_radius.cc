@@ -41,7 +41,7 @@ static inline bool match_radius_request(uint32_t pload, uint32_t len) {
 	uint32_t stated_len = 0;
 
 	stated_len = ntohl(pload) & 0xffff;
-	if (stated_len != pload)
+	if (stated_len != len)
 		return false;
 	
 	/* Access-Request */
@@ -59,7 +59,7 @@ static inline bool match_radius_resp(uint32_t pload, uint32_t len) {
 	uint32_t stated_len = 0;
 
 	stated_len = ntohl(pload) & 0xffff;
-	if (stated_len != pload)
+	if (stated_len != len)
 		return false;
 
 	/* Access-Accept */	

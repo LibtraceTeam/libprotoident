@@ -74,6 +74,7 @@ void free_protocols(LPIModuleMap *mod_map) {
 int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 	register_afp(mod_map);
+	register_akamai_tcp(mod_map);
 	register_ares(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
@@ -86,6 +87,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cvs(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
+	register_dvrns(mod_map);
 	register_dxp(mod_map);
 	register_ea_games(mod_map);
 	register_emule(mod_map);
@@ -93,6 +95,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_flash(mod_map);
 	register_ftpcontrol(mod_map);
 	register_ftpdata(mod_map);
+	register_gamespy_tcp(mod_map);
 	register_gnutella(mod_map);
 	register_goku(mod_map);
 	register_hamachi(mod_map);
@@ -176,11 +179,13 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_tor(mod_map);
 	register_trackmania(mod_map);
 	register_trojan_win32_generic_sb(mod_map);
+	register_trojan_zeroaccess(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
 	register_weblogic(mod_map);
 	register_winmx(mod_map);
 	register_wow(mod_map);
+	register_wuala(mod_map);
 	register_xmpp(mod_map);
 	register_xunlei(mod_map);
 	register_xymon(mod_map);
@@ -188,6 +193,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_yahoo_error(mod_map);
 	register_yahoo_webcam(mod_map);
 	register_youku_tcp(mod_map);
+	register_zabbix(mod_map);
 	register_zynga(mod_map);
 	return 0;
 }
@@ -195,6 +201,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 int register_udp_protocols(LPIModuleMap *mod_map) {
 
 	register_akamai(mod_map);
+	register_akamai_transfer(mod_map);
 	register_ares_udp(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);

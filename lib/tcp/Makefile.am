@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
 	lpi_afp.cc \
+	lpi_akamai.cc \
 	lpi_ares.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
@@ -13,6 +14,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cvs.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
+	lpi_dvrns.cc \
 	lpi_dxp.cc \
 	lpi_ea_games.cc \
 	lpi_emule.cc \
@@ -20,6 +22,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_flash.cc \
 	lpi_ftpcontrol.cc \
 	lpi_ftpdata.cc \
+	lpi_gamespy.cc \
 	lpi_gnutella.cc \
 	lpi_goku.cc \
 	lpi_hamachi.cc \
@@ -103,11 +106,13 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_tor.cc \
 	lpi_trackmania.cc \
 	lpi_trojan_win32_generic_sb.cc \
+	lpi_trojan_zeroaccess.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
 	lpi_weblogic.cc \
 	lpi_winmx.cc \
 	lpi_wow.cc \
+	lpi_wuala.cc \
 	lpi_xmpp.cc \
 	lpi_xunlei.cc \
 	lpi_xymon.cc \
@@ -115,6 +120,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_yahoo_error.cc \
 	lpi_yahoo_webcam.cc \
 	lpi_youku.cc \
+	lpi_zabbix.cc \
 	lpi_zynga.cc 
 
 EXTRA_DIST=tcp_protocols.h

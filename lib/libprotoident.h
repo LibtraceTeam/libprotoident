@@ -96,6 +96,8 @@ typedef enum {
 	LPI_CATEGORY_LOGGING,		/* Logging */
 	LPI_CATEGORY_PRINTING,		/* Network printing */
 	LPI_CATEGORY_TRANSLATION,	/* Language translation */
+	LPI_CATEGORY_CDN,		/* CDN protocols, e.g. Akamai */
+	LPI_CATEGORY_CLOUD,		/* Cloud computing/storage protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -222,6 +224,12 @@ typedef enum {
 	LPI_PROTO_MUNIN,
 	LPI_PROTO_TROJAN_WIN32_GENERIC_SB,
 	LPI_PROTO_PALTALK,
+	LPI_PROTO_ZABBIX,
+	LPI_PROTO_AKAMAI, 
+	LPI_PROTO_GAMESPY, 
+	LPI_PROTO_WUALA,
+	LPI_PROTO_TROJAN_ZEROACCESS, 
+	LPI_PROTO_DVRNS, 
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -326,6 +334,7 @@ typedef enum {
 	LPI_PROTO_UDP_TEAMVIEWER,
 	LPI_PROTO_UDP_ARES,
 	LPI_PROTO_UDP_EPSON,
+	LPI_PROTO_UDP_AKAMAI_TRANSFER,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

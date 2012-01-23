@@ -4,6 +4,7 @@
 #include "proto_manager.h"
 
 void register_akamai(LPIModuleMap *mod_map);
+void register_akamai_transfer(LPIModuleMap *mod_map);
 void register_ares_udp(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);

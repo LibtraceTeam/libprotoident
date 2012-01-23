@@ -4,6 +4,7 @@
 #include "proto_manager.h"
 
 void register_afp(LPIModuleMap *mod_map);
+void register_akamai_tcp(LPIModuleMap *mod_map);
 void register_ares(LPIModuleMap *mod_map);
 void register_bitextend(LPIModuleMap *mod_map);
 void register_bittorrent(LPIModuleMap *mod_map);
@@ -16,6 +17,7 @@ void register_conquer(LPIModuleMap *mod_map);
 void register_cvs(LPIModuleMap *mod_map);
 void register_directconnect(LPIModuleMap *mod_map);
 void register_dns_tcp(LPIModuleMap *mod_map);
+void register_dvrns(LPIModuleMap *mod_map);
 void register_dxp(LPIModuleMap *mod_map);
 void register_ea_games(LPIModuleMap *mod_map);
 void register_emule(LPIModuleMap *mod_map);
@@ -23,6 +25,7 @@ void register_eye(LPIModuleMap *mod_map);
 void register_flash(LPIModuleMap *mod_map);
 void register_ftpcontrol(LPIModuleMap *mod_map);
 void register_ftpdata(LPIModuleMap *mod_map);
+void register_gamespy_tcp(LPIModuleMap *mod_map);
 void register_gnutella(LPIModuleMap *mod_map);
 void register_goku(LPIModuleMap *mod_map);
 void register_hamachi(LPIModuleMap *mod_map);
@@ -106,11 +109,13 @@ void register_tip(LPIModuleMap *mod_map);
 void register_tor(LPIModuleMap *mod_map);
 void register_trackmania(LPIModuleMap *mod_map);
 void register_trojan_win32_generic_sb(LPIModuleMap *mod_map);
+void register_trojan_zeroaccess(LPIModuleMap *mod_map);
 void register_warcraft3(LPIModuleMap *mod_map);
 void register_web_junk(LPIModuleMap *mod_map);
 void register_weblogic(LPIModuleMap *mod_map);
 void register_winmx(LPIModuleMap *mod_map);
 void register_wow(LPIModuleMap *mod_map);
+void register_wuala(LPIModuleMap *mod_map);
 void register_xmpp(LPIModuleMap *mod_map);
 void register_xunlei(LPIModuleMap *mod_map);
 void register_xymon(LPIModuleMap *mod_map);
@@ -118,6 +123,7 @@ void register_yahoo(LPIModuleMap *mod_map);
 void register_yahoo_error(LPIModuleMap *mod_map);
 void register_yahoo_webcam(LPIModuleMap *mod_map);
 void register_youku_tcp(LPIModuleMap *mod_map);
+void register_zabbix(LPIModuleMap *mod_map);
 void register_zynga(LPIModuleMap *mod_map);
 
 #endif
