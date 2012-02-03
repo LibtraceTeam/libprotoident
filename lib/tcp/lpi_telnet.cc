@@ -66,6 +66,16 @@ static inline bool match_telnet_pattern(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_atos_telnet(uint32_t payload) {
+
+	/* ATOS seems to be related to ADSL routers, which really shouldn't
+	 * be allowing telnet over the public internet */
+
+	if (MATCH(payload, 0x1b, 0x5b, 0x32, 0x4a))
+		return true;
+	return false;
+
+}
 
 static inline bool match_telnet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -73,6 +83,11 @@ static inline bool match_telnet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         if (match_telnet_pattern(data->payload[1], data->payload_len[1]))
                 return true;
+
+	if (match_atos_telnet(data->payload[0]) && data->payload_len[1] == 0)
+		return true;
+	if (match_atos_telnet(data->payload[1]) && data->payload_len[0] == 0)
+		return true;
 
 	return false;
 }

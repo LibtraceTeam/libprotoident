@@ -174,7 +174,7 @@ typedef enum {
 	LPI_PROTO_CONQUER,	/* Conquer Online game */
 	LPI_PROTO_RTMP,		/* Adobe RTMP */
 	LPI_PROTO_TIP,		/* Transaction Internet Protocol */
-	LPI_PROTO_P2P_HTTP,	/* P2P over HTTP, a la KaZaA and Gnutella */
+	LPI_PROTO_NONSTANDARD_HTTP, /* HTTP on unconventional port numbers */
 	LPI_PROTO_HARVEYS,	/* Photo transfers for Harveys Real Estate */
 	LPI_PROTO_SHOUTCAST,
 	LPI_PROTO_HTTP_BADPORT,	/* HTTP over port 443, leading to failure */
@@ -229,7 +229,10 @@ typedef enum {
 	LPI_PROTO_GAMESPY, 
 	LPI_PROTO_WUALA,
 	LPI_PROTO_TROJAN_ZEROACCESS, 
-	LPI_PROTO_DVRNS, 
+	LPI_PROTO_DVRNS,
+	LPI_PROTO_CHATANGO, 
+	LPI_PROTO_OMEGLE,
+	LPI_PROTO_TELNET_EXPLOIT, 
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -335,6 +338,7 @@ typedef enum {
 	LPI_PROTO_UDP_ARES,
 	LPI_PROTO_UDP_EPSON,
 	LPI_PROTO_UDP_AKAMAI_TRANSFER,
+	LPI_PROTO_UDP_DCC,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

@@ -13,6 +13,7 @@ void register_callofduty(LPIModuleMap *mod_map);
 void register_checkpoint_rdp(LPIModuleMap *mod_map);
 void register_cirn(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
+void register_dcc_udp(LPIModuleMap *mod_map);
 void register_demonware(LPIModuleMap *mod_map);
 void register_dhcp(LPIModuleMap *mod_map);
 void register_dht_dict(LPIModuleMap *mod_map);

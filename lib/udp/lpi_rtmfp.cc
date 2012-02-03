@@ -68,7 +68,7 @@ static inline bool match_rtmfp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_rtmfp = {
 	LPI_PROTO_UDP_RTMFP,
 	LPI_CATEGORY_STREAMING,
-	"RTFMP",
+	"RTMFP",
 	12,
 	match_rtmfp
 };

@@ -10,6 +10,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cod.cc \
+	lpi_dcc.cc \
 	lpi_demonware.cc \
 	lpi_dhcp.cc \
 	lpi_dht_dict.cc \

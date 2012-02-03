@@ -43,11 +43,17 @@ static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 
 	if (MATCHSTR(payload, "ihrk"))
 		return true;
+	if (MATCHSTR(payload, "ihri"))
+		return true;
+	if (MATCHSTR(payload, "iiri"))
+		return true;
 	if (MATCHSTR(payload, "ihrh"))
 		return true;
 	if (MATCHSTR(payload, "ihrj"))
 		return true;
 	if (MATCHSTR(payload, "ikro"))
+		return true;
+	if (MATCHSTR(payload, "ikri"))
 		return true;
 	if (MATCHSTR(payload, "ikvk"))
 		return true;

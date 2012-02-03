@@ -36,22 +36,51 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_zabbix(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+/* http://pastebin.com/bGxqigRN */
 
-	if (!match_str_either(data, "ZBXD"))
+static inline bool match_omegle_client(uint32_t payload, uint32_t len) {
+	if (len < 12)
+		return false;
+	if (!MATCH(payload, 0x0b, 'o', 'm', 'e'))
 		return false;
 	return true;
+
 }
 
-static lpi_module_t lpi_zabbix = {
-	LPI_PROTO_ZABBIX,
-	LPI_CATEGORY_MONITORING,
-	"Zabbix",
-	5,
-	match_zabbix
+static inline bool match_omegle_server(uint32_t payload, uint32_t len) {
+
+	if (len == 4 && MATCH(payload, 0x01, 'w', 0x00, 0x00))
+		return true;
+	if (len == 68 && MATCH(payload, 0x01, 0x63, 0x00, 0x40))
+		return true;
+	return false;
+
+}
+
+static inline bool match_omegle(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_omegle_client(data->payload[0], data->payload_len[0])) {
+		if (match_omegle_server(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_omegle_client(data->payload[1], data->payload_len[1])) {
+		if (match_omegle_server(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	return false;
+}
+
+static lpi_module_t lpi_omegle = {
+	LPI_PROTO_OMEGLE,
+	LPI_CATEGORY_CHAT,
+	"Omegle",
+	3,
+	match_omegle
 };
 
-void register_zabbix(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_zabbix, mod_map);
+void register_omegle(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_omegle, mod_map);
 }
 

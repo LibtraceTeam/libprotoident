@@ -36,22 +36,39 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_zabbix(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_nonstandard_http(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!match_str_either(data, "ZBXD"))
-		return false;
-	return true;
+        /* Must not be on a known HTTP port
+         * 
+	 * This used to be HTTP_P2P, but we found that most of this stuff was
+	 * legit HTTP - just using really weird ports.
+	 *
+	 * We might miss some HTTP-based P2P now, but it's just too hard for
+	 * us to differentiate more than this.
+	 */
+        if (valid_http_port(data))
+                return false;
+
+        if (match_str_both(data, "GET ", "HTTP"))
+                return true;
+
+        if (match_str_either(data, "GET ")) {
+                if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+                        return true;
+        }
+
+        return false;
 }
 
-static lpi_module_t lpi_zabbix = {
-	LPI_PROTO_ZABBIX,
-	LPI_CATEGORY_MONITORING,
-	"Zabbix",
-	5,
-	match_zabbix
+static lpi_module_t lpi_http_nonstandard = {
+	LPI_PROTO_NONSTANDARD_HTTP,
+	LPI_CATEGORY_WEB,
+	"HTTP_NonStandard",
+	100,
+	match_nonstandard_http
 };
 
-void register_zabbix(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_zabbix, mod_map);
+void register_http_nonstandard(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_http_nonstandard, mod_map);
 }
 

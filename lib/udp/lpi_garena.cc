@@ -40,9 +40,10 @@ static inline bool match_garena(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* http://garenalinux.pastebay.com/71533 */
 
-        /* Garena is always on port 1513 */
-        if (data->server_port != 1513 && data->client_port != 1513)
+        if (data->server_port == 53 || data->client_port == 53)
                 return false;
+        
+	/* Garena is NOT always on port 1513 */
 
         /* Matching HELLO in each direction */
         if (MATCH(data->payload[0], 0x02, 0x00, 0x00, 0x00)) {
@@ -53,6 +54,8 @@ static inline bool match_garena(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (data->payload_len[1] != 16)
                         return false;
                 if (MATCH(data->payload[1], 0x02, 0x00, 0x00, 0x00))
+                        return true;
+                if (MATCH(data->payload[1], 0x0f, 0x00, 0x00, 0x00))
                         return true;
                 return false;
         }
@@ -65,6 +68,8 @@ static inline bool match_garena(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (data->payload_len[0] != 16)
                         return false;
                 if (MATCH(data->payload[0], 0x02, 0x00, 0x00, 0x00))
+                        return true;
+                if (MATCH(data->payload[0], 0x0f, 0x00, 0x00, 0x00))
                         return true;
                 return false;
         }

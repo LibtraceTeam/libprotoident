@@ -36,52 +36,64 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_zeroaccess_in(uint32_t payload, uint32_t len) {
+/* DCC is the IRC-based file sharing protocol, not to be confused with
+ * Direct Connect */
 
-	if (len != 20)
-		return false;
-	if (!MATCH(payload, 0xe5, 0xaa, 0xc0, 0x31))
-		return false;
-	return true;
+static inline bool match_dcc_length(uint32_t payload, uint32_t len) {
 
-}
+	uint32_t hdr_len;
 
-static inline bool match_zeroaccess_out(uint32_t payload, uint32_t len) {
+	hdr_len = (ntohl(payload)) >> 16;
 
-	if (len == 0)
+	if (hdr_len == len)
 		return true;
-	if (!MATCH(payload, 0xe5, 0xaa, 0xc0, 0x31))
-		return false;
-	return true;
+	return false;
 
 }
 
-static inline bool match_trojan_zeroaccess(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_dcc_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* More info on this trojan can be found at 
-	 * http://www.antivirus365.org/PCAntivirus/43465.html */
+	if (!match_dcc_length(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_dcc_length(data->payload[1], data->payload_len[1]))
+		return false;
 
-	if (match_zeroaccess_in(data->payload[0], data->payload_len[0])) {
-		if (match_zeroaccess_out(data->payload[1], data->payload_len[1]))
+	/* Byte 3 must match */
+	if ((ntohl(data->payload[0]) & 0xff00) != (ntohl(data->payload[1]) & 0xff00))
+		return false;
+
+	if (MATCH(data->payload[0], ANY, ANY, ANY, 0x01)) {
+		if (MATCH(data->payload[1], ANY, ANY, ANY, 0x06))
 			return true;
 	}
-	if (match_zeroaccess_in(data->payload[1], data->payload_len[1])) {
-		if (match_zeroaccess_out(data->payload[0], data->payload_len[0]))
+	
+	if (MATCH(data->payload[1], ANY, ANY, ANY, 0x01)) {
+		if (MATCH(data->payload[0], ANY, ANY, ANY, 0x06))
+			return true;
+	}
+
+	if (MATCH(data->payload[0], ANY, ANY, ANY, 0x02)) {
+		if (MATCH(data->payload[1], ANY, ANY, ANY, 0x04))
+			return true;
+	}
+	
+	if (MATCH(data->payload[1], ANY, ANY, ANY, 0x02)) {
+		if (MATCH(data->payload[0], ANY, ANY, ANY, 0x04))
 			return true;
 	}
 
 	return false;
 }
 
-static lpi_module_t lpi_trojan_zeroaccess = {
-	LPI_PROTO_TROJAN_ZEROACCESS,
-	LPI_CATEGORY_MALWARE,
-	"TrojanZeroAccess",
-	10,
-	match_trojan_zeroaccess
+static lpi_module_t lpi_dcc_udp = {
+	LPI_PROTO_UDP_DCC,
+	LPI_CATEGORY_CHAT,
+	"DCC_UDP",
+	8,
+	match_dcc_udp
 };
 
-void register_trojan_zeroaccess(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_trojan_zeroaccess, mod_map);
+void register_dcc_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_dcc_udp, mod_map);
 }
 

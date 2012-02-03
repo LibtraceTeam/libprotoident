@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_dvrns.cc 60 2011-02-02 04:07:52Z salcock $
+ * $Id$
  */
 
 #include <string.h>

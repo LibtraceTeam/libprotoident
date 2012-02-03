@@ -36,37 +36,51 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_p2p_http(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_chatango_in(uint32_t payload, uint32_t len) {
 
-        /* Must not be on a known HTTP port
-         *
-         * XXX I know that people will still try to use port 80 for their
-         * warezing, but we want to at least try and get the most obvious 
-         * HTTP-based P2P
-         */
-        if (valid_http_port(data))
-                return false;
+	if (len != 2)
+		return false;
+	if (!MATCH(payload, 'v', 0x00, 0x00, 0x00))
+		return false;
 
-        if (match_str_both(data, "GET ", "HTTP"))
-                return true;
+	return true;
 
-        if (match_str_either(data, "GET ")) {
-                if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
-                        return true;
-        }
-
-        return false;
 }
 
-static lpi_module_t lpi_http_p2p = {
-	LPI_PROTO_P2P_HTTP,
-	LPI_CATEGORY_P2P,
-	"HTTP_P2P",
-	100,
-	match_p2p_http
+static inline bool match_chatango_out(uint32_t payload, uint32_t len) {
+
+	if (len != 10)
+		return false;
+	if (!MATCH(payload, 'v', ':', '1', '0'))
+		return false;
+
+	return true;
+
+}
+
+static inline bool match_chatango(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (match_chatango_out(data->payload[0], data->payload_len[0])) {
+		if (match_chatango_in(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_chatango_in(data->payload[0], data->payload_len[0])) {
+		if (match_chatango_out(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	return false;
+}
+
+static lpi_module_t lpi_chatango = {
+	LPI_PROTO_CHATANGO,
+	LPI_CATEGORY_CHAT,
+	"Chatango",
+	3,
+	match_chatango
 };
 
-void register_http_p2p(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_http_p2p, mod_map);
+void register_chatango(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_chatango, mod_map);
 }
 

@@ -62,6 +62,12 @@ static inline bool match_sip_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         (data->payload_len[0] == 0 ||
                         data->payload_len[1] == 0))
                 return true;
+	if (match_str_either(data, "SUBS")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
 
 	return false;
 }

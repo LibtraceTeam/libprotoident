@@ -80,6 +80,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
 	register_cgp(mod_map);
+	register_chatango(mod_map);
 	register_cisco_vpn(mod_map);
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
@@ -102,7 +103,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_harveys(mod_map);
 	register_http_badport(mod_map);
 	register_http(mod_map);
-	register_http_p2p(mod_map);
+	register_http_nonstandard(mod_map);
 	register_https(mod_map);
 	register_http_tunnel(mod_map);
 	register_ica(mod_map);
@@ -143,6 +144,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_nntp(mod_map);
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
+	register_omegle(mod_map);
 	register_openvpn(mod_map);
 	register_paltalk(mod_map);
 	register_pando(mod_map);
@@ -175,6 +177,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_teamviewer(mod_map);
 	register_telecomkey(mod_map);
 	register_telnet(mod_map);
+	register_telnet_exploit(mod_map);
 	register_tip(mod_map);
 	register_tor(mod_map);
 	register_trackmania(mod_map);
@@ -210,6 +213,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_checkpoint_rdp(mod_map);
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
+	register_dcc_udp(mod_map);
 	register_demonware(mod_map);
 	register_dhcp(mod_map);
 	register_dht_dict(mod_map);

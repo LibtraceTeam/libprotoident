@@ -7,6 +7,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
 	lpi_cgp.cc \
+	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
@@ -29,7 +30,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_harveys.cc \
 	lpi_http_badport.cc \
 	lpi_http.cc \
-	lpi_http_p2p.cc \
+	lpi_http_nonstandard.cc \
 	lpi_https.cc \
 	lpi_http_tunnel.cc \
 	lpi_ica.cc \
@@ -70,6 +71,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_nntp.cc \
 	lpi_nopayload.cc \
 	lpi_notes_rpc.cc \
+	lpi_omegle.cc \
 	lpi_openvpn.cc \
 	lpi_paltalk.cc \
 	lpi_pando.cc \
@@ -102,6 +104,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_teamviewer.cc \
 	lpi_telecomkey.cc \
 	lpi_telnet.cc \
+	lpi_telnet_exploit.cc \
 	lpi_tip.cc \
 	lpi_tor.cc \
 	lpi_trackmania.cc \
