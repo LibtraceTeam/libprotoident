@@ -413,13 +413,14 @@ static void cleanup_signal(int sig) {
 static void usage(char *prog) {
 
         printf("Usage details for %s\n\n", prog);
-        printf("%s [-l <mac] [-T] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
+        printf("%s [-i <freq>] [-l <mac] [-T] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
         printf("Options:\n");
 	printf("  -l <mac>      Determine direction based on <mac> representing the 'inside' \n                 portion of the network\n");
 	printf("  -T            Use trace direction tags to determine direction\n");
         printf("  -f <filter>   Ignore flows that do not match the given BPF filter\n");
         printf("  -R            Ignore flows involving private RFC 1918 address space\n");
-        exit(0);
+        printf("  -i <freq>	Report statistics every <freq> seconds\n");
+	exit(0);
 
 }
 
@@ -518,6 +519,11 @@ int main(int argc, char *argv[]) {
 		return -1;
 
 	reset_counters();
+
+	if (optind == argc) {
+		fprintf(stderr, "No input sources specified!\n");
+		usage(argv[0]);
+	}
 
         for (i = optind; i < argc; i++) {
 
