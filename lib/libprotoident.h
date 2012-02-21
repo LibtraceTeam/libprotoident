@@ -98,6 +98,7 @@ typedef enum {
 	LPI_CATEGORY_TRANSLATION,	/* Language translation */
 	LPI_CATEGORY_CDN,		/* CDN protocols, e.g. Akamai */
 	LPI_CATEGORY_CLOUD,		/* Cloud computing/storage protocols */
+	LPI_CATEGORY_NOTIFICATION,	/* Notification / messaging protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -233,6 +234,13 @@ typedef enum {
 	LPI_PROTO_CHATANGO, 
 	LPI_PROTO_OMEGLE,
 	LPI_PROTO_TELNET_EXPLOIT, 
+	LPI_PROTO_POP3S,		/* POP3 over TLS/SSL */ 
+	LPI_PROTO_PSN_STORE,		
+	LPI_PROTO_SKYPE_TCP,		/* Skype TCP sessions */		
+	LPI_PROTO_APPLE_PUSH,		/* Apple push notifications */ 
+	LPI_PROTO_XMPPS,		/* XMPP over TLS/SSL */
+	LPI_PROTO_SMTPS,		/* Legacy Secure SMTP */ 
+	LPI_PROTO_NNTPS,		/* NNTP over TLS/SSL */		
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

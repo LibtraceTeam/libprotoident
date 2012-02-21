@@ -2,6 +2,7 @@ noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
 	lpi_afp.cc \
 	lpi_akamai.cc \
+	lpi_apple_push.cc \
 	lpi_ares.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
@@ -69,6 +70,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ncsoft.cc \
 	lpi_netbios.cc \
 	lpi_nntp.cc \
+	lpi_nntps.cc \
 	lpi_nopayload.cc \
 	lpi_notes_rpc.cc \
 	lpi_omegle.cc \
@@ -77,8 +79,10 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_pando.cc \
 	lpi_pdbox.cc \
 	lpi_pop3.cc \
+	lpi_pop3s.cc \
 	lpi_postgresql.cc \
 	lpi_pptp.cc \
+	lpi_psn_store.cc \
 	lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
@@ -91,8 +95,10 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
 	lpi_sip.cc \
+	lpi_skype_tcp.cc \
 	lpi_smb.cc \
 	lpi_smtp.cc \
+	lpi_smtps.cc \
 	lpi_socks4.cc \
 	lpi_socks5.cc \
 	lpi_ssh.cc \
@@ -117,6 +123,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_wow.cc \
 	lpi_wuala.cc \
 	lpi_xmpp.cc \
+	lpi_xmpps.cc \
 	lpi_xunlei.cc \
 	lpi_xymon.cc \
 	lpi_yahoo.cc \

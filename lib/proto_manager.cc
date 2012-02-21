@@ -75,6 +75,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 	register_afp(mod_map);
 	register_akamai_tcp(mod_map);
+	register_apple_push(mod_map);
 	register_ares(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
@@ -142,6 +143,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ncsoft(mod_map);
 	register_netbios(mod_map);
 	register_nntp(mod_map);
+	register_nntps(mod_map);
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
 	register_omegle(mod_map);
@@ -150,8 +152,10 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_pando(mod_map);
 	register_pdbox(mod_map);
 	register_pop3(mod_map);
+	register_pop3s(mod_map);
 	register_postgresql(mod_map);
 	register_pptp(mod_map);
+	register_psn_store(mod_map);
 	register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
@@ -164,8 +168,10 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_second_life(mod_map);
 	register_shoutcast(mod_map);
 	register_sip(mod_map);
+	register_skype_tcp(mod_map);
 	register_smb(mod_map);
 	register_smtp(mod_map);
+	register_smtps(mod_map);
 	register_socks4(mod_map);
 	register_socks5(mod_map);
 	register_ssh(mod_map);
@@ -190,6 +196,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_wow(mod_map);
 	register_wuala(mod_map);
 	register_xmpp(mod_map);
+	register_xmpps(mod_map);
 	register_xunlei(mod_map);
 	register_xymon(mod_map);
 	register_yahoo(mod_map);
