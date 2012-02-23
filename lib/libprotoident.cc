@@ -396,6 +396,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "CDN";
 		case LPI_CATEGORY_CLOUD:
 			return "Cloud";
+		case LPI_CATEGORY_NOTIFICATION:
+			return "Notification";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:
