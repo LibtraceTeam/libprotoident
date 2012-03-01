@@ -42,6 +42,7 @@
 #include <inttypes.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <libtrace.h>
 #include <libflowmanager.h>
@@ -68,8 +69,12 @@ uint64_t in_byte_count[LPI_PROTO_LAST];
 uint64_t out_byte_count[LPI_PROTO_LAST];
 uint64_t in_flow_count[LPI_PROTO_LAST];
 uint64_t out_flow_count[LPI_PROTO_LAST];
+
+uint64_t in_current_flows[LPI_PROTO_LAST];
+uint64_t out_current_flows[LPI_PROTO_LAST];
 	
 uint32_t report_freq = 60;
+char local_id[256];
 
 typedef struct live {
 	uint8_t init_dir;
@@ -116,92 +121,34 @@ void reset_counters() {
 
 }
 
-static inline FILE *open_fd(const char *fname) {
-	char buf[10];
-	
-	FILE *fd = fopen(fname, "a+");
-	if (!fd) {
-		perror("fopen");
-		exit(1);
-	}
-	
-	/* The file is empty, i.e. newly created, we need to write our
-	 * header at the start of the file */ 
-	if (fread(buf, 1, 10, fd) != 10) {
-		if (ferror(fd)) {
-			perror("fread");
-			exit(1);
-		}
-		assert(feof(fd));
 
-
-		fprintf(fd, "TS ");
-
-		for (int i = 0; i < LPI_PROTO_LAST; i++) {
-			fprintf(fd, "%s ", lpi_print((lpi_protocol_t)i));
-		}
-
-		fprintf(fd, "\n");
-	}
-	
-	return fd;
-}
-
-void dump_counter_array(double ts, FILE *fd, uint64_t *counter, bool kbps) {
+void dump_counter_array(double ts, const char *id, uint32_t freq, 
+		const char *type, uint64_t *counter) {
 
 	int i;
-	double bitrate = 0.0;
-
-	fprintf(fd, "%.0f ", ts);
+	
 
 	for (i = 0; i < LPI_PROTO_LAST; i++) {
-		
-		if (kbps) {
-			bitrate = ((float)counter[i]) * 8.0 / 1024.0 / report_freq;
-			fprintf(fd, "%.3f ", bitrate);
-		} else {
-			fprintf(fd, "%" PRIu64 " ", counter[i]);
-		}
+		if (lpi_is_protocol_inactive((lpi_protocol_t)i))
+			continue;
+	
+		fprintf(stdout, "%s,%.0f,%u,%s,%s,", id, ts, freq, type,
+				lpi_print((lpi_protocol_t)i));
+		fprintf(stdout, "%" PRIu64 "\n", counter[i]);
 	}
 
-	fprintf(fd, "\n");
-	fflush(fd);
 }
 
 void dump_counters(double ts) {
 
-	static FILE *in_pkt_fd = NULL;
-	static FILE *out_pkt_fd = NULL;
-	static FILE *in_byte_fd = NULL;
-	static FILE *out_byte_fd = NULL;
-	static FILE *in_flow_fd = NULL;
-	static FILE *out_flow_fd = NULL;
-
-	if (in_pkt_fd == NULL) {
-		in_pkt_fd = open_fd("packets_in");
-	}
-	if (out_pkt_fd == NULL) {
-		out_pkt_fd = open_fd("packets_out");
-	}
-	if (in_byte_fd == NULL) {
-		in_byte_fd = open_fd("bytes_in");
-	}
-	if (out_byte_fd == NULL) {
-		out_byte_fd = open_fd("bytes_out");
-	}
-	if (in_flow_fd == NULL) {
-		in_flow_fd = open_fd("flows_in");
-	}
-	if (out_flow_fd == NULL) {
-		out_flow_fd = open_fd("flows_out");
-	}
-
-	dump_counter_array(ts, in_pkt_fd, in_pkt_count, false);
-	dump_counter_array(ts, out_pkt_fd, out_pkt_count, false);
-	dump_counter_array(ts, in_byte_fd, in_byte_count, true);
-	dump_counter_array(ts, out_byte_fd, out_byte_count, true);
-	dump_counter_array(ts, in_flow_fd, in_flow_count, false);
-	dump_counter_array(ts, out_flow_fd, out_flow_count, false);
+	dump_counter_array(ts, local_id, report_freq, "in_pkts", in_pkt_count);
+	dump_counter_array(ts, local_id, report_freq, "out_pkts", out_pkt_count);
+	dump_counter_array(ts, local_id, report_freq, "in_bytes", in_byte_count);
+	dump_counter_array(ts, local_id, report_freq, "out_bytes", out_byte_count);
+	dump_counter_array(ts, local_id, report_freq, "in_new_flows", in_flow_count);
+	dump_counter_array(ts, local_id, report_freq, "out_new_flows", out_flow_count);
+	dump_counter_array(ts, local_id, report_freq, "in_curr_flows", in_current_flows);
+	dump_counter_array(ts, local_id, report_freq, "out_curr_flows", out_current_flows);
 
 }
 
@@ -240,10 +187,14 @@ void update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen,
 		}
 	} else if (old_proto == NULL) {
 		
-		if (live->init_dir == 0)
+		if (live->init_dir == 0) {
 			out_flow_count[live->proto->protocol] += 1;
-		else
+			out_current_flows[live->proto->protocol] += 1;
+		}
+		else {
 			in_flow_count[live->proto->protocol] += 1;
+			in_current_flows[live->proto->protocol] += 1;
+		}
 			
 		out_byte_count[live->proto->protocol] += live->out_wbytes;
 		out_pkt_count[live->proto->protocol] += live->out_pkts;
@@ -258,10 +209,14 @@ void update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen,
 
 		if (live->init_dir == 0) {
 			out_flow_count[old_proto->protocol] --;
+			out_current_flows[old_proto->protocol] --;
 			out_flow_count[live->proto->protocol] ++;
+			out_current_flows[live->proto->protocol] ++;
 		} else {
 			in_flow_count[old_proto->protocol] --;
+			in_current_flows[old_proto->protocol] --;
 			in_flow_count[live->proto->protocol] ++;
+			in_current_flows[live->proto->protocol] ++;
 		}
 
 
@@ -302,6 +257,17 @@ void expire_live_flows(double ts, bool exp_flag) {
 
                 LiveFlow *live = (LiveFlow *)expired->extension;
 		
+		if (live->init_dir == 0) {
+			assert(out_current_flows[live->proto->protocol] != 0);
+			out_current_flows[live->proto->protocol] --;
+		} else {
+			if (in_current_flows[live->proto->protocol] == 0)
+				fprintf(stderr, "%s\n", lpi_print((lpi_protocol_t)live->proto->protocol));
+			assert(in_current_flows[live->proto->protocol] != 0);
+			in_current_flows[live->proto->protocol] --;
+
+		}
+
 		/* Don't forget to free our custom data structure */
                 free(live);
 
@@ -369,8 +335,8 @@ void per_packet(libtrace_packet_t *packet) {
         	live = (LiveFlow *)f->extension;
 	} else {
         	live = (LiveFlow *)f->extension;
-		if (tcp && tcp->syn && !tcp->ack)
-			live->init_dir = dir;
+		//if (tcp && tcp->syn && !tcp->ack)
+		//	live->init_dir = dir;
 	}
 
 	if (dir == 0) {
@@ -413,9 +379,10 @@ static void cleanup_signal(int sig) {
 static void usage(char *prog) {
 
         printf("Usage details for %s\n\n", prog);
-        printf("%s [-i <freq>] [-l <mac] [-T] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
+        printf("%s [-i <freq>] [-m <monitor id>] [-l <mac] [-T] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
         printf("Options:\n");
 	printf("  -l <mac>      Determine direction based on <mac> representing the 'inside' \n                 portion of the network\n");
+	printf("  -m <id>	Id number to use for this monitor (defaults to $HOSTNAME)\n");
 	printf("  -T            Use trace direction tags to determine direction\n");
         printf("  -f <filter>   Ignore flows that do not match the given BPF filter\n");
         printf("  -R            Ignore flows involving private RFC 1918 address space\n");
@@ -446,13 +413,17 @@ int main(int argc, char *argv[]) {
 	uint32_t max_reports = 0;
 	uint32_t reports_done = 0;
 
+	if (gethostname(local_id, 256) == -1) {
+		strncpy(local_id, "unknown", 256);
+	}
+
         packet = trace_create_packet();
         if (packet == NULL) {
                 perror("Creating libtrace packet");
                 return -1;
         }
 
-	while ((opt = getopt(argc, argv, "i:f:Rhl:T")) != EOF) {
+	while ((opt = getopt(argc, argv, "i:f:Rhl:Tm:")) != EOF) {
                 switch (opt) {
 			case 'l':
                                 local_mac = optarg;
@@ -469,6 +440,9 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'i':
 				report_freq = atoi(optarg);
+				break;
+			case 'm':
+				strncpy(local_id, optarg, 256);
 				break;
 			case 'h':
 			default:
@@ -519,6 +493,8 @@ int main(int argc, char *argv[]) {
 		return -1;
 
 	reset_counters();
+	memset(out_current_flows, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+	memset(in_current_flows, 0, LPI_PROTO_LAST * sizeof(uint64_t));
 
 	if (optind == argc) {
 		fprintf(stderr, "No input sources specified!\n");
@@ -562,7 +538,7 @@ int main(int argc, char *argv[]) {
 			}
 
 			while (ts > next_report) {
-				dump_counters(next_report);
+				dump_counters(next_report - report_freq);
 				reset_counters();
 				next_report += report_freq;
 				reports_done ++;
@@ -591,7 +567,7 @@ int main(int argc, char *argv[]) {
         }
 
         trace_destroy_packet(packet);
-        expire_live_flows(ts, true);
+	expire_live_flows(ts, true);
 	lpi_free_library();
 
         return 0;
