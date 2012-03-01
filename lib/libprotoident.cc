@@ -429,3 +429,16 @@ const char *lpi_print(lpi_protocol_t proto) {
 	
 }
 
+bool lpi_is_protocol_inactive(lpi_protocol_t proto) {
+
+	LPINameMap::iterator it;
+
+	it = lpi_names.find(proto);
+
+	if (it == lpi_names.end()) {
+		return true;
+	}	
+	return false;
+
+}
+

@@ -50,7 +50,7 @@ static inline bool match_jedi_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_jedi = {
 	LPI_PROTO_UDP_JEDI,
 	LPI_CATEGORY_REMOTE,
-	"Citrix_Jedi",
+	"Citrix_Jedi_UDP",
 	3,
 	match_jedi_udp
 };

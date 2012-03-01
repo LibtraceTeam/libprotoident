@@ -81,7 +81,7 @@ static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED)
 static lpi_module_t lpi_second_life = {
 	LPI_PROTO_UDP_SECONDLIFE,
 	LPI_CATEGORY_GAMING,
-	"SecondLife",
+	"SecondLife_UDP",
 	6,
 	match_second_life
 };

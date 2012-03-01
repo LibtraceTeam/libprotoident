@@ -58,7 +58,7 @@ static inline bool match_cod_waw(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_cod_waw = {
 	LPI_PROTO_COD_WAW,
 	LPI_CATEGORY_GAMING,
-	"Call_of_Duty",
+	"Call_of_Duty_TCP",
 	10,	/* Weak rule */
 	match_cod_waw
 };

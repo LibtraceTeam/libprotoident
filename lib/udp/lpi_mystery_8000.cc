@@ -53,7 +53,7 @@ static inline bool match_mystery_8000_udp(lpi_data_t *data, lpi_module_t *mod UN
 static lpi_module_t lpi_mystery_8000_udp = {
 	LPI_PROTO_UDP_MYSTERY_8000,
 	LPI_CATEGORY_NO_CATEGORY,
-	"Mystery_8000",
+	"Mystery_8000_UDP",
 	250,
 	match_mystery_8000_udp
 };

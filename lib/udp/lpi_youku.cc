@@ -53,7 +53,7 @@ static inline bool match_youku_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_youku = {
 	LPI_PROTO_UDP_YOUKU,
 	LPI_CATEGORY_STREAMING,
-	"Youku",
+	"Youku_UDP",
 	4,
 	match_youku_udp
 };

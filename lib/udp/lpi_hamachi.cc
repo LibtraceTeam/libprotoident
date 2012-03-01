@@ -56,7 +56,7 @@ static inline bool match_hamachi(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_hamachi = {
 	LPI_PROTO_UDP_HAMACHI,
 	LPI_CATEGORY_TUNNELLING,
-	"Hamachi",
+	"Hamachi_UDP",
 	8,
 	match_hamachi
 };

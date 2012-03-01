@@ -77,7 +77,7 @@ static bool match_tcp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_dns = {
 	LPI_PROTO_DNS,
 	LPI_CATEGORY_SERVICES,
-	"DNS",
+	"DNS_TCP",
 	6, 	/* Not a high certainty */
 	match_tcp_dns
 };

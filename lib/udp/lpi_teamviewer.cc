@@ -61,7 +61,7 @@ static inline bool match_teamviewer_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 static lpi_module_t lpi_teamviewer = {
 	LPI_PROTO_UDP_TEAMVIEWER,
 	LPI_CATEGORY_REMOTE,
-	"TeamViewer",
+	"TeamViewer_UDP",
 	10,
 	match_teamviewer_udp
 };

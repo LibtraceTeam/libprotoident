@@ -493,7 +493,26 @@ const char *lpi_print_category(lpi_category_t category);
  */
 lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
 
-
+/** Determines whether the protocol matching a given protocol number is no
+ *  longer supported by libprotoident.
+ *
+ *  @param proto The protocol to check
+ *
+ *  @return true if the protocol is no longer supported, false otherwise.
+ *
+ *  Some protocols are no longer supported by libprotoident, either because
+ *  the rules were found to be producing too many false positives or the 
+ *  protocol has been merged with another existing protocol (especially in the
+ *  case of mystery protocols). When these cases occur, we don't necessarily
+ *  remove the protocol from the enumerated type list, just disable the module
+ *  and set the name string for the protocol to "NULL".
+ *
+ *  This function allows the caller to check if a given protocol value has 
+ *  been disabled. This is often handy when reporting stats for all the 
+ *  protocol values (see lpi_live for an example), as ideally you would want
+ *  to avoid reporting anything for the NULL protocols.
+ */
+bool lpi_is_protocol_inactive(lpi_protocol_t proto);
 #ifdef __cplusplus 
 }
 #endif
