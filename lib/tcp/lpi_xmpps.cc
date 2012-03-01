@@ -84,6 +84,8 @@ static inline bool match_xmpps(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_gtalk(data))
 		return true;
+	if (match_facebook_chat(data))
+		return true;
 
 	return false;
 

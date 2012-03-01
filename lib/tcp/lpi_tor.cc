@@ -39,9 +39,22 @@
 static inline bool match_tor(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* I *think* this is TOR but have not confirmed */
+	
+	/* Don't believe in this rule anymore :) */
+	/*
 	if (match_chars_either(data, 0x3d, 0x00, 0x00, 0x00) &&
 			(data->payload_len[0] == 4 ||
 			data->payload_len[1] == 4))
+		return true;
+	*/
+
+	/* Lots of TOR is SSL over port 443, which we can't really distinguish
+	 * from HTTPS. However, we can match the stuff on port 9001 */
+
+	if (!match_ssl(data))
+		return false;
+
+	if (data->server_port == 9001 || data->client_port == 9001)
 		return true;
 
 	return false;
