@@ -160,23 +160,37 @@ There are currently three tools included with libprotoident.
 
    Options:
         -f <filterstring> : Specifies a BPF filter to be applied to the input.
-	-R : ignore traffic to or from RFC1918 private addresses.
+	-R : Ignore traffic to or from RFC1918 private addresses.
 	-i <secs>: Specifies the reporting interval (in seconds).
+	-T : Use trace direction tags to determine direction.
+	-l <mac> : Determine direction based on the given mac address. The mac
+		   should represent the 'inside' or 'local' side of the network.
+	-m <id>	: Use the given id string to identify the monitor rather than
+		  $HOSTNAME.
 
    Output:
-      	lpi_live creates four output files called packets_in, packets_out, 
-	bytes_in and bytes_out. Each line in those files describes the amount
-	of traffic observed for each supported protocol during the reporting
-	interval beginning from the timestamp given as the first field of the
-	line.
 
-	The first line in each file is a header which describes the mapping of
-	protocols to columns in the output file.
+   	IMPORTANT: lpi_live output has changed significantly in version 2.0.5!
 
-	The bytes_in and bytes_out files report the traffic in kilobits per
-	seconds. The packets_in and packets_out files simply contain raw
-	packet counts.
-	
+	Reports are written to stdout. Each line of output is a series of comma
+	separated values representing a single measurement.
+
+	The values are (in order):
+	 * The monitor id
+	 * The Unix timestamp for the beginning of the measurement period
+	 * The length of the measurement period
+	 * The statistic being reported - this is one of the following:
+	 	- in_pkts = inbound packets
+		- out_pkts = outbound packets
+		- in_bytes = inbound bytes (based on wire length)
+		- out_bytes = outbound bytes (based on wire length)
+		- in_new_flows = new inbound flows
+		- out_new_flows = new outbound flows
+		- in_curr_flows = inbound flows active at the period end
+		- out_curr_flows = outbound flows active at the period end
+	* The application protocol being measured
+	* The value for the measured statistic
+		
 API
 ===
 
