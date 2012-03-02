@@ -99,6 +99,7 @@ typedef enum {
 	LPI_CATEGORY_CDN,		/* CDN protocols, e.g. Akamai */
 	LPI_CATEGORY_CLOUD,		/* Cloud computing/storage protocols */
 	LPI_CATEGORY_NOTIFICATION,	/* Notification / messaging protocols */
+	LPI_CATEGORY_SERIALISATION,	/* Transfer of programming "objects" */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -241,6 +242,7 @@ typedef enum {
 	LPI_PROTO_XMPPS,		/* XMPP over TLS/SSL */
 	LPI_PROTO_SMTPS,		/* Legacy Secure SMTP */ 
 	LPI_PROTO_NNTPS,		/* NNTP over TLS/SSL */		
+	LPI_PROTO_JAVA,			/* Serialised Java Objects */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -347,6 +349,7 @@ typedef enum {
 	LPI_PROTO_UDP_EPSON,
 	LPI_PROTO_UDP_AKAMAI_TRANSFER,
 	LPI_PROTO_UDP_DCC,
+	LPI_PROTO_UDP_AMANDA,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

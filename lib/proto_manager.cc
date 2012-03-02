@@ -118,6 +118,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
 	register_irc(mod_map);
+	register_java(mod_map);
 	register_jedi(mod_map);
 	register_kaseya(mod_map);
 	register_kaspersky(mod_map);
@@ -212,6 +213,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 
 	register_akamai(mod_map);
 	register_akamai_transfer(mod_map);
+	register_amanda(mod_map);
 	register_ares_udp(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);

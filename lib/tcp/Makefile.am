@@ -45,6 +45,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid_pop.cc \
 	lpi_invalid_smtp.cc \
 	lpi_irc.cc \
+	lpi_java.cc \
 	lpi_jedi.cc \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \

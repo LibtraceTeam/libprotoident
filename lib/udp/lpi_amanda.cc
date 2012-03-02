@@ -36,38 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_flash(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_amanda(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* Flash player stuff - cross-domain policy etc. */
-	
-	if (match_str_either(data, "<cro")) {
-		if (match_str_either(data, "<msg"))
-			return true;
-		if (match_str_either(data, "<pol"))
-			return true;
-		if (data->payload_len[0] == 0)
-			return true;
-		if (data->payload_len[1] == 0)
-			return true;
-	}
-
-	if (match_str_either(data, "<?xm")) {
-		if (match_str_either(data, "<pol"))
-			return true;
-	}
+	if (match_str_either(data, "Aman"))
+		return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_flash = {
-	LPI_PROTO_FLASH,
-	LPI_CATEGORY_STREAMING,
-	"Flash_Player",
+static lpi_module_t lpi_amanda = {
+	LPI_PROTO_UDP_AMANDA,
+	LPI_CATEGORY_FILES,
+	"AmandaUDP",
 	6,
-	match_flash
+	match_amanda
 };
 
-void register_flash(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_flash, mod_map);
+void register_amanda(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_amanda, mod_map);
 }
 

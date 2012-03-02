@@ -146,6 +146,9 @@ static inline bool match_smtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_str_either(data, "quit") && (data->server_port == 25 ||
                         data->client_port == 25))
                 return true;
+        if (match_str_either(data, "Quit") && (data->server_port == 25 ||
+                        data->client_port == 25))
+                return true;
         /* Match the server banner code */
 
         if (match_smtp_banner(data->payload[0], data->payload_len[0])) {

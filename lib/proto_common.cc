@@ -363,6 +363,10 @@ static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
 static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x15, 0x03, 0x01, ANY))
                 return true;
+
+	/* Alerts are also possible under SSL 3.0 */
+        if (MATCH(payload, 0x15, 0x03, 0x00, ANY))
+                return true;
         return false;
 }
 

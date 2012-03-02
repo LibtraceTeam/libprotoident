@@ -36,29 +36,43 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_cisco_vpn_payload(uint32_t payload, uint32_t len) {
+static inline bool match_cisco_vpn_server(uint32_t payload, uint32_t len) {
 	if (len == 0)
 		return true;
-	if (MATCH(payload, 0x01, 0xf4, 0x01, 0xf4))
+	if (MATCH(payload, 0x01, 0xf4, ANY, ANY))
+		return true;
+	return false;
+}
+
+static inline bool match_cisco_vpn_client(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x01, 0xf4))
 		return true;
 	return false;
 }
 
 static inline bool match_cisco_vpn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!match_cisco_vpn_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_cisco_vpn_payload(data->payload[1], data->payload_len[1]))
-		return false;
+	if (match_cisco_vpn_server(data->payload[0], data->payload_len[0])) {
+		if (match_cisco_vpn_client(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+	
+	if (match_cisco_vpn_server(data->payload[1], data->payload_len[1])) {
+		if (match_cisco_vpn_client(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
-	return true;
+	return false;
+
 }
 
 static lpi_module_t lpi_cisco_vpn = {
 	LPI_PROTO_CISCO_VPN,
 	LPI_CATEGORY_TUNNELLING,
 	"Cisco_VPN",
-	3,
+	7,
 	match_cisco_vpn
 };
 

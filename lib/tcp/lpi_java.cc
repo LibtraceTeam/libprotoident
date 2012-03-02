@@ -36,68 +36,37 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_ldap_payload(uint32_t payload, uint32_t len) {
-	
-	uint8_t *byte = ((uint8_t *)&payload);
-	uint16_t struct_len = 0;
+static inline bool match_java_serial(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
 		return true;
-
-	byte ++;
-	
-	if (((*byte) & 0x80) == 0x80) {
-		uint8_t bytes_required = ((*byte) & 0x7f);
-		if (bytes_required > 2 || bytes_required == 0)
-			return false;
-
-		if (bytes_required == 1) {
-			if (len > 255)
-				return false;
-			byte ++;
-			struct_len = 3 + ((uint8_t)(*byte));
-			if (!MATCH(payload, 0x30, ANY, ANY, 0x02))
-				return false;
-		} else {
-			struct_len = 4 + ntohs(*((uint16_t *)(byte + 1)));
-			if (!MATCH(payload, 0x30, ANY, ANY, ANY))
-				return false;
-		}
-	} else {
-		if (!MATCH(payload, 0x30, ANY, 0x02, 0x01))
-			return false;
-		if (len > 255)
-			return false;
-		struct_len = (*byte) + 2;
-	}
-			
-	if (struct_len != len)
-		return false;	
-	
-
-	return true;
+	if (len != 4)
+		return false;
+	if (MATCH(payload, 0xac, 0xed, 0x00, 0x05))
+		return true;
+	return false;
 
 }
 
-static inline bool match_ldap(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_java(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!match_ldap_payload(data->payload[0], data->payload_len[0]))
+	if (!match_java_serial(data->payload[0], data->payload_len[0]))
 		return false;
-	if (!match_ldap_payload(data->payload[1], data->payload_len[1]))
+	if (!match_java_serial(data->payload[1], data->payload_len[1]))
 		return false;
 
 	return true;
 }
 
-static lpi_module_t lpi_ldap = {
-	LPI_PROTO_LDAP,
-	LPI_CATEGORY_SERVICES,
-	"LDAP",
-	3,
-	match_ldap
+static lpi_module_t lpi_java = {
+	LPI_PROTO_JAVA,
+	LPI_CATEGORY_SERIALISATION,
+	"JavaObjectSerialised",
+	5,
+	match_java
 };
 
-void register_ldap(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ldap, mod_map);
+void register_java(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_java, mod_map);
 }
 

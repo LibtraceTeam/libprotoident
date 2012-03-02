@@ -47,6 +47,11 @@ static inline bool match_rtmp_server_handshake(uint32_t payload, uint32_t len) {
 	if (MATCH(payload, 0x06, ANY, ANY, ANY))
 		return true;
 
+	/* Encrypted, but not RTMPE? */
+	if (MATCH(payload, 0x08, ANY, ANY, ANY))
+		return true;
+
+
 	/* RTMPE handshake type */
 	if (MATCH(payload, 0x09, ANY, ANY, ANY))
 		return true;
