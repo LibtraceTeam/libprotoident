@@ -47,6 +47,7 @@ void register_invalid_bittorrent(LPIModuleMap *mod_map);
 void register_invalid_http(LPIModuleMap *mod_map);
 void register_invalid_pop(LPIModuleMap *mod_map);
 void register_invalid_smtp(LPIModuleMap *mod_map);
+void register_ipop(LPIModuleMap *mod_map);
 void register_irc(LPIModuleMap *mod_map);
 void register_java(LPIModuleMap *mod_map);
 void register_jedi(LPIModuleMap *mod_map);

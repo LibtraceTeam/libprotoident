@@ -66,6 +66,7 @@ void register_mystery_99(LPIModuleMap *mod_map);
 void register_mystery_e9(LPIModuleMap *mod_map);
 void register_mystery_qq(LPIModuleMap *mod_map);
 void register_netbios_udp(LPIModuleMap *mod_map);
+void register_netflow(LPIModuleMap *mod_map);
 void register_newerth(LPIModuleMap *mod_map);
 void register_norton(LPIModuleMap *mod_map);
 void register_ntp(LPIModuleMap *mod_map);

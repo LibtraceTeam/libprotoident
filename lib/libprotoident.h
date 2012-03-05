@@ -243,6 +243,7 @@ typedef enum {
 	LPI_PROTO_SMTPS,		/* Legacy Secure SMTP */ 
 	LPI_PROTO_NNTPS,		/* NNTP over TLS/SSL */		
 	LPI_PROTO_JAVA,			/* Serialised Java Objects */
+	LPI_PROTO_IPOP,			/* IP over P2P */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -350,6 +351,7 @@ typedef enum {
 	LPI_PROTO_UDP_AKAMAI_TRANSFER,
 	LPI_PROTO_UDP_DCC,
 	LPI_PROTO_UDP_AMANDA,
+	LPI_PROTO_UDP_NETFLOW,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

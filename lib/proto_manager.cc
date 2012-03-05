@@ -117,6 +117,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_http(mod_map);
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
+	register_ipop(mod_map);
 	register_irc(mod_map);
 	register_java(mod_map);
 	register_jedi(mod_map);
@@ -274,6 +275,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_e9(mod_map);
 	register_mystery_qq(mod_map);
 	register_netbios_udp(mod_map);
+	register_netflow(mod_map);
 	register_newerth(mod_map);
 	register_norton(mod_map);
 	register_ntp(mod_map);

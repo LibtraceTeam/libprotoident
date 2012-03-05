@@ -63,6 +63,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_e9.cc \
 	lpi_mystery_qq.cc \
 	lpi_netbios.cc \
+	lpi_netflow.cc \
 	lpi_newerth.cc \
 	lpi_nopayload.cc \
 	lpi_norton.cc \
