@@ -88,6 +88,8 @@ typedef struct live {
 	uint64_t out_wbytes;
 	uint64_t out_pbytes;
 	double start_ts;
+	uint32_t start_period;
+	uint32_t count_period;
 	lpi_data_t lpi;
 	lpi_module_t *proto;
 } LiveFlow;
@@ -96,7 +98,7 @@ typedef struct live {
  * LiveFlow structure and ensures that the extension pointer points at
  * it.
  */
-void init_live_flow(Flow *f, uint8_t dir, double ts) {
+void init_live_flow(Flow *f, uint8_t dir, double ts, uint32_t period) {
 	LiveFlow *live = NULL;
 
 	live = (LiveFlow *)malloc(sizeof(LiveFlow));
@@ -108,6 +110,8 @@ void init_live_flow(Flow *f, uint8_t dir, double ts) {
 	live->in_pkts = 0;
 	live->out_pkts = 0;
 	live->start_ts = ts;
+	live->start_period = period;
+	live->count_period = period;
 	lpi_init_data(&live->lpi);
 	f->extension = live;
 	live->proto = NULL;
@@ -205,8 +209,20 @@ bool should_guess(LiveFlow *live, uint32_t plen, uint8_t dir) {
 	return false;	
 }
 
+void decrement_counter(uint64_t *array, lpi_protocol_t proto, uint32_t val) {
+
+	if (array[proto] < val) {
+		array[proto] = 0;
+	}
+	else {
+		array[proto] -= val;
+	}
+
+}
+
+
 int update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen, 
-		uint8_t dir) {
+		uint8_t dir, uint32_t period) {
 
 	lpi_module_t *old_proto = live->proto;
 
@@ -248,16 +264,26 @@ int update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen,
 		/* Protocol has "changed" - subtract whatever we would have
 		 * inserted into the previous protocol counter and shift those
 		 * values into the new one */
+		if (period == live->start_period) {
+
+			if (live->init_dir == 0) {
+				assert(out_flow_count[old_proto->protocol] > 0);
+				out_flow_count[old_proto->protocol] --;
+				out_flow_count[live->proto->protocol] ++;
+			} else {
+				assert(in_flow_count[old_proto->protocol] > 0);
+				in_flow_count[old_proto->protocol] --;
+				in_flow_count[live->proto->protocol] ++;
+			}
+		}
 
 		if (live->init_dir == 0) {
-			out_flow_count[old_proto->protocol] --;
+			assert(out_current_flows[old_proto->protocol] > 0);
 			out_current_flows[old_proto->protocol] --;
-			out_flow_count[live->proto->protocol] ++;
 			out_current_flows[live->proto->protocol] ++;
 		} else {
-			in_flow_count[old_proto->protocol] --;
+			assert(in_current_flows[old_proto->protocol] > 0);
 			in_current_flows[old_proto->protocol] --;
-			in_flow_count[live->proto->protocol] ++;
 			in_current_flows[live->proto->protocol] ++;
 		}
 
@@ -265,16 +291,57 @@ int update_protocol_counters(LiveFlow *live, uint32_t wlen, uint32_t plen,
 		if (dir == 0) {
 
 			assert(live->out_wbytes >= wlen);
-			out_byte_count[old_proto->protocol] -= (live->out_wbytes - wlen);
-			out_pkt_count[old_proto->protocol] -= (live->out_pkts - 1);
-			in_byte_count[old_proto->protocol] -= (live->in_wbytes);
-			in_pkt_count[old_proto->protocol] -= (live->in_pkts);
+			assert(live->out_pkts >= 1);
+
+			/*
+			if (out_byte_count[old_proto->protocol] < (live->out_wbytes - wlen)) {
+				fprintf(stderr, "1. out byte fail - trying to subtract %u from %u\n", (live->out_wbytes - wlen), out_byte_count[old_proto->protocol]);
+				assert(0);
+			}
+			if (out_pkt_count[old_proto->protocol] < (live->out_pkts - 1)) {
+				fprintf(stderr, "2. out pkt fail - trying to subtract %u from %u\n", (live->out_pkts - 1), out_pkt_count[old_proto->protocol]);
+				assert(0);
+			}
+			if (in_byte_count[old_proto->protocol] < (live->in_wbytes)) {
+				fprintf(stderr, "3. in byte fail - trying to subtract %u from %u\n", (live->in_wbytes), in_byte_count[old_proto->protocol]);
+				assert(0);
+			}
+			if (in_pkt_count[old_proto->protocol] < (live->in_pkts)) {
+				fprintf(stderr, "4. in pkt fail - trying to subtract %u from %u\n", (live->in_pkts), in_pkt_count[old_proto->protocol]);
+				assert(0);
+			}
+			*/
+			decrement_counter(in_byte_count, old_proto->protocol, live->in_wbytes);
+			decrement_counter(in_pkt_count, old_proto->protocol, live->in_pkts);
+			decrement_counter(out_byte_count, old_proto->protocol, live->out_wbytes - wlen);
+			decrement_counter(out_pkt_count, old_proto->protocol, live->out_pkts - 1);
+		
 		} else {
 			assert(live->in_wbytes >= wlen);
-			out_byte_count[old_proto->protocol] -= (live->out_wbytes);
-			out_pkt_count[old_proto->protocol] -= (live->out_pkts);
-			in_byte_count[old_proto->protocol] -= (live->in_wbytes - wlen);
-			in_pkt_count[old_proto->protocol] -= (live->in_pkts - 1);
+			assert(live->in_pkts >= 1);
+			/*
+			if (in_byte_count[old_proto->protocol] < (live->in_wbytes - wlen)) {
+				fprintf(stderr, "5. in byte fail - trying to subtract %u from %u\n", (live->in_wbytes - wlen), in_byte_count[old_proto->protocol]);
+				assert(0);
+			}
+			if (in_pkt_count[old_proto->protocol] < (live->in_pkts - 1)) {
+				fprintf(stderr, "6. in pkt fail - trying to subtract %u from %u\n", (live->in_pkts - 1), in_pkt_count[old_proto->protocol]);
+				assert(0);
+			}
+			if (out_byte_count[old_proto->protocol] < (live->out_wbytes)) {
+				fprintf(stderr, "7. out byte fail - trying to subtract %u from %u\n", (live->out_wbytes), out_byte_count[old_proto->protocol]);
+				assert(0);
+			}
+			if (out_pkt_count[old_proto->protocol] < (live->out_pkts)) {
+				fprintf(stderr, "8. out pkt fail - trying to subtract %u from %u\n", (live->out_pkts), out_pkt_count[old_proto->protocol]);
+				assert(0);
+			}
+			*/
+
+			decrement_counter(out_byte_count, old_proto->protocol, live->out_wbytes);
+			decrement_counter(out_pkt_count, old_proto->protocol, live->out_pkts);
+			decrement_counter(in_byte_count, old_proto->protocol, live->in_wbytes - wlen);
+			decrement_counter(in_pkt_count, old_proto->protocol, live->in_pkts - 1);
 
 		}
 		out_byte_count[live->proto->protocol] += live->out_wbytes;
@@ -322,7 +389,7 @@ void expire_live_flows(double ts, bool exp_flag) {
 }
 
 
-void per_packet(libtrace_packet_t *packet) {
+void per_packet(libtrace_packet_t *packet, uint32_t report_count) {
 
         Flow *f;
         LiveFlow *live = NULL;
@@ -375,7 +442,7 @@ void per_packet(libtrace_packet_t *packet) {
 	/* If the returned flow is new, you will probably want to allocate and
 	 * initialise any custom data that you intend to track for the flow */
         if (is_new) {
-                init_live_flow(f, dir, ts);
+                init_live_flow(f, dir, ts, report_count);
         	live = (LiveFlow *)f->extension;
 	} else {
         	live = (LiveFlow *)f->extension;
@@ -383,6 +450,16 @@ void per_packet(libtrace_packet_t *packet) {
 		//	live->init_dir = dir;
 	}
 
+	if (live->count_period != report_count) {
+		live->out_pbytes = 0;
+		live->out_wbytes = 0;
+		live->out_pkts = 0;
+		live->in_pbytes = 0;
+		live->in_pbytes = 0;
+		live->in_pkts = 0;
+		live->count_period = report_count;
+	}
+	
 	if (dir == 0) {
 		live->out_pbytes += trace_get_payload_length(packet);
 		live->out_wbytes += trace_get_wire_length(packet);
@@ -400,7 +477,8 @@ void per_packet(libtrace_packet_t *packet) {
 	lpi_update_data(packet, &live->lpi, dir);
 
 	if (update_protocol_counters(live, trace_get_wire_length(packet), 
-			trace_get_payload_length(packet), dir) == -1) {
+			trace_get_payload_length(packet), dir,
+			report_count) == -1) {
 		
 		trace_dump_packet(packet);
 		dump_live_flow(live);
@@ -587,7 +665,7 @@ int main(int argc, char *argv[]) {
                 }
                 while (trace_read_packet(trace, packet) > 0) {
                         ts = trace_get_seconds(packet);
-			per_packet(packet);
+			per_packet(packet, reports_done);
 			if (next_report == 0.0 && ts != 0.0) {
 				next_report = ts + report_freq;
 			}
