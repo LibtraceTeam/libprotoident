@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_fring.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,32 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_bjnp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_fring(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* Could strengthen this by requiring 16 byte packets too if needed */
-
-	if (match_str_either(data, "BJNP"))
+	if (match_str_both(data, "NOPC", "1234"))
 		return true;
-
-	/* Apparently, there are a few other combinations that we can see */
-	if (match_str_either(data, "BNJB"))
-		return true;
-	if (match_str_either(data, "PJNB"))
-		return true;
-	
 
 	return false;
 }
 
-static lpi_module_t lpi_bjnp = {
-	LPI_PROTO_UDP_BJNP,
-	LPI_CATEGORY_PRINTING,
-	"Canon_BJNP",
-	3,
-	match_bjnp
+static lpi_module_t lpi_fring = {
+	LPI_PROTO_FRING,
+	LPI_CATEGORY_VOIP,
+	"Fring",
+	2,
+	match_fring
 };
 
-void register_bjnp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_bjnp, mod_map);
+void register_fring(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_fring, mod_map);
 }
 

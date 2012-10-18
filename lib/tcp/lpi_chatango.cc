@@ -51,10 +51,12 @@ static inline bool match_chatango_out(uint32_t payload, uint32_t len) {
 
 	if (len != 10)
 		return false;
-	if (!MATCH(payload, 'v', ':', '1', '0'))
-		return false;
+	if (MATCH(payload, 'v', ':', '1', '0'))
+		return true;
+	if (MATCH(payload, 'v', ':', '1', '4'))
+		return true;
 
-	return true;
+	return false;
 
 }
 

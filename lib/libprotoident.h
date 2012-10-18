@@ -100,6 +100,8 @@ typedef enum {
 	LPI_CATEGORY_CLOUD,		/* Cloud computing/storage protocols */
 	LPI_CATEGORY_NOTIFICATION,	/* Notification / messaging protocols */
 	LPI_CATEGORY_SERIALISATION,	/* Transfer of programming "objects" */
+	LPI_CATEGORY_BROADCAST,		/* Protocols usually broadcast to the
+					   local network */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -244,6 +246,12 @@ typedef enum {
 	LPI_PROTO_NNTPS,		/* NNTP over TLS/SSL */		
 	LPI_PROTO_JAVA,			/* Serialised Java Objects */
 	LPI_PROTO_IPOP,			/* IP over P2P */
+	LPI_PROTO_SPOTIFY,
+	LPI_PROTO_RUNESCAPE,	
+	LPI_PROTO_WHOIS,
+	LPI_PROTO_VIBER,
+	LPI_PROTO_FRING,
+	LPI_PROTO_PALRINGO,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -352,6 +360,17 @@ typedef enum {
 	LPI_PROTO_UDP_DCC,
 	LPI_PROTO_UDP_AMANDA,
 	LPI_PROTO_UDP_NETFLOW,
+	LPI_PROTO_UDP_ZEROACCESS,
+	LPI_PROTO_UDP_VXWORKS_EXPLOIT,
+	LPI_PROTO_UDP_APPLE_FACETIME_INIT,
+	LPI_PROTO_UDP_STEAM_LOCALBROADCAST,	
+	/* ^Protocol used by Steam to discover clients on the local network */
+	LPI_PROTO_UDP_LANSYNC,	/* LANSync, used by DropBox */
+	LPI_PROTO_UDP_MSOFFICE_MAC,	/* MS Office for Mac anti-piracy */
+	LPI_PROTO_UDP_SPOTIFY_BROADCAST,
+	LPI_PROTO_UDP_MDNS,	/* Multicast DNS */
+	LPI_PROTO_UDP_FASP,
+	LPI_PROTO_UDP_ROBLOX,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

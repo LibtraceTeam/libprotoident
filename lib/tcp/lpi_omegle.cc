@@ -53,6 +53,8 @@ static inline bool match_omegle_server(uint32_t payload, uint32_t len) {
 		return true;
 	if (len == 68 && MATCH(payload, 0x01, 0x63, 0x00, 0x40))
 		return true;
+	if (MATCH(payload, 0x09, 'c', 'l', 'i'))
+		return true;
 	return false;
 
 }

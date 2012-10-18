@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_fasp.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,32 +36,57 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_bjnp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_fasp_out(uint32_t payload, uint32_t len) {
 
-	/* Could strengthen this by requiring 16 byte packets too if needed */
-
-	if (match_str_either(data, "BJNP"))
+	if (MATCH(payload, ANY, 0x21, 0x00, 0x00))
 		return true;
 
-	/* Apparently, there are a few other combinations that we can see */
-	if (match_str_either(data, "BNJB"))
-		return true;
-	if (match_str_either(data, "PJNB"))
+	return false;
+
+}
+
+static inline bool match_fasp_in(uint32_t payload, uint32_t len) {
+	
+	if (len != 64)
+		return false;
+
+	if (MATCH(payload, ANY, 0x20, 0x00, 0x00))
 		return true;
 	
+	return false;
 
+}
+
+static inline bool match_fasp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+	if (data->server_port != 33001 && data->client_port != 33001)
+		return false;
+	
+	/* First byte must match in both directions */
+	if ((data->payload[0] & 0xff) != (data->payload[1] & 0xff))
+		return false;
+
+	if (match_fasp_out(data->payload[0], data->payload_len[0])) {
+		if (match_fasp_in(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_fasp_out(data->payload[1], data->payload_len[1])) {
+		if (match_fasp_in(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 	return false;
 }
 
-static lpi_module_t lpi_bjnp = {
-	LPI_PROTO_UDP_BJNP,
-	LPI_CATEGORY_PRINTING,
-	"Canon_BJNP",
-	3,
-	match_bjnp
+static lpi_module_t lpi_fasp = {
+	LPI_PROTO_UDP_FASP,
+	LPI_CATEGORY_FILES,
+	"FASP",
+	16,
+	match_fasp
 };
 
-void register_bjnp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_bjnp, mod_map);
+void register_fasp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_fasp, mod_map);
 }
 

@@ -72,11 +72,11 @@ static inline bool match_wow_s2c(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
 		return true;
-	if (!MATCH(payload, 0x00, 0x30, 0x57, 0x4f))
-		return false;
 	if (len != 50)
 		return false;
-	return true;
+	if (MATCH(payload, 0x30, 0x00, 0x57, 0x4f))
+		return true;
+	return false;
 }
 
 

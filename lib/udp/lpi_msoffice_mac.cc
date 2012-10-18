@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_msoffice_mac.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,32 +36,43 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_bjnp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* Could strengthen this by requiring 16 byte packets too if needed */
+/* Protocol used by MS Office 2008 (Mac OS X version only) for license checking 
+ * on a local network.
+ */
 
-	if (match_str_either(data, "BJNP"))
-		return true;
+static inline bool match_office_2008(lpi_data_t *data) {
 
-	/* Apparently, there are a few other combinations that we can see */
-	if (match_str_either(data, "BNJB"))
-		return true;
-	if (match_str_either(data, "PJNB"))
-		return true;
+	if (!match_str_either(data, "MSOP"))
+		return false;
 	
+	if (data->payload_len[0] == 72 && data->payload_len[1] == 0)
+		return true;
+	if (data->payload_len[1] == 72 && data->payload_len[0] == 0)
+		return true;
+
+	return false;
+}
+ 
+static inline bool match_msoffice_mac(lpi_data_t *data, 
+		lpi_module_t *mod UNUSED) {
+
+	if (data->server_port == 2223 || data->client_port == 2223) {
+		return match_office_2008(data);
+	}
 
 	return false;
 }
 
-static lpi_module_t lpi_bjnp = {
-	LPI_PROTO_UDP_BJNP,
-	LPI_CATEGORY_PRINTING,
-	"Canon_BJNP",
-	3,
-	match_bjnp
+static lpi_module_t lpi_msoffice_mac = {
+	LPI_PROTO_UDP_MSOFFICE_MAC,
+	LPI_CATEGORY_BROADCAST,
+	"MSOffice_Mac",
+	10,
+	match_msoffice_mac
 };
 
-void register_bjnp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_bjnp, mod_map);
+void register_msoffice_mac(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_msoffice_mac, mod_map);
 }
 

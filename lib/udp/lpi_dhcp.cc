@@ -36,8 +36,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_dhcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
+static inline bool match_dhcp_v4(lpi_data_t *data) {
 	if (match_chars_either(data, 0x01, 0x01, 0x06, 0x00))
 		return true;
 	if (match_chars_either(data, 0x02, 0x01, 0x06, 0x00))
@@ -46,11 +45,76 @@ static inline bool match_dhcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
+static inline bool match_dhcp_v6_ports(uint16_t porta, uint16_t portb) {
+	if (porta == 547 && portb == 546)
+		return true;
+	if (portb == 547 && porta == 546)
+		return true;
+	return false;
+}
+
+static inline bool match_dhcp_v6_solicit(uint32_t payload, uint32_t len) {
+
+	if (len < 52)
+		return false;
+	if (!MATCH(payload, 0x01, ANY, ANY, ANY))
+		return false;
+
+	return true;
+
+}
+
+static inline bool match_dhcp_v6_advert(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+	if (MATCH(payload, 0x02, ANY, ANY, ANY))
+		return false;
+	
+	return true;
+
+}
+
+static inline bool match_dhcp_v6(lpi_data_t *data) {
+
+	if (!match_dhcp_v6_ports(data->server_port, data->client_port))
+		return false;
+
+	if (match_dhcp_v6_solicit(data->payload[0], data->payload_len[0])) {
+		if (match_dhcp_v6_advert(data->payload[1], 
+				data->payload_len[1])) {
+			return true;
+		}
+	}
+
+	if (match_dhcp_v6_solicit(data->payload[1], data->payload_len[1])) {
+		if (match_dhcp_v6_advert(data->payload[0], 
+				data->payload_len[0])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static inline bool match_dhcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+
+	if (match_dhcp_v4(data))
+		return true;
+	if (match_dhcp_v6(data))
+		return true;
+	
+	return false;
+	
+}
+
+
 static lpi_module_t lpi_dhcp = {
 	LPI_PROTO_UDP_DHCP,
 	LPI_CATEGORY_SERVICES,
 	"DHCP",
-	3,
+	8,
 	match_dhcp
 };
 

@@ -279,6 +279,7 @@ void per_packet(libtrace_packet_t *packet) {
                 lfm_check_tcp_flags(f, tcp, dir, ts);
         }
 
+	assert(f);
         /* Tell libflowmanager to update the expiry time for this flow */
         lfm_update_flow_expiry_timeout(f, ts);
 

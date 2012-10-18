@@ -94,7 +94,9 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ea_games(mod_map);
 	register_emule(mod_map);
 	register_eye(mod_map);
+	register_fasp(mod_map);
 	register_flash(mod_map);
+	register_fring(mod_map);
 	register_ftpcontrol(mod_map);
 	register_ftpdata(mod_map);
 	register_gamespy_tcp(mod_map);
@@ -150,6 +152,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_tcp_no_payload(mod_map);
 	register_omegle(mod_map);
 	register_openvpn(mod_map);
+	register_palringo(mod_map);
 	register_paltalk(mod_map);
 	register_pando(mod_map);
 	register_pdbox(mod_map);
@@ -167,6 +170,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_rsync(mod_map);
 	register_rtmp(mod_map);
 	register_rtsp(mod_map);
+	register_runescape(mod_map);
 	register_second_life(mod_map);
 	register_shoutcast(mod_map);
 	register_sip(mod_map);
@@ -176,6 +180,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_smtps(mod_map);
 	register_socks4(mod_map);
 	register_socks5(mod_map);
+	register_spotify(mod_map);
 	register_ssh(mod_map);
 	register_ssl(mod_map);
 	register_steam(mod_map);
@@ -191,9 +196,11 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_trackmania(mod_map);
 	register_trojan_win32_generic_sb(mod_map);
 	register_trojan_zeroaccess(mod_map);
+	register_viber(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
 	register_weblogic(mod_map);
+	register_whois(mod_map);
 	register_winmx(mod_map);
 	register_wow(mod_map);
 	register_wuala(mod_map);
@@ -215,6 +222,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_akamai(mod_map);
 	register_akamai_transfer(mod_map);
 	register_amanda(mod_map);
+	register_apple_facetime_init(mod_map);
 	register_ares_udp(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
@@ -258,12 +266,15 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_kaspersky_udp(mod_map);
 	register_kazaa(mod_map);
 	register_l2tp(mod_map);
+	register_lansync_udp(mod_map);
 	register_ldap_ad(mod_map);
 	register_linkproof(mod_map);
+	register_mdns(mod_map);
 	register_moh(mod_map);
 	register_mp2p_udp(mod_map);
 	register_msn_cache(mod_map);
 	register_msn_video(mod_map);
+	register_msoffice_mac(mod_map);
 	register_mta(mod_map);
 	register_mystery_05(mod_map);
 	register_mystery_0660(mod_map);
@@ -293,6 +304,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_quake(mod_map);
 	register_radius(mod_map);
 	register_real(mod_map);
+	register_roblox(mod_map);
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
 	register_rtp(mod_map);
@@ -304,10 +316,12 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_snmp(mod_map);
 	register_sopcast(mod_map);
 	register_spamfighter(mod_map);
+	register_spotify_bcast(mod_map);
 	register_sql_worm(mod_map);
 	register_ssdp(mod_map);
 	register_starcraft(mod_map);
 	register_steamfriends(mod_map);
+	register_steam_localbroadcast(mod_map);
 	register_steam_udp(mod_map);
 	register_storm_worm(mod_map);
 	register_stun(mod_map);
@@ -324,6 +338,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_unreal(mod_map);
 	register_ventrilo(mod_map);
 	register_vivox(mod_map);
+	register_vxworks_exploit(mod_map);
 	register_winmessage(mod_map);
 	register_worm_22105(mod_map);
 	register_xfire_p2p(mod_map);
@@ -331,6 +346,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_xunlei_udp(mod_map);
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
+	register_zeroaccess_udp(mod_map);
 	return 0;
 }
 

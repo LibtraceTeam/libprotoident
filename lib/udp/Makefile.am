@@ -3,6 +3,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_akamai.cc \
 	lpi_akamai_transfer.cc \
 	lpi_amanda.cc \
+	lpi_apple_facetime_init.cc \
 	lpi_ares.cc \
 	lpi_backweb.cc \
 	lpi_battlefield.cc \
@@ -26,6 +27,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_eso.cc \
 	lpi_esp_encap.cc \
 	lpi_eye.cc \
+	lpi_fasp.cc \
 	lpi_fortinet.cc \
 	lpi_freechal.cc \
 	lpi_gamespy.cc \
@@ -46,12 +48,15 @@ libprotoident_udp_la_SOURCES = \
 	lpi_kaspersky.cc \
 	lpi_kazaa.cc \
 	lpi_l2tp.cc \
+	lpi_lansync.cc \
 	lpi_ldap_ad.cc \
 	lpi_linkproof.cc \
+	lpi_mdns.cc \
 	lpi_moh.cc \
 	lpi_mp2p.cc \
 	lpi_msn_cache.cc \
 	lpi_msn_video.cc \
+	lpi_msoffice_mac.cc \
 	lpi_mta.cc \
 	lpi_mystery_05.cc \
 	lpi_mystery_0660.cc \
@@ -82,6 +87,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_quake.cc \
 	lpi_radius.cc \
 	lpi_real.cc \
+	lpi_roblox.cc \
 	lpi_rtcp.cc \
 	lpi_rtmfp.cc \
 	lpi_rtp.cc \
@@ -93,11 +99,13 @@ libprotoident_udp_la_SOURCES = \
 	lpi_snmp.cc \
 	lpi_sopcast.cc \
 	lpi_spamfighter.cc \
+	lpi_spotify_bcast.cc \
 	lpi_sql_worm.cc \
 	lpi_ssdp.cc \
 	lpi_starcraft.cc \
 	lpi_steam.cc \
 	lpi_steamfriends.cc \
+	lpi_steam_localbroadcast.cc \
 	lpi_storm_worm.cc \
 	lpi_stun.cc \
 	lpi_syslog.cc \
@@ -112,13 +120,15 @@ libprotoident_udp_la_SOURCES = \
 	lpi_unreal.cc \
 	lpi_ventrilo.cc \
 	lpi_vivox.cc \
+	lpi_vxworks_exploit.cc \
 	lpi_winmessage.cc \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
 	lpi_xlsp.cc \
 	lpi_xunlei.cc \
 	lpi_youdao_dict.cc \
-	lpi_youku.cc
+	lpi_youku.cc \
+	lpi_zeroaccess_udp.cc
 
 EXTRA_DIST=udp_protocols.h
 
