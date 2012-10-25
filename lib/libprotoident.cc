@@ -134,7 +134,7 @@ static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
 	if (rem < sizeof(libtrace_tcp_t))
 		return 0;
 	if (tcp->rst)
-		return 0;
+		return 1;
 	
 	if (data->server_port == 0) {
 		data->server_port = ntohs(tcp->dest);
@@ -279,7 +279,7 @@ static lpi_module_t *guess_protocol(LPIModuleMap *modmap, lpi_data_t *data) {
 	/* Deal with each priority in turn - want to match higher priority
 	 * rules first. 
 	 */
-	
+
 	for (m_it = modmap->begin(); m_it != modmap->end(); m_it ++) {
 		LPIModuleList *ml = m_it->second;
 		
