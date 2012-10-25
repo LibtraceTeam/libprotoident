@@ -66,7 +66,7 @@ static inline bool match_mystery_emule(lpi_data_t *data, lpi_module_t *mod UNUSE
 
 static lpi_module_t lpi_mystery_emule = {
 	LPI_PROTO_UDP_EMULE_MYSTERY,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"eMule_UDP_Mystery",
 	250,
 	match_mystery_emule

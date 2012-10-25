@@ -46,7 +46,7 @@ static inline bool match_gnutella2_udp(lpi_data_t *data, lpi_module_t *mod UNUSE
 
 static lpi_module_t lpi_gnutella2_udp = {
 	LPI_PROTO_UDP_GNUTELLA2,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Gnutella2_UDP",
 	3,
 	match_gnutella2_udp

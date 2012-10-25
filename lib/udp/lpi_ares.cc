@@ -70,7 +70,7 @@ static inline bool match_ares_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_ares_udp = {
 	LPI_PROTO_UDP_ARES,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Ares_UDP",
 	9,
 	match_ares_udp

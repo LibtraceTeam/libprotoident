@@ -98,7 +98,7 @@ static inline bool match_kademlia(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_kademlia = {
 	LPI_PROTO_UDP_KADEMLIA,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Kademlia",
 	11,
 	match_kademlia

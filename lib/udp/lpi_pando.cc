@@ -69,7 +69,7 @@ static inline bool match_pando_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_pando_udp = {
 	LPI_PROTO_UDP_PANDO,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Pando_UDP",
 	10,
 	match_pando_udp

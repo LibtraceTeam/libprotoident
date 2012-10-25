@@ -243,7 +243,7 @@ static inline bool match_gnutella_udp(lpi_data_t *data, lpi_module_t *mod UNUSED
 
 static lpi_module_t lpi_gnutella_udp = {
 	LPI_PROTO_UDP_GNUTELLA,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Gnutella_UDP",
 	10,	/* Rules are pretty dodgy so make this low priority */
 	match_gnutella_udp

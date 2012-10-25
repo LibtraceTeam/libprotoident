@@ -37,9 +37,13 @@
 #include "proto_common.h"
 
 /* Separate modules for dictionary-style DHT (which has a much stronger rule)
- * and Vuze DHTs (which are not so strong) */
+ * and Vuze DHTs (which are not so strong) 
+ *
+ * This source file also covers the uTP protocol, which typically shares the
+ * same flow as the dictionary DHTs
+ */
 
-static inline bool match_number_query(uint32_t payload, uint32_t len) {
+static inline bool match_utp_query(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 0x01, 0x00, ANY, ANY))
                 return true;
@@ -61,7 +65,7 @@ static inline bool match_number_query(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_number_reply(uint32_t payload, uint32_t len) {
+static inline bool match_utp_reply(uint32_t payload, uint32_t len) {
 
 	if (len == 0)
 		return true;
@@ -149,18 +153,18 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (match_dict_query(data->payload[0], data->payload_len[0])) {
 		if (match_dict_reply(data->payload[1], data->payload_len[1]))
 			return true;
-		if (match_number_reply(data->payload[1], data->payload_len[1]))
+		if (match_utp_reply(data->payload[1], data->payload_len[1]))
 			return true;
 	}
 	
 	if (match_dict_query(data->payload[1], data->payload_len[1])) {
 		if (match_dict_reply(data->payload[0], data->payload_len[0]))
 			return true;
-		if (match_number_reply(data->payload[0], data->payload_len[0]))
+		if (match_utp_reply(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
-	if (match_number_query(data->payload[0], data->payload_len[0])) {
+	if (match_utp_query(data->payload[0], data->payload_len[0])) {
 		
 		if (MATCH(data->payload[0], 0x01, 0x00, ANY, ANY)) {
 			if (!num_seq_match(data->payload[0], data->payload[1]))
@@ -168,16 +172,16 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			
 		}
 
-		if (match_number_reply(data->payload[1], data->payload_len[1]))
+		if (match_utp_reply(data->payload[1], data->payload_len[1]))
 			return true;
 	}
 
-	if (match_number_query(data->payload[1], data->payload_len[1])) {
+	if (match_utp_query(data->payload[1], data->payload_len[1])) {
 		if (MATCH(data->payload[1], 0x01, 0x00, ANY, ANY)) {
 			if (!num_seq_match(data->payload[1], data->payload[0]))
 				return false;
 		}
-		if (match_number_reply(data->payload[0], data->payload_len[0]))
+		if (match_utp_reply(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
@@ -187,7 +191,7 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_dht_dict = {
 	LPI_PROTO_UDP_BTDHT,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"BitTorrent_UDP",
 	6,
 	match_dht_dict

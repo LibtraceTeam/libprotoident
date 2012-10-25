@@ -52,7 +52,7 @@ static inline bool match_probable_gnutella(lpi_data_t *data, lpi_module_t *mod U
 
 static lpi_module_t lpi_probable_gnutella = {
 	LPI_PROTO_UDP_GNUTELLA,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Gnutella_UDP",
 	255,	/* This is a really bad rule - make it extremely low priority */
 	match_probable_gnutella

@@ -59,7 +59,7 @@ static inline bool match_kazaa(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_kazaa = {
 	LPI_PROTO_UDP_KAZAA,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Kazaa_UDP",
 	4,
 	match_kazaa

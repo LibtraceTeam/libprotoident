@@ -292,7 +292,7 @@ static inline bool match_dht_other(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_dht_other = {
 	LPI_PROTO_UDP_BTDHT,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"BitTorrent_UDP",
 	12,	/* Need to be lower priority than DNS, at least in cases 
 		 * where traffic is one-way only */

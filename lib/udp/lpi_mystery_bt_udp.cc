@@ -261,7 +261,7 @@ static inline bool match_mystery_bt_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 
 static lpi_module_t lpi_mystery_bt_udp= {
 	LPI_PROTO_UDP_MYSTERY_BT,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Mystery_BitTorrent_UDP",
 	9,	/* Need to be higher than Skype or Gnutella */
 	match_mystery_bt_udp

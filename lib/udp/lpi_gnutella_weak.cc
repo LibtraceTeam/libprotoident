@@ -53,7 +53,7 @@ static inline bool match_gnutella_weak(lpi_data_t *data,
 
 static lpi_module_t lpi_gnutella_weak = {
 	LPI_PROTO_UDP_GNUTELLA,
-	LPI_CATEGORY_P2P_STRUCTURE,
+	LPI_CATEGORY_P2P,
 	"Gnutella_UDP",
 	220,
 	match_gnutella_weak
