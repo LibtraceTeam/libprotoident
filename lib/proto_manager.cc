@@ -86,6 +86,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
 	register_conquer(mod_map);
+	register_cryptic(mod_map);
 	register_cvs(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);

@@ -13,6 +13,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \
+	lpi_cryptic.cc \
 	lpi_cvs.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \

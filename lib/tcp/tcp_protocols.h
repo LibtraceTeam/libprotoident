@@ -16,6 +16,7 @@ void register_cisco_vpn(LPIModuleMap *mod_map);
 void register_clubbox(LPIModuleMap *mod_map);
 void register_cod_waw(LPIModuleMap *mod_map);
 void register_conquer(LPIModuleMap *mod_map);
+void register_cryptic(LPIModuleMap *mod_map);
 void register_cvs(LPIModuleMap *mod_map);
 void register_directconnect(LPIModuleMap *mod_map);
 void register_dns_tcp(LPIModuleMap *mod_map);

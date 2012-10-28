@@ -252,6 +252,7 @@ typedef enum {
 	LPI_PROTO_VIBER,
 	LPI_PROTO_FRING,
 	LPI_PROTO_PALRINGO,
+	LPI_PROTO_CRYPTIC,		/* Games by Cryptic */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
