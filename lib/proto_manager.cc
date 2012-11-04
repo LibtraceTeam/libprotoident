@@ -136,6 +136,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_msnv(mod_map);
 	register_munin(mod_map);
 	register_mysql(mod_map);
+	register_mystery_100_star(mod_map);
 	register_mystery_443(mod_map);
 	register_mystery_8000(mod_map);
 	register_mystery_9000(mod_map);
@@ -186,6 +187,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ssl(mod_map);
 	register_steam(mod_map);
 	register_stun_tcp(mod_map);
+	register_supl(mod_map);
 	register_svn(mod_map);
 	register_tds(mod_map);
 	register_teamviewer(mod_map);

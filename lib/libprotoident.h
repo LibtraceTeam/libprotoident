@@ -102,6 +102,7 @@ typedef enum {
 	LPI_CATEGORY_SERIALISATION,	/* Transfer of programming "objects" */
 	LPI_CATEGORY_BROADCAST,		/* Protocols usually broadcast to the
 					   local network */
+	LPI_CATEGORY_LOCATION,		/* Location-related services / GPS */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -253,6 +254,7 @@ typedef enum {
 	LPI_PROTO_FRING,
 	LPI_PROTO_PALRINGO,
 	LPI_PROTO_CRYPTIC,		/* Games by Cryptic */
+	LPI_PROTO_SUPL,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -383,6 +385,7 @@ typedef enum {
 	LPI_PROTO_MYSTERY_443,
 	LPI_PROTO_MYSTERY_SYMANTEC,
 	LPI_PROTO_MYSTERY_RXXF,
+	LPI_PROTO_MYSTERY_100_STAR,
 	
 	LPI_PROTO_UDP_MYSTERY_0D,	
 	LPI_PROTO_UDP_MYSTERY_99,

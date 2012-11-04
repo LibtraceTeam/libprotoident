@@ -62,6 +62,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_msnv.cc \
 	lpi_munin.cc \
 	lpi_mysql.cc \
+	lpi_mystery_100_star.cc \
 	lpi_mystery_443.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_9000.cc \
@@ -112,6 +113,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ssl.cc \
 	lpi_steam.cc \
 	lpi_stun.cc \
+	lpi_supl.cc \
 	lpi_svn.cc \
 	lpi_tds.cc \
 	lpi_teamviewer.cc \

@@ -402,6 +402,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Serialisation";
 		case LPI_CATEGORY_BROADCAST:
 			return "Broadcast";
+		case LPI_CATEGORY_LOCATION:
+			return "Location";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:
