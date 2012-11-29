@@ -116,7 +116,7 @@ void expire_live_flows(double ts, bool exp_flag) {
 }
 
 
-void per_packet(libtrace_packet_t *packet, uint32_t report_count) {
+void per_packet(libtrace_packet_t *packet) {
 
         Flow *f;
         LiveFlow *live = NULL;
@@ -169,35 +169,15 @@ void per_packet(libtrace_packet_t *packet, uint32_t report_count) {
 	/* If the returned flow is new, you will probably want to allocate and
 	 * initialise any custom data that you intend to track for the flow */
         if (is_new) {
-                init_live_flow(f, dir, ts, report_count);
-        	live = (LiveFlow *)f->extension;
+                init_live_flow(&counts, f, dir, ts);
+	    	live = (LiveFlow *)f->extension;
 	} else {
         	live = (LiveFlow *)f->extension;
 		//if (tcp && tcp->syn && !tcp->ack)
 		//	live->init_dir = dir;
 	}
 
-	if (live->count_period != report_count) {
-		live->out_pbytes = 0;
-		live->out_wbytes = 0;
-		live->out_pkts = 0;
-		live->in_pbytes = 0;
-		live->in_pbytes = 0;
-		live->in_pkts = 0;
-		live->count_period = report_count;
-	}
-	
-	if (dir == 0) {
-		live->out_pbytes += trace_get_payload_length(packet);
-		live->out_wbytes += trace_get_wire_length(packet);
-		live->out_pkts += 1;
-	} else {
-		live->in_pbytes += trace_get_payload_length(packet);
-		live->in_wbytes += trace_get_wire_length(packet);
-		live->in_pkts += 1;
-
-		assert(trace_get_payload_length(packet) <= 65536);
-	}
+	update_liveflow_stats(live, packet, &counts, dir);
 
 	/* Pass the packet into libprotolive so that it can extract any
 	 * info it needs from this packet */
@@ -205,8 +185,7 @@ void per_packet(libtrace_packet_t *packet, uint32_t report_count) {
 
 	if (update_protocol_counters(live, &counts,
 			trace_get_wire_length(packet), 
-			trace_get_payload_length(packet), dir,
-			report_count) == -1) {
+			trace_get_payload_length(packet), dir) == -1) {
 		
 		trace_dump_packet(packet);
 		//dump_live_flow(live);
@@ -353,7 +332,7 @@ int main(int argc, char *argv[]) {
 	if (lpi_init_library() == -1)
 		return -1;
 
-	reset_counters(&counts, true);
+	init_live_counters(&counts);
 
 	if (optind == argc) {
 		fprintf(stderr, "No input sources specified!\n");
@@ -391,7 +370,7 @@ int main(int argc, char *argv[]) {
                 }
                 while (trace_read_packet(trace, packet) > 0) {
                         ts = trace_get_seconds(packet);
-			per_packet(packet, reports_done);
+			per_packet(packet);
 			if (next_report == 0.0 && ts != 0.0) {
 				next_report = ts + report_freq;
 			}
