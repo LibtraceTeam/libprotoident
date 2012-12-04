@@ -41,6 +41,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <netdb.h>
 
 #include <libtrace.h>
 #include <libwandevent.h>
@@ -75,6 +78,8 @@ char *local_id = (char*) "unnamed";
 
 /* A file descriptor event - used when waiting on input from a live interface */
 struct wand_fdcb_t fd_cb;
+struct wand_fdcb_t socket_cb;
+
 /* A timer event - used when waiting for the next packet to occur in a trace 
  * file replay
  */
@@ -89,6 +94,21 @@ struct wand_signal_t signal_sigint;
 struct timeval start_reporting_period;
 
 static volatile int done = 0;
+/* The default number of clients that can be connected to the server at a time. 
+ * Can be set when starting the server */
+int max_clients = 20; 
+
+/* Struct that contains a file descriptor which is used to store details about 
+ * connected clients */
+typedef struct {
+	int fd;
+} Client;
+
+/* Array of structs which are used to handle connections from clients */
+Client *client_array = NULL;
+
+/* Variable to store the number of currently connected clients */
+static int clientCounter = 0;
 
 LiveCounters counts;
 
@@ -97,6 +117,23 @@ void collect_packets(libtrace_t *trace, libtrace_packet_t *packet );
 
 void usage(char *prog) {
 	return;
+}
+
+int message_client(int f, char msg[]) {
+	char *message = msg;
+	int len = strlen(message);
+	int sent = 0;
+	
+	/* Continue until ALL of the message has been sent correctly */
+	while (sent < len) {
+		int ret = send(f, message + sent, len - sent, 0);
+		if (ret == -1) {
+			perror("send");
+			printf("Error sending message to client!");
+			return -1;
+		}
+		sent += ret;
+	}
 }
 
 /* Function which prints the stats to the console every n seconds, where n is a 
@@ -118,9 +155,14 @@ void output_stats(struct wand_timer_t *timer)
 
 	wand_add_timer(ev_hdl, &output_timer);
 
-	/* Call method which will dump the values of all the counters to 
-	 * standard output */
-	dump_counters_stdout(&counts, tv->tv_sec, local_id, report_freq);
+	// dump_counters_stdout(&counts, tv->tv_sec, local_id, report_freq);
+	
+	/* Send message to connected clients */
+	char msg[] = "Hello\n";
+	
+	for (int i = 0; i < clientCounter; i++) {
+		message_client(client_array[i].fd, msg);
+	}	 
 }
 
 /* Expires all flows that libflowmanager believes have been idle for too
@@ -239,6 +281,50 @@ void process_packet(libtrace_packet_t *packet)
 	/* Tell libflowmanager to update the expiry time for this flow */
 	lfm_update_flow_expiry_timeout(f, ts);	
 }
+
+
+
+void accept_connections(struct wand_fdcb_t *event, 
+			enum wand_eventtype_t event_type)
+{
+	printf("Server: trying to accept connection...\n");	
+	int lis_sock = event->fd;
+	
+	struct sockaddr_storage remote;
+	socklen_t addr_size = sizeof (remote);
+	
+	int new_fd = 0;
+	
+	new_fd = accept(lis_sock, (struct sockaddr *)&remote, &addr_size);	
+	
+	if (new_fd == -1) {
+		perror("accept");
+		//close(lis_sock);
+		return;
+	} else {
+		/* Array of clients not full yet, add client to array of connected clients */
+		if (clientCounter < max_clients) {
+			/* Create Client struct */
+			Client newClient;
+			newClient.fd = new_fd;
+		
+			/* Add it to the array of Clients */
+			client_array[clientCounter] = newClient;
+			clientCounter++;	
+			
+			printf("Server: Accepted connection!\n");	
+			printf("Server: Number of connected clients: %lu\n", 
+								clientCounter);					
+		} else {
+			printf("Server: Maximum number of connections reached! Cannot accept new clients!\n");	
+			char msg[] = "Server has exceeded the number of possible connections. Try again later!\n";
+			
+			if (message_client(new_fd, msg))			
+				close(new_fd);
+		}	
+	}	
+}
+
 
 /* File descriptor callback method which is executed when a fd is added */
 void source_read_event( struct wand_fdcb_t *event, 
@@ -369,6 +455,34 @@ int main(int argc, char *argv[])
 	bool opt_false = false;
 	bool ignore_rfc1918 = false;
 	
+	struct sockaddr_in addr;
+	int sock, sa_len = sizeof(struct sockaddr_in);
+	
+	sock = socket(PF_INET, SOCK_STREAM, 0);
+	if (sock == -1) {
+		perror ("socket");
+		return -1;
+	}
+	
+	addr.sin_family = AF_INET;
+	memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
+	addr.sin_port = htons(3124);
+	
+	/* Bind to all local IPv4 addresses */
+	addr.sin_addr.s_addr = INADDR_ANY;
+	
+	/* Bind the socket to the port */
+	if (bind(sock, (struct sockaddr *)&addr, sa_len) == -1) {
+		perror("bind");
+		return -1;
+	}
+	
+	/* Start listening for inbound connections */
+	if (listen(sock, 10) == -1) {
+		perror("listen");
+		return -1;
+	}	
+	
 	/* Initialise libwandevent */
 	if (wand_event_init() == -1) {
 		fprintf(stderr, "Error initialising libwandevent\n");
@@ -383,7 +497,14 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	
-	/* event handler has been correctly created, so add a signal event */
+	/* Add listening fd to libwandevent */
+	socket_cb.fd = sock;
+	socket_cb.flags = EV_READ;
+	socket_cb.data = NULL;
+	socket_cb.callback = accept_connections;
+	wand_add_event(ev_hdl, &socket_cb);
+	
+	/* event handler has been correctly created, so add a signal event for SIGINT */
 	signal_sigint.signum = SIGINT;
 	signal_sigint.data = NULL;
 	signal_sigint.callback = cleanup_signal;
@@ -394,7 +515,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	while ((opt = getopt(argc, argv, "f:l:i:r:TPR")) != EOF) {
+	while ((opt = getopt(argc, argv, "f:l:i:r:c:TPR")) != EOF) {
 		switch (opt) {
 			/* Ignore flows that do not match the given BPF filter */
 			case 'f':
@@ -415,6 +536,15 @@ int main(int argc, char *argv[])
 			 * the counters were last reset */
 			case 'r':
 				report_freq = atoi(optarg);
+				break;
+			/* The maximum number of clients that can connect to the 
+			 * server. 
+			 * Defaults to 20 if the option is not set */
+			case 'c':
+				max_clients = atoi(optarg);
+				/* set the size of the array that stores client 
+				 * file descriptors */
+				client_array = (Client*)malloc(max_clients * sizeof(Client));
 				break;
 			/* Use trace direction tags to determine direction */
 			case 'T':
@@ -543,6 +673,8 @@ int main(int argc, char *argv[])
 	wand_destroy_event_handler(ev_hdl);
 	expire_live_flows(0, true);
 	lpi_free_library();
+	close(sock);
+	free(client_array);
 	
 	return 0;
 }
