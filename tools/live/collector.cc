@@ -23,7 +23,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_live.cc 135 2012-11-29 04:01:59Z salcock $
+ * $Id$
  */
 
 
