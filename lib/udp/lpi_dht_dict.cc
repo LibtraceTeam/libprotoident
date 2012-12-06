@@ -148,6 +148,16 @@ static inline bool num_seq_match(uint32_t query, uint32_t resp) {
 
 }
 
+static inline bool match_bt_search(uint32_t payload, uint32_t len) {
+
+	/* Matches the BT-SEARCH command, which we've seen while messing with
+	 * World of Warcraft */
+	if (MATCHSTR(payload, "BT-S"))
+		return true;
+	return false;
+
+}
+
 static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_dict_query(data->payload[0], data->payload_len[0])) {
@@ -182,6 +192,15 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 				return false;
 		}
 		if (match_utp_reply(data->payload[0], data->payload_len[0]))
+			return true;
+	}
+
+	if (match_bt_search(data->payload[0], data->payload_len[0])) {
+		if (data->payload_len[1] == 0)
+			return true;
+	}
+	if (match_bt_search(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 0)
 			return true;
 	}
 
