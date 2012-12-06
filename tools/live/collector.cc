@@ -26,7 +26,6 @@
  * $Id$
  */
 
-
 #define __STDC_FORMAT_MACROS
 
 #include <stdio.h>
@@ -53,6 +52,7 @@
 
 #include "../tools_common.h"
 #include "live_common.h"
+#include "lpicp_export.h"
 
 wand_event_handler_t *ev_hdl = NULL;
 
@@ -70,11 +70,9 @@ uint8_t mac_bytes[6];
 libtrace_t *trace = NULL;
 libtrace_packet_t *packet = NULL;
 
-/* Number of seconds that have passed since the counters were last reset */
-uint32_t report_freq = 300;
 
-/* String that identifies this particular measurement process */ 
-char *local_id = (char*) "unnamed";
+uint32_t report_freq = 300;
+char* local_id = (char*) "unnamed";
 
 /* A file descriptor event - used when waiting on input from a live interface */
 struct wand_fdcb_t fd_cb;
@@ -94,21 +92,9 @@ struct wand_signal_t signal_sigint;
 struct timeval start_reporting_period;
 
 static volatile int done = 0;
-/* The default number of clients that can be connected to the server at a time. 
- * Can be set when starting the server */
-int max_clients = 20; 
-
-/* Struct that contains a file descriptor which is used to store details about 
- * connected clients */
-typedef struct {
-	int fd;
-} Client;
-
-/* Array of structs which are used to handle connections from clients */
-Client *client_array = NULL;
 
 /* Variable to store the number of currently connected clients */
-static int clientCounter = 0;
+//static int clientCounter = 0;
 
 LiveCounters counts;
 
@@ -117,23 +103,6 @@ void collect_packets(libtrace_t *trace, libtrace_packet_t *packet );
 
 void usage(char *prog) {
 	return;
-}
-
-int message_client(int f, char msg[]) {
-	char *message = msg;
-	int len = strlen(message);
-	int sent = 0;
-	
-	/* Continue until ALL of the message has been sent correctly */
-	while (sent < len) {
-		int ret = send(f, message + sent, len - sent, 0);
-		if (ret == -1) {
-			perror("send");
-			printf("Error sending message to client!");
-			return -1;
-		}
-		sent += ret;
-	}
 }
 
 /* Function which prints the stats to the console every n seconds, where n is a 
@@ -160,9 +129,11 @@ void output_stats(struct wand_timer_t *timer)
 	/* Send message to connected clients */
 	char msg[] = "Hello\n";
 	
-	for (int i = 0; i < clientCounter; i++) {
-		message_client(client_array[i].fd, msg);
-	}	 
+	
+	lpicp_export_counters(&counts, start_reporting_period, local_id, 
+		report_freq);
+	
+	
 }
 
 /* Expires all flows that libflowmanager believes have been idle for too
@@ -284,46 +255,7 @@ void process_packet(libtrace_packet_t *packet)
 
 
 
-void accept_connections(struct wand_fdcb_t *event, 
-			enum wand_eventtype_t event_type)
-{
-	printf("Server: trying to accept connection...\n");	
-	int lis_sock = event->fd;
-	
-	struct sockaddr_storage remote;
-	socklen_t addr_size = sizeof (remote);
-	
-	int new_fd = 0;
-	
-	new_fd = accept(lis_sock, (struct sockaddr *)&remote, &addr_size);	
-	
-	if (new_fd == -1) {
-		perror("accept");
-		//close(lis_sock);
-		return;
-	} else {
-		/* Array of clients not full yet, add client to array of connected clients */
-		if (clientCounter < max_clients) {
-			/* Create Client struct */
-			Client newClient;
-			newClient.fd = new_fd;
-		
-			/* Add it to the array of Clients */
-			client_array[clientCounter] = newClient;
-			clientCounter++;	
-			
-			printf("Server: Accepted connection!\n");	
-			printf("Server: Number of connected clients: %lu\n", 
-								clientCounter);					
-		} else {
-			printf("Server: Maximum number of connections reached! Cannot accept new clients!\n");	
-			char msg[] = "Server has exceeded the number of possible connections. Try again later!\n";
-			
-			if (message_client(new_fd, msg))			
-				close(new_fd);
-		}	
-	}	
-}
+
 
 
 /* File descriptor callback method which is executed when a fd is added */
@@ -455,6 +387,10 @@ int main(int argc, char *argv[])
 	bool opt_false = false;
 	bool ignore_rfc1918 = false;
 	
+	/* The default number of clients that can be connected to the server at a time. 
+	* Can be set when starting the server */
+	int max_clients = 20; 
+	
 	struct sockaddr_in addr;
 	int sock, sa_len = sizeof(struct sockaddr_in);
 	
@@ -541,10 +477,7 @@ int main(int argc, char *argv[])
 			 * server. 
 			 * Defaults to 20 if the option is not set */
 			case 'c':
-				max_clients = atoi(optarg);
-				/* set the size of the array that stores client 
-				 * file descriptors */
-				client_array = (Client*)malloc(max_clients * sizeof(Client));
+				max_clients = atoi(optarg);				
 				break;
 			/* Use trace direction tags to determine direction */
 			case 'T':
@@ -564,7 +497,10 @@ int main(int argc, char *argv[])
 				usage(argv[0]);
 		}
 	}
-
+	
+	/* set the size of the array that stores client file descriptors */
+	create_client_array(max_clients);
+	
 	// if -l <mac> was specified in the command line args
 	if (local_mac != NULL) {
 
@@ -674,7 +610,6 @@ int main(int argc, char *argv[])
 	expire_live_flows(0, true);
 	lpi_free_library();
 	close(sock);
-	free(client_array);
 	
 	return 0;
 }

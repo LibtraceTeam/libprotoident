@@ -1,7 +1,25 @@
 #ifndef LIVE_COMMON_H_
 #define LIVE_COMMON_H_
 
+#include <stdio.h>
+#include <assert.h>
+#include <getopt.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <netdb.h>
+
 #include <libprotoident.h>
+#include <libwandevent.h>
+#include <libflowmanager.h>
 
 /* This structure contains all the current values for all the statistics we
  * want our collector to track. There is an entry in each array for each
@@ -80,6 +98,21 @@ typedef struct live {
         lpi_module_t *proto;
 } LiveFlow;
 
+/* Struct that contains a file descriptor which is used to store details about 
+ * connected clients */
+typedef struct client {
+	int fd;
+} Client_t;
+
+
+typedef struct lpi_collect_buffer {
+	char buf[65535];
+	int buf_used;
+	int buf_exported;	
+} Lpi_collect_buffer_t;
+
+
+
 /* Allocates and initialises a new LiveFlow structure and attaches it to the
  * provided Flow structure. 
  * 
@@ -155,5 +188,14 @@ void destroy_live_flow(LiveFlow *live, LiveCounters *cnt);
  */
 void update_liveflow_stats(LiveFlow *live, libtrace_packet_t *packet,
                 LiveCounters *cnt, uint8_t dir);
+                
+void accept_connections(struct wand_fdcb_t *event, 
+				enum wand_eventtype_t event_type);
+				
+int message_client(int f, char msg[]);
+
+void create_client_array(int max_clients);
+
+int write_buffer_network(Lpi_collect_buffer_t *buffer);
 
 #endif

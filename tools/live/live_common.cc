@@ -1,13 +1,24 @@
 #define __STDC_FORMAT_MACROS
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
 #include <assert.h>
+#include <getopt.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <netdb.h>
 
 #include <libflowmanager.h>
 #include <libtrace.h>
+#include <libwandevent.h>
 
 #include "live_common.h"
 
@@ -23,6 +34,14 @@
 #define IN_CURR (cnt->in_current_flows)
 #define OUT_PEAK (cnt->out_peak_flows)
 #define IN_PEAK (cnt->in_peak_flows)
+
+/* Array of structs which are used to handle connections from clients */
+Client_t *client_array = NULL;
+/* Maximum number of clients that can be connected to the server at a time. */
+int max_clients; 
+
+/* Variable to store the number of currently connected clients */
+static int clientCounter = 0;
 
 void init_live_flow(LiveCounters *cnt, Flow *f, uint8_t dir, double ts) {
         LiveFlow *live = NULL;
@@ -339,4 +358,92 @@ void destroy_live_flow(LiveFlow *live, LiveCounters *cnt) {
 
 	free(live);
 
+}
+
+void accept_connections(struct wand_fdcb_t *event, 
+			enum wand_eventtype_t event_type)
+{
+	printf("Server: trying to accept connection...\n");	
+	int lis_sock = event->fd;
+	
+	struct sockaddr_storage remote;
+	socklen_t addr_size = sizeof (remote);
+	
+	int new_fd = 0;
+	
+	new_fd = accept(lis_sock, (struct sockaddr *)&remote, &addr_size);	
+	
+	if (new_fd == -1) {
+		perror("accept");
+		//close(lis_sock);
+		return;
+	} else {
+		/* Array of clients not full yet, add client to array of connected clients */
+		if (clientCounter < max_clients) {
+			/* Create Client struct */
+			Client_t newClient;
+			newClient.fd = new_fd;
+		
+			/* Add it to the array of Clients */
+			client_array[clientCounter] = newClient;
+			clientCounter++;	
+			
+			printf("Server: Accepted connection!\n");	
+			printf("Server: Number of connected clients: %lu\n", 
+								clientCounter);					
+		} else {
+			printf("Server: Maximum number of connections reached! Cannot accept new clients!\n");	
+			char msg[] = "Server has exceeded the number of possible connections. Try again later!\n";
+			
+			if (message_client(new_fd, msg))			
+				close(new_fd);
+		}	
+	}	
+}
+
+int message_client(int f, char msg[]) {
+	char *message = msg;
+	int len = strlen(message);
+	int sent = 0;
+	
+	/* Continue until ALL of the message has been sent correctly */
+	while (sent < len) {
+		int ret = send(f, message + sent, len - sent, 0);
+		if (ret == -1) {
+			perror("send");
+			printf("Error sending message to client!");
+			return -1;
+		}
+		sent += ret;
+	}
+}
+
+void create_client_array(int max_cl)
+{
+	client_array = (Client_t*)malloc(max_cl * sizeof(Client_t));
+	max_clients = max_cl;
+}
+
+int write_buffer_network(Lpi_collect_buffer_t *buffer)
+{
+	/* try to send the data to each of the connected clients */
+	for (int i = 0; i < clientCounter; i++) {
+		/* Continue until ALL of the message has been sent correctly */
+		while (buffer->buf_exported < buffer->buf_used) {
+			int ret = send( client_array[i].fd, /* client fd */
+					/* pointer to start of data */
+					buffer->buf + buffer->buf_exported, 
+					/* message size in bytes */
+					buffer->buf_used - buffer->buf_exported, 
+					/* flag */
+					0);
+			if (ret == -1) {
+				perror("send");
+				printf("Error sending data to client!");
+				return -1;
+			}		
+				
+			buffer->buf_exported += ret;			
+		}
+	}		
 }
