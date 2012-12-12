@@ -447,3 +447,4 @@ int write_buffer_network(Lpi_collect_buffer_t *buffer)
 		}
 	}		
 }
+

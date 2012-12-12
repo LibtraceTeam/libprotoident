@@ -111,8 +111,6 @@ typedef struct lpi_collect_buffer {
 	int buf_exported;	
 } Lpi_collect_buffer_t;
 
-
-
 /* Allocates and initialises a new LiveFlow structure and attaches it to the
  * provided Flow structure. 
  * 

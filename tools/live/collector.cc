@@ -53,6 +53,7 @@
 #include "../tools_common.h"
 #include "live_common.h"
 #include "lpicp_export.h"
+#include "lpicp.h"
 
 wand_event_handler_t *ev_hdl = NULL;
 
@@ -124,14 +125,7 @@ void output_stats(struct wand_timer_t *timer)
 
 	wand_add_timer(ev_hdl, &output_timer);
 
-	// dump_counters_stdout(&counts, tv->tv_sec, local_id, report_freq);
-	
-	/* Send message to connected clients */
-	char msg[] = "Hello\n";
-	
-	
-	lpicp_export_counters(&counts, start_reporting_period, local_id, 
-		report_freq);
+	lpicp_export_counters(&counts, start_reporting_period, local_id, report_freq);
 	
 	
 }
@@ -252,11 +246,6 @@ void process_packet(libtrace_packet_t *packet)
 	/* Tell libflowmanager to update the expiry time for this flow */
 	lfm_update_flow_expiry_timeout(f, ts);	
 }
-
-
-
-
-
 
 /* File descriptor callback method which is executed when a fd is added */
 void source_read_event( struct wand_fdcb_t *event, 
