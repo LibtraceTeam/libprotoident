@@ -17,6 +17,9 @@ enum lpicp_metric {
 	LPICP_METRIC_PEAK_FLOWS
 };
 
+/* Structure which defines a custom header used at the start of a packet which 
+ * contains flow records that are to be exported over a network.
+ * It contains the information that is common for all the flows. */
 typedef struct __attribute__((packed)) lpicp_header {
 	
 	uint8_t version;
@@ -27,6 +30,7 @@ typedef struct __attribute__((packed)) lpicp_header {
 
 } Lpicp_header_t ;
 
+/* Structure which defines a stat header used for LPICP_STATS records */
 typedef struct __attribute__((packed)) lpicp_stat_header {
 	uint32_t secs;
 	uint32_t usecs;
@@ -36,7 +40,9 @@ typedef struct __attribute__((packed)) lpicp_stat_header {
 	uint16_t num_records;		
 } Lpicp_stat_header_t;
 
+/* Function to convert a uint64_t to Host Byte Order from Network Byte Order */
 uint64_t ntoh64(uint64_t num);
 
+/* Function to convert a uint64_t to Network Byte Order from Host Byte Order */
 uint64_t hton64(uint64_t num);
 #endif

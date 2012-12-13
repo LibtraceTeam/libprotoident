@@ -53,6 +53,9 @@ typedef struct counters {
         uint64_t in_peak_flows[LPI_PROTO_LAST];
 	/* Peak values for out_current_flows since the last report */
         uint64_t out_peak_flows[LPI_PROTO_LAST];
+        
+	uint64_t remote_ips[LPI_PROTO_LAST];
+	uint64_t local_ips[LPI_PROTO_LAST];
 
 } LiveCounters;
 
@@ -105,11 +108,21 @@ typedef struct client {
 } Client_t;
 
 
+/* Struct which holds a buffer of bytes to be sent to the clients, a count of the 
+ * bytes used and the number of bytes exported from the buffer.
+ */
 typedef struct lpi_collect_buffer {
 	char buf[65535];
 	int buf_used;
 	int buf_exported;	
 } Lpi_collect_buffer_t;
+
+typedef struct ip_collector {
+	uint64_t currently_active_flows[LPI_PROTO_LAST];
+	
+	uint64_t total_observed_period[LPI_PROTO_LAST];
+} Ip_collector_t;
+
 
 /* Allocates and initialises a new LiveFlow structure and attaches it to the
  * provided Flow structure. 

@@ -71,7 +71,6 @@ uint8_t mac_bytes[6];
 libtrace_t *trace = NULL;
 libtrace_packet_t *packet = NULL;
 
-
 uint32_t report_freq = 300;
 char* local_id = (char*) "unnamed";
 
@@ -94,9 +93,8 @@ struct timeval start_reporting_period;
 
 static volatile int done = 0;
 
-/* Variable to store the number of currently connected clients */
-//static int clientCounter = 0;
-
+/* Structure which contains all the current values for all the statistics the 
+ * collector needs to track. */
 LiveCounters counts;
 
 /* Function prototype */
@@ -125,8 +123,7 @@ void output_stats(struct wand_timer_t *timer)
 
 	wand_add_timer(ev_hdl, &output_timer);
 
-	lpicp_export_counters(&counts, start_reporting_period, local_id, report_freq);
-	
+	lpicp_export_counters(&counts, start_reporting_period, local_id, report_freq);	
 	
 }
 
@@ -368,7 +365,7 @@ void collect_packets(libtrace_t *trace, libtrace_packet_t *packet )
 }
 
 int main(int argc, char *argv[])
-{
+{	
 	int opt, i;
 	libtrace_filter_t *filter = NULL;
 	char *filterstring = NULL;

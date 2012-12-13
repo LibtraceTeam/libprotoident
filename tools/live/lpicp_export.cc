@@ -90,18 +90,6 @@ int lpi_print_proto_values(int index, uint64_t* array)
 		*value = hton64(array[index]);
 		buffer.buf_used += sizeof(uint64_t);
 		
-		/*FILE *fp = NULL;
-		fp = fopen("data_server.txt", "a"); 
-
-		if(fp == NULL)	{
-			printf("Failed to open file for writing\n");
-			return -1;
-		} else {
-			fprintf(fp, "%s %u %u\n",lpi_print((lpi_protocol_t) index) , *proto_len, ntoh64(*value));	
-		}
-		
-		fclose(	fp);	*/		
-		
 		return 1;		
 	}	
 }

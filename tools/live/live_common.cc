@@ -15,12 +15,19 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <map>
 
 #include <libflowmanager.h>
 #include <libtrace.h>
 #include <libwandevent.h>
 
 #include "live_common.h"
+
+using namespace std;
+
+typedef map<char*, Ip_collector_t> Ip_map_t;
+
+Ip_map_t ip_map;
 
 /* These macros should make this code a lot more readable */
 #define PROTONUM (live->proto->protocol)
@@ -66,23 +73,43 @@ void init_live_flow(LiveCounters *cnt, Flow *f, uint8_t dir, double ts) {
 }
 
 void reset_counters(LiveCounters *cnt, bool wipe_all) {
-        memset(cnt->in_pkt_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+	
+	memset(cnt->in_pkt_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
         memset(cnt->out_pkt_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
         memset(cnt->in_byte_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
         memset(cnt->out_byte_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
         memset(cnt->in_flow_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
         memset(cnt->out_flow_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-
+        
+        memset(cnt->remote_ips, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+        memset(cnt->local_ips, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+                
         /* Don't reset the current flow count unless told to! */
         if (wipe_all) {
                 memset(IN_CURR, 0, LPI_PROTO_LAST*sizeof(uint64_t));
                 memset(OUT_CURR, 0, LPI_PROTO_LAST*sizeof(uint64_t));
-        }
+        } else { // steps 2,3,4
+        
+		/* Iterate over map */
+		for (Ip_map_t::iterator ii=ip_map.begin(); ii!=ip_map.end(); ii++) {
+			
+			for (int i = 0; i < LPI_PROTO_LAST; i++) {
+				(*ii).second.total_observed_period[i] = 
+					(*ii).second.currently_active_flows[i];
+				
+				/* Increment the local IP counter only if the IP 
+				 * is actually using that protocol */	
+				if ((*ii).second.total_observed_period[i] > 0) {
+					cnt->local_ips[i]++;
+				}
+			}			
+		}
+	}
+	
         for (int i = 0; i < LPI_PROTO_LAST; i++) {
                 cnt->in_peak_flows[i] = cnt->in_current_flows[i];
                 cnt->out_peak_flows[i] = cnt->out_current_flows[i];
         }
-
 
 	cnt->reports ++;
 
@@ -209,6 +236,10 @@ static inline void update_new(LiveFlow *live, LiveCounters *cnt) {
 	OUT_PKTS[PROTONUM] += live->out_pkts;
 	IN_BYTES[PROTONUM] += live->in_wbytes;
 	IN_PKTS[PROTONUM] += live->in_pkts;
+	
+	
+	
+	
 }
 
 
