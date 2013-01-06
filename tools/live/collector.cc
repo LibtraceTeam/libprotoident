@@ -124,7 +124,8 @@ void output_stats(struct wand_timer_t *timer)
 	wand_add_timer(ev_hdl, &output_timer);
 
 	lpicp_export_counters(&counts, start_reporting_period, local_id, report_freq);	
-	
+
+	reset_counters(&counts, false);
 }
 
 /* Expires all flows that libflowmanager believes have been idle for too
@@ -379,16 +380,22 @@ int main(int argc, char *argv[])
 	
 	struct sockaddr_in addr;
 	int sock, sa_len = sizeof(struct sockaddr_in);
-	
+	int sockopt = 1;
+
 	sock = socket(PF_INET, SOCK_STREAM, 0);
 	if (sock == -1) {
 		perror ("socket");
 		return -1;
 	}
+
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof(sockopt)) == -1) {
+		perror("setsockopt (SO_REUSEADDR)");
+		return -1;
+	}
 	
 	addr.sin_family = AF_INET;
 	memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
-	addr.sin_port = htons(3124);
+	addr.sin_port = htons(3678);
 	
 	/* Bind to all local IPv4 addresses */
 	addr.sin_addr.s_addr = INADDR_ANY;
