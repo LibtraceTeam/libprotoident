@@ -1,3 +1,36 @@
+/* 
+ * This file is part of libprotoident
+ *
+ * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Author: Shane Alcock
+ *
+ * With contributions from:
+ *      Aaron Murrihy
+ *      Donald Neal
+ *
+ * All rights reserved.
+ *
+ * This code has been developed by the University of Waikato WAND 
+ * research group. For further information please see http://www.wand.net.nz/
+ *
+ * libprotoident is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * libprotoident is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with libprotoident; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * $Id$
+ */
+
+
 #ifndef LIVE_COMMON_H_
 #define LIVE_COMMON_H_
 
@@ -21,17 +54,26 @@
 #include <libwandevent.h>
 #include <libflowmanager.h>
 
+using namespace std;
+
+typedef struct ip_collector {
+	uint64_t currently_active_flows[LPI_PROTO_LAST];
+	uint64_t total_observed_period[LPI_PROTO_LAST];
+} IPCollector;
+
+struct ltstr {
+	bool operator()(const char *s1, const char *s2) const {
+		return strcmp(s1, s2) < 0;
+	}
+};
+
+typedef map<const char*, IPCollector *, ltstr> IPMap;
+
 /* This structure contains all the current values for all the statistics we
- * want our collector to track. There is an entry in each array for each
- * supported LPI protocol */
-typedef struct counters {
-
-	/* The number of times that the counters have been reset, which
-	 * should correspond with the number of times we have reported
-	 * statistics (hence the name 'reports' rather than 'resets')
-	 */
-	uint32_t reports;
-
+ * want our collector to be able to track on a per-user basis. There is an 
+ * entry in each array for each supported LPI protocol */
+typedef struct user_counts {
+	
 	/* Incoming packets */
         uint64_t in_pkt_count[LPI_PROTO_LAST];
 	/* Outgoing packets */
@@ -53,9 +95,33 @@ typedef struct counters {
         uint64_t in_peak_flows[LPI_PROTO_LAST];
 	/* Peak values for out_current_flows since the last report */
         uint64_t out_peak_flows[LPI_PROTO_LAST];
-        
+	
+	/* Number of remote IPs that are talking to us */
 	uint64_t remote_ips[LPI_PROTO_LAST];
-	uint64_t local_ips[LPI_PROTO_LAST];
+} UserCounters;
+
+typedef map <char *, UserCounters *, ltstr> UserMap;
+
+typedef struct counters {
+
+	/* The number of times that the counters have been reset, which
+	 * should correspond with the number of times we have reported
+	 * statistics (hence the name 'reports' rather than 'resets')
+	 */
+	uint32_t reports;
+	uint32_t user_count;
+		
+	UserCounters all;
+	UserMap users;
+       
+       	/* These aren't useful to track on a per user basis */ 
+	IPMap active_local;
+	IPMap observed_local;
+
+	uint64_t all_local_ips[LPI_PROTO_LAST];
+	uint64_t active_local_ips[LPI_PROTO_LAST];
+
+	bool user_tracking;
 
 } LiveCounters;
 
@@ -99,29 +165,9 @@ typedef struct live {
         lpi_data_t lpi;
 	/* The protocol that this flow matches */
         lpi_module_t *proto;
+
+	bool activated_ip;
 } LiveFlow;
-
-/* Struct that contains a file descriptor which is used to store details about 
- * connected clients */
-typedef struct client {
-	int fd;
-} Client_t;
-
-
-/* Struct which holds a buffer of bytes to be sent to the clients, a count of the 
- * bytes used and the number of bytes exported from the buffer.
- */
-typedef struct lpi_collect_buffer {
-	char buf[65535];
-	int buf_used;
-	int buf_exported;	
-} Lpi_collect_buffer_t;
-
-typedef struct ip_collector {
-	uint64_t currently_active_flows[LPI_PROTO_LAST];
-	
-	uint64_t total_observed_period[LPI_PROTO_LAST];
-} Ip_collector_t;
 
 
 /* Allocates and initialises a new LiveFlow structure and attaches it to the
@@ -136,7 +182,7 @@ void init_live_flow(LiveCounters *cnt, Flow *f, uint8_t dir, double ts);
  *
  * This will reset ALL the counter values and the report count to zero.
  */
-void init_live_counters(LiveCounters *cnt);
+void init_live_counters(LiveCounters *cnt, bool track_users);
 
 /* Resets the counters - if not doing cumulative stats, this should be called
  * after outputting the counters. 
@@ -162,7 +208,7 @@ void reset_counters(LiveCounters *cnt, bool wipe_all);
  * Counters are not reset after dumping - you need to call reset_counters()
  * to do that.
  */
-void dump_counters_stdout(LiveCounters *cnt, double ts, char *local_id, 
+void dump_counters_stdout(UserCounters *cnt, double ts, char *local_id, 
                 uint32_t report_freq);
 
 /* Updates the counters based on the most recent packet for a given flow.
@@ -200,13 +246,5 @@ void destroy_live_flow(LiveFlow *live, LiveCounters *cnt);
 void update_liveflow_stats(LiveFlow *live, libtrace_packet_t *packet,
                 LiveCounters *cnt, uint8_t dir);
                 
-void accept_connections(struct wand_fdcb_t *event, 
-				enum wand_eventtype_t event_type);
-				
-int message_client(int f, char msg[]);
-
-void create_client_array(int max_clients);
-
-int write_buffer_network(Lpi_collect_buffer_t *buffer);
 
 #endif

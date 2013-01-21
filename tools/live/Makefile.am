@@ -1,6 +1,6 @@
 bin_PROGRAMS=lpi_live
 
-include_HEADERS=lpicp.h lpicp_export.h
+#include_HEADERS=lpicp.h lpicp_export.h
 
 include ../Makefile.tools
 lpi_live_SOURCES=lpi_live.cc live_common.cc ../tools_common.cc 

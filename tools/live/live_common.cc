@@ -1,3 +1,39 @@
+/* 
+ * This file is part of libprotoident
+ *
+ * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Author: Shane Alcock
+ *
+ * With contributions from:
+ *      Aaron Murrihy
+ *      Donald Neal
+ *
+ * All rights reserved.
+ *
+ * This code has been developed by the University of Waikato WAND 
+ * research group. For further information please see http://www.wand.net.nz/
+ *
+ * libprotoident is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * libprotoident is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with libprotoident; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * $Id$
+ */
+
+/* The basis of this code was taken from the lpi_live tool and moved into a
+ * separate source file that could be shared between the original tool and our
+ * new collector.
+ */
 #define __STDC_FORMAT_MACROS
 
 #include <stdio.h>
@@ -23,12 +59,6 @@
 
 #include "live_common.h"
 
-using namespace std;
-
-typedef map<char*, Ip_collector_t> Ip_map_t;
-
-Ip_map_t ip_map;
-
 /* These macros should make this code a lot more readable */
 #define PROTONUM (live->proto->protocol)
 #define OUT_BYTES (cnt->out_byte_count)
@@ -42,13 +72,141 @@ Ip_map_t ip_map;
 #define OUT_PEAK (cnt->out_peak_flows)
 #define IN_PEAK (cnt->in_peak_flows)
 
-/* Array of structs which are used to handle connections from clients */
-Client_t *client_array = NULL;
-/* Maximum number of clients that can be connected to the server at a time. */
-int max_clients; 
 
-/* Variable to store the number of currently connected clients */
-static int clientCounter = 0;
+static inline IPCollector * create_ip_collector() {
+	IPCollector *col = NULL;
+
+	col = (IPCollector *)malloc(sizeof(IPCollector));
+	memset(col->currently_active_flows, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+	memset(col->total_observed_period, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+
+	return col;
+}
+
+
+static void wipe_local_ip_collectors(IPMap *ipmap) {
+	
+	IPMap::iterator ii = ipmap->begin();
+
+	while (ii != ipmap->end()) {
+		IPMap::iterator tmp = ii;
+		ii ++;
+		free(tmp->second);
+		ipmap->erase(tmp);
+	}
+
+	assert(ipmap->empty());
+}
+
+static void reset_local_ip_counts(uint64_t *counts, IPMap *ipmap) {
+
+	IPMap::iterator ii = ipmap->begin();
+
+	while (ii != ipmap->end()) {
+		bool active = false;
+
+		for (int i = 0; i < LPI_PROTO_LAST; i++) {
+			ii->second->total_observed_period[i] = 
+				ii->second->currently_active_flows[i];
+			if (ii->second->total_observed_period[i] > 0) {
+				counts[i]++;
+				active = true;
+			}
+		}
+
+		if (!active) {
+			/* If there are no active flows for this IP,
+			 * remove it from the IP map to save space
+			 */
+			IPMap::iterator tmp = ii;
+			ii ++;
+			free((char *)tmp->first);
+			free(tmp->second);
+			ipmap->erase(tmp);
+		} else {
+			ii++;
+		}
+	}
+
+}
+
+static int reset_user(UserCounters *user, bool wipe_all) {
+	size_t array_size = LPI_PROTO_LAST * sizeof(uint64_t);
+
+	memset(user->in_pkt_count, 0, array_size);
+        memset(user->out_pkt_count, 0, array_size);
+        memset(user->in_byte_count, 0, array_size);
+        memset(user->out_byte_count, 0, array_size);
+        memset(user->in_flow_count, 0, array_size);
+        memset(user->out_flow_count, 0, array_size);
+        
+        memset(user->remote_ips, 0, array_size);
+                
+        /* Don't reset the current flow count unless told to! */
+        if (wipe_all) {
+                memset(user->in_current_flows, 0, array_size);
+                memset(user->out_current_flows, 0, array_size);
+        } 
+	
+        for (int i = 0; i < LPI_PROTO_LAST; i++) {
+                user->in_peak_flows[i] = user->in_current_flows[i];
+                user->out_peak_flows[i] = user->out_current_flows[i];
+        }
+
+
+	if (user->in_current_flows > 0)
+		return 0;
+	if (user->out_current_flows > 0)
+		return 0;
+
+	/* Tell the caller that this user is no longer active and can be
+	 * released */
+	return 1;
+
+}
+
+void reset_counters(LiveCounters *cnt, bool wipe_all) {
+
+	UserMap::iterator it, tmp; 
+
+	reset_user(&cnt->all, wipe_all);
+
+	it = cnt->users.begin();
+
+	while (it != cnt->users.end()) {
+		if (reset_user(it->second, wipe_all)) {
+			tmp = it;
+			it ++;
+			free((void *)tmp->first);
+			free(tmp->second);
+			cnt->users.erase(tmp);
+		} else {
+			it ++;
+		}
+	}
+        memset(cnt->all_local_ips, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+        memset(cnt->active_local_ips, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+
+	if (!wipe_all) {
+		reset_local_ip_counts(cnt->all_local_ips, &cnt->observed_local);
+		reset_local_ip_counts(cnt->active_local_ips, &cnt->active_local);
+	} else {
+		wipe_local_ip_collectors(&cnt->observed_local);
+		wipe_local_ip_collectors(&cnt->active_local);
+	}
+	cnt->reports ++;
+}
+
+
+void init_live_counters(LiveCounters *cnt, bool track_users) {
+
+	cnt->user_tracking = track_users;
+	reset_counters(cnt, true);
+	
+	/* Force the report count to be zero, because reset_counters would
+	 * normally increment it */
+	cnt->reports = 0;
+}
 
 void init_live_flow(LiveCounters *cnt, Flow *f, uint8_t dir, double ts) {
         LiveFlow *live = NULL;
@@ -68,60 +226,28 @@ void init_live_flow(LiveCounters *cnt, Flow *f, uint8_t dir, double ts) {
         f->extension = live;
         live->proto = NULL;
 
+	live->activated_ip = false;
+
         f->id.get_local_ip_str(live->local_ip);
         f->id.get_external_ip_str(live->ext_ip);
-}
 
-void reset_counters(LiveCounters *cnt, bool wipe_all) {
-	
-	memset(cnt->in_pkt_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        memset(cnt->out_pkt_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        memset(cnt->in_byte_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        memset(cnt->out_byte_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        memset(cnt->in_flow_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        memset(cnt->out_flow_count, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        
-        memset(cnt->remote_ips, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-        memset(cnt->local_ips, 0, LPI_PROTO_LAST * sizeof(uint64_t));
-                
-        /* Don't reset the current flow count unless told to! */
-        if (wipe_all) {
-                memset(IN_CURR, 0, LPI_PROTO_LAST*sizeof(uint64_t));
-                memset(OUT_CURR, 0, LPI_PROTO_LAST*sizeof(uint64_t));
-        } else { // steps 2,3,4
-        
-		/* Iterate over map */
-		for (Ip_map_t::iterator ii=ip_map.begin(); ii!=ip_map.end(); ii++) {
-			
-			for (int i = 0; i < LPI_PROTO_LAST; i++) {
-				(*ii).second.total_observed_period[i] = 
-					(*ii).second.currently_active_flows[i];
-				
-				/* Increment the local IP counter only if the IP 
-				 * is actually using that protocol */	
-				if ((*ii).second.total_observed_period[i] > 0) {
-					cnt->local_ips[i]++;
-				}
-			}			
-		}
+	if (cnt->user_tracking) {
+		/* Create a new counter for the user if needed */
+		UserMap::iterator it = cnt->users.find(live->local_ip);
+		if (it != cnt->users.end())
+			return;
+
+		size_t key_len = strlen(live->local_ip) + 1;
+		char *key = (char *)malloc(key_len);
+		memcpy(key, live->local_ip, key_len);
+		
+		UserCounters *uc = (UserCounters *)malloc(sizeof(UserCounters));
+		reset_user(uc, true);
+		cnt->users[key] = uc;
+		cnt->user_count ++;
 	}
-	
-        for (int i = 0; i < LPI_PROTO_LAST; i++) {
-                cnt->in_peak_flows[i] = cnt->in_current_flows[i];
-                cnt->out_peak_flows[i] = cnt->out_current_flows[i];
-        }
 
-	cnt->reports ++;
 
-}
-
-void init_live_counters(LiveCounters *cnt) {
-
-	reset_counters(cnt, true);
-	
-	/* Force the report count to be zero, because reset_counters would
-	 * normally increment it */
-	cnt->reports = 0;
 }
 
 static void stdout_counter_array(double ts, const char *id, uint32_t freq,
@@ -143,7 +269,7 @@ static void stdout_counter_array(double ts, const char *id, uint32_t freq,
 }
 
 /* Dumps the values for all of our counters to standard output */
-void dump_counters_stdout(LiveCounters *cnt, double ts, char *local_id, 
+void dump_counters_stdout(UserCounters *cnt, double ts, char *local_id, 
 		uint32_t report_freq) {
 
         stdout_counter_array(ts, local_id, report_freq, "in_pkts", IN_PKTS);
@@ -195,12 +321,74 @@ static bool should_guess(LiveFlow *live, uint32_t plen, uint8_t dir) {
         return false;
 }
 
+static inline void activate_local_ip(LiveFlow *live, IPMap *ipmap, 
+		uint64_t *ip_counts) {
 
-static inline void update_unchanged(LiveFlow *live, LiveCounters *cnt,
+	/* Update the IP map for this flow */
+	IPMap::iterator it;
+	IPCollector *ip_coll = NULL;
+
+	it = ipmap->find(live->local_ip);
+	if (it == ipmap->end()) {
+		size_t key_len = strlen(live->local_ip) + 1;
+		char *key = (char *)malloc(key_len);
+		memcpy(key, live->local_ip, key_len);
+		
+		ip_coll = create_ip_collector();
+		(*ipmap)[key] = ip_coll;
+
+	} else {
+		ip_coll = it->second;
+	}
+
+	ip_coll->currently_active_flows[PROTONUM] += 1;
+	ip_coll->total_observed_period[PROTONUM] += 1;
+
+	if (ip_coll->total_observed_period[PROTONUM] == 1)
+		ip_counts[PROTONUM] += 1;	
+
+}
+
+static inline void swap_local_ip(LiveFlow *live, IPMap *ipmap, 
+		uint64_t *ip_counts, lpi_protocol_t old) {
+
+	IPCollector *col = NULL;
+	IPMap::iterator it = ipmap->find(live->local_ip);
+	assert(it != ipmap->end());
+
+	col = it->second;
+	assert(col->currently_active_flows[old] > 0);
+	assert(col->total_observed_period[old] > 0);
+
+	col->currently_active_flows[old] -= 1;
+	col->total_observed_period[old] -= 1;
+	col->currently_active_flows[PROTONUM] += 1;
+	col->total_observed_period[PROTONUM] += 1;
+
+	if (col->total_observed_period[old] == 0) {
+		ip_counts[old] -= 1;
+	}
+	if (col->total_observed_period[PROTONUM] == 1) {
+		ip_counts[PROTONUM] += 1;
+	}
+	
+	
+}
+
+static inline void deactivate_local_ip(LiveFlow *live, IPMap *ipmap) { 
+
+	IPMap::iterator it = ipmap->find(live->local_ip);
+	assert(it != ipmap->end());
+	IPCollector *col = it->second;
+	col->currently_active_flows[PROTONUM] -= 1;
+
+}
+
+static inline void update_unchanged(LiveFlow *live, UserCounters *cnt,
                 uint32_t wlen,  uint8_t dir) {
         /* The protocol classification hasn't changed, so just increment
 	 * the packet and byte counters based on the new packet */
-	
+
 	if (dir == 0) {
                 OUT_BYTES[PROTONUM] += wlen;
                 OUT_PKTS[PROTONUM] += 1;
@@ -210,7 +398,29 @@ static inline void update_unchanged(LiveFlow *live, LiveCounters *cnt,
         }
 }
 
-static inline void update_new(LiveFlow *live, LiveCounters *cnt) {
+static inline void update_unchanged_ip(LiveFlow *live, LiveCounters *cnt,
+		uint32_t plen, uint8_t dir) {
+
+	/* Basically, we are just checking for cases where the flow has not
+	 * seen any outgoing payload originally, but this last packet has
+	 * changed that so we need to count the local IP as active */
+
+	if (dir != 0)
+		return;
+	if (plen == 0)
+		return;
+	if (plen != live->out_pbytes)
+		return;
+
+	if (PROTONUM == LPI_PROTO_NO_PAYLOAD)
+		assert(0);
+	assert(live->activated_ip == false);
+	//printf("UNCHANGED: Activating %s\n", live->local_ip, PROTONUM);	
+	activate_local_ip(live, &(cnt->active_local), cnt->active_local_ips);
+	live->activated_ip = true;
+}
+
+static inline void update_new(LiveFlow *live, UserCounters *cnt) {
 
 	/* This is a new flow that has been classified for the first
 	 * time. We therefore need to increase the new, current and
@@ -237,13 +447,31 @@ static inline void update_new(LiveFlow *live, LiveCounters *cnt) {
 	IN_BYTES[PROTONUM] += live->in_wbytes;
 	IN_PKTS[PROTONUM] += live->in_pkts;
 	
-	
-	
-	
+}
+
+static inline void update_new_ip(LiveFlow *live, LiveCounters *cnt) {
+
+	/* New flow, so increment the observed IP count */
+	activate_local_ip(live, &(cnt->observed_local), cnt->all_local_ips);
+
+	/* If this flow has sent payload in direction 0, update the active
+	 * IP count too */
+
+	if (live->out_pbytes == 0) {
+		return;
+	}
+
+	if (PROTONUM == LPI_PROTO_NO_PAYLOAD)
+		assert(0);
+
+	//printf("NEW: Activating %s %d\n", live->local_ip, PROTONUM);	
+	assert(live->activated_ip == false);
+	activate_local_ip(live, &(cnt->active_local), cnt->active_local_ips);
+	live->activated_ip = true;
 }
 
 
-static inline void update_changed(LiveFlow *live, LiveCounters *cnt, 
+static inline void update_changed(LiveFlow *live, UserCounters *cnt, 
 		uint32_t wlen, uint8_t dir, uint32_t period,
 		lpi_protocol_t old) {
 
@@ -306,8 +534,6 @@ static inline void update_changed(LiveFlow *live, LiveCounters *cnt,
 		decrement_counter(IN_PKTS, old, live->in_pkts - 1);
 
 	}
-
-	
 	/* Right, now we can add our packets and bytes to the counter for
 	 * our new protocol */
 	OUT_BYTES[PROTONUM] += live->out_wbytes;
@@ -315,6 +541,31 @@ static inline void update_changed(LiveFlow *live, LiveCounters *cnt,
 	IN_BYTES[PROTONUM] += live->in_wbytes;
 	IN_PKTS[PROTONUM] += live->in_pkts;
 }
+
+static void update_changed_ip(LiveFlow *live, LiveCounters *cnt, 
+		uint32_t plen, uint8_t dir, lpi_protocol_t old) {
+	
+	swap_local_ip(live, &cnt->observed_local, cnt->all_local_ips, old);
+
+	if (live->out_pbytes == 0)
+		return;
+	
+	if (PROTONUM == LPI_PROTO_NO_PAYLOAD)
+		assert(0);
+	if (dir == 0 && plen == live->out_pbytes) {
+		/* The packet that triggered the change is the first 
+		 * outgoing packet for this flow, so we haven't activated
+		 * the IP for this flow yet! */
+		//printf("SWAP: Activating %s %d\n", live->local_ip, PROTONUM);	
+		activate_local_ip(live, &(cnt->active_local), 
+				cnt->active_local_ips);
+		return;
+	}
+	
+	//printf("Swapping %s %d->%d\n", live->local_ip, old, PROTONUM);	
+	swap_local_ip(live, &cnt->active_local, cnt->active_local_ips, old);
+}
+	
 
 int update_protocol_counters(LiveFlow *live, LiveCounters *cnt, uint32_t wlen,
                 uint32_t plen, uint8_t dir) {
@@ -334,12 +585,28 @@ int update_protocol_counters(LiveFlow *live, LiveCounters *cnt, uint32_t wlen,
         }
 
         if (old_proto == live->proto) {
-                update_unchanged(live, cnt, wlen, dir);
+                update_unchanged(live, &cnt->all, wlen, dir);
+		if (cnt->user_tracking) {
+			update_unchanged(live, cnt->users[live->local_ip],
+					wlen, dir);
+		}
+		update_unchanged_ip(live, cnt, plen, dir);
         } else if (old_proto == NULL) {
-                update_new(live, cnt);
+                update_new(live, &cnt->all);
+		if (cnt->user_tracking) {
+			update_new(live, cnt->users[live->local_ip]);
+		}
+		update_new_ip(live, cnt);
+
         } else {
-		update_changed(live, cnt, wlen, dir, cnt->reports, 
+		update_changed(live, &cnt->all, wlen, dir, cnt->reports, 
 				old_proto->protocol);
+		if (cnt->user_tracking) {
+			update_changed(live, cnt->users[live->local_ip],
+					wlen, dir, cnt->reports, 
+					old_proto->protocol);
+		}
+		update_changed_ip(live, cnt, plen, dir, old_proto->protocol);
 	}
 
 	return 0;
@@ -351,11 +618,9 @@ void update_liveflow_stats(LiveFlow *live, libtrace_packet_t *packet,
 	/* We're in a new reporting period - reset our stats because we
  	 * only want the amount of traffic since we last reported */
 	if (live->count_period != cnt->reports) {
-                live->out_pbytes = 0;
                 live->out_wbytes = 0;
                 live->out_pkts = 0;
-                live->in_pbytes = 0;
-                live->in_pbytes = 0;
+                live->in_wbytes = 0;
                 live->in_pkts = 0;
                 live->count_period = cnt->reports;
         }
@@ -375,10 +640,7 @@ void update_liveflow_stats(LiveFlow *live, libtrace_packet_t *packet,
 
 }
 
-void destroy_live_flow(LiveFlow *live, LiveCounters *cnt) {
-
-	/* Decrement the currently active flow counter for our matching
-	 * protocol */
+static inline void update_counter_expired(LiveFlow *live, UserCounters *cnt) {
 	if (live->init_dir == 0) {
 		assert(OUT_CURR[PROTONUM] != 0);
 		OUT_CURR[PROTONUM] --;
@@ -386,96 +648,29 @@ void destroy_live_flow(LiveFlow *live, LiveCounters *cnt) {
 		assert(IN_CURR[PROTONUM] != 0);
 		IN_CURR[PROTONUM] --;
 	}
-
-	free(live);
-
 }
 
-void accept_connections(struct wand_fdcb_t *event, 
-			enum wand_eventtype_t event_type)
-{
-	printf("Server: trying to accept connection...\n");	
-	int lis_sock = event->fd;
-	
-	struct sockaddr_storage remote;
-	socklen_t addr_size = sizeof (remote);
-	
-	int new_fd = 0;
-	
-	new_fd = accept(lis_sock, (struct sockaddr *)&remote, &addr_size);	
-	
-	if (new_fd == -1) {
-		perror("accept");
-		//close(lis_sock);
+static inline void update_expired_ip(LiveFlow *live, LiveCounters *cnt) {
+
+	deactivate_local_ip(live, &(cnt->observed_local));
+	if (live->out_pbytes == 0)
 		return;
-	} else {
-		/* Array of clients not full yet, add client to array of connected clients */
-		if (clientCounter < max_clients) {
-			/* Create Client struct */
-			Client_t newClient;
-			newClient.fd = new_fd;
-		
-			/* Add it to the array of Clients */
-			client_array[clientCounter] = newClient;
-			clientCounter++;	
-			
-			printf("Server: Accepted connection!\n");	
-			printf("Server: Number of connected clients: %lu\n", 
-								clientCounter);					
-		} else {
-			printf("Server: Maximum number of connections reached! Cannot accept new clients!\n");	
-			char msg[] = "Server has exceeded the number of possible connections. Try again later!\n";
-			
-			if (message_client(new_fd, msg))			
-				close(new_fd);
-		}	
-	}	
+	deactivate_local_ip(live, &(cnt->active_local));
+
 }
 
-int message_client(int f, char msg[]) {
-	char *message = msg;
-	int len = strlen(message);
-	int sent = 0;
+void destroy_live_flow(LiveFlow *live, LiveCounters *cnt) {
+
+	/* Decrement the currently active flow counter for our matching
+	 * protocol */
 	
-	/* Continue until ALL of the message has been sent correctly */
-	while (sent < len) {
-		int ret = send(f, message + sent, len - sent, 0);
-		if (ret == -1) {
-			perror("send");
-			printf("Error sending message to client!");
-			return -1;
-		}
-		sent += ret;
+	update_counter_expired(live, &cnt->all);
+	if (cnt->user_tracking) {
+		update_counter_expired(live, cnt->users[live->local_ip]);
 	}
+	
+	update_expired_ip(live, cnt);
+	free(live);
 }
 
-void create_client_array(int max_cl)
-{
-	client_array = (Client_t*)malloc(max_cl * sizeof(Client_t));
-	max_clients = max_cl;
-}
-
-int write_buffer_network(Lpi_collect_buffer_t *buffer)
-{
-	/* try to send the data to each of the connected clients */
-	for (int i = 0; i < clientCounter; i++) {
-		/* Continue until ALL of the message has been sent correctly */
-		while (buffer->buf_exported < buffer->buf_used) {
-			int ret = send( client_array[i].fd, /* client fd */
-					/* pointer to start of data */
-					buffer->buf + buffer->buf_exported, 
-					/* message size in bytes */
-					buffer->buf_used - buffer->buf_exported, 
-					/* flag */
-					0);
-			if (ret == -1) {
-				perror("send");
-				printf("Error sending data to client!");
-				return -1;
-			}		
-				
-			buffer->buf_exported += ret;			
-		}
-	}		
-}
 

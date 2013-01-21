@@ -80,14 +80,14 @@ void dump_rrd_counters(double ts) {
 		if (lpi_is_protocol_inactive((lpi_protocol_t)i))
 			continue;
 		fprintf(stdout, "%s %s %u:", local_id, lpi_print((lpi_protocol_t)i), (uint32_t)ts);
-		fprintf(stdout, "%" PRIu64 ":", counts.in_pkt_count[i]);
-		fprintf(stdout, "%" PRIu64 ":", counts.out_pkt_count[i]);
-		fprintf(stdout, "%" PRIu64 ":", counts.in_byte_count[i]);
-		fprintf(stdout, "%" PRIu64 ":", counts.out_byte_count[i]);
-		fprintf(stdout, "%" PRIu64 ":", counts.in_flow_count[i]);
-		fprintf(stdout, "%" PRIu64 ":", counts.out_flow_count[i]);
-		fprintf(stdout, "%" PRIu64 ":", counts.in_current_flows[i]);
-		fprintf(stdout, "%" PRIu64 "\n", counts.out_current_flows[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.in_pkt_count[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.out_pkt_count[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.in_byte_count[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.out_byte_count[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.in_flow_count[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.out_flow_count[i]);
+		fprintf(stdout, "%" PRIu64 ":", counts.all.in_current_flows[i]);
+		fprintf(stdout, "%" PRIu64 "\n", counts.all.out_current_flows[i]);
 	}
 
 }
@@ -332,7 +332,7 @@ int main(int argc, char *argv[]) {
 	if (lpi_init_library() == -1)
 		return -1;
 
-	init_live_counters(&counts);
+	init_live_counters(&counts, false);
 
 	if (optind == argc) {
 		fprintf(stderr, "No input sources specified!\n");
@@ -379,7 +379,7 @@ int main(int argc, char *argv[]) {
 				if (output_rrd) {
 					dump_rrd_counters(next_report - report_freq);
 				} else {
-					dump_counters_stdout(&counts, next_report - report_freq, local_id, report_freq);
+					dump_counters_stdout(&counts.all, next_report - report_freq, local_id, report_freq);
 				}
 				reset_counters(&counts, false);
 				next_report += report_freq;
