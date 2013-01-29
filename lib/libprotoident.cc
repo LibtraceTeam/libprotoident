@@ -113,6 +113,8 @@ void lpi_init_data(lpi_data_t *data) {
 
 	data->payload[0] = 0;
 	data->payload[1] = 0;
+	data->seen_syn[0] = false;
+	data->seen_syn[1] = false;
 	data->seqno[0] = 0;
 	data->seqno[1] = 0;
 	data->observed[0] = 0;
@@ -128,7 +130,7 @@ void lpi_init_data(lpi_data_t *data) {
 }
 
 static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
-		uint32_t rem) {
+		uint32_t rem, uint32_t psize) {
 	uint32_t seq = 0;
 
 	if (rem < sizeof(libtrace_tcp_t))
@@ -145,6 +147,17 @@ static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
 
 	if (tcp->syn && data->payload_len[dir] == 0) {
 		data->seqno[dir] = seq + 1;
+		data->seen_syn[dir] = true;
+	}
+
+	/* Ok, we've got some payload but we never saw the SYN for this
+	 * direction. What do we do?
+	 *
+	 * Current idea: just assume this is the first payload bearing
+	 * packet. Better than running around with an uninitialised seqno */
+	if (data->seen_syn[dir] == false && psize > 0) {
+		data->seqno[dir] = seq;
+		data->seen_syn[dir] = true;
 	}
 
 	if (seq_cmp(seq, data->seqno[dir]) > 0)
@@ -202,7 +215,7 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		return 0;		
 
 	if (proto == 6) {
-		if (update_tcp_flow(data, (libtrace_tcp_t *)transport, dir, rem) == 0) 
+		if (update_tcp_flow(data, (libtrace_tcp_t *)transport, dir, rem, psize) == 0) 
 			return 0;
 		payload = (char *)trace_get_payload_from_tcp(
 				(libtrace_tcp_t *)transport, &rem);

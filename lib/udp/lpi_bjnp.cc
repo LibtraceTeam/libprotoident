@@ -46,7 +46,11 @@ static inline bool match_bjnp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	/* Apparently, there are a few other combinations that we can see */
 	if (match_str_either(data, "BNJB"))
 		return true;
+	if (match_str_either(data, "BJNB"))
+		return true;
 	if (match_str_either(data, "PJNB"))
+		return true;
+	if (match_str_either(data, "PNJB"))
 		return true;
 	
 

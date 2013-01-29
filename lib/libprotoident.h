@@ -255,6 +255,7 @@ typedef enum {
 	LPI_PROTO_PALRINGO,
 	LPI_PROTO_CRYPTIC,		/* Games by Cryptic */
 	LPI_PROTO_SUPL,
+	LPI_PROTO_MINECRAFT,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -412,6 +413,7 @@ typedef enum {
  * should be ok. */
 typedef struct lpi {
 	uint32_t payload[2];
+	bool seen_syn[2];
 	uint32_t seqno[2];
 	uint32_t observed[2];
 	uint16_t server_port;

@@ -79,7 +79,9 @@ static inline bool match_zeroaccess_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 
 	/* Pretty unlikely that the CRC will be exactly 0, but 0 is a
 	 * common payload for other UDP protocols */
-	if (data->payload[0] == 0 || data->payload[1] == 0)
+	if (data->payload[0] == 0 && data->payload_len[0] != 0)
+		return false;
+	if (data->payload[1] == 0 && data->payload_len[1] != 0)
 		return false;
 
 	if (data->payload_len[0] == 16) {
@@ -87,12 +89,34 @@ static inline bool match_zeroaccess_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 			return true;
 		if (data->payload_len[1] == 988)
 			return true;
+		if (data->payload_len[1] == 568)
+			return true;
+
+		/* If no response, lets at least force it to be on the
+		 * default port before reporting a match */
+		if (data->payload_len[1] == 0) {
+			if (data->server_port == 16464)
+				return true;
+			if (data->client_port == 16464)
+				return true;
+		}
 	}
 	if (data->payload_len[1] == 16) {
 		if (data->payload_len[0] == 848)
 			return true;
 		if (data->payload_len[0] == 988)
 			return true;
+		if (data->payload_len[0] == 568)
+			return true;
+
+		/* If no response, lets at least force it to be on the
+		 * default port before reporting a match */
+		if (data->payload_len[0] == 0) {
+			if (data->server_port == 16464)
+				return true;
+			if (data->client_port == 16464)
+				return true;
+		}
 	}
 
 	return false;
@@ -102,7 +126,7 @@ static lpi_module_t lpi_zeroaccess_udp = {
 	LPI_PROTO_UDP_ZEROACCESS,
 	LPI_CATEGORY_MALWARE,
 	"ZeroAccess_UDP",
-	20,
+	40,
 	match_zeroaccess_udp
 };
 

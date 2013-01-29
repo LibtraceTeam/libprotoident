@@ -73,6 +73,8 @@ static inline bool match_utp_reply(uint32_t payload, uint32_t len) {
                 return true;
 	if (MATCH(payload, 0x21, 0x02, ANY, ANY) && (len == 30 || len == 33))
                 return true;
+        if (MATCH(payload, 0x21, 0x01, ANY, ANY) && len == 26)
+                return true;
         if (MATCH(payload, 0x21, 0x00, ANY, ANY) && len == 20)
                 return true;
 	if (MATCH(payload, 0x31, 0x02, ANY, ANY) && len == 30)
@@ -165,12 +167,16 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 		if (match_utp_reply(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_utp_query(data->payload[1], data->payload_len[1]))
+			return true;
 	}
 	
 	if (match_dict_query(data->payload[1], data->payload_len[1])) {
 		if (match_dict_reply(data->payload[0], data->payload_len[0]))
 			return true;
 		if (match_utp_reply(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_utp_query(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 

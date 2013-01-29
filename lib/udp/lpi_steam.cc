@@ -36,6 +36,30 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_39_request(uint32_t payload, uint32_t len) {
+
+	if (len != 4)
+		return false;
+	if (!MATCH(payload, 0x39, 0x18, 0x00, 0x00))
+		return false;
+	
+	return true;
+
+}
+
+static inline bool match_3a_response(uint32_t payload, uint32_t len) {
+
+	if (len == 0)
+		return true;
+
+	if (len != 8)
+		return false;
+	if (!MATCH(payload, 0x3a, 0x18, 0x00, 0x00))
+		return false;
+	
+	return true;
+
+}
 static inline bool match_steam_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Master Server Queries begin with 31 ff 30 2e
@@ -68,6 +92,18 @@ static inline bool match_steam_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         }
 
+	/* This stuff is definitely related to Steam or some game played
+	 * over Steam - need to look into this more at some point */
+
+	if (match_39_request(data->payload[0], data->payload_len[0])) {
+		if (match_3a_response(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+	if (match_39_request(data->payload[1], data->payload_len[1])) {
+		if (match_3a_response(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 	
 	return false;
 }

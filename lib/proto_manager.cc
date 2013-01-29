@@ -128,6 +128,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_kaspersky(mod_map);
 	register_ldap(mod_map);
 	register_message4u(mod_map);
+	register_minecraft(mod_map);
 	//register_mitglieder(mod_map);
 	register_mms(mod_map);
 	register_mp2p(mod_map);

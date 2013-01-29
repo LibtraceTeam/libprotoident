@@ -42,10 +42,19 @@ static inline bool match_irc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		return true;
 	if (match_str_either(data, "NICK"))
 		return true;
+	if (match_str_either(data, "\x0aNIC"))
+		return true;
 	if (match_str_both(data, ":irc", "USER"))
 		return true;
 	if (match_str_both(data, ":loc", "MODE"))
 		return true;
+
+
+	/* Trying to match on broken IRC implementations :) */
+	if (data->server_port == 6667 || data->client_port == 6667) {
+		if (match_str_either(data, "ERRO"))
+			return true;
+	}
 
 	return false;
 }

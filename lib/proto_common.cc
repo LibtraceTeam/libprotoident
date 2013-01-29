@@ -231,6 +231,8 @@ bool match_file_header(uint32_t payload) {
         /* MP3 */
         if (MATCH(payload, 'I', 'D', '3', 0x03))
                 return true;
+	if (MATCHSTR(payload, "\xff\xfb\x90\xc0"))
+		return true;
 
         /* RPM */
         if (MATCH(payload, 0xed, 0xab, 0xee, 0xdb))

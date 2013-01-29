@@ -54,6 +54,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_kaspersky.cc \
 	lpi_ldap.cc \
 	lpi_message4u.cc \
+	lpi_minecraft.cc \
 	lpi_mitglieder.cc \
 	lpi_mms.cc \
 	lpi_mp2p.cc \
