@@ -36,47 +36,30 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_roblox_out(uint32_t payload, uint32_t len) {
+/* League of Legends: a popular online game circa 2012/2013 */
+static inline bool match_lol(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (MATCHSTR(payload, "\x05\x00\xff\xff"))
-		return true;
-	return false;
+	/* This is based entirely on traffic captured while playing LoL */
 
-}
-
-static inline bool match_roblox_in(uint32_t payload, uint32_t len) {
-
-	if (len != 28)
+	if (!match_str_both(data, "\x29\x00\x00\x00", "\x29\x00\x00\x00"))
 		return false;
-	if (MATCHSTR(payload, "\x06\x00\xff\xff"))
+	if (data->payload_len[0] == 44 and data->payload_len[1] == 48)
 		return true;
-	return false;
-
-}
-
-static inline bool match_roblox(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (match_roblox_out(data->payload[0], data->payload_len[0])) {
-		if (match_roblox_in(data->payload[1], data->payload_len[1]))
-			return true;
-	}
-	if (match_roblox_out(data->payload[1], data->payload_len[1])) {
-		if (match_roblox_in(data->payload[0], data->payload_len[0]))
-			return true;
-	}
+	if (data->payload_len[1] == 44 and data->payload_len[0] == 48)
+		return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_roblox = {
-	LPI_PROTO_UDP_ROBLOX,
+static lpi_module_t lpi_lol = {
+	LPI_PROTO_UDP_LOL,
 	LPI_CATEGORY_GAMING,
-	"Roblox",
-	7,
-	match_roblox
+	"LeagueOfLegends",
+	15,
+	match_lol
 };
 
-void register_roblox(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_roblox, mod_map);
+void register_lol(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_lol, mod_map);
 }
 

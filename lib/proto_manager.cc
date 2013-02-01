@@ -245,7 +245,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_dns_udp(mod_map);
 	register_driveshare(mod_map);
 	register_emule_udp(mod_map);
-	register_emule_weak_udp(mod_map);
+	//register_emule_weak_udp(mod_map);
 	register_epson(mod_map);
 	//register_eso(mod_map);
 	register_esp_encap(mod_map);
@@ -273,6 +273,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_lansync_udp(mod_map);
 	register_ldap_ad(mod_map);
 	register_linkproof(mod_map);
+	register_lol(mod_map);
 	register_mdns(mod_map);
 	register_moh(mod_map);
 	register_mp2p_udp(mod_map);

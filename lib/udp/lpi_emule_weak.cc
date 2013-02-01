@@ -36,6 +36,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+/** XXX This module is currently disabled due to a tendency to overmatch! */
 
 static inline bool match_mystery_emule(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         /* These particular patterns occur frequently on port 4672, making

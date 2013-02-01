@@ -62,6 +62,12 @@ static inline bool match_pando_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         if (match_str_both(data, "UDPA", "UDPE"))
                 return true;
+	if (match_str_either(data, "UDPA")) {
+		if (data->payload_len[0] == 0)
+			return true;
+		if (data->payload_len[1] == 0)
+			return true;
+	}
 	
 
 	return false;

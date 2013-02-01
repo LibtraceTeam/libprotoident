@@ -54,6 +54,7 @@ void register_l2tp(LPIModuleMap *mod_map);
 void register_lansync_udp(LPIModuleMap *mod_map);
 void register_ldap_ad(LPIModuleMap *mod_map);
 void register_linkproof(LPIModuleMap *mod_map);
+void register_lol(LPIModuleMap *mod_map);
 void register_mdns(LPIModuleMap *mod_map);
 void register_moh(LPIModuleMap *mod_map);
 void register_mp2p_udp(LPIModuleMap *mod_map);

@@ -51,6 +51,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_lansync.cc \
 	lpi_ldap_ad.cc \
 	lpi_linkproof.cc \
+	lpi_lol.cc \
 	lpi_mdns.cc \
 	lpi_moh.cc \
 	lpi_mp2p.cc \
