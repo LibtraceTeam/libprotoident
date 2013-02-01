@@ -42,7 +42,9 @@ static inline bool match_irc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		return true;
 	if (match_str_either(data, "NICK"))
 		return true;
-	if (match_str_either(data, "\x0aNIC"))
+	if (MATCHSTR(data->payload[0], "\x0aNIC"))
+		return true;
+	if (MATCHSTR(data->payload[1], "\x0aNIC"))
 		return true;
 	if (match_str_both(data, ":irc", "USER"))
 		return true;
