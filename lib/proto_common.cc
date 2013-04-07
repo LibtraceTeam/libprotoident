@@ -664,3 +664,20 @@ bool match_youku_payload(uint32_t pload, uint32_t len) {
         return false;
 
 }
+
+bool match_tpkt(uint32_t payload, uint32_t len) {
+        uint32_t stated_len = 0;
+
+        /*
+         * TPKT header is 03 00 + 2 bytes of length (including the TPKT header)
+         */
+
+        if (!MATCH(payload, 0x03, 0x00, ANY, ANY))
+                return false;
+
+        stated_len = ntohl(payload) & 0xffff;
+        if (stated_len != len)
+                return false;
+        return true;
+
+}

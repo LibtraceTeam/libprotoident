@@ -126,6 +126,7 @@ void register_telnet(LPIModuleMap *mod_map);
 void register_telnet_exploit(LPIModuleMap *mod_map);
 void register_tip(LPIModuleMap *mod_map);
 void register_tor(LPIModuleMap *mod_map);
+void register_tpkt_generic(LPIModuleMap *mod_map);
 void register_trackmania(LPIModuleMap *mod_map);
 void register_trojan_win32_generic_sb(LPIModuleMap *mod_map);
 void register_trojan_zeroaccess(LPIModuleMap *mod_map);

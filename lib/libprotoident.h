@@ -103,6 +103,7 @@ typedef enum {
 	LPI_CATEGORY_BROADCAST,		/* Protocols usually broadcast to the
 					   local network */
 	LPI_CATEGORY_LOCATION,		/* Location-related services / GPS */
+	LPI_CATEGORY_CACHING,		/* Proxy cache protocols and similar */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -256,6 +257,7 @@ typedef enum {
 	LPI_PROTO_CRYPTIC,		/* Games by Cryptic */
 	LPI_PROTO_SUPL,
 	LPI_PROTO_MINECRAFT,
+	LPI_PROTO_TPKT,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -375,6 +377,11 @@ typedef enum {
 	LPI_PROTO_UDP_MDNS,	/* Multicast DNS */
 	LPI_PROTO_UDP_FASP,
 	LPI_PROTO_UDP_ROBLOX,
+	LPI_PROTO_UDP_OPENVPN,
+	LPI_PROTO_UDP_NOE,	/* Alcatel's New Office Environment */
+	LPI_PROTO_UDP_VIBER,
+	LPI_PROTO_UDP_DTLS,
+	LPI_PROTO_UDP_ICP,
 	LPI_PROTO_UDP_LOL,	/* League of Legends */
 
 	/* Patterns that we can match, but do not know the protocol */

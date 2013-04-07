@@ -36,76 +36,60 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_rtmp_server_handshake(uint32_t payload, uint32_t len) {
+/* Alcatel's New Office Environment proprietary VOIP protocol
+ * Thanks to Remy Mudingay for providing traces to identify this protocol
+ */
 
-	if (len < 4)
+static inline bool match_noe_5byte(uint32_t payload, uint32_t plen) {
+
+	if (plen != 5)
 		return false;
-
-	/* Standard RTMP handshake types */	
-	if (MATCH(payload, 0x03, ANY, ANY, ANY))
+	if (MATCH(payload, 0x07, ANY, ANY, ANY))
 		return true;
-	if (MATCH(payload, 0x06, ANY, ANY, ANY))
-		return true;
-
-	/* Encrypted, but not RTMPE? */
-	if (MATCH(payload, 0x08, ANY, ANY, ANY))
-		return true;
-
-
-	/* RTMPE handshake type */
-	if (MATCH(payload, 0x09, ANY, ANY, ANY))
-		return true;
-
-	/* New handshake type used by some YouTube videos */
-	if (MATCH(payload, 0x0a, ANY, ANY, ANY))
-		return true;
-
 	return false;
+
 }
 
-static inline bool match_rtmp_client_handshake(uint32_t payload, uint32_t len) {
+static inline bool match_noe_20byte(uint32_t payload, uint32_t plen) {
 
-	if (len < 4)
+	if (plen != 20)
 		return false;
-
-	/* Standard RTMP handshake types */	
-	if (MATCH(payload, 0x03, ANY, ANY, ANY))
+	if (MATCH(payload, 0x07, ANY, ANY, ANY))
 		return true;
-	if (MATCH(payload, 0x06, ANY, ANY, ANY))
-		return true;
-
 	return false;
+
 }
 
-static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_noe(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_rtmp_client_handshake(data->payload[0], data->payload_len[0]))
-	{
-		if (match_rtmp_server_handshake(data->payload[1], 
-				data->payload_len[1])) {
+	if (data->payload_len[0] == 1 && data->payload_len[1] == 1) {
+		if (match_str_both(data, "\x05\x00\x00\x00", 
+				"\x04\x00\x00\x00")) {
 			return true;
 		}
 	}
 
-	if (match_rtmp_client_handshake(data->payload[1], data->payload_len[1]))
-	{
-		if (match_rtmp_server_handshake(data->payload[0], 
-				data->payload_len[0])) {
+	if (match_noe_5byte(data->payload[0], data->payload_len[0])) {
+		if (match_noe_20byte(data->payload[1], data->payload_len[1]))
 			return true;
-		}
+	}
+
+	if (match_noe_5byte(data->payload[1], data->payload_len[1])) {
+		if (match_noe_20byte(data->payload[0], data->payload_len[0]))
+			return true;
 	}
 	return false;
 }
 
-static lpi_module_t lpi_rtmp = {
-	LPI_PROTO_RTMP,
-	LPI_CATEGORY_STREAMING,
-	"RTMP",
-	16,	/* Not a strong rule */
-	match_rtmp
+static lpi_module_t lpi_noe = {
+	LPI_PROTO_UDP_NOE,
+	LPI_CATEGORY_VOIP,
+	"NOE",
+	12,
+	match_noe
 };
 
-void register_rtmp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_rtmp, mod_map);
+void register_noe(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_noe, mod_map);
 }
 

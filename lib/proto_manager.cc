@@ -197,6 +197,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_telnet_exploit(mod_map);
 	register_tip(mod_map);
 	register_tor(mod_map);
+	register_tpkt_generic(mod_map);
 	register_trackmania(mod_map);
 	register_trojan_win32_generic_sb(mod_map);
 	register_trojan_zeroaccess(mod_map);
@@ -244,6 +245,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_directconnect_udp(mod_map);
 	register_dns_udp(mod_map);
 	register_driveshare(mod_map);
+	register_dtls(mod_map);
 	register_emule_udp(mod_map);
 	//register_emule_weak_udp(mod_map);
 	register_epson(mod_map);
@@ -260,6 +262,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_gsm(mod_map);
 	register_halflife(mod_map);
 	register_hamachi_udp(mod_map);
+	register_icp(mod_map);
 	register_imesh_udp(mod_map);
 	register_ipmsg(mod_map);
 	//register_ipv6_udp(mod_map);
@@ -293,10 +296,12 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_netbios_udp(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
+	register_noe(mod_map);
 	register_norton(mod_map);
 	register_ntp(mod_map);
 	register_nwn(mod_map);
 	register_opaserv(mod_map);
+	register_openvpn_udp(mod_map);
 	register_orbit_udp(mod_map);
 	register_pando_udp(mod_map);
 	register_pplive(mod_map);
@@ -342,6 +347,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_udp_no_payload(mod_map);
 	register_unreal(mod_map);
 	register_ventrilo(mod_map);
+	register_viber_udp(mod_map);
 	register_vivox(mod_map);
 	register_vxworks_exploit(mod_map);
 	register_winmessage(mod_map);

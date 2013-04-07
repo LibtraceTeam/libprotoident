@@ -123,6 +123,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_telnet_exploit.cc \
 	lpi_tip.cc \
 	lpi_tor.cc \
+	lpi_tpkt.cc \
 	lpi_trackmania.cc \
 	lpi_trojan_win32_generic_sb.cc \
 	lpi_trojan_zeroaccess.cc \

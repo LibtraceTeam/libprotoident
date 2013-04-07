@@ -36,50 +36,70 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_rdp_payload(uint32_t payload, uint32_t len) {
+static inline bool match_rdp_sizes(lpi_data_t *data) {
 
-	uint32_t stated_len = 0;
+	/* This should match the common packet sizes we see for genuine
+	 * RDP traffic */
 
-        /* RDP is transported via TPKT
-         *
-         * TPKT header is 03 00 + 2 bytes of length (including the TPKT header)
-         */
+	if (data->payload_len[0] == 11 || data->payload_len[0] == 19) {
+		if (data->payload_len[1] == 19)
+			return true;
+		if (data->payload_len[1] >= 30 && data->payload_len[1] <= 47)
+			return true;
+	}
 
-        if (!MATCH(payload, 0x03, 0x00, ANY, ANY))
-                return false;
+	if (data->payload_len[1] == 11 || data->payload_len[1] == 19) {
+		if (data->payload_len[0] == 19)
+			return true;
+		if (data->payload_len[0] >= 30 && data->payload_len[0] <= 47)
+			return true;
+	}
 
-        stated_len = ntohl(payload) & 0xffff;
-        if (stated_len != len)
-                return false;
-        return true;
-	
-
+	return false;
 }
+
+static inline bool match_rdp_port(lpi_data_t *data) {
+
+	/* To try and avoid confusing RDP with other protocols that rely
+	 * on TPKT, most notably H.323, I've had to add a port requirement
+	 * here */
+	 
+	if (data->server_port == 3389 || data->client_port == 3389)
+		return true;
+	return false;
+}
+
+	
 
 static bool match_rdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_rdp_payload(data->payload[0], data->payload_len[0])) {
-		if (match_rdp_payload(data->payload[1], data->payload_len[1]))
+        /* RDP is transported via TPKT */
+	if (!match_tpkt(data->payload[0], data->payload_len[0]))
+		return false;
+	if (!match_tpkt(data->payload[1], data->payload_len[1]))
+		return false;
+	
+	if (match_rdp_port(data))
+		return true;
+	if (match_rdp_sizes(data))
+		return true;
+	
+
+#if 0
+	if (match_tpkt(data->payload[0], data->payload_len[0])) {
+		if (match_tpkt(data->payload[1], data->payload_len[1]))
 			return true;
 		
 		/* Some RDP responses seem to be encrypted - not sure if this
 		 * payload length is common to all flows */
 		if (data->payload_len[1] == 309) 
-		{
-			if (data->server_port == 3389)
-				return true;
-			if (data->client_port == 3389) 
-				return true;
-		}
+			return true;
 	}
-	if (match_rdp_payload(data->payload[1], data->payload_len[1])) {
-		if (data->payload_len[0] == 309) {
-			if (data->server_port == 3389)
-				return true;
-			if (data->client_port == 3389) 
-				return true;
-		}
+	if (match_tpkt(data->payload[1], data->payload_len[1])) {
+		if (data->payload_len[0] == 309) 
+			return true;
 	}
+#endif
 	return false;
 }
 

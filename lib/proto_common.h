@@ -76,4 +76,5 @@ bool match_8000_payload(uint32_t payload, uint32_t len);
 bool match_youku_payload(uint32_t payload, uint32_t len);
 bool match_emule(lpi_data_t *data);
 bool match_kaspersky(lpi_data_t *data);
+bool match_tpkt(uint32_t payload, uint32_t len);
 #endif

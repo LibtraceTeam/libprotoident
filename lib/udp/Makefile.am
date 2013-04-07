@@ -21,6 +21,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_driveshare.cc \
+	lpi_dtls.cc \
 	lpi_emule.cc \
 	lpi_emule_weak.cc \
 	lpi_epson.cc \
@@ -38,6 +39,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gsm.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
+	lpi_icp.cc \
 	lpi_imesh.cc \
 	lpi_ipmsg.cc \
 	lpi_ipv6.cc \
@@ -71,11 +73,13 @@ libprotoident_udp_la_SOURCES = \
 	lpi_netbios.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \
+	lpi_noe.cc \
 	lpi_nopayload.cc \
 	lpi_norton.cc \
 	lpi_ntp.cc \
 	lpi_nwn.cc \
 	lpi_opaserv.cc \
+	lpi_openvpn.cc \
 	lpi_orbit.cc \
 	lpi_pando.cc \
 	lpi_pplive.cc \
@@ -120,6 +124,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_tvants.cc \
 	lpi_unreal.cc \
 	lpi_ventrilo.cc \
+	lpi_viber.cc \
 	lpi_vivox.cc \
 	lpi_vxworks_exploit.cc \
 	lpi_winmessage.cc \
