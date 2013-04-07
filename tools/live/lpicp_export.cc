@@ -132,7 +132,6 @@ void lpi_export_single_counter (uint64_t* array, struct timeval tv, uint8_t dir,
 		
 		/* Set the number of records exported in this flow */
 		tmp_stat_hdr->num_records = ntohs(num_rec);		
-		
 		write_buffer_network(&buffer);			
 	}		 			
 }
@@ -141,56 +140,40 @@ void lpicp_export_counters(LiveCounters *count, struct timeval tv, char *local_i
 		uint32_t report_len)
 { 
 	/* Exporting incoming packet counts */
-	printf("server: Exporting incoming packets\n");	
 	lpi_export_single_counter( count->in_pkt_count, tv, 1, LPICP_METRIC_PKTS, 
 				local_id, report_len);	
 				
 	/* Outgoing packets */
-	printf("server: Exporting outgoing packets\n");	
 	lpi_export_single_counter( count->out_pkt_count, tv, 0, LPICP_METRIC_PKTS, 
 				local_id, report_len);	
 				
 	/* Incoming bytes (based on wire length) */
-	printf("server: Exporting incoming bytes\n");	
 	lpi_export_single_counter( count->in_byte_count, tv, 1, LPICP_METRIC_BYTES, 
 				local_id, report_len);	
           
 	/* Outgoing bytes (based on wire length) */
-	printf("server: Exporting outgoing bytes\n");	
 	lpi_export_single_counter( count->out_byte_count, tv, 0, LPICP_METRIC_BYTES, 
 				local_id, report_len);
 	
 	/* New flows originating from outside the local network */
-	printf("server: Exporting incoming new flows\n");	
         lpi_export_single_counter( count->in_flow_count, tv, 1, LPICP_METRIC_NEW_FLOWS, 
 				local_id, report_len);
                 
 	/* New flows originating from inside the local network */
-	printf("server: Exporting outgoing new flows\n");	
 	lpi_export_single_counter( count->out_flow_count, tv, 0, LPICP_METRIC_NEW_FLOWS, 
 				local_id, report_len);
 				
-	/* Currently active flows that originated from outside */
-	printf("server: Exporting incoming current active flows\n");	
-	lpi_export_single_counter( count->in_current_flows, tv, 1, LPICP_METRIC_CURR_FLOWS, 
-				local_id, report_len);
-
-	/* Currently active flows that originated from inside */
-	printf("server: Exporting outgoing current active flows\n");	
-	lpi_export_single_counter( count->out_current_flows, tv, 0, LPICP_METRIC_CURR_FLOWS, 
-				local_id, report_len);
-       
 	/* Peak values for in_current_flows since the last report */
-	printf("server: Exporting incoming peak flows\n");	
 	lpi_export_single_counter( count->in_peak_flows, tv, 1, LPICP_METRIC_PEAK_FLOWS, 
 				local_id, report_len);
         
 	/* Peak values for out_current_flows since the last report */
-	printf("server: Exporting outgoing peak flows\n");	
 	lpi_export_single_counter( count->out_peak_flows, tv, 0, LPICP_METRIC_PEAK_FLOWS, 
 				local_id, report_len);	
-				
-	printf("server: Exported all the flows for %u\n\n", tv.tv_sec);	
+
+	/* Number of local IPs observed using each protocol */			
+	lpi_export_single_counter( count->local_ips, tv, 1, LPICP_METRIC_ACTIVE_IPS, 
+				local_id, report_len);	
 }
 
 

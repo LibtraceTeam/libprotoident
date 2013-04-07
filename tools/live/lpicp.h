@@ -14,7 +14,8 @@ enum lpicp_metric {
 	LPICP_METRIC_BYTES,	
 	LPICP_METRIC_NEW_FLOWS,
 	LPICP_METRIC_CURR_FLOWS,
-	LPICP_METRIC_PEAK_FLOWS
+	LPICP_METRIC_PEAK_FLOWS,
+	LPICP_METRIC_ACTIVE_IPS
 };
 
 /* Structure which defines a custom header used at the start of a packet which 
