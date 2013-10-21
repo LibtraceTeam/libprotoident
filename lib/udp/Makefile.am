@@ -8,6 +8,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_backweb.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
+	lpi_canon_mfnp.cc \
 	lpi_checkpoint_rdp.cc \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
@@ -96,6 +97,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_rtcp.cc \
 	lpi_rtmfp.cc \
 	lpi_rtp.cc \
+	lpi_sanandreas_mp.cc \
 	lpi_second_life.cc \
 	lpi_serialnumberd.cc \
 	lpi_sip.cc \

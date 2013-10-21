@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_canon_mfnp.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,40 +36,26 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_zabbix(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_canon_mfnp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_str_either(data, "ZBXD"))
-		return true;
-
-        /* Everything below this line requires one of the ports to be the
-         * default zabbix port */
-        if (data->server_port != 10050 && data->client_port != 10050)
+        if (data->server_port != 8610 && data->client_port != 8610)
                 return false;
 
-        /* Zabbix Windows performance counters 
-         * TODO capture some genuine responses and match on those too */
-        if (MATCH(data->payload[0], 'p', 'e', 'r', 'f'))
-                return true;
-        if (MATCH(data->payload[1], 'p', 'e', 'r', 'f'))
-                return true;
-
-        if (MATCH(data->payload[0], 's', 'y', 's', 't'))
-                return true;
-        if (MATCH(data->payload[1], 's', 'y', 's', 't'))
+        if (match_str_either(data, "MFNP"))
                 return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_zabbix = {
-	LPI_PROTO_ZABBIX,
-	LPI_CATEGORY_MONITORING,
-	"Zabbix",
-	5,
-	match_zabbix
+static lpi_module_t lpi_canon_mfnp = {
+	LPI_PROTO_UDP_MFNP,
+	LPI_CATEGORY_PRINTING,
+	"Canon_MFNP",
+	8,
+	match_canon_mfnp
 };
 
-void register_zabbix(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_zabbix, mod_map);
+void register_canon_mfnp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_canon_mfnp, mod_map);
 }
 

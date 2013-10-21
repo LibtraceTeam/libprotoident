@@ -258,6 +258,7 @@ typedef enum {
 	LPI_PROTO_SUPL,
 	LPI_PROTO_MINECRAFT,
 	LPI_PROTO_TPKT,
+        LPI_PROTO_QVOD,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -383,6 +384,8 @@ typedef enum {
 	LPI_PROTO_UDP_DTLS,
 	LPI_PROTO_UDP_ICP,
 	LPI_PROTO_UDP_LOL,	/* League of Legends */
+	LPI_PROTO_UDP_SANANDREAS,	/* San Andreas Multiplayer */
+	LPI_PROTO_UDP_MFNP,	/* Canon MFNP Printer protocol */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

@@ -93,6 +93,7 @@ void register_pop3s(LPIModuleMap *mod_map);
 void register_postgresql(LPIModuleMap *mod_map);
 void register_pptp(LPIModuleMap *mod_map);
 void register_psn_store(LPIModuleMap *mod_map);
+void register_qvod(LPIModuleMap *mod_map);
 void register_razor(LPIModuleMap *mod_map);
 void register_rbls(LPIModuleMap *mod_map);
 void register_rdp(LPIModuleMap *mod_map);

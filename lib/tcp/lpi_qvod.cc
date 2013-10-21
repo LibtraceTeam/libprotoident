@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_qvod.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,40 +36,46 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_zabbix(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+/* Chinese variant of BitTorrent -- www.qvod.com */
 
-	if (match_str_either(data, "ZBXD"))
-		return true;
+static inline bool match_qvod_message(uint32_t payload, uint32_t len) {
 
-        /* Everything below this line requires one of the ports to be the
-         * default zabbix port */
-        if (data->server_port != 10050 && data->client_port != 10050)
+        if (!MATCH(payload, 0x13, 'Q', 'V', 'O'))
                 return false;
+        if (len != 68)
+                return false;
+        return true;
 
-        /* Zabbix Windows performance counters 
-         * TODO capture some genuine responses and match on those too */
-        if (MATCH(data->payload[0], 'p', 'e', 'r', 'f'))
-                return true;
-        if (MATCH(data->payload[1], 'p', 'e', 'r', 'f'))
-                return true;
+}
 
-        if (MATCH(data->payload[0], 's', 'y', 's', 't'))
-                return true;
-        if (MATCH(data->payload[1], 's', 'y', 's', 't'))
-                return true;
+static inline bool match_qvod(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_qvod_message(data->payload[0], data->payload_len[0])) {
+                if (match_qvod_message(data->payload[1], data->payload_len[1]))
+                        return true;
+                if (data->payload_len[1] == 0)
+                        return true;
+        }
+
+        if (match_qvod_message(data->payload[1], data->payload_len[1])) {
+                if (match_qvod_message(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (data->payload_len[0] == 0)
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_zabbix = {
-	LPI_PROTO_ZABBIX,
-	LPI_CATEGORY_MONITORING,
-	"Zabbix",
-	5,
-	match_zabbix
+static lpi_module_t lpi_qvod = {
+	LPI_PROTO_QVOD,
+	LPI_CATEGORY_P2P,
+	"Qvod",
+	6,
+	match_qvod
 };
 
-void register_zabbix(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_zabbix, mod_map);
+void register_qvod(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_qvod, mod_map);
 }
 

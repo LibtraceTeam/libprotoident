@@ -164,7 +164,8 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_postgresql(mod_map);
 	register_pptp(mod_map);
 	register_psn_store(mod_map);
-	register_razor(mod_map);
+	register_qvod(mod_map);
+        register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
 	register_rejection(mod_map);
@@ -232,6 +233,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
+	register_canon_mfnp(mod_map);
 	register_callofduty(mod_map);
 	register_checkpoint_rdp(mod_map);
 	register_cirn(mod_map);
@@ -318,6 +320,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
 	register_rtp(mod_map);
+	register_sanandreas_mp(mod_map);
 	register_second_life_udp(mod_map);
 	register_serialnumberd(mod_map);
 	register_sip_udp(mod_map);

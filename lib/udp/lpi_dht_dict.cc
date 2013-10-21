@@ -73,7 +73,7 @@ static inline bool match_utp_reply(uint32_t payload, uint32_t len) {
                 return true;
 	if (MATCH(payload, 0x21, 0x02, ANY, ANY) && (len == 30 || len == 33))
                 return true;
-        if (MATCH(payload, 0x21, 0x01, ANY, ANY) && len == 26)
+        if (MATCH(payload, 0x21, 0x01, ANY, ANY) && (len == 26 || len == 23))
                 return true;
         if (MATCH(payload, 0x21, 0x00, ANY, ANY) && len == 20)
                 return true;

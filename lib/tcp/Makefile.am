@@ -90,7 +90,8 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_postgresql.cc \
 	lpi_pptp.cc \
 	lpi_psn_store.cc \
-	lpi_razor.cc \
+	lpi_qvod.cc \
+        lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
 	lpi_rejection.cc \
