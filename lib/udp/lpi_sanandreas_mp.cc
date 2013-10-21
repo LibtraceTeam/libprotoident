@@ -52,9 +52,9 @@ static inline bool match_samp_reply(uint32_t payload, uint32_t len) {
                 return true;
         if (!MATCHSTR(payload, "SAMP"))
                 return false;
-        if (len != 11)
-                return false;
-        return true;
+        if (len == 11 || len == 15)
+                return true;
+        return false;
 }
 
 static inline bool match_sanandreas_mp(lpi_data_t *data, 

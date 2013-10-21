@@ -42,8 +42,6 @@ static inline bool match_qvod_message(uint32_t payload, uint32_t len) {
 
         if (!MATCH(payload, 0x13, 'Q', 'V', 'O'))
                 return false;
-        if (len != 68)
-                return false;
         return true;
 
 }
