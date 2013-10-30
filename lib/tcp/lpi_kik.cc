@@ -65,6 +65,10 @@ static inline bool match_kik(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		return true;
 	if (MATCH(data->payload[1], 0x16, 0x03, 0x03, 0x0e))
 		return true;
+	if (MATCH(data->payload[0], 0x16, 0x03, 0x01, 0x0e))
+		return true;
+	if (MATCH(data->payload[1], 0x16, 0x03, 0x01, 0x0e))
+		return true;
 
 	return false;
 }

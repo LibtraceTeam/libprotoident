@@ -47,6 +47,11 @@ static inline bool match_apple_push(lpi_data_t *data, lpi_module_t *mod UNUSED) 
 	if (data->server_port != 5223 && data->client_port != 5223)
 		return false;
 
+	/* If payload is only one-way, fall back to SSL to avoid risking
+	 * a false positive for other port 5223 SSL apps, e.g. Kik */
+	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
+		return false;
+
 	/* Too much size variation to write a good set of rules based on
 	 * payload sizes, just use this as the fallback option for all
 	 * SSL traffic on 5223 that doesn't match something else, e.g.
