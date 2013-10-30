@@ -36,35 +36,48 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_apple_push(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_kik(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* This rule matches the push notifications sent to IOS devices */ 
+	/* This rule tries to match the traffic for Kik, a somewhat popular
+	 * IM app for mobile devices. 
+	 *
+	 * The problem with Kik is that it uses port 5223 and SSL, so it is
+	 * very difficult to distinguish from ApplePush
+	 */ 
 
 	if (!match_ssl(data))
 		return false;
 	
-	/* Port 5223 is used for the push notifications */
+	/* Port 5223 is used */
 	if (data->server_port != 5223 && data->client_port != 5223)
 		return false;
 
-	/* Too much size variation to write a good set of rules based on
-	 * payload sizes, just use this as the fallback option for all
-	 * SSL traffic on 5223 that doesn't match something else, e.g.
-	 * PSN store */
+	/* The key to matching Kik is bytes 3 and 4 of the incoming SSL
+	 * handshake packet. They are slightly different to those seen
+	 * for ApplePush flows.
+	 */
+	
+	if (MATCH(data->payload[0], 0x16, 0x03, 0x01, 0x0c))
+		return true;
+	if (MATCH(data->payload[1], 0x16, 0x03, 0x01, 0x0c))
+		return true;
+	if (MATCH(data->payload[0], 0x16, 0x03, 0x03, 0x0e))
+		return true;
+	if (MATCH(data->payload[1], 0x16, 0x03, 0x03, 0x0e))
+		return true;
 
-	return true;
+	return false;
 }
 
-static lpi_module_t lpi_apple_push = {
-	LPI_PROTO_APPLE_PUSH,
-	LPI_CATEGORY_NOTIFICATION,
-	"ApplePush",
-	8, /* Should be a higher priority than regular SSL, but lower than
-	      anything else on port 5223  */
-	match_apple_push
+static lpi_module_t lpi_kik = {
+	LPI_PROTO_KIK,
+	LPI_CATEGORY_CHAT,
+	"Kik",
+	5, /* Should be a higher priority than ApplePush */
+	match_kik
 };
 
-void register_apple_push(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_apple_push, mod_map);
+void register_kik(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_kik, mod_map);
 }
 

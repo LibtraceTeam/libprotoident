@@ -259,6 +259,7 @@ typedef enum {
 	LPI_PROTO_MINECRAFT,
 	LPI_PROTO_TPKT,
         LPI_PROTO_QVOD,
+        LPI_PROTO_KIK,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

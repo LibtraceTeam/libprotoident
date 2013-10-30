@@ -52,6 +52,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_jedi.cc \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
+	lpi_kik.cc \
 	lpi_ldap.cc \
 	lpi_message4u.cc \
 	lpi_minecraft.cc \

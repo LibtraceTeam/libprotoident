@@ -126,6 +126,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_jedi(mod_map);
 	register_kaseya(mod_map);
 	register_kaspersky(mod_map);
+	register_kik(mod_map);
 	register_ldap(mod_map);
 	register_message4u(mod_map);
 	register_minecraft(mod_map);
