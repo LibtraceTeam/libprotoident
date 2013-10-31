@@ -207,6 +207,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
 	register_weblogic(mod_map);
+	register_whatsapp(mod_map);
 	register_whois(mod_map);
 	register_winmx(mod_map);
 	register_wow(mod_map);

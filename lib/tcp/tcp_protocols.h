@@ -136,6 +136,7 @@ void register_viber(LPIModuleMap *mod_map);
 void register_warcraft3(LPIModuleMap *mod_map);
 void register_web_junk(LPIModuleMap *mod_map);
 void register_weblogic(LPIModuleMap *mod_map);
+void register_whatsapp(LPIModuleMap *mod_map);
 void register_whois(LPIModuleMap *mod_map);
 void register_winmx(LPIModuleMap *mod_map);
 void register_wow(LPIModuleMap *mod_map);
