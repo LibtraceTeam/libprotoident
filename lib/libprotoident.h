@@ -261,6 +261,7 @@ typedef enum {
         LPI_PROTO_QVOD,
         LPI_PROTO_KIK,
         LPI_PROTO_WHATSAPP,
+        LPI_PROTO_WECHAT,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

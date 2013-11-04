@@ -133,6 +133,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
 	lpi_weblogic.cc \
+	lpi_wechat.cc \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \
