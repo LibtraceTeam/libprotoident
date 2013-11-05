@@ -100,6 +100,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_fring(mod_map);
 	register_ftpcontrol(mod_map);
 	register_ftpdata(mod_map);
+	register_funshion_tcp(mod_map);
 	register_gamespy_tcp(mod_map);
 	register_gnutella(mod_map);
 	register_goku(mod_map);
@@ -259,6 +260,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_eye_udp(mod_map);
 	register_fortinet(mod_map);
 	register_freechal(mod_map);
+	register_funshion_udp(mod_map);
 	register_gamespy(mod_map);
 	register_garena(mod_map);
 	register_gnutella_udp(mod_map);

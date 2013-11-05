@@ -26,6 +26,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fring.cc \
 	lpi_ftpcontrol.cc \
 	lpi_ftpdata.cc \
+	lpi_funshion.cc \
 	lpi_gamespy.cc \
 	lpi_gnutella.cc \
 	lpi_goku.cc \

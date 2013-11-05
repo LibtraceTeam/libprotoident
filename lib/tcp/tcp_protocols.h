@@ -29,6 +29,7 @@ void register_flash(LPIModuleMap *mod_map);
 void register_fring(LPIModuleMap *mod_map);
 void register_ftpcontrol(LPIModuleMap *mod_map);
 void register_ftpdata(LPIModuleMap *mod_map);
+void register_funshion_tcp(LPIModuleMap *mod_map);
 void register_gamespy_tcp(LPIModuleMap *mod_map);
 void register_gnutella(LPIModuleMap *mod_map);
 void register_goku(LPIModuleMap *mod_map);

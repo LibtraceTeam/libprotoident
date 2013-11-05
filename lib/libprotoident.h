@@ -262,6 +262,7 @@ typedef enum {
         LPI_PROTO_KIK,
         LPI_PROTO_WHATSAPP,
         LPI_PROTO_WECHAT,
+	LPI_PROTO_FUNSHION,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -389,6 +390,7 @@ typedef enum {
 	LPI_PROTO_UDP_LOL,	/* League of Legends */
 	LPI_PROTO_UDP_SANANDREAS,	/* San Andreas Multiplayer */
 	LPI_PROTO_UDP_MFNP,	/* Canon MFNP Printer protocol */
+	LPI_PROTO_UDP_FUNSHION, 
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

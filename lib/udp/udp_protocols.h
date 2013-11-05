@@ -35,6 +35,7 @@ void register_eye_udp(LPIModuleMap *mod_map);
 void register_fasp(LPIModuleMap *mod_map);
 void register_fortinet(LPIModuleMap *mod_map);
 void register_freechal(LPIModuleMap *mod_map);
+void register_funshion_udp(LPIModuleMap *mod_map);
 void register_gamespy(LPIModuleMap *mod_map);
 void register_garena(LPIModuleMap *mod_map);
 void register_gnutella_udp(LPIModuleMap *mod_map);

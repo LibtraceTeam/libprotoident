@@ -32,6 +32,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_fasp.cc \
 	lpi_fortinet.cc \
 	lpi_freechal.cc \
+	lpi_funshion.cc \
 	lpi_gamespy.cc \
 	lpi_garena.cc \
 	lpi_gnutella.cc \
