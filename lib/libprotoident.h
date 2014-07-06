@@ -39,17 +39,21 @@
 #include <list>
 
 #if __GNUC__ >= 3 
+#ifndef PRINTF
 #  define DEPRECATED __attribute__((deprecated))
 #  define SIMPLE_FUNCTION __attribute__((pure))
 #  define UNUSED __attribute__((unused))
 #  define PACKED __attribute__((packed))
 #  define PRINTF(formatpos,argpos) __attribute__((format(printf,formatpos,argpos)))
+#endif
 #else
+#ifndef PRINTF
 #  define DEPRECATED
 #  define SIMPLE_FUNCTION
 #  define UNUSED
 #  define PACKED 
 #  define PRINTF(formatpos,argpos) 
+#endif
 #endif
 
 #define DEFAULT_MAXTHREADS 10
