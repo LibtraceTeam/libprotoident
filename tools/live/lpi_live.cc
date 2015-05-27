@@ -231,16 +231,16 @@ static void usage(char *prog) {
 
 int main(int argc, char *argv[]) {
 
-        libtrace_t *trace;
-        libtrace_packet_t *packet;
+	libtrace_t *trace;
+	libtrace_packet_t *packet;
 	libtrace_filter_t *filter = NULL;
 	struct sigaction sigact;
 
-        bool opt_true = true;
-        bool opt_false = false;
+	bool opt_true = true;
+	bool opt_false = false;
 
-        int i, opt;
-        double ts;
+	int i, opt;
+	double ts;
 	char *filterstring = NULL;
 	int dir;
 	bool ignore_rfc1918 = false;
@@ -254,24 +254,24 @@ int main(int argc, char *argv[]) {
 		strncpy(local_id, "unknown", 256);
 	}
 
-        packet = trace_create_packet();
-        if (packet == NULL) {
-                perror("Creating libtrace packet");
-                return -1;
-        }
+	packet = trace_create_packet();
+	if (packet == NULL) {
+		perror("Creating libtrace packet");
+		return -1;
+	}
 
 	while ((opt = getopt(argc, argv, "ri:f:Rhl:Tm:")) != EOF) {
-                switch (opt) {
+		switch (opt) {
 			case 'l':
-                                local_mac = optarg;
-                                dir_method = DIR_METHOD_MAC;
-                                break;
+				local_mac = optarg;
+				dir_method = DIR_METHOD_MAC;
+				break;
 			case 'T':
-                                dir_method = DIR_METHOD_TRACE;
-                                break;
+				dir_method = DIR_METHOD_TRACE;
+				break;
 			case 'f':
-                                filterstring = optarg;
-                                break;
+				filterstring = optarg;
+				break;
 			case 'r':
 				output_rrd = true;
 				break;
@@ -287,31 +287,31 @@ int main(int argc, char *argv[]) {
 			case 'h':
 			default:
 				usage(argv[0]);
-                }
-        }
+			}
+	}
 
-        if (filterstring != NULL) {
-                filter = trace_create_filter(filterstring);
-        }
+	if (filterstring != NULL) {
+		filter = trace_create_filter(filterstring);
+	}
 
 	if (local_mac != NULL) {
-                if (convert_mac_string(local_mac, mac_bytes) < 0) {
-                        fprintf(stderr, "Invalid MAC: %s\n", local_mac);
-                        return 1;
-                }
-        }
+		if (convert_mac_string(local_mac, mac_bytes) < 0) {
+			fprintf(stderr, "Invalid MAC: %s\n", local_mac);
+			return 1;
+		}
+	}
 
 	/* This tells libflowmanager to ignore any flows where an RFC1918
 	 * private IP address is involved */
-        if (lfm_set_config_option(LFM_CONFIG_IGNORE_RFC1918, 
-				&ignore_rfc1918) == 0)
-                return -1;
+	if (lfm_set_config_option(LFM_CONFIG_IGNORE_RFC1918, 
+		&ignore_rfc1918) == 0)
+		return -1;
 
 	/* This tells libflowmanager not to replicate the TCP timewait
 	 * behaviour where closed TCP connections are retained in the Flow
 	 * map for an extra 2 minutes */
-        if (lfm_set_config_option(LFM_CONFIG_TCP_TIMEWAIT, &opt_false) == 0)
-                return -1;
+	if (lfm_set_config_option(LFM_CONFIG_TCP_TIMEWAIT, &opt_false) == 0)
+		return -1;
 
 	/* This tells libflowmanager not to utilise the fast expiry rules for
 	 * short-lived UDP connections - these rules are experimental 
@@ -320,14 +320,14 @@ int main(int argc, char *argv[]) {
 		return -1;
 
 	sigact.sa_handler = cleanup_signal;
-        sigemptyset(&sigact.sa_mask);
-        sigact.sa_flags = SA_RESTART;
+	sigemptyset(&sigact.sa_mask);
+	sigact.sa_flags = SA_RESTART;
 
-        sigaction(SIGINT, &sigact, NULL);
-        sigaction(SIGTERM, &sigact, NULL);
+	sigaction(SIGINT, &sigact, NULL);
+	sigaction(SIGTERM, &sigact, NULL);
 
-        signal(SIGINT,&cleanup_signal);
-        signal(SIGTERM,&cleanup_signal);
+	signal(SIGINT,&cleanup_signal);
+	signal(SIGTERM,&cleanup_signal);
 
 	if (lpi_init_library() == -1)
 		return -1;
@@ -339,37 +339,36 @@ int main(int argc, char *argv[]) {
 		usage(argv[0]);
 	}
 
-        for (i = optind; i < argc; i++) {
+	for (i = optind; i < argc; i++) {
+		fprintf(stderr, "%s\n", argv[i]);
 
-                fprintf(stderr, "%s\n", argv[i]);
-                
 		/* Bog-standard libtrace stuff for reading trace files */
 		trace = trace_create(argv[i]);
 
-                if (!trace) {
-                        perror("Creating libtrace trace");
-                        return -1;
-                }
+		if (!trace) {
+			perror("Creating libtrace trace");
+			return -1;
+		}
 
-                if (trace_is_err(trace)) {
-                        trace_perror(trace, "Opening trace file");
-                        trace_destroy(trace);
-                        continue;
-                }
+		if (trace_is_err(trace)) {
+			trace_perror(trace, "Opening trace file");
+			trace_destroy(trace);
+			continue;
+		}
 
-                if (filter && trace_config(trace, TRACE_OPTION_FILTER, filter) == -1) {
-                        trace_perror(trace, "Configuring filter");
-                        trace_destroy(trace);
-                        return -1;
-                }
+		if (filter && trace_config(trace, TRACE_OPTION_FILTER, filter) == -1) {
+			trace_perror(trace, "Configuring filter");
+			trace_destroy(trace);
+			return -1;
+		}
 
-                if (trace_start(trace) == -1) {
-                        trace_perror(trace, "Starting trace");
-                        trace_destroy(trace);
-                        continue;
-                }
-                while (trace_read_packet(trace, packet) > 0) {
-                        ts = trace_get_seconds(packet);
+		if (trace_start(trace) == -1) {
+			trace_perror(trace, "Starting trace");
+			trace_destroy(trace);
+			continue;
+		}
+		while (trace_read_packet(trace, packet) > 0) {
+		ts = trace_get_seconds(packet);
 			per_packet(packet);
 			if (next_report == 0.0 && ts != 0.0) {
 				next_report = ts + report_freq;
@@ -393,26 +392,29 @@ int main(int argc, char *argv[]) {
 			if (done)
 				break;
 
-                }
+		}
 
-		if (done)
+		if (done) {
+			trace_destroy(trace);
 			break;
+		}
+		
+		if (trace_is_err(trace)) {
+			trace_perror(trace, "Reading packets");
+			trace_destroy(trace);
+			continue;
+		}
 
-                if (trace_is_err(trace)) {
-                        trace_perror(trace, "Reading packets");
-                        trace_destroy(trace);
-                        continue;
-                }
+		trace_destroy(trace);
 
-                trace_destroy(trace);
+	}
 
-        }
+	reset_counters(&counts, false);
 
-        trace_destroy_packet(packet);
+	trace_destroy_packet(packet);
 	expire_live_flows(ts, true);
 	lpi_free_library();
 
-        return 0;
+	return 0;
 
 }
-
