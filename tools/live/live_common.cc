@@ -55,7 +55,6 @@
 
 #include <libflowmanager.h>
 #include <libtrace.h>
-#include <libwandevent.h>
 
 #include "live_common.h"
 
