@@ -12,8 +12,8 @@ See the file COPYING for full licensing details for this software.
 
 Report and bugs, questions or comments to contact@wand.net.nz
 
-NEW: You can now lodge bugs by filing a ticket in the libprotoident trac:
-http://wand.net.nz/trac/libprotoident/wiki
+NEW: You can now lodge bugs by filing an issue on the libprotoident github:
+https://github.com/wanduow/libprotoident
 
 Authors:
 	Shane Alcock
@@ -21,6 +21,7 @@ Authors:
 With contributions from:
 	Donald Neal
 	Aaron Murrihy
+        Paweł Foremski <pjf@iitis.pl>
 
 Introduction
 ============
@@ -72,7 +73,7 @@ POP3 and IMAP are part of the Mail category.
 
 Tools
 =====
-There are currently three tools included with libprotoident.
+There are currently four tools included with libprotoident.
 
  * lpi_protoident
  
@@ -144,14 +145,80 @@ There are currently three tools included with libprotoident.
 	 * First four bytes of payload sent from second endpoint (in hex)
 	 * First four bytes of payload sent from second endpoint (ASCII)
 	 * Size of first payload-bearing packet sent from second endpoint
-	
- * lpi_live
+
+
+ * lpi_arff
+
+   Description:
+        This tool is similar to lpi_protoident except that it writes its
+        output in the ARFF format so that it is compatible with the Weka
+        machine learning software (http://www.cs.waikato.ac.nz/ml/weka/).
+
+        This tool was contributed by Paweł Foremski <pjf@iitis.pl>.
+
+   Usage:
+        lpi_arff <input trace URI>
+
+	The input trace must be a valid libtrace URI.
+
+   Output:
+        The output begins with a series of lines describing each feature that
+        will be used to describe each flow. Following that,
+   	for each flow in the input trace, a single line is printed to stdout
+	describing the flow. The line contains the following fields separated
+	by commas (in order):
+
+	 * Application protocol (as reported by libprotoident)
+	 * ID number for the application protocol
+	 * Total number of packets sent from first endpoint to second endpoint
+	 * Total number of bytes sent from first endpoint to second endpoint
+	 * Total number of packets sent from second endpoint to first endpoint
+	 * Total number of bytes sent from second endpoint to first endpoint
+         * Minimum payload size sent from first endpoint to second endpoint
+         * Mean payload size sent from first endpoint to second endpoint
+         * Maximum payload size sent from first endpoint to second endpoint
+         * Standard deviation of payload size sent from first endpoint to
+                second endpoint
+         * Minimum payload size sent from second endpoint to first endpoint
+         * Mean payload size sent from second endpoint to first endpoint
+         * Maximum payload size sent from second endpoint to first endpoint
+         * Standard deviation of payload size sent from second endpoint to
+                first endpoint
+         * Minimum packet interarrival time for packets sent from first
+                endpoint to second endpoint
+         * Mean packet interarrival time for packets sent from first
+                endpoint to second endpoint
+         * Maximum packet interarrival time for packets sent from first
+                endpoint to second endpoint
+         * Standard deviation of packet interarrival time for packets sent from
+                first endpoint to second endpoint
+         * Minimum packet interarrival time for packets sent from second
+                endpoint to first endpoint
+         * Mean packet interarrival time for packets sent from second
+                endpoint to first endpoint
+         * Maximum packet interarrival time for packets sent from second
+                endpoint to first endpoint
+         * Standard deviation of packet interarrival time for packets sent from
+                second endpoint to first endpoint
+         * Flow duration (in microseconds)
+         * Flow start time (as a Unix timestamp)
+
+ * lpi_live   (DEPRECATED)
   
    Description:
    	This tool reports byte and packet counts (both inbound and outbound)
-	for each identified protocol in real-time. Identification of a flow 
+	for each identified protocol in real-time. Identification of a flow
 	occurs as soon as possible, so that the statistics reported are as
 	up-to-date as possible.
+
+        lpi_live has been deprecated and will not be built by default. The code
+        is still available in our git repository, but we will not update or
+        support this tool anymore. Instead, please use the lpicollector
+        (https://github.com/wanduow/lpicollector) for real-time flow analysis
+        with libprotoident.
+
+        In combination with the included lpi.py example client, lpicollector
+        can produce output similar to that produced by lpi_live.
 
    Usage:
    	lpi_live <options> <input URI>
@@ -195,7 +262,7 @@ API
 ===
 
 If you want to develop your own tools based on libprotoident, you'll need to
-use the libprotoident API. The API is very simple and the best way to learn it 
+use the libprotoident API. The API is very simple and the best way to learn it
 is to examine how the existing tools work. The source for the tools is
 located in the tools/ directory.
 
