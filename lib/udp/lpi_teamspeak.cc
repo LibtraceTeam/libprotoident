@@ -41,6 +41,9 @@ static inline bool match_teamspeak(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	/* Teamspeak version 2 */
         if (match_str_both(data, "\xf4\xbe\x03\x00", "\xf4\xbe\x03\x00"))
                 return true;
+        /* Teamspeak version 3 */
+	if (match_str_both(data, "TS3I", "TS3I"))
+		return true;
 	/* Not sure what this is, but it goes to a teamspeak.org server */
 	if (match_str_either(data, "\x07Pri"))
 		return true;
