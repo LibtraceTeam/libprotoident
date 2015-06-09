@@ -51,23 +51,6 @@ AC_CHECK_LIB([trace], [trace_get_payload_length],,trace_found=0)
 
 if test "$build_tools" = yes; then
 	AC_CHECK_LIB([flowmanager], [lfm_release_flow],,lfm_found=0)
-
-#	AC_ARG_WITH([wandevent], AC_HELP_STRING([--with-wandevent], 
-#		[build lpi_collector (requires libwandevent)]))
-
-#	AS_IF([test "x$with_wandevent" != "xno"],
-#		[AC_SEARCH_LIBS(wand_event_run, wandevent, have_wandevent=yes,
-#			have_wandevent=no)], [have_wandevent=no])
-	
-#	AS_IF([test "x$have_wandevent" = "xyes"], [
-#		AC_DEFINE(HAVE_WANDEVENT, 1, "Libwandevent is present and to be used")
-#		with_wandevent=yes],
-#		[AS_IF([test "x$with_wandevent" = "xyes"], 
-#			[AC_MSG_ERROR([libwandevent requested but not found])])
-#		AC_DEFINE(HAVE_WANDEVENT, 0, "Libwandevent is present and to be used")
-#		with_wandevent=no]
-#	)
-
 fi
 
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])
@@ -86,7 +69,6 @@ if test "$lfm_found" = 0; then
 fi
 
 AM_CONDITIONAL([BUILD_LPI_TOOLS], [test "$build_tools" = yes])
-#AM_CONDITIONAL([BUILD_COLLECTOR], [test "x$with_wandevent" = "xyes"])
 
 AC_SUBST([ADD_LIBS])
 AC_SUBST([ADD_LDFLAGS])
