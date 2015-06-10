@@ -126,7 +126,7 @@ void lpi_init_data(lpi_data_t *data) {
 	data->payload_len[1] = 0;
 	data->ips[0] = 0;
 	data->ips[1] = 0;
-
+    memset(data->ip6s, 0, sizeof(data->ip6s));
 }
 
 static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
@@ -190,6 +190,7 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	void *transport;
 	uint32_t four_bytes;
 	libtrace_ip_t *ip = NULL;
+	libtrace_ip6_t *ip6 = NULL;
 
 	//tcp = trace_get_tcp(packet);
 	psize = trace_get_payload_length(packet);
@@ -229,7 +230,8 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	}
 
 	ip = trace_get_ip(packet);
-	
+	ip6 = trace_get_ip6(packet);
+
 	if (payload == NULL)
 		return 0;
 	if (psize <= 0)
@@ -255,6 +257,16 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		}
 	}
 
+    if (ip6 != NULL && IN6_IS_ADDR_UNSPECIFIED(&data->ip6s[0])) {
+		if (dir == 0) {
+            data->ip6s[0] = ip6->ip_src;
+            data->ip6s[1] = ip6->ip_dst;
+		} else {
+            data->ip6s[1] = ip6->ip_src;
+            data->ip6s[0] = ip6->ip_dst;
+		}
+    }
+	
 	return 1;
 
 }

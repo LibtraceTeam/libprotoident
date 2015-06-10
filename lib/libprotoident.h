@@ -441,6 +441,7 @@ typedef struct lpi {
 	uint8_t trans_proto;
 	uint32_t payload_len[2];
 	uint32_t ips[2];
+    in6_addr ip6s[2];
 } lpi_data_t;
 
 typedef struct lpi_module lpi_module_t;
