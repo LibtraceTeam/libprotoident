@@ -49,6 +49,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <netdb.h>
+#include <string>
 
 #include <libprotoident.h>
 #include <libwandevent.h>
@@ -56,18 +57,17 @@
 
 using namespace std;
 
-typedef struct ip_collector {
+struct IPCollector {
+	IPCollector() {
+		memset(currently_active_flows, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+		memset(total_observed_period, 0, LPI_PROTO_LAST * sizeof(uint64_t));
+	}
+
 	uint64_t currently_active_flows[LPI_PROTO_LAST];
 	uint64_t total_observed_period[LPI_PROTO_LAST];
-} IPCollector;
-
-struct ltstr {
-	bool operator()(const char *s1, const char *s2) const {
-		return strcmp(s1, s2) < 0;
-	}
 };
 
-typedef map<const char*, IPCollector *, ltstr> IPMap;
+typedef map<string, IPCollector> IPMap;
 
 /* This structure contains all the current values for all the statistics we
  * want our collector to be able to track on a per-user basis. There is an 
@@ -100,7 +100,7 @@ typedef struct user_counts {
 	uint64_t remote_ips[LPI_PROTO_LAST];
 } UserCounters;
 
-typedef map <char *, UserCounters *, ltstr> UserMap;
+typedef map <string, UserCounters *> UserMap;
 
 typedef struct counters {
 
