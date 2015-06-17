@@ -11,6 +11,7 @@ void register_ares_udp(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);
 void register_bjnp(LPIModuleMap *mod_map);
+void register_btsync_udp(LPIModuleMap *mod_map);
 void register_callofduty(LPIModuleMap *mod_map);
 void register_canon_mfnp(LPIModuleMap *mod_map);
 void register_checkpoint_rdp(LPIModuleMap *mod_map);

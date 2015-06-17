@@ -267,6 +267,7 @@ typedef enum {
         LPI_PROTO_WHATSAPP,
         LPI_PROTO_WECHAT,
 	LPI_PROTO_FUNSHION,
+	LPI_PROTO_BTSYNC,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -381,6 +382,7 @@ typedef enum {
 	LPI_PROTO_UDP_STEAM_LOCALBROADCAST,	
 	/* ^Protocol used by Steam to discover clients on the local network */
 	LPI_PROTO_UDP_LANSYNC,	/* LANSync, used by DropBox */
+	LPI_PROTO_UDP_BTSYNC,
 	LPI_PROTO_UDP_MSOFFICE_MAC,	/* MS Office for Mac anti-piracy */
 	LPI_PROTO_UDP_SPOTIFY_BROADCAST,
 	LPI_PROTO_UDP_MDNS,	/* Multicast DNS */
