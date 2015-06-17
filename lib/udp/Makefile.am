@@ -8,6 +8,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_backweb.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
+	lpi_btsync.cc \
 	lpi_canon_mfnp.cc \
 	lpi_checkpoint_rdp.cc \
 	lpi_cirn.cc \

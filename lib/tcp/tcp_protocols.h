@@ -10,6 +10,7 @@ void register_ares(LPIModuleMap *mod_map);
 void register_bitextend(LPIModuleMap *mod_map);
 void register_bittorrent(LPIModuleMap *mod_map);
 void register_blizzard(LPIModuleMap *mod_map);
+void register_btsync(LPIModuleMap *mod_map);
 void register_cgp(LPIModuleMap *mod_map);
 void register_chatango(LPIModuleMap *mod_map);
 void register_cisco_vpn(LPIModuleMap *mod_map);

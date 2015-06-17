@@ -7,6 +7,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
+	lpi_btsync.cc \
 	lpi_cgp.cc \
 	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \

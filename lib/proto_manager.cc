@@ -80,6 +80,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
+	register_btsync(mod_map);
 	register_cgp(mod_map);
 	register_chatango(mod_map);
 	register_cisco_vpn(mod_map);
@@ -237,6 +238,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
+	register_btsync_udp(mod_map);
 	register_canon_mfnp(mod_map);
 	register_callofduty(mod_map);
 	register_checkpoint_rdp(mod_map);
