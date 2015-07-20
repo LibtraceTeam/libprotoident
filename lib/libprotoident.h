@@ -268,6 +268,9 @@ typedef enum {
         LPI_PROTO_WECHAT,
 	LPI_PROTO_FUNSHION,
 	LPI_PROTO_BTSYNC,
+        LPI_PROTO_SPEEDTEST,
+        LPI_PROTO_GIT,
+        LPI_PROTO_DUELING_NETWORK,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -396,7 +399,12 @@ typedef enum {
 	LPI_PROTO_UDP_LOL,	/* League of Legends */
 	LPI_PROTO_UDP_SANANDREAS,	/* San Andreas Multiplayer */
 	LPI_PROTO_UDP_MFNP,	/* Canon MFNP Printer protocol */
-	LPI_PROTO_UDP_FUNSHION, 
+	LPI_PROTO_UDP_FUNSHION,
+	LPI_PROTO_UDP_QUIC,
+	LPI_PROTO_UDP_AVAST_DNS,
+	LPI_PROTO_UDP_DB2,
+	LPI_PROTO_UDP_NATPMP,
+	LPI_PROTO_UDP_GPRS_TUNNEL,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

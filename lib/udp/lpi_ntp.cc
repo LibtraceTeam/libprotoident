@@ -41,7 +41,6 @@ static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
         uint8_t first;
 	uint8_t *ptr;
         uint8_t version;
-        uint8_t mode;
 
         if (len != 48 && len != 68)
                 return false;
@@ -52,11 +51,8 @@ static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
         //first = (uint8_t) (payload);
 
         version = (first & 0x38) >> 3;
-        mode = (first & 0x07);
 
         if (version > 4 || version == 0)
-                return false;
-        if (mode != 1 && mode != 3)
                 return false;
 
         return true;
@@ -80,7 +76,7 @@ static inline bool match_ntp_response(uint32_t payload, uint32_t len) {
 
         if (version > 4 || version == 0)
                 return false;
-        if (mode != 4 && mode != 2 && mode != 1)
+        if (mode == 3)
                 return false;
 
         return true;

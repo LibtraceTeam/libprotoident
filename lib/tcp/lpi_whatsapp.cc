@@ -40,6 +40,8 @@ static inline bool match_wa_first(uint32_t payload) {
 
 	if (MATCH(payload, 'W', 'A', 0x01, 0x02))
 		return true;
+	if (MATCH(payload, 'W', 'A', 0x01, 0x05))
+		return true;
 	return false;
 
 }

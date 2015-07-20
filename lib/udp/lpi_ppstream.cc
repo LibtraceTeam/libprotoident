@@ -57,6 +57,18 @@ static inline bool ppstream_pattern(uint32_t payload) {
 		return true;
 	if (MATCH(payload, ANY, ANY, 0x43, 0x4d))
 		return true;
+	if (MATCH(payload, ANY, ANY, 0x44, 0x73))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x44, 0xb2))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x44, 0xb5))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x55, 0x72))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x55, 0x75))
+		return true;
+	if (MATCH(payload, ANY, ANY, 0x55, 0xb3))
+		return true;
 
 	return false;
 

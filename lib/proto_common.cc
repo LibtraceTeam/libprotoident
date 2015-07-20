@@ -373,6 +373,10 @@ static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
 static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x15, 0x03, 0x01, ANY))
                 return true;
+        if (MATCH(payload, 0x15, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x15, 0x03, 0x03, ANY))
+                return true;
 
 	/* Alerts are also possible under SSL 3.0 */
         if (MATCH(payload, 0x15, 0x03, 0x00, ANY))
@@ -656,6 +660,8 @@ bool match_youku_payload(uint32_t pload, uint32_t len) {
 	if (len == 0)
                 return true;
         if (MATCH(pload, 0x4b, 0x55, 0x00, 0x01) && len == 16)
+                return true;
+        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x02))
                 return true;
         if (MATCH(pload, 0x4b, 0x55, 0x00, 0x03))
                 return true;

@@ -65,6 +65,8 @@ static inline bool match_ftp_command(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCHSTR(payload, "user"))
                 return true;
+        if (MATCHSTR(payload, "AUTH"))
+                return true;
 
         /* This is invalid syntax, but clients using HOST seem to revert to
          * sane FTP commands once the server reports a syntax error */

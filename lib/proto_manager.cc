@@ -91,6 +91,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cvs(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
+	register_duelingnetwork(mod_map);
 	register_dvrns(mod_map);
 	register_dxp(mod_map);
 	register_ea_games(mod_map);
@@ -103,6 +104,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ftpdata(mod_map);
 	register_funshion_tcp(mod_map);
 	register_gamespy_tcp(mod_map);
+	register_git(mod_map);
 	register_gnutella(mod_map);
 	register_goku(mod_map);
 	register_hamachi(mod_map);
@@ -187,6 +189,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_smtps(mod_map);
 	register_socks4(mod_map);
 	register_socks5(mod_map);
+	register_speedtest(mod_map);
 	register_spotify(mod_map);
 	register_ssh(mod_map);
 	register_ssl(mod_map);
@@ -235,6 +238,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_amanda(mod_map);
 	register_apple_facetime_init(mod_map);
 	register_ares_udp(mod_map);
+	register_avast_secure_dns(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
@@ -244,6 +248,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_checkpoint_rdp(mod_map);
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
+	register_db2(mod_map);
 	register_dcc_udp(mod_map);
 	register_demonware(mod_map);
 	register_dhcp(mod_map);
@@ -268,6 +273,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_gnutella_udp(mod_map);
 	register_gnutella2_udp(mod_map);
 	register_gnutella_weak(mod_map);
+	register_gprs_tunnel(mod_map);
 	register_gsm(mod_map);
 	register_halflife(mod_map);
 	register_hamachi_udp(mod_map);
@@ -302,6 +308,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_99(mod_map);
 	register_mystery_e9(mod_map);
 	register_mystery_qq(mod_map);
+	register_natpmp(mod_map);
 	register_netbios_udp(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
@@ -321,6 +328,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_qq(mod_map);
 	register_qqlive(mod_map);
 	register_quake(mod_map);
+	register_quic(mod_map);
 	register_radius(mod_map);
 	register_real(mod_map);
 	register_roblox(mod_map);

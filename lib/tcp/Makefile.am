@@ -18,6 +18,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cvs.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
+	lpi_duelingnetwork.cc \
 	lpi_dvrns.cc \
 	lpi_dxp.cc \
 	lpi_ea_games.cc \
@@ -29,6 +30,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ftpdata.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_git.cc \
 	lpi_gnutella.cc \
 	lpi_goku.cc \
 	lpi_hamachi.cc \
@@ -113,6 +115,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_smtps.cc \
 	lpi_socks4.cc \
 	lpi_socks5.cc \
+	lpi_speedtest.cc \
 	lpi_spotify.cc \
 	lpi_ssh.cc \
 	lpi_ssl.cc \

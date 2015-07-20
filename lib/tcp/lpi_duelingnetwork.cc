@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_duelingnetwork.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,47 +36,28 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_mystery_symantec(lpi_data_t *data, 
-		lpi_module_t *mod UNUSED) {
+static inline bool match_duelingnetwork(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* This protocol definitely goes to hosts in the Symantec IP space,
-	 * but it is not exactly clear what the purpose of it is */
+        if (data->server_port != 1235 && data->client_port != 1235)
+                return false;
 
-	/* Always on TCP port 80 */
-	if (data->server_port != 80 && data->client_port != 80)
-		return false;
-
-	if (data->payload_len[0] != 4 || data->payload_len[1] != 4)
-		return false;
-
-	if (MATCH(data->payload[0], 0x00, 0x00, 0x00, 0x00)) {
-		if (MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x00))
-			return false;
-		if (MATCH(data->payload[1], 0x58, 0x54, 0x7d, 0x01))
-			return true;
-		if (MATCH(data->payload[1], ANY, ANY, ANY, 0x00))
-			return true;
-	}
-
-	if (MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x00)) {
-		if (MATCH(data->payload[1], 0x58, 0x54, 0x7d, 0x01))
-			return true;
-		if (MATCH(data->payload[0], ANY, ANY, ANY, 0x00))
-			return true;
-	}
+        if (data->payload_len[0] == 40 && MATCHSTR(data->payload[0], "Ritv"))
+                return true;
+        if (data->payload_len[1] == 40 && MATCHSTR(data->payload[1], "Ritv"))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_mystery_symantec = {
-	LPI_PROTO_MYSTERY_SYMANTEC,
-	LPI_CATEGORY_NO_CATEGORY,
-	"Mystery_Symantec",
-	250,
-	match_mystery_symantec
+static lpi_module_t lpi_duelingnetwork = {
+	LPI_PROTO_DUELING_NETWORK,
+	LPI_CATEGORY_GAMING,
+	"DuelingNetwork",
+	4,
+	match_duelingnetwork
 };
 
-void register_mystery_symantec(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_mystery_symantec, mod_map);
+void register_duelingnetwork(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_duelingnetwork, mod_map);
 }
 

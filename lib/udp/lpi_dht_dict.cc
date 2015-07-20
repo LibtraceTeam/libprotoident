@@ -119,6 +119,8 @@ static inline bool match_dict_reply(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCH(payload, 'd', '1', ANY, ':'))
 		return true;
+	if (MATCH(payload, 'd', '2', ':', 'i'))
+		return true;
 	
 	/* These are a bit iffy, but this seems to be what happens in
 	 * response to a lot of dict queries :/ */

@@ -5,7 +5,8 @@ libprotoident_udp_la_SOURCES = \
 	lpi_amanda.cc \
 	lpi_apple_facetime_init.cc \
 	lpi_ares.cc \
-	lpi_backweb.cc \
+	lpi_avast_secure_dns.cc \
+        lpi_backweb.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
 	lpi_btsync.cc \
@@ -14,6 +15,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cod.cc \
+	lpi_db2.cc \
 	lpi_dcc.cc \
 	lpi_demonware.cc \
 	lpi_dhcp.cc \
@@ -39,6 +41,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gnutella.cc \
 	lpi_gnutella2.cc \
 	lpi_gnutella_weak.cc \
+	lpi_gprs_tunnel.cc \
 	lpi_gsm.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
@@ -73,6 +76,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_99.cc \
 	lpi_mystery_e9.cc \
 	lpi_mystery_qq.cc \
+	lpi_natpmp.cc \
 	lpi_netbios.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \
@@ -93,6 +97,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_qq.cc \
 	lpi_qqlive.cc \
 	lpi_quake.cc \
+	lpi_quic.cc \
 	lpi_radius.cc \
 	lpi_real.cc \
 	lpi_roblox.cc \
