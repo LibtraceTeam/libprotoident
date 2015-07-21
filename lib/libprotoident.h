@@ -271,6 +271,7 @@ typedef enum {
         LPI_PROTO_SPEEDTEST,
         LPI_PROTO_GIT,
         LPI_PROTO_DUELING_NETWORK,
+        LPI_PROTO_LINE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -405,6 +406,8 @@ typedef enum {
 	LPI_PROTO_UDP_DB2,
 	LPI_PROTO_UDP_NATPMP,
 	LPI_PROTO_UDP_GPRS_TUNNEL,
+	LPI_PROTO_UDP_WECHAT,
+	LPI_PROTO_UDP_NOCTION,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

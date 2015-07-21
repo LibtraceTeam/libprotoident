@@ -132,6 +132,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_kaspersky(mod_map);
 	register_kik(mod_map);
 	register_ldap(mod_map);
+	register_line(mod_map);
 	register_message4u(mod_map);
 	register_minecraft(mod_map);
 	//register_mitglieder(mod_map);
@@ -312,6 +313,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_netbios_udp(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
+	register_noction(mod_map);
 	register_noe(mod_map);
 	register_norton(mod_map);
 	register_ntp(mod_map);
@@ -322,7 +324,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_pando_udp(mod_map);
 	register_pplive(mod_map);
 	register_ppstream(mod_map);
-	register_probable_gnutella(mod_map);
+	//register_probable_gnutella(mod_map);
 	register_psn(mod_map);
 	register_pyzor(mod_map);
 	register_qq(mod_map);
@@ -368,6 +370,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_viber_udp(mod_map);
 	register_vivox(mod_map);
 	register_vxworks_exploit(mod_map);
+	register_wechat_udp(mod_map);
 	register_winmessage(mod_map);
 	register_worm_22105(mod_map);
 	register_xfire_p2p(mod_map);

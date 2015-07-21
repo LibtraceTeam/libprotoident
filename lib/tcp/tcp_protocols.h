@@ -61,6 +61,7 @@ void register_kaseya(LPIModuleMap *mod_map);
 void register_kaspersky(LPIModuleMap *mod_map);
 void register_kik(LPIModuleMap *mod_map);
 void register_ldap(LPIModuleMap *mod_map);
+void register_line(LPIModuleMap *mod_map);
 void register_message4u(LPIModuleMap *mod_map);
 void register_minecraft(LPIModuleMap *mod_map);
 void register_mitglieder(LPIModuleMap *mod_map);

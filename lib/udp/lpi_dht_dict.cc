@@ -81,6 +81,8 @@ static inline bool match_utp_reply(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x31, 0x00, ANY, ANY) && len == 20)
                 return true;
+        if (MATCH(payload, 0x41, 0x00, ANY, ANY) && len == 20)
+                return true;
 	if (MATCH(payload, 0x41, 0x02, ANY, ANY) && (len == 33 || len == 30))
                 return true;
 

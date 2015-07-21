@@ -80,6 +80,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_netbios.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \
+	lpi_noction.cc \
 	lpi_noe.cc \
 	lpi_nopayload.cc \
 	lpi_norton.cc \
@@ -136,6 +137,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_viber.cc \
 	lpi_vivox.cc \
 	lpi_vxworks_exploit.cc \
+	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
