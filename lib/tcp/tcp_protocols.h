@@ -5,6 +5,7 @@
 
 void register_afp(LPIModuleMap *mod_map);
 void register_akamai_tcp(LPIModuleMap *mod_map);
+void register_amp(LPIModuleMap *mod_map);
 void register_apple_push(LPIModuleMap *mod_map);
 void register_ares(LPIModuleMap *mod_map);
 void register_bitextend(LPIModuleMap *mod_map);

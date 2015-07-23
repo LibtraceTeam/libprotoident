@@ -65,6 +65,14 @@ static inline bool match_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (match_str_both(data, "\x02\x03\x00\x00", "\x02\x03\x00\x00")) {
+                if (data->payload_len[0] == 83 && data->payload_len[1] == 43)
+                        return true;
+
+                if (data->payload_len[1] == 83 && data->payload_len[0] == 43)
+                        return true;
+        }
+
 
 	return false;
 }

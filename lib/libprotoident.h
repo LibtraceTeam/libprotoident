@@ -272,6 +272,7 @@ typedef enum {
         LPI_PROTO_GIT,
         LPI_PROTO_DUELING_NETWORK,
         LPI_PROTO_LINE,
+        LPI_PROTO_AMP,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

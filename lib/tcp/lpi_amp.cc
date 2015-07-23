@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_speedtest.cc 60 2011-02-02 04:07:52Z salcock $
+ * $Id: lpi_amp.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,49 +36,41 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_speedtest_hi(uint32_t payload, uint32_t len) {
+static inline bool match_amp_throughput(lpi_data_t *data) {
+        /* AMP Throughput generally uses port 8826 */
+        if (data->server_port != 8826 && data->client_port != 8826)
+                return false;
 
-        if (len != 3)
+        /* AMP Throughput tests are large one-way data transfers */
+        if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
                 return false;
-        if (!MATCH(payload, 'H', 'I', 0x0a, 0x00))
+
+        /* Packets are always going to be MSS-sized -- assume MTU is no
+         * smaller than 1280 bytes */
+        if (data->payload_len[0] < 1240 && data->payload_len[1] < 1240)
                 return false;
+
         return true;
+
 }
 
-static inline bool match_speedtest_hello(uint32_t payload, uint32_t len) {
+static inline bool match_amp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (len == 0)
+        if (match_amp_throughput(data))
                 return true;
-        if (!MATCH(payload, 'H', 'E', 'L', 'L'))
-                return false;
-        return true;
-}
-
-static inline bool match_speedtest(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (match_speedtest_hi(data->payload[0], data->payload_len[0])) {
-                if (match_speedtest_hello(data->payload[1], data->payload_len[1])) {
-                        return true;
-                }
-        }
-        if (match_speedtest_hi(data->payload[1], data->payload_len[1])) {
-                if (match_speedtest_hello(data->payload[0], data->payload_len[0])) {
-                        return true;
-                }
-        }
 
 	return false;
 }
 
-static lpi_module_t lpi_speedtest = {
-	LPI_PROTO_SPEEDTEST,
+static lpi_module_t lpi_amp = {
+	LPI_PROTO_AMP,
 	LPI_CATEGORY_MONITORING,
-	"Speedtest.net",
-	5,
-	match_speedtest
+	"AMP",
+	240,    /* AMP is not something I'd expect to see outside of Waikato */
+	match_amp
 };
 
-void register_speedtest(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_speedtest, mod_map);
+void register_amp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_amp, mod_map);
 }
 

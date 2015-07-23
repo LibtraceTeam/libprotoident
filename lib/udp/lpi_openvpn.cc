@@ -55,9 +55,26 @@ static inline bool match_openvpn_handshake(uint32_t pl_a, uint32_t pl_b) {
 		if (MATCH(pl_b, 0x37, ANY, ANY, ANY))
 			return true;
 	}
-	
-	
+
 	return false;
+
+}
+
+static inline bool match_tunnelbear_40(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x40, ANY, ANY, ANY))
+                return false;
+        if (len != 26)
+                return false;
+        return true;
+
+}
+
+static inline bool match_tunnelbear_38(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x38, ANY, ANY, ANY))
+                return false;
+        if (len != 14 && len != 126)
+                return false;
+        return true;
 
 }
 
@@ -67,13 +84,26 @@ static inline bool match_openvpn_udp(lpi_data_t *data, lpi_module_t *mod UNUSED)
 	 * add a port-based condition as well. Default port for OpenVPN
 	 * is UDP 1194 */
 
-	if (data->server_port != 1194 && data->client_port != 1194) {
-		return false;
+	if (data->server_port == 1194 || data->client_port == 1194) {
+                /* Just match the two-way stuff for now */
+                if (match_openvpn_handshake(data->payload[0],
+                                data->payload[1]))
+                        return true;
 	}
 
-	/* Just match the two-way stuff for now */
-	if (match_openvpn_handshake(data->payload[0], data->payload[1])) 
-		return true;
+
+        /* These are based on traffic seen involving TunnelBear hosts */
+        if (match_tunnelbear_40(data->payload[0], data->payload_len[0])) {
+                if (match_tunnelbear_38(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_tunnelbear_40(data->payload[1], data->payload_len[1])) {
+                if (match_tunnelbear_38(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+
 	return false;
 }
 
