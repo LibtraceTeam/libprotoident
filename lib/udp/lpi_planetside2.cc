@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_planetside2.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,63 +36,53 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_halflife_ports(lpi_data_t *data) {
-        if (data->server_port >= 27000 && data->server_port < 28000)
-                return true;
-        if (data->client_port >= 27000 && data->client_port < 28000)
-                return true;
-        return false;
-}
-
-static inline bool match_halflife_nine(uint32_t payload, uint32_t len) {
-
-        if (len != 9)
+static inline bool match_planetside_35(uint32_t payload, uint32_t len) {
+        if (len != 35)
                 return false;
-        if (!MATCHSTR(payload,  "\xff\xff\xff\xff"))
+
+        if (!MATCH(payload, 0x00, 0x01, 0x00, 0x00))
                 return false;
+
         return true;
 
 }
 
-static inline bool match_halflife_generic(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-        if (!MATCHSTR(payload,  "\xff\xff\xff\xff"))
+static inline bool match_planetside_21(uint32_t payload, uint32_t len) {
+        if (len != 21)
                 return false;
+
+        if (!MATCH(payload, 0x00, 0x02, ANY, ANY))
+                return false;
+
         return true;
 
 }
 
-static inline bool match_halflife(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_halflife_nine(data->payload[0], data->payload_len[0])) {
-                if (match_halflife_nine(data->payload[1], data->payload_len[1]))
+static inline bool match_planetside2(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_planetside_35(data->payload[0], data->payload_len[0])) {
+                if (match_planetside_21(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (!match_halflife_ports(data))
-                return false;
-
-        if (match_halflife_generic(data->payload[0], data->payload_len[0])) {
-                if (match_halflife_generic(data->payload[1], data->payload_len[1]))
+        if (match_planetside_35(data->payload[1], data->payload_len[1])) {
+                if (match_planetside_21(data->payload[0], data->payload_len[0]))
                         return true;
         }
-
 
 	return false;
 }
 
-static lpi_module_t lpi_halflife = {
-	LPI_PROTO_UDP_HL,
+static lpi_module_t lpi_planetside2 = {
+	LPI_PROTO_UDP_PLANETSIDE2,
 	LPI_CATEGORY_GAMING,
-	"HalfLife",
-	20,     /* Make sure this comes after other similar game protocols,
-                 * e.g. ARMA, Quake */
-	match_halflife
+	"Planetside2",
+	17,
+	match_planetside2
 };
 
-void register_halflife(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_halflife, mod_map);
+void register_planetside2(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_planetside2, mod_map);
 }
 

@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_clashofclans.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,46 +36,45 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_halflife_ports(lpi_data_t *data) {
-        if (data->server_port >= 27000 && data->server_port < 28000)
+static inline bool match_coc_login(uint32_t payload, uint32_t len) {
+
+        /* First two bytes are 10101 (0x2775)
+         * Next three bytes are a length field, usually 250-330 bytes */
+
+        if (MATCH(payload, 0x27, 0x75, 0x00, 0x01))
                 return true;
-        if (data->client_port >= 27000 && data->client_port < 28000)
+        if (MATCH(payload, 0x27, 0x75, 0x00, 0x00))
                 return true;
+
         return false;
-}
-
-static inline bool match_halflife_nine(uint32_t payload, uint32_t len) {
-
-        if (len != 9)
-                return false;
-        if (!MATCHSTR(payload,  "\xff\xff\xff\xff"))
-                return false;
-        return true;
 
 }
 
-static inline bool match_halflife_generic(uint32_t payload, uint32_t len) {
+static inline bool match_coc_encrypt(uint32_t payload, uint32_t len) {
 
-        if (len == 0)
+        /* First two bytes are 20000 (0x4e20)
+         * Next three bytes are a length field, always seems to be just
+         * under 256 bytes */
+
+        if (MATCH(payload, 0x4e, 0x20, 0x00, 0x00))
                 return true;
-        if (!MATCHSTR(payload,  "\xff\xff\xff\xff"))
-                return false;
-        return true;
+
+        return false;
 
 }
 
-static inline bool match_halflife(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_clashofclans(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_halflife_nine(data->payload[0], data->payload_len[0])) {
-                if (match_halflife_nine(data->payload[1], data->payload_len[1]))
+        /* Could limit this to port 9339, but the pattern is probably strong
+         * enough by itself */
+
+        if (match_coc_login(data->payload[0], data->payload_len[0])) {
+                if (match_coc_encrypt(data->payload[1], data->payload_len[1]))
                         return true;
         }
-
-        if (!match_halflife_ports(data))
-                return false;
-
-        if (match_halflife_generic(data->payload[0], data->payload_len[0])) {
-                if (match_halflife_generic(data->payload[1], data->payload_len[1]))
+        
+        if (match_coc_login(data->payload[1], data->payload_len[1])) {
+                if (match_coc_encrypt(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
@@ -83,16 +82,15 @@ static inline bool match_halflife(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-static lpi_module_t lpi_halflife = {
-	LPI_PROTO_UDP_HL,
+static lpi_module_t lpi_clashofclans = {
+	LPI_PROTO_CLASH_OF_CLANS,
 	LPI_CATEGORY_GAMING,
-	"HalfLife",
-	20,     /* Make sure this comes after other similar game protocols,
-                 * e.g. ARMA, Quake */
-	match_halflife
+	"ClashOfClans",
+	4,
+	match_clashofclans
 };
 
-void register_halflife(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_halflife, mod_map);
+void register_clashofclans(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_clashofclans, mod_map);
 }
 

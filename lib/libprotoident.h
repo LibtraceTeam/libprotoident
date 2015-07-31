@@ -273,6 +273,12 @@ typedef enum {
         LPI_PROTO_DUELING_NETWORK,
         LPI_PROTO_LINE,
         LPI_PROTO_AMP,
+        LPI_PROTO_SPDY,
+        LPI_PROTO_YAHOO_GAMES,
+        LPI_PROTO_DELL_BACKUP,
+        LPI_PROTO_REVOLVER_NBLBT,
+        LPI_PROTO_CRASHPLAN,
+        LPI_PROTO_CLASH_OF_CLANS,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -296,7 +302,8 @@ typedef enum {
 	LPI_PROTO_UDP_SPAMFIGHTER,	/* SpamFighter */
 	LPI_PROTO_UDP_TRACEROUTE,
 	LPI_PROTO_UDP_SECONDLIFE,
-	LPI_PROTO_UDP_HL,	/* Halflife */
+	LPI_PROTO_UDP_HL,	/* Halflife, includes derivatives such as
+                                 * CounterStrike and Garry's Mod */
 	LPI_PROTO_UDP_XLSP,	/* XLSP - Xbox Live */
 	LPI_PROTO_UDP_DEMONWARE,	/* Company that does game networking */
 	LPI_PROTO_UDP_IMESH,	/* iMesh */
@@ -409,6 +416,9 @@ typedef enum {
 	LPI_PROTO_UDP_GPRS_TUNNEL,
 	LPI_PROTO_UDP_WECHAT,
 	LPI_PROTO_UDP_NOCTION,
+        LPI_PROTO_UDP_ARMA_SERVER,    /* Includes DayZ */
+        LPI_PROTO_UDP_PLANETSIDE2,
+        LPI_PROTO_UDP_RWTH_AACHEN,      /* RWTH-Aachen University research */
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

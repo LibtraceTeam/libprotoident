@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_yahoo_games.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,63 +36,54 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_halflife_ports(lpi_data_t *data) {
-        if (data->server_port >= 27000 && data->server_port < 28000)
-                return true;
-        if (data->client_port >= 27000 && data->client_port < 28000)
-                return true;
-        return false;
-}
+/* This traffic all seems to go to games.X.yahoo.com, so I'm going to assume
+ * that this is Yahoo Games */
 
-static inline bool match_halflife_nine(uint32_t payload, uint32_t len) {
+static inline bool match_yahoo_games_req(uint32_t payload, uint32_t len) {
 
-        if (len != 9)
+        if (len != 1)
                 return false;
-        if (!MATCHSTR(payload,  "\xff\xff\xff\xff"))
+        if (!MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return false;
         return true;
 
 }
 
-static inline bool match_halflife_generic(uint32_t payload, uint32_t len) {
+static inline bool match_yahoo_games_resp(uint32_t payload, uint32_t len) {
 
-        if (len == 0)
-                return true;
-        if (!MATCHSTR(payload,  "\xff\xff\xff\xff"))
+        if (len != 22)
+                return false;
+        if (!MATCH(payload, 0x81, 0xd3, 0x70, 0x6c))
                 return false;
         return true;
 
 }
 
-static inline bool match_halflife(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_yahoo_games(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_halflife_nine(data->payload[0], data->payload_len[0])) {
-                if (match_halflife_nine(data->payload[1], data->payload_len[1]))
+        if (match_yahoo_games_req(data->payload[0], data->payload_len[0])) {
+                if (match_yahoo_games_resp(data->payload[1], data->payload_len[1])) {
                         return true;
+                }
         }
-
-        if (!match_halflife_ports(data))
-                return false;
-
-        if (match_halflife_generic(data->payload[0], data->payload_len[0])) {
-                if (match_halflife_generic(data->payload[1], data->payload_len[1]))
+        if (match_yahoo_games_req(data->payload[1], data->payload_len[1])) {
+                if (match_yahoo_games_resp(data->payload[0], data->payload_len[0])) {
                         return true;
+                }
         }
-
 
 	return false;
 }
 
-static lpi_module_t lpi_halflife = {
-	LPI_PROTO_UDP_HL,
+static lpi_module_t lpi_yahoo_games = {
+	LPI_PROTO_YAHOO_GAMES,
 	LPI_CATEGORY_GAMING,
-	"HalfLife",
-	20,     /* Make sure this comes after other similar game protocols,
-                 * e.g. ARMA, Quake */
-	match_halflife
+	"YahooGames",
+	4,
+	match_yahoo_games
 };
 
-void register_halflife(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_halflife, mod_map);
+void register_yahoo_games(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_yahoo_games, mod_map);
 }
 

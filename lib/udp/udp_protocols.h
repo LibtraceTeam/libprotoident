@@ -3,11 +3,13 @@
 
 #include "proto_manager.h"
 
+void register_aachen_udp(LPIModuleMap *mod_map);
 void register_akamai(LPIModuleMap *mod_map);
 void register_akamai_transfer(LPIModuleMap *mod_map);
 void register_amanda(LPIModuleMap *mod_map);
 void register_apple_facetime_init(LPIModuleMap *mod_map);
 void register_ares_udp(LPIModuleMap *mod_map);
+void register_arma_server(LPIModuleMap *mod_map);
 void register_avast_secure_dns(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);
@@ -92,6 +94,7 @@ void register_opaserv(LPIModuleMap *mod_map);
 void register_openvpn_udp(LPIModuleMap *mod_map);
 void register_orbit_udp(LPIModuleMap *mod_map);
 void register_pando_udp(LPIModuleMap *mod_map);
+void register_planetside2(LPIModuleMap *mod_map);
 void register_pplive(LPIModuleMap *mod_map);
 void register_ppstream(LPIModuleMap *mod_map);
 void register_probable_gnutella(LPIModuleMap *mod_map);

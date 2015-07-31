@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_crashplan.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,44 +36,49 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_ssdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_crashplan_16(uint32_t payload, uint32_t len) {
 
-	if (match_str_either(data, "M-SE"))
-                return true;
+        if (len != 16)
+                return false;
+        if (!MATCH(payload, 0x0f, 0xa9, 0x00, 0x00))
+                return false;
+        return true;
 
-	if (match_str_either(data, "NOTI")) {
-		if (data->server_port != 1900)
-			return false;
-		if (data->client_port != 1900)
-			return false;
-		return true;
-	}
+}
 
-        /* Check for SSDP reflection attacks */
-	if (match_str_either(data, "HTTP")) {
-		/* usually only the source port is 1900 */
-                if (data->server_port != 1900 && data->client_port != 1900)
-			return false;
+static inline bool match_crashplan_6(uint32_t payload, uint32_t len) {
 
-                /* the request usually has a spoofed address so we won't
-                 * payload in one direction */
-                if (data->payload_len[0] != 0 && data->payload_len[0] != 0)
-                        return false;
-		return true;
-	}
+        if (len != 6)
+                return false;
+        if (!MATCH(payload, 0x80, 0x63, 0x00, 0x00))
+                return false;
+        return true;
 
+}
+
+static inline bool match_crashplan(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_crashplan_16(data->payload[0], data->payload_len[0])) {
+                if (match_crashplan_6(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_crashplan_16(data->payload[1], data->payload_len[1])) {
+                if (match_crashplan_6(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 	return false;
 }
 
-static lpi_module_t lpi_ssdp = {
-	LPI_PROTO_UDP_SSDP,
-	LPI_CATEGORY_SERVICES,
-	"SSDP",
+static lpi_module_t lpi_crashplan = {
+	LPI_PROTO_CRASHPLAN,
+	LPI_CATEGORY_CLOUD,
+	"CrashPlan",
 	5,
-	match_ssdp
+	match_crashplan
 };
 
-void register_ssdp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ssdp, mod_map);
+void register_crashplan(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_crashplan, mod_map);
 }
 

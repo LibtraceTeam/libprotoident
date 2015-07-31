@@ -70,10 +70,23 @@ static inline bool match_quic_response(uint32_t payload, uint32_t other) {
 
 }
 
+static inline bool match_quic_port(lpi_data_t *data) {
+        if (data->server_port == 443)
+                return true;
+        if (data->client_port == 443)
+                return true;
+
+        if (data->server_port == 80)
+                return true;
+        if (data->client_port == 80)
+                return true;
+
+        return false;
+}
+
 static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        /* Always appears to use UDP port 443 */
-        if (data->server_port != 443 && data->client_port != 443)
+        if (!match_quic_port(data))
                 return false;
 
         /* Spec says that packets must not be larger than 1350 bytes */

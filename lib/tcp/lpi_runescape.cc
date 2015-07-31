@@ -69,6 +69,11 @@ static inline bool match_runescape_resp(uint32_t payload, uint32_t len) {
 			return true;
 	}
 
+	if (MATCH(payload, 0x0f, 0x2a, 0x00, 0x00)) {
+		if (len == 44)
+			return true;
+	}
+
 	if (MATCH(payload, 0x0e, 0x00, 0x00, 0x00)) {
 		if (len == 1)
 			return true;

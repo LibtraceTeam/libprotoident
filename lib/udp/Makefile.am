@@ -1,10 +1,12 @@
 noinst_LTLIBRARIES = libprotoident_udp.la
 libprotoident_udp_la_SOURCES = \
+	lpi_aachen_udp.cc \
 	lpi_akamai.cc \
 	lpi_akamai_transfer.cc \
 	lpi_amanda.cc \
 	lpi_apple_facetime_init.cc \
 	lpi_ares.cc \
+	lpi_arma_server.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
 	lpi_battlefield.cc \
@@ -90,6 +92,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
 	lpi_pando.cc \
+	lpi_planetside2.cc \
 	lpi_pplive.cc \
 	lpi_ppstream.cc \
 	lpi_probable_gnutella.cc \

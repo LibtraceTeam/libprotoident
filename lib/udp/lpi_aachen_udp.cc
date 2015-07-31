@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_aachen_udp.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,44 +36,41 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_ssdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_aachen_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_str_either(data, "M-SE"))
-                return true;
+        /* Regular UDP port 80 probes from RWTH-Aachen University for
+         * research purposes. See http://137.226.113.7/ for more details.
+         */
 
-	if (match_str_either(data, "NOTI")) {
-		if (data->server_port != 1900)
-			return false;
-		if (data->client_port != 1900)
-			return false;
-		return true;
-	}
+        if (data->server_port == 80 || data->client_port == 80) {
+                if (data->payload_len[0] == 0) {
+                        if (data->payload_len[1] != 1055)
+                                return false;
+                        if (MATCH(data->payload[1], 0x0d, 'S', 'C', 'A'))
+                                return true;
+                }
 
-        /* Check for SSDP reflection attacks */
-	if (match_str_either(data, "HTTP")) {
-		/* usually only the source port is 1900 */
-                if (data->server_port != 1900 && data->client_port != 1900)
-			return false;
+                if (data->payload_len[1] == 0) {
+                        if (data->payload_len[0] != 1055)
+                                return false;
+                        if (MATCH(data->payload[0], 0x0d, 'S', 'C', 'A'))
+                                return true;
+                }
+        }
 
-                /* the request usually has a spoofed address so we won't
-                 * payload in one direction */
-                if (data->payload_len[0] != 0 && data->payload_len[0] != 0)
-                        return false;
-		return true;
-	}
 
 	return false;
 }
 
-static lpi_module_t lpi_ssdp = {
-	LPI_PROTO_UDP_SSDP,
-	LPI_CATEGORY_SERVICES,
-	"SSDP",
-	5,
-	match_ssdp
+static lpi_module_t lpi_aachen_udp = {
+	LPI_PROTO_UDP_RWTH_AACHEN,
+	LPI_CATEGORY_MONITORING,
+	"RWTHAachenScan",
+	100,
+	match_aachen_udp
 };
 
-void register_ssdp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ssdp, mod_map);
+void register_aachen_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_aachen_udp, mod_map);
 }
 

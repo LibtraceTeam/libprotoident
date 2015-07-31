@@ -12,11 +12,14 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cgp.cc \
 	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \
+	lpi_clashofclans.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \
+	lpi_crashplan.cc \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
+	lpi_dell_backup.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_duelingnetwork.cc \
@@ -102,6 +105,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
 	lpi_rejection.cc \
+	lpi_revolver_nblbt.cc \
 	lpi_rfb.cc \
 	lpi_rpcscan.cc \
 	lpi_rsync.cc \
@@ -117,6 +121,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_smtps.cc \
 	lpi_socks4.cc \
 	lpi_socks5.cc \
+	lpi_spdy.cc \
 	lpi_speedtest.cc \
 	lpi_spotify.cc \
 	lpi_ssh.cc \
@@ -152,6 +157,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_xymon.cc \
 	lpi_yahoo.cc \
 	lpi_yahoo_error.cc \
+	lpi_yahoo_games.cc \
 	lpi_yahoo_webcam.cc \
 	lpi_youku.cc \
 	lpi_zabbix.cc \

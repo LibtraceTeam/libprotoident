@@ -84,14 +84,25 @@ static inline bool match_spotify_04_resp(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_spotify_port(uint16_t port) {
+
+        if (port == 4070)
+                return true;
+        if (port == 80)
+                return true;
+        if (port == 443)
+                return true;
+        return false;
+
+}
+
 static inline bool match_spotify(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Make sure we're using the right port */
-	if (data->server_port != 4070 && data->client_port != 4070) {
-		/* Port 443 is used for uploading? */
-		if (data->server_port != 443 && data->client_port != 443)
-			return false;
-	}
+        if (!match_spotify_port(data->server_port) && 
+                        !match_spotify_port(data->client_port)) {
+                return false;
+        }
 
 	if (match_spotify_02_req(data->payload[0], data->payload_len[0])) {
 		if (match_spotify_02_resp(data->payload[1], data->payload_len[1]))

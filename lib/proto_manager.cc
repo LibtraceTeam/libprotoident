@@ -85,11 +85,14 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cgp(mod_map);
 	register_chatango(mod_map);
 	register_cisco_vpn(mod_map);
+	register_clashofclans(mod_map);
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
 	register_conquer(mod_map);
+	register_crashplan(mod_map);
 	register_cryptic(mod_map);
 	register_cvs(mod_map);
+	register_dell_backup(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
 	register_duelingnetwork(mod_map);
@@ -176,6 +179,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_rbls(mod_map);
 	register_rdp(mod_map);
 	register_rejection(mod_map);
+	register_revolver_nblbt(mod_map);
 	register_rfb(mod_map);
 	register_rpcscan(mod_map);
 	register_rsync(mod_map);
@@ -191,6 +195,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_smtps(mod_map);
 	register_socks4(mod_map);
 	register_socks5(mod_map);
+	register_spdy(mod_map);
 	register_speedtest(mod_map);
 	register_spotify(mod_map);
 	register_ssh(mod_map);
@@ -226,6 +231,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_xymon(mod_map);
 	register_yahoo(mod_map);
 	register_yahoo_error(mod_map);
+	register_yahoo_games(mod_map);
 	register_yahoo_webcam(mod_map);
 	register_youku_tcp(mod_map);
 	register_zabbix(mod_map);
@@ -235,11 +241,13 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 int register_udp_protocols(LPIModuleMap *mod_map) {
 
+	register_aachen_udp(mod_map);
 	register_akamai(mod_map);
 	register_akamai_transfer(mod_map);
 	register_amanda(mod_map);
 	register_apple_facetime_init(mod_map);
 	register_ares_udp(mod_map);
+	register_arma_server(mod_map);
 	register_avast_secure_dns(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
@@ -323,6 +331,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_openvpn_udp(mod_map);
 	register_orbit_udp(mod_map);
 	register_pando_udp(mod_map);
+	register_planetside2(mod_map);
 	register_pplive(mod_map);
 	register_ppstream(mod_map);
 	//register_probable_gnutella(mod_map);

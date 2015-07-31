@@ -73,6 +73,14 @@ static inline bool match_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (data->payload[0] == data->payload[1]) {
+                if (!MATCH(data->payload[0], 0x02, ANY, ANY, ANY))
+                        return false;
+                if (data->server_port != 8000 && data->client_port != 8000)
+                        return false;
+                return true;
+        }
+
 
 	return false;
 }
@@ -81,7 +89,7 @@ static lpi_module_t lpi_qq = {
 	LPI_PROTO_UDP_QQ,
 	LPI_CATEGORY_CHAT,
 	"QQ",
-	3,
+	23,
 	match_qq
 };
 
