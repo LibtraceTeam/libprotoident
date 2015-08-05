@@ -56,13 +56,34 @@ static inline bool match_bittorrent_header(uint32_t payload, uint32_t len) {
 }
 
 
+static inline bool match_ww_xx_header(uint32_t payload, uint32_t len) {
+        /* Fairly confident that this is related to Bittorrent, though I
+         * can't seem to find any source code or documentation that references
+         * it.
+         *
+         * The full string included in the header is:
+         * 0x13 #WW-XX#@77
+         */
+       if (MATCH(payload, 0x13, 0x23, 0x57, 0x57))
+               return true;
+       return false;
+
+}
+
 static inline bool match_bittorrent(lpi_data_t *data, lpi_module_t *mod UNUSED) 
 {
-        if (!match_bittorrent_header(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_bittorrent_header(data->payload[1], data->payload_len[1]))
-                return false;
-        return true;
+        if (match_bittorrent_header(data->payload[0], data->payload_len[0])) {
+                if (match_bittorrent_header(data->payload[1], 
+                                data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_ww_xx_header(data->payload[0], data->payload_len[0])) {
+                if (match_ww_xx_header(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        return false;
 }
 
 static lpi_module_t lpi_bittorrent = {

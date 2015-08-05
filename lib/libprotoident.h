@@ -279,6 +279,7 @@ typedef enum {
         LPI_PROTO_REVOLVER_NBLBT,
         LPI_PROTO_CRASHPLAN,
         LPI_PROTO_CLASH_OF_CLANS,
+        LPI_PROTO_TRION,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
