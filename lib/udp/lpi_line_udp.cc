@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_line_udp.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,57 +36,49 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_teamviewer_payload(uint32_t payload, uint32_t len) {
+static inline bool match_line_108(uint32_t payload, uint32_t len) {
 
-	if (len == 0)
-		return true;
-	if (!MATCH(payload, 0x17, 0x24, ANY, ANY))
-		return false;
-
-	if ((ntohl(payload) & 0xff) != len - 5)
-		return false;
-	
-	return true;
-	
-
-}
-
-static inline bool match_teamviewer_alt(uint32_t payload, uint32_t len) {
-        if (!MATCH(payload, 0x11, 0x30, 0x36, 0x00))
+        if (len != 108)
                 return false;
-        return true;
+        if (MATCH(payload, 0xb6, 0x12, 0x00, 0x68))
+                return true;
+        return false;
+
 }
 
-static inline bool match_teamviewer(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_line_35(uint32_t payload, uint32_t len) {
 
-	if (match_teamviewer_payload(data->payload[0], data->payload_len[0])) {
-                if (match_teamviewer_payload(data->payload[1], data->payload_len[1]))
-                        return true;
-                if (match_teamviewer_alt(data->payload[1], data->payload_len[1]))
-                        return true;
+        if (len != 35)
+                return false;
+        if (MATCH(payload, 0xb6, 0x13, 0x00, 0x06))
+                return true;
+        return false;
 
+}
+
+static inline bool match_line_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_line_108(data->payload[0], data->payload_len[0])) {
+                if (match_line_35(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
-	if (match_teamviewer_payload(data->payload[1], data->payload_len[1])) {
-                if (match_teamviewer_payload(data->payload[0], data->payload_len[0]))
+        if (match_line_108(data->payload[1], data->payload_len[1])) {
+                if (match_line_35(data->payload[0], data->payload_len[0]))
                         return true;
-                if (match_teamviewer_alt(data->payload[0], data->payload_len[0]))
-                        return true;
-
         }
-
 	return false;
 }
 
-static lpi_module_t lpi_teamviewer = {
-	LPI_PROTO_TEAMVIEWER,
-	LPI_CATEGORY_REMOTE,
-	"Teamviewer",
-	4,
-	match_teamviewer
+static lpi_module_t lpi_line_udp = {
+	LPI_PROTO_UDP_LINE,
+	LPI_CATEGORY_CHAT,
+	"Line_UDP",
+	6,
+	match_line_udp
 };
 
-void register_teamviewer(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_teamviewer, mod_map);
+void register_line_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_line_udp, mod_map);
 }
 

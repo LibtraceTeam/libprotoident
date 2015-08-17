@@ -70,6 +70,7 @@ void register_message4u(LPIModuleMap *mod_map);
 void register_minecraft(LPIModuleMap *mod_map);
 void register_mitglieder(LPIModuleMap *mod_map);
 void register_mms(LPIModuleMap *mod_map);
+void register_mongo(LPIModuleMap *mod_map);
 void register_mp2p(LPIModuleMap *mod_map);
 void register_msn(LPIModuleMap *mod_map);
 void register_msnc(LPIModuleMap *mod_map);

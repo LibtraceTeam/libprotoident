@@ -44,7 +44,11 @@ static inline bool match_wechat_uplink_hb(uint32_t payload, uint32_t len) {
         /* Byte 3 appears to be a length indicator */
         if (MATCH(payload, 0xd1, 0x0a, 0x2e, 0x0a))
                 return true;
+        if (MATCH(payload, 0xd1, 0x0a, 0x2d, 0x0a))
+                return true;
         if (MATCH(payload, 0xd1, 0x0a, 0x1e, 0x0a))
+                return true;
+        if (MATCH(payload, 0xd1, 0x0a, 0x1d, 0x0a))
                 return true;
 
         return false;

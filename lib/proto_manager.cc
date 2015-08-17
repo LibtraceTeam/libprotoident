@@ -141,6 +141,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_minecraft(mod_map);
 	//register_mitglieder(mod_map);
 	register_mms(mod_map);
+	register_mongo(mod_map);
 	register_mp2p(mod_map);
 	register_msn(mod_map);
 	register_msnc(mod_map);
@@ -253,6 +254,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
+	register_bmdp(mod_map);
 	register_btsync_udp(mod_map);
 	register_canon_mfnp(mod_map);
 	register_callofduty(mod_map);
@@ -268,6 +270,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_diablo2(mod_map);
 	register_directconnect_udp(mod_map);
 	register_dns_udp(mod_map);
+	register_dota2(mod_map);
 	register_driveshare(mod_map);
 	register_dtls(mod_map);
 	register_emule_udp(mod_map);
@@ -301,6 +304,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_l2tp(mod_map);
 	register_lansync_udp(mod_map);
 	register_ldap_ad(mod_map);
+	register_line_udp(mod_map);
 	register_linkproof(mod_map);
 	register_lol(mod_map);
 	register_mdns(mod_map);

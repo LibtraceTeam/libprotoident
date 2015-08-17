@@ -183,6 +183,17 @@ static bool is_emule_udp(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_emule_verycd(uint32_t payload, uint32_t len) {
+
+        /* Later packets in the flow are clearly referencing eMule builds
+         * and software, in particular VeryCD and xl build61 */
+        if (len != 31)
+                return false;
+        if (!MATCH(payload, 0x3b, 0x00, 0x00, 0x00))
+                return false;
+        return true;
+
+}
 
 
 static inline bool match_emule_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
@@ -203,6 +214,16 @@ static inline bool match_emule_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (is_emule_udp(data->payload[0], data->payload_len[0]) &&
                         is_emule_udp(data->payload[1], data->payload_len[1]))
                 return true;
+
+        if (match_emule_verycd(data->payload[0], data->payload_len[0])) {
+                if (data->payload_len[1] != 0)
+                        return true;
+        }
+
+        if (match_emule_verycd(data->payload[1], data->payload_len[1])) {
+                if (data->payload_len[0] != 0)
+                        return true;
+        }
 
 	return false;
 }

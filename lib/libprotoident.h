@@ -280,6 +280,7 @@ typedef enum {
         LPI_PROTO_CRASHPLAN,
         LPI_PROTO_CLASH_OF_CLANS,
         LPI_PROTO_TRION,
+        LPI_PROTO_MONGO,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -420,6 +421,9 @@ typedef enum {
         LPI_PROTO_UDP_ARMA_SERVER,    /* Includes DayZ */
         LPI_PROTO_UDP_PLANETSIDE2,
         LPI_PROTO_UDP_RWTH_AACHEN,      /* RWTH-Aachen University research */
+        LPI_PROTO_UDP_BMDP,      /* Part of Microsoft ADS */
+        LPI_PROTO_UDP_DOTA2,      
+        LPI_PROTO_UDP_LINE, 
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

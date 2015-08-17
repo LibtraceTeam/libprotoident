@@ -45,7 +45,8 @@ static inline bool match_rtp_payload(uint32_t payload, uint32_t len,
 
         /* Be stricter about packet length when looking at one-way flows */
 	if (other_len == 0) {
-		if (len != 32 && len != 92 && len != 172)
+		if (len != 32 && len != 92 && len != 172 && 
+                                len != 31 && len != 24)
 			return false;
 	}
 

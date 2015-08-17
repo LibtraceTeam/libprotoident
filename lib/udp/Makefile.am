@@ -11,6 +11,7 @@ libprotoident_udp_la_SOURCES = \
         lpi_backweb.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
+	lpi_bmdp.cc \
 	lpi_btsync.cc \
 	lpi_canon_mfnp.cc \
 	lpi_checkpoint_rdp.cc \
@@ -26,6 +27,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_diablo2.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
+	lpi_dota2.cc \
 	lpi_driveshare.cc \
 	lpi_dtls.cc \
 	lpi_emule.cc \
@@ -60,6 +62,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_l2tp.cc \
 	lpi_lansync.cc \
 	lpi_ldap_ad.cc \
+	lpi_line_udp.cc \
 	lpi_linkproof.cc \
 	lpi_lol.cc \
 	lpi_mdns.cc \

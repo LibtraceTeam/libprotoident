@@ -64,6 +64,8 @@ static inline bool match_ww_xx_header(uint32_t payload, uint32_t len) {
          * The full string included in the header is:
          * 0x13 #WW-XX#@77
          */
+       if (len == 0)
+               return true;
        if (MATCH(payload, 0x13, 0x23, 0x57, 0x57))
                return true;
        return false;

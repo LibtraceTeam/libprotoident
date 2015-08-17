@@ -67,6 +67,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_minecraft.cc \
 	lpi_mitglieder.cc \
 	lpi_mms.cc \
+	lpi_mongo.cc \
 	lpi_mp2p.cc \
 	lpi_msn.cc \
 	lpi_msnc.cc \
