@@ -49,6 +49,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gsm.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
+	lpi_heroes_generals.cc \
 	lpi_icp.cc \
 	lpi_imesh.cc \
 	lpi_ipmsg.cc \
@@ -151,7 +152,8 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xunlei.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
-	lpi_zeroaccess_udp.cc
+	lpi_zeroaccess_udp.cc \
+	lpi_zoom.cc
 
 EXTRA_DIST=udp_protocols.h
 

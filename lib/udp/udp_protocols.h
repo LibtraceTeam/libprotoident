@@ -52,6 +52,7 @@ void register_gprs_tunnel(LPIModuleMap *mod_map);
 void register_gsm(LPIModuleMap *mod_map);
 void register_halflife(LPIModuleMap *mod_map);
 void register_hamachi_udp(LPIModuleMap *mod_map);
+void register_heroes_generals(LPIModuleMap *mod_map);
 void register_icp(LPIModuleMap *mod_map);
 void register_imesh_udp(LPIModuleMap *mod_map);
 void register_ipmsg(LPIModuleMap *mod_map);
@@ -155,4 +156,5 @@ void register_xunlei_udp(LPIModuleMap *mod_map);
 void register_youdao_dict(LPIModuleMap *mod_map);
 void register_youku_udp(LPIModuleMap *mod_map);
 void register_zeroaccess_udp(LPIModuleMap *mod_map);
+void register_zoom(LPIModuleMap *mod_map);
 #endif

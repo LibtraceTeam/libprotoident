@@ -424,6 +424,8 @@ typedef enum {
         LPI_PROTO_UDP_BMDP,      /* Part of Microsoft ADS */
         LPI_PROTO_UDP_DOTA2,      
         LPI_PROTO_UDP_LINE, 
+        LPI_PROTO_UDP_ZOOM,
+        LPI_PROTO_UDP_HEROES_GENERALS,  /* Heroes and Generals */ 
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

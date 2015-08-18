@@ -291,6 +291,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_gsm(mod_map);
 	register_halflife(mod_map);
 	register_hamachi_udp(mod_map);
+	register_heroes_generals(mod_map);
 	register_icp(mod_map);
 	register_imesh_udp(mod_map);
 	register_ipmsg(mod_map);
@@ -394,6 +395,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
 	register_zeroaccess_udp(mod_map);
+	register_zoom(mod_map);
 	return 0;
 }
 

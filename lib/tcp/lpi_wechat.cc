@@ -36,34 +36,24 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_wc_first(uint32_t payload, uint32_t len) {
-	
-	/* The initial request is always 16 bytes */
-	if (len != 16)
-		return false;
+static inline bool match_wc_pair(uint32_t payloada, uint32_t lena,
+                uint32_t payloadb, uint32_t lenb) {
 
-	if (!MATCH(payload, 0x00, 0x00, 0x00, 0x10))
-		return false;
-	
-	return true;
+        if (lena == 16 && MATCH(payloada, 0x00, 0x00, 0x00, 0x10)) {
+                if (lenb == 16 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x10))
+                        return true;
+                if (lenb == 18 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x12))
+                        return true;
+        }
 
-}
+        if (lena == 21 && MATCH(payloada, 0x00, 0x00, 0x00, 0x15)) {
+                if (lenb == 25 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x19))
+                        return true;
+        }
 
-static inline bool match_wc_second(uint32_t payload, uint32_t len) {
-	if (len == 0)
-		return true;
-	
-	/* The response is either 16 or 18 bytes in size.
-	 * Technically, more values could be possible but until we see
-	 * them in the wild I'll just match on 16 and 18.
-	 */
+        return false;
 
-	if (len == 16 && MATCH(payload, 0x00, 0x00, 0x00, 0x10))
-		return true;
-	if (len == 18 && MATCH(payload, 0x00, 0x00, 0x00, 0x12))
-		return true;
 
-	return false;
 }
 
 static inline bool match_wc_ab_request(uint32_t payload, uint32_t len) {
@@ -113,16 +103,16 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (!valid_port)
 		return false;
 
-	if (match_wc_first(data->payload[0], data->payload_len[0])) {
-		if (match_wc_second(data->payload[1], data->payload_len[1]))
-			return true;
+	if (match_wc_pair(data->payload[0], data->payload_len[0],
+                        data->payload[1], data->payload_len[1])) {
+		return true;
 	}
 	
-	if (match_wc_first(data->payload[1], data->payload_len[1])) {
-		if (match_wc_second(data->payload[0], data->payload_len[0]))
-			return true;
+	if (match_wc_pair(data->payload[1], data->payload_len[1],
+                        data->payload[0], data->payload_len[0])) {
+		return true;
 	}
-
+	
         if (match_wc_ab_request(data->payload[0], data->payload_len[0])) {
                 if (match_wc_ab_reply(data->payload[1], data->payload_len[1]))
                         return true;
