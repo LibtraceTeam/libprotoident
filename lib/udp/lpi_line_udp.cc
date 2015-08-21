@@ -56,6 +56,16 @@ static inline bool match_line_35(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_line_16(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+
+        if (len == 16 && MATCH(payload, 0xb6, 0x09, 0x00, 0x0c))
+                return true;
+
+        return false;
+}
+
 static inline bool match_line_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_line_108(data->payload[0], data->payload_len[0])) {
@@ -67,6 +77,18 @@ static inline bool match_line_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_line_35(data->payload[0], data->payload_len[0]))
                         return true;
         }
+
+        /* Not 100% sure about this one, but the few clues I have make me
+         * think this is likely to be Line.
+         *   1. all connections use at least one port in the 50000+ range.
+         *   2. many remote addresses are in Japanese ASNs.
+         *   3. first byte of payload is 0xb6.
+         */
+        if (match_line_16(data->payload[0], data->payload_len[0])) {
+                if (match_line_16(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
 	return false;
 }
 
@@ -74,7 +96,7 @@ static lpi_module_t lpi_line_udp = {
 	LPI_PROTO_UDP_LINE,
 	LPI_CATEGORY_CHAT,
 	"Line_UDP",
-	6,
+	16,
 	match_line_udp
 };
 

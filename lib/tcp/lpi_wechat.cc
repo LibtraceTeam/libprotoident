@@ -57,17 +57,42 @@ static inline bool match_wc_pair(uint32_t payloada, uint32_t lena,
 }
 
 static inline bool match_wc_ab_request(uint32_t payload, uint32_t len) {
-        /* Technically this is 0xab, followed by 4 bytes of length but I've
-         * not seen a length above 255 thus far.
+        /* This is 0xab, followed by 4 bytes of length for the first
+         * packet.
          */
 
-        if (len > 255)
-                return false;
+        if (len <= 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+                return true;
 
         if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))
                 return true;
         return false;
 
+}
+
+static inline bool match_wc_ab_big02(uint32_t payload, uint32_t len) {
+        /* again 0xab followed by length, except this time the length is
+         * for the entire flow.
+         */
+        if (len <= 255)
+                return false;
+
+        /* Flows are unlikely to need a full 4 bytes for length so I'm
+         * going to stick 0x00 in the top byte for now */
+        if (MATCH(payload, 0xab, 0x00, ANY, ANY)) {
+                return true;
+        }
+        return false;
+        
+}
+
+static inline bool match_wc_ab_big01(uint32_t payload, uint32_t len) {
+
+        if (len < 100)
+                return false;
+        if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+                return true;
+        return false;
 }
 
 static inline bool match_wc_ab_reply(uint32_t payload, uint32_t len) {
@@ -120,6 +145,16 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_wc_ab_request(data->payload[1], data->payload_len[1])) {
                 if (match_wc_ab_reply(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_wc_ab_big01(data->payload[0], data->payload_len[0])) {
+                if (match_wc_ab_big02(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_wc_ab_big01(data->payload[1], data->payload_len[1])) {
+                if (match_wc_ab_big02(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

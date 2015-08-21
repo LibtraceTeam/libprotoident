@@ -55,7 +55,7 @@ static inline bool match_mongo_reply(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
 
-        /* Only ever seen MTU sized packets as the response */
+        /* Only ever seen MTU sized packets as these responses */
         if (MATCH(payload, 0x84, 0x0c, 0x00, 0x00))
                 return true;
         if (MATCH(payload, 0x83, 0x0c, 0x00, 0x00))
@@ -64,6 +64,20 @@ static inline bool match_mongo_reply(uint32_t payload, uint32_t len) {
                 return true;
 
         return false;
+}
+
+static inline bool match_mongo_short_req(uint32_t payload, uint32_t len) {
+        if (len == 58 && MATCH(payload, 0x3a, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
+static inline bool match_mongo_short_reply(uint32_t payload, uint32_t len) {
+        if (len == 212 && MATCH(payload, 0xd4, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
 }
 
 static inline bool match_mongo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
@@ -82,6 +96,15 @@ static inline bool match_mongo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (match_mongo_short_req(data->payload[0], data->payload_len[0])) {
+                if (match_mongo_short_reply(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_mongo_short_req(data->payload[1], data->payload_len[1])) {
+                if (match_mongo_short_reply(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 	return false;
 }
 

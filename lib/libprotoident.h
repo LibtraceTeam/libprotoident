@@ -281,6 +281,7 @@ typedef enum {
         LPI_PROTO_CLASH_OF_CLANS,
         LPI_PROTO_TRION,
         LPI_PROTO_MONGO,
+        LPI_PROTO_LLP2P,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

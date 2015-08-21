@@ -215,6 +215,10 @@ static inline bool match_emule_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         is_emule_udp(data->payload[1], data->payload_len[1]))
                 return true;
 
+
+        /* Having doubts about the correctness of this rule, so disabling
+         * for now. */
+        /*
         if (match_emule_verycd(data->payload[0], data->payload_len[0])) {
                 if (data->payload_len[1] != 0)
                         return true;
@@ -224,6 +228,7 @@ static inline bool match_emule_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (data->payload_len[0] != 0)
                         return true;
         }
+        */
 
 	return false;
 }

@@ -36,6 +36,22 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_shuijing_44(uint32_t payload, uint32_t len) {
+        if (len < 180)
+                return false;
+        if (MATCH(payload, 0x44, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_shuijing_3e(uint32_t payload, uint32_t len) {
+        if (len != 9)
+                return false;
+        if (MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/*
@@ -74,6 +90,22 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+
+        /* Pretty sure this is "Thunder Crystal" (a.k.a. Xunlei Shuijing),
+         * a P2P approach to doing CDN. Uses TCP port 4593, usually.
+         * Ref: http://dl.acm.org/citation.cfm?id=2736085
+         *
+         * XXX Should this be a separate protocol?
+         */
+
+        if (match_shuijing_44(data->payload[0], data->payload_len[0])) {
+                if (match_shuijing_3e(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        if (match_shuijing_44(data->payload[1], data->payload_len[1])) {
+                if (match_shuijing_3e(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }
