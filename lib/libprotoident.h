@@ -282,6 +282,7 @@ typedef enum {
         LPI_PROTO_TRION,
         LPI_PROTO_MONGO,
         LPI_PROTO_LLP2P,
+        LPI_PROTO_HEARTHSTONE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

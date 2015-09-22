@@ -64,7 +64,7 @@ static inline bool match_wc_ab_request(uint32_t payload, uint32_t len) {
         if (len <= 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x00))
                 return true;
 
-        if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+        if (MATCH(payload, 0xab, 0x00, 0x00, 0x01))
                 return true;
         return false;
 

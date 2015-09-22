@@ -113,6 +113,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_goku(mod_map);
 	register_hamachi(mod_map);
 	register_harveys(mod_map);
+	register_hearthstone(mod_map);
 	register_http_badport(mod_map);
 	register_http(mod_map);
 	register_http_nonstandard(mod_map);

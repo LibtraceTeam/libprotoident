@@ -36,6 +36,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_bnet_auth_req(uint32_t payload, uint32_t len) {
+
+        if (len >= 160 && len <= 170 && MATCH(payload, 0x00, 0x0a, 0x08, 0xfe))
+                return true;
+        return false;
+
+}
+
+static inline bool match_bnet_auth_resp(uint32_t payload, uint32_t len) {
+
+        if (len == 184 || len == 199) {
+                if (MATCH(payload, 0x00, 0x09, 0x08, 0x00))
+                        return true;
+        }
+        return false;
+}
+
 static inline bool match_blizzard(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_str_both(data, "\x10\xdf\x22\x00", "\x10\x00\x00\x00"))
@@ -47,6 +64,18 @@ static inline bool match_blizzard(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (MATCH(data->payload[1], 0x00, ANY, 0xed, 0x01) &&
                 MATCH(data->payload[0], 0x00, 0x06, 0xec, 0x01))
                 return true;
+
+
+        /* More up to date battle.net authentication protocol */
+        if (match_bnet_auth_req(data->payload[0], data->payload_len[0])) {
+                if (match_bnet_auth_resp(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_bnet_auth_req(data->payload[1], data->payload_len[1])) {
+                if (match_bnet_auth_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }

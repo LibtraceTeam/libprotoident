@@ -39,6 +39,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_goku.cc \
 	lpi_hamachi.cc \
 	lpi_harveys.cc \
+	lpi_hearthstone.cc \
 	lpi_http_badport.cc \
 	lpi_http.cc \
 	lpi_http_nonstandard.cc \
