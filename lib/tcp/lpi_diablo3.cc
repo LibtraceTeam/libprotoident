@@ -36,43 +36,42 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_l2tp_payload(uint32_t payload, uint32_t len) {
-
-	uint32_t hdrlen = ntohl(payload) & 0xffff;
-
-        if (len == 0)
-		return true;
-
-        if (len != hdrlen)
-                return false;
-
-	if (!MATCH(payload, 0xc8, 0x02, ANY, ANY))
-		return false;
-
-	return true;
-
+static inline bool match_diablo_req(uint32_t payload, uint32_t len) {
+        if (len == 25 && MATCH(payload, 0x00, 0x00, 0x00, 0x19))
+                return true;
+        return false;
 }
 
-static inline bool match_l2tp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (!match_l2tp_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_l2tp_payload(data->payload[1], data->payload_len[1]))
-		return false;
-
-
-	return true;
+static inline bool match_diablo_resp(uint32_t payload, uint32_t len) {
+        if (len == 66 && MATCH(payload, 0x00, 0x00, 0x00, 0x42))
+                return true;
+        return false;
 }
 
-static lpi_module_t lpi_l2tp = {
-	LPI_PROTO_UDP_L2TP,
-	LPI_CATEGORY_TUNNELLING,
-	"L2TP",
-	6,
-	match_l2tp
+static inline bool match_diablo3(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+
+        if (match_diablo_req(data->payload[0], data->payload_len[0])) {
+                if (match_diablo_resp(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_diablo_req(data->payload[1], data->payload_len[1])) {
+                if (match_diablo_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+	return false;
+}
+
+static lpi_module_t lpi_diablo3 = {
+	LPI_PROTO_DIABLO3,
+	LPI_CATEGORY_GAMING,
+	"Diablo3",
+	5,
+	match_diablo3
 };
 
-void register_l2tp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_l2tp, mod_map);
+void register_diablo3(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_diablo3, mod_map);
 }
 

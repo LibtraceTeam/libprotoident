@@ -59,6 +59,8 @@ static inline bool match_shuijing_33(uint32_t payload, uint32_t len) {
 static inline bool match_shuijing_31(uint32_t payload, uint32_t len) {
         if (len == 31 && MATCH(payload, 0x3b, 0x00, 0x00, 0x00))
                 return true;
+        if (len == 31 && MATCH(payload, 0x32, 0x00, 0x00, 0x00))
+                return true;
         return false;
 }
 

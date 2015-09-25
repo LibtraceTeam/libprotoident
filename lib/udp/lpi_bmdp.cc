@@ -51,7 +51,6 @@ static inline bool match_bmdp_payload(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return false;
 
-        printf("%08x %08x\n", byte3, byte4);
         /* Byte 3 is always Xd, where X >=0 and X < 8 */
         if ((ntohl(payload) & 0x7d00) != byte3)
                 return false;

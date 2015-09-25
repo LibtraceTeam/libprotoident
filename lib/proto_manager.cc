@@ -82,6 +82,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
 	register_btsync(mod_map);
+	register_cacaoweb(mod_map);
 	register_cgp(mod_map);
 	register_chatango(mod_map);
 	register_cisco_vpn(mod_map);
@@ -93,6 +94,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cryptic(mod_map);
 	register_cvs(mod_map);
 	register_dell_backup(mod_map);
+	register_diablo3(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
 	register_duelingnetwork(mod_map);
@@ -191,6 +193,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_runescape(mod_map);
 	register_second_life(mod_map);
 	register_shoutcast(mod_map);
+	register_silkroadonline(mod_map);
 	register_sip(mod_map);
 	register_skype_tcp(mod_map);
 	register_smb(mod_map);
@@ -207,11 +210,13 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_stun_tcp(mod_map);
 	register_supl(mod_map);
 	register_svn(mod_map);
+	register_taobao(mod_map);
 	register_tds(mod_map);
 	register_teamviewer(mod_map);
 	register_telecomkey(mod_map);
 	register_telnet(mod_map);
 	register_telnet_exploit(mod_map);
+	register_tera(mod_map);
 	register_tip(mod_map);
 	register_tor(mod_map);
 	register_tpkt_generic(mod_map);

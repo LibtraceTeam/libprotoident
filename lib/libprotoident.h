@@ -283,6 +283,11 @@ typedef enum {
         LPI_PROTO_MONGO,
         LPI_PROTO_LLP2P,
         LPI_PROTO_HEARTHSTONE,
+        LPI_PROTO_DIABLO3,
+        LPI_PROTO_CACAOWEB,
+        LPI_PROTO_TAOBAO,       /* Custom protocol seen on Taobao CDN */
+        LPI_PROTO_TERA,
+        LPI_PROTO_SILKROADONLINE,       /* Korean MMO */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

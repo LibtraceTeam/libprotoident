@@ -36,43 +36,45 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_l2tp_payload(uint32_t payload, uint32_t len) {
 
-	uint32_t hdrlen = ntohl(payload) & 0xffff;
+static inline bool match_tera_resp(uint32_t payload, uint32_t len) {
 
-        if (len == 0)
-		return true;
-
-        if (len != hdrlen)
+        if (len != 4)
                 return false;
-
-	if (!MATCH(payload, 0xc8, 0x02, ANY, ANY))
-		return false;
-
-	return true;
+        if (MATCH(payload, 0x01, 0x00, 0x00, 0x00))
+                return true;
+        return false;
 
 }
 
-static inline bool match_l2tp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_tera(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!match_l2tp_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_l2tp_payload(data->payload[1], data->payload_len[1]))
-		return false;
+        /* XXX This traffic generally only appears on port 10001 */
 
+        /* First C->S packet is 128 bytes, but first bytes are random */
 
-	return true;
+        if (data->payload_len[1] == 128) {
+                if (match_tera_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (data->payload_len[0] == 128) {
+                if (match_tera_resp(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+	return false;
 }
 
-static lpi_module_t lpi_l2tp = {
-	LPI_PROTO_UDP_L2TP,
-	LPI_CATEGORY_TUNNELLING,
-	"L2TP",
-	6,
-	match_l2tp
+static lpi_module_t lpi_tera = {
+	LPI_PROTO_TERA,
+	LPI_CATEGORY_GAMING,
+	"Tera",
+	8,
+	match_tera
 };
 
-void register_l2tp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_l2tp, mod_map);
+void register_tera(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_tera, mod_map);
 }
 

@@ -58,7 +58,7 @@ static inline bool match_bulk_response(uint32_t payload, uint32_t len) {
          * for now.
          * */
 
-        if (len == 4 && MATCH(payload, 0x00, 0x00, 0x02, 0x00))
+        if (len == 4 && MATCH(payload, 0x00, 0x00, ANY, ANY))
                 return true;
         return false;
 

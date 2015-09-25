@@ -9,6 +9,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
 	lpi_btsync.cc \
+	lpi_cacaoweb.cc \
 	lpi_cgp.cc \
 	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \
@@ -20,6 +21,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
 	lpi_dell_backup.cc \
+	lpi_diablo3.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_duelingnetwork.cc \
@@ -117,6 +119,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_runescape.cc \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
+	lpi_silkroadonline.cc \
 	lpi_sip.cc \
 	lpi_skype_tcp.cc \
 	lpi_smb.cc \
@@ -133,11 +136,13 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_stun.cc \
 	lpi_supl.cc \
 	lpi_svn.cc \
+	lpi_taobao.cc \
 	lpi_tds.cc \
 	lpi_teamviewer.cc \
 	lpi_telecomkey.cc \
 	lpi_telnet.cc \
 	lpi_telnet_exploit.cc \
+	lpi_tera.cc \
 	lpi_tip.cc \
 	lpi_tor.cc \
 	lpi_tpkt.cc \

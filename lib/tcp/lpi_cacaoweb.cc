@@ -36,43 +36,34 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_l2tp_payload(uint32_t payload, uint32_t len) {
-
-	uint32_t hdrlen = ntohl(payload) & 0xffff;
-
-        if (len == 0)
-		return true;
-
-        if (len != hdrlen)
+static inline bool match_cacaoweb_header(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x84, 0x95, 0xa6, 0xbe))
                 return false;
-
-	if (!MATCH(payload, 0xc8, 0x02, ANY, ANY))
-		return false;
-
-	return true;
+        if (len == 51 || len == 56)
+                return true;
+        return false;
 
 }
 
-static inline bool match_l2tp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_cacaoweb(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!match_l2tp_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_l2tp_payload(data->payload[1], data->payload_len[1]))
-		return false;
+        if (match_cacaoweb_header(data->payload[0], data->payload_len[0])) {
+                if (match_cacaoweb_header(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 
-
-	return true;
+	return false;
 }
 
-static lpi_module_t lpi_l2tp = {
-	LPI_PROTO_UDP_L2TP,
-	LPI_CATEGORY_TUNNELLING,
-	"L2TP",
-	6,
-	match_l2tp
+static lpi_module_t lpi_cacaoweb = {
+	LPI_PROTO_CACAOWEB,
+	LPI_CATEGORY_P2P,
+	"CacaoWeb",
+	5,
+	match_cacaoweb
 };
 
-void register_l2tp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_l2tp, mod_map);
+void register_cacaoweb(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cacaoweb, mod_map);
 }
 

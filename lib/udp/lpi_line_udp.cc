@@ -48,9 +48,9 @@ static inline bool match_line_108(uint32_t payload, uint32_t len) {
 
 static inline bool match_line_35(uint32_t payload, uint32_t len) {
 
-        if (len != 35)
+        if (!MATCH(payload, 0xb6, 0x13, 0x00, 0x06))
                 return false;
-        if (MATCH(payload, 0xb6, 0x13, 0x00, 0x06))
+        if (len == 35 || len == 46)
                 return true;
         return false;
 
