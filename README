@@ -38,6 +38,9 @@ Required Libraries
 libtrace
 	* available from http://research.wand.net.nz/software/libtrace.php
 
+libwandevent
+	* available from http://research.wand.net.nz/software/libwandevent.php
+
 libflowmanager
 	* optional, but required to build the tools
 	* available from http://research.wand.net.nz/software/libflowmanager.php
@@ -46,9 +49,10 @@ Installation
 ============
 After having installed the required libraries, running the following series
 of commands should install libprotoident
-
-        ./configure
-       	make
+	
+	./bootstrap.sh (only if you've cloned the source from GitHub)
+	./configure
+	make
 	make install
 
 By default, libprotoident installs to /usr/local - this can be changed by
@@ -56,6 +60,10 @@ appending the --prefix=<new location> option to ./configure.
 
 The libprotoident tools are built by default - this can be changed by using the
 --with-tools=no option with ./configure.
+
+On Mac OS X, libprotoident can be installed via Homebrew:
+
+	brew install libprotoident
 
 Protocols Supported
 ===================
