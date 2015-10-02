@@ -42,6 +42,7 @@ void register_gamespy_tcp(LPIModuleMap *mod_map);
 void register_git(LPIModuleMap *mod_map);
 void register_gnutella(LPIModuleMap *mod_map);
 void register_goku(LPIModuleMap *mod_map);
+void register_googlehangouts(LPIModuleMap *mod_map);
 void register_hamachi(LPIModuleMap *mod_map);
 void register_harveys(LPIModuleMap *mod_map);
 void register_hearthstone(LPIModuleMap *mod_map);

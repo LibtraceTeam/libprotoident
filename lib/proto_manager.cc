@@ -113,6 +113,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_git(mod_map);
 	register_gnutella(mod_map);
 	register_goku(mod_map);
+	register_googlehangouts(mod_map);
 	register_hamachi(mod_map);
 	register_harveys(mod_map);
 	register_hearthstone(mod_map);
@@ -393,6 +394,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_viber_udp(mod_map);
 	register_vivox(mod_map);
 	register_vxworks_exploit(mod_map);
+	register_warthunder(mod_map);
 	register_wechat_udp(mod_map);
 	register_winmessage(mod_map);
 	register_worm_22105(mod_map);

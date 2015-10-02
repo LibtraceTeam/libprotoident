@@ -144,6 +144,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_viber.cc \
 	lpi_vivox.cc \
 	lpi_vxworks_exploit.cc \
+	lpi_warthunder.cc \
 	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
 	lpi_worm_22105.cc \

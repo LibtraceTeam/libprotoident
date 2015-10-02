@@ -288,6 +288,7 @@ typedef enum {
         LPI_PROTO_TAOBAO,       /* Custom protocol seen on Taobao CDN */
         LPI_PROTO_TERA,
         LPI_PROTO_SILKROADONLINE,       /* Korean MMO */
+        LPI_PROTO_GOOGLE_HANGOUTS,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -433,6 +434,7 @@ typedef enum {
         LPI_PROTO_UDP_LINE, 
         LPI_PROTO_UDP_ZOOM,
         LPI_PROTO_UDP_HEROES_GENERALS,  /* Heroes and Generals */ 
+        LPI_PROTO_UDP_WARTHUNDER,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

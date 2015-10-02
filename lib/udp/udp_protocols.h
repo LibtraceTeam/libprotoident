@@ -147,6 +147,7 @@ void register_ventrilo(LPIModuleMap *mod_map);
 void register_viber_udp(LPIModuleMap *mod_map);
 void register_vivox(LPIModuleMap *mod_map);
 void register_vxworks_exploit(LPIModuleMap *mod_map);
+void register_warthunder(LPIModuleMap *mod_map);
 void register_wechat_udp(LPIModuleMap *mod_map);
 void register_winmessage(LPIModuleMap *mod_map);
 void register_worm_22105(LPIModuleMap *mod_map);
