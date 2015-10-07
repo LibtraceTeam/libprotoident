@@ -65,7 +65,7 @@ static inline bool match_zoom(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         }
 
         /* Byte 4 must match in both directions */
-        if ((data->payload[0] & 0xff000000) != data->payload[1] & 0xff000000)
+        if ((data->payload[0] & 0xff000000) != (data->payload[1] & 0xff000000))
                 return false;
 
         if (match_zoom_01(data->payload[0], data->payload_len[0])) {

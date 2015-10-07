@@ -60,7 +60,7 @@ static inline bool match_mystery_443(lpi_data_t *data, lpi_module_t *mod UNUSED)
 
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
 		return false;
-	if ((data->payload[0] & 0xffff0000) != data->payload[1] & 0xffff0000)
+	if ((data->payload[0] & 0xffff0000) != (data->payload[1] & 0xffff0000))
 		return false;
 	
 	if ((data->payload[0] & 0xffff0000) ==  0x00000000)

@@ -47,6 +47,7 @@ static inline bool match_hearthstone_reply(uint32_t payload) {
                 return true;
         if (MATCH(payload, 0xa8, 0x00, 0x00, 0x00))
                 return true;
+	return false;
 }
 
 
