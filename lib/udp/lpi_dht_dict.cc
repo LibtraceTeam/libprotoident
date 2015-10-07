@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -194,6 +194,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 		if (match_utp_reply(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_dict_reply(data->payload[1], data->payload_len[1]))
+			return true;
 	}
 
 	if (match_utp_query(data->payload[1], data->payload_len[1])) {
@@ -202,6 +204,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 				return false;
 		}
 		if (match_utp_reply(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_dict_reply(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 

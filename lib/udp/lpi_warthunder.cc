@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -41,6 +41,10 @@
 static inline bool match_warthunder_req(uint32_t payload, uint32_t len) {
 
         if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0a))
+                return true;
+        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0b))
+                return true;
+        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x14))
                 return true;
         return false;
 

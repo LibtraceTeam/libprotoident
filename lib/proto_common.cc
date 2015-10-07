@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -284,6 +284,10 @@ bool match_file_header(uint32_t payload) {
 	if (MATCH(payload, 'B', 'Z', 'h', '9'))
 		return true;
 
+        /* xz compression format */
+        if (MATCH(payload, 0xfd, '7', 'z', 'X'))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.
@@ -365,9 +369,12 @@ static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
 static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
         uint32_t stated_len = 0;
 
-        if (!MATCH(payload, 0x80, ANY, 0x01, 0x03))
-                return false;
-        return true;
+        if (MATCH(payload, 0x80, ANY, 0x01, 0x03))
+                return true;
+        if (MATCH(payload, 0x81, ANY, 0x01, 0x03))
+                return true;
+
+        return false;
 }
 
 static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
@@ -387,12 +394,20 @@ static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
 static inline bool match_tls_change(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x14, 0x03, 0x01, ANY))
                 return true;
+        if (MATCH(payload, 0x14, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x14, 0x03, 0x03, ANY))
+                return true;
         return false;
 
 }
 
 static inline bool match_tls_content(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x17, 0x03, 0x01, ANY))
+                return true;
+        if (MATCH(payload, 0x17, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x17, 0x03, 0x03, ANY))
                 return true;
         return false;
 }

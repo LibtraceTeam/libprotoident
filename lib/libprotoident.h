@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -289,6 +289,8 @@ typedef enum {
         LPI_PROTO_TERA,
         LPI_PROTO_SILKROADONLINE,       /* Korean MMO */
         LPI_PROTO_GOOGLE_HANGOUTS,
+        LPI_PROTO_HOLA,
+        LPI_PROTO_GUILDWARS2,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -435,6 +437,11 @@ typedef enum {
         LPI_PROTO_UDP_ZOOM,
         LPI_PROTO_UDP_HEROES_GENERALS,  /* Heroes and Generals */ 
         LPI_PROTO_UDP_WARTHUNDER,
+        LPI_PROTO_UDP_H1Z1,
+        LPI_PROTO_UDP_CS_GLOBAL_OFFENSIVE,
+        LPI_PROTO_UDP_NTP_REFLECT,      /* NTP reflection attack */
+        LPI_PROTO_UDP_PUNKBUSTER,
+        LPI_PROTO_UDP_ROBOCRAFT,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

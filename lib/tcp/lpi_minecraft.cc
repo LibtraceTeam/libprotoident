@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -82,6 +82,8 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         if (len > 25 || len < 10)
                 return false;
         if (MATCH(payload, 0x13, 0x00, 0x2f, ANY))
+                return true;
+        if (MATCH(payload, 0x18, 0x00, 0x2f, ANY))
                 return true;
         return false;
 }

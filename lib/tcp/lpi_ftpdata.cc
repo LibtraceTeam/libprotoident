@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -59,6 +59,11 @@ static inline bool match_bulk_response(uint32_t payload, uint32_t len) {
          * */
 
         if (len == 4 && MATCH(payload, 0x00, 0x00, ANY, ANY))
+                return true;
+
+
+        /* Another weird FTP client: sends the occasional one byte response */
+        if (len == 1 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return true;
         return false;
 

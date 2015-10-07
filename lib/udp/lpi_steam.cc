@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -61,27 +61,6 @@ static inline bool match_3a_response(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_steam_game_18(uint32_t payload, uint32_t len) {
-        if (len != 18)
-                return false;
-        if (!MATCHSTR(payload, "\xff\xff\xff\xff"))
-                return false;
-        return true;
-
-}
-
-static inline bool match_steam_game_33(uint32_t payload, uint32_t len) {
-        if (len == 0)
-                return true;
-
-        if (len != 33)
-                return false;
-        if (!MATCHSTR(payload, "\xff\xff\xff\xff"))
-                return false;
-        return true;
-
-}
-
 static inline bool match_steam_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Master Server Queries begin with 31 ff 30 2e
@@ -127,19 +106,6 @@ static inline bool match_steam_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 
-        /* Steam Game Client traffic */
-        if (data->server_port == 27005 || data->client_port == 27005) {
-                if (match_steam_game_18(data->payload[0], data->payload_len[0])) {
-                        if (match_steam_game_33(data->payload[1], data->payload_len[1])) {
-                                return true;
-                        }
-                }
-                if (match_steam_game_18(data->payload[1], data->payload_len[1])) {
-                        if (match_steam_game_33(data->payload[0], data->payload_len[0])) {
-                                return true;
-                        }
-                }
-        }
 	
 	return false;
 }
