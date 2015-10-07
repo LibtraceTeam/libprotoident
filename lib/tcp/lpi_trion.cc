@@ -62,6 +62,18 @@ static inline bool match_trion_23(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_trion_1c(uint32_t payload, uint32_t len) {
+        if (len == 263 && MATCH(payload, 0x1c, 0x80, 0x20, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_trion_2080(uint32_t payload, uint32_t len) {
+        if (len == 263 && MATCH(payload, 0x20, 0x80, 0x20, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_trion(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         /* We can also try to limit to port 6560 and 37000-37100, if
@@ -74,6 +86,18 @@ static inline bool match_trion(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_trion_29(data->payload[1], data->payload_len[1])) {
                 if (match_trion_23(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        /* RIFT and Defiance require TCP port 6540 and 50000 and use a
+         * different payload pattern */
+        if (match_trion_1c(data->payload[0], data->payload_len[0])) {
+                if (match_trion_2080(data->payload[1], data->payload_len[1])) 
+                        return true;
+        }
+
+        if (match_trion_1c(data->payload[1], data->payload_len[1])) {
+                if (match_trion_2080(data->payload[0], data->payload_len[0])) 
                         return true;
         }
 

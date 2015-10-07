@@ -37,42 +37,50 @@
 #include "proto_common.h"
 
 
-static inline bool match_robocraft_req(uint32_t payload, uint32_t len) {
+static inline bool match_gw2_req(uint32_t payload, uint32_t len) {
 
-        if (MATCH(payload, 0x09, 0x0b, 0x00, 0x05))
-                return true;
-        if (MATCH(payload, 0x09, 0x0b, 0x07, 0xd0))
-                return true;
-
-        return false;
-}
-
-static inline bool match_robocraft_resp(uint32_t payload, uint32_t len) {
-
-        if (MATCHSTR(payload, "\x0a\x00\xff\xff"))
+        if (len < 285 || len > 290)
+                return false;
+        if (MATCH(payload, 0x50, 0x20, 0x2f, 0x53))
                 return true;
         return false;
+
 }
 
-static inline bool match_robocraft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_gw2_resp(uint32_t payload, uint32_t len) {
 
-        if (match_robocraft_req(data->payload[0], data->payload_len[0])) {
-                if (match_robocraft_resp(data->payload[1], data->payload_len[1]))
+        if (len != 35)
+                return false;
+        if (MATCH(payload, 0x53, 0x54, 0x53, 0x2f))
+                return true;
+        return false;
+
+}
+
+static inline bool match_guildwars2(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_gw2_req(data->payload[1], data->payload_len[1])) {
+                if (match_gw2_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_gw2_req(data->payload[0], data->payload_len[0])) {
+                if (match_gw2_resp(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_robocraft = {
-	LPI_PROTO_UDP_ROBOCRAFT,
+static lpi_module_t lpi_guildwars2 = {
+	LPI_PROTO_GUILDWARS2,
 	LPI_CATEGORY_GAMING,
-	"Robocraft",
+	"GuildWars2",
 	5,
-	match_robocraft
+	match_guildwars2
 };
 
-void register_robocraft(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_robocraft, mod_map);
+void register_guildwars2(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_guildwars2, mod_map);
 }
 

@@ -40,6 +40,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_gnutella.cc \
 	lpi_goku.cc \
 	lpi_googlehangouts.cc \
+	lpi_guildwars2.cc \
 	lpi_hamachi.cc \
 	lpi_harveys.cc \
 	lpi_hearthstone.cc \

@@ -290,6 +290,7 @@ typedef enum {
         LPI_PROTO_SILKROADONLINE,       /* Korean MMO */
         LPI_PROTO_GOOGLE_HANGOUTS,
         LPI_PROTO_HOLA,
+        LPI_PROTO_GUILDWARS2,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

@@ -369,9 +369,12 @@ static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
 static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
         uint32_t stated_len = 0;
 
-        if (!MATCH(payload, 0x80, ANY, 0x01, 0x03))
-                return false;
-        return true;
+        if (MATCH(payload, 0x80, ANY, 0x01, 0x03))
+                return true;
+        if (MATCH(payload, 0x81, ANY, 0x01, 0x03))
+                return true;
+
+        return false;
 }
 
 static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
