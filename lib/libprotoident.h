@@ -289,6 +289,7 @@ typedef enum {
         LPI_PROTO_TERA,
         LPI_PROTO_SILKROADONLINE,       /* Korean MMO */
         LPI_PROTO_GOOGLE_HANGOUTS,
+        LPI_PROTO_HOLA,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -439,6 +440,7 @@ typedef enum {
         LPI_PROTO_UDP_CS_GLOBAL_OFFENSIVE,
         LPI_PROTO_UDP_NTP_REFLECT,      /* NTP reflection attack */
         LPI_PROTO_UDP_PUNKBUSTER,
+        LPI_PROTO_UDP_ROBOCRAFT,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

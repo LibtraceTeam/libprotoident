@@ -83,6 +83,8 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
                 return false;
         if (MATCH(payload, 0x13, 0x00, 0x2f, ANY))
                 return true;
+        if (MATCH(payload, 0x18, 0x00, 0x2f, ANY))
+                return true;
         return false;
 }
 

@@ -284,6 +284,10 @@ bool match_file_header(uint32_t payload) {
 	if (MATCH(payload, 'B', 'Z', 'h', '9'))
 		return true;
 
+        /* xz compression format */
+        if (MATCH(payload, 0xfd, '7', 'z', 'X'))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.

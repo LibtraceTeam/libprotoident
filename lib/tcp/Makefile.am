@@ -43,6 +43,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_hamachi.cc \
 	lpi_harveys.cc \
 	lpi_hearthstone.cc \
+	lpi_hola.cc \
 	lpi_http_badport.cc \
 	lpi_http.cc \
 	lpi_http_nonstandard.cc \

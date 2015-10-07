@@ -115,6 +115,7 @@ void register_quic(LPIModuleMap *mod_map);
 void register_radius(LPIModuleMap *mod_map);
 void register_real(LPIModuleMap *mod_map);
 void register_roblox(LPIModuleMap *mod_map);
+void register_robocraft(LPIModuleMap *mod_map);
 void register_rtcp(LPIModuleMap *mod_map);
 void register_rtmfp(LPIModuleMap *mod_map);
 void register_rtp(LPIModuleMap *mod_map);

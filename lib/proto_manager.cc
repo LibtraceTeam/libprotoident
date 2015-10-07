@@ -117,6 +117,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_hamachi(mod_map);
 	register_harveys(mod_map);
 	register_hearthstone(mod_map);
+	register_hola(mod_map);
 	register_http_badport(mod_map);
 	register_http(mod_map);
 	register_http_nonstandard(mod_map);
@@ -362,6 +363,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_radius(mod_map);
 	register_real(mod_map);
 	register_roblox(mod_map);
+	register_robocraft(mod_map);
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
 	register_rtp(mod_map);

@@ -46,6 +46,7 @@ void register_googlehangouts(LPIModuleMap *mod_map);
 void register_hamachi(LPIModuleMap *mod_map);
 void register_harveys(LPIModuleMap *mod_map);
 void register_hearthstone(LPIModuleMap *mod_map);
+void register_hola(LPIModuleMap *mod_map);
 void register_http_badport(LPIModuleMap *mod_map);
 void register_http(LPIModuleMap *mod_map);
 void register_http_nonstandard(LPIModuleMap *mod_map);
