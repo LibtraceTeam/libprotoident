@@ -47,6 +47,7 @@ Installation
 After having installed the required libraries, running the following series
 of commands should install libprotoident
 
+        ./bootstrap.sh (only if you've cloned the source from GitHub)
         ./configure
        	make
 	make install
