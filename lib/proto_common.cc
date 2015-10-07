@@ -387,12 +387,20 @@ static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
 static inline bool match_tls_change(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x14, 0x03, 0x01, ANY))
                 return true;
+        if (MATCH(payload, 0x14, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x14, 0x03, 0x03, ANY))
+                return true;
         return false;
 
 }
 
 static inline bool match_tls_content(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x17, 0x03, 0x01, ANY))
+                return true;
+        if (MATCH(payload, 0x17, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x17, 0x03, 0x03, ANY))
                 return true;
         return false;
 }

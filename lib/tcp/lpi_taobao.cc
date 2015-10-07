@@ -95,6 +95,17 @@ static inline bool match_taobao(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         }
 
 
+        if (match_taobao_req2(data->payload[0], data->payload_len[0])) {
+                if (match_taobao_resp2(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_taobao_req2(data->payload[1], data->payload_len[1])) {
+                if (match_taobao_resp2(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+
 	return false;
 }
 

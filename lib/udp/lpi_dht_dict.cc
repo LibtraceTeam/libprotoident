@@ -194,6 +194,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 		if (match_utp_reply(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_dict_reply(data->payload[1], data->payload_len[1]))
+			return true;
 	}
 
 	if (match_utp_query(data->payload[1], data->payload_len[1])) {
@@ -202,6 +204,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 				return false;
 		}
 		if (match_utp_reply(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_dict_reply(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 

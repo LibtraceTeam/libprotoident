@@ -60,6 +60,11 @@ static inline bool match_bulk_response(uint32_t payload, uint32_t len) {
 
         if (len == 4 && MATCH(payload, 0x00, 0x00, ANY, ANY))
                 return true;
+
+
+        /* Another weird FTP client: sends the occasional one byte response */
+        if (len == 1 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
         return false;
 
 }
