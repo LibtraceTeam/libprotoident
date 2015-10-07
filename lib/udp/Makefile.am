@@ -18,6 +18,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cod.cc \
+	lpi_csgo.cc \
 	lpi_db2.cc \
 	lpi_dcc.cc \
 	lpi_demonware.cc \
@@ -47,6 +48,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gnutella_weak.cc \
 	lpi_gprs_tunnel.cc \
 	lpi_gsm.cc \
+	lpi_h1z1.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
 	lpi_heroes_generals.cc \
@@ -91,6 +93,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_nopayload.cc \
 	lpi_norton.cc \
 	lpi_ntp.cc \
+	lpi_ntp_reflect.cc \
 	lpi_nwn.cc \
 	lpi_opaserv.cc \
 	lpi_openvpn.cc \
@@ -101,6 +104,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ppstream.cc \
 	lpi_probable_gnutella.cc \
 	lpi_psn.cc \
+	lpi_punkbuster.cc \
 	lpi_pyzor.cc \
 	lpi_qq.cc \
 	lpi_qqlive.cc \

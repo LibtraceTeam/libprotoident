@@ -269,6 +269,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_checkpoint_rdp(mod_map);
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
+	register_csgo(mod_map);
 	register_db2(mod_map);
 	register_dcc_udp(mod_map);
 	register_demonware(mod_map);
@@ -297,6 +298,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_gnutella_weak(mod_map);
 	register_gprs_tunnel(mod_map);
 	register_gsm(mod_map);
+	register_h1z1(mod_map);
 	register_halflife(mod_map);
 	register_hamachi_udp(mod_map);
 	register_heroes_generals(mod_map);
@@ -340,6 +342,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_noe(mod_map);
 	register_norton(mod_map);
 	register_ntp(mod_map);
+	register_ntp_reflect(mod_map);
 	register_nwn(mod_map);
 	register_opaserv(mod_map);
 	register_openvpn_udp(mod_map);
@@ -350,6 +353,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ppstream(mod_map);
 	//register_probable_gnutella(mod_map);
 	register_psn(mod_map);
+	register_punkbuster(mod_map);
 	register_pyzor(mod_map);
 	register_qq(mod_map);
 	register_qqlive(mod_map);

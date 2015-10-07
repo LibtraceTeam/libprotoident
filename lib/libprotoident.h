@@ -435,6 +435,10 @@ typedef enum {
         LPI_PROTO_UDP_ZOOM,
         LPI_PROTO_UDP_HEROES_GENERALS,  /* Heroes and Generals */ 
         LPI_PROTO_UDP_WARTHUNDER,
+        LPI_PROTO_UDP_H1Z1,
+        LPI_PROTO_UDP_CS_GLOBAL_OFFENSIVE,
+        LPI_PROTO_UDP_NTP_REFLECT,      /* NTP reflection attack */
+        LPI_PROTO_UDP_PUNKBUSTER,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
