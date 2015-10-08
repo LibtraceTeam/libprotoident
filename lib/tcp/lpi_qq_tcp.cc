@@ -56,7 +56,7 @@ static inline bool check_length(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_mystery_443(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_qq_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
 		return false;
@@ -78,15 +78,15 @@ static inline bool match_mystery_443(lpi_data_t *data, lpi_module_t *mod UNUSED)
 	return true;
 }
 
-static lpi_module_t lpi_mystery_443 = {
-	LPI_PROTO_MYSTERY_443,
-	LPI_CATEGORY_NO_CATEGORY,
-	"Mystery_443",
-	250,
-	match_mystery_443
+static lpi_module_t lpi_qq_tcp = {
+	LPI_PROTO_QQ,
+	LPI_CATEGORY_CHAT,
+	"QQ",
+	20,
+	match_qq_tcp
 };
 
-void register_mystery_443(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_mystery_443, mod_map);
+void register_qq_tcp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_qq_tcp, mod_map);
 }
 

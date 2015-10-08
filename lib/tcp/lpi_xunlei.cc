@@ -52,6 +52,20 @@ static inline bool match_shuijing_3e(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_xunlei_3e(uint32_t payload, uint32_t len) {
+        if (len == 132 && MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
+static inline bool match_xunlei_36(uint32_t payload, uint32_t len) {
+        if (len == 51 && MATCH(payload, 0x36, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
 static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/*
@@ -106,6 +120,25 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_shuijing_3e(data->payload[0], data->payload_len[0]))
                         return true;
         }
+
+        
+        /* Almost certainly Xunlei-related, appears on port 8080 to hosts
+         * that are in subnets used by Xunlei. Many IP ranges appear in
+         * http://ipfilter-emule.googlecode.com/svn/trunk/ipfilter-xl/.htaccess?id=htxl
+         */
+
+        if (match_xunlei_3e(data->payload[0], data->payload_len[0])) {
+                if (match_xunlei_36(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_xunlei_3e(data->payload[1], data->payload_len[1])) {
+                if (match_xunlei_36(data->payload[0], data->payload_len[0])) {
+                        return true;
+                }
+        }
+
 
 	return false;
 }

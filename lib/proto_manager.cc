@@ -156,7 +156,6 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_munin(mod_map);
 	register_mysql(mod_map);
 	register_mystery_100_star(mod_map);
-	register_mystery_443(mod_map);
 	register_mystery_8000(mod_map);
 	register_mystery_9000(mod_map);
 	register_mystery_conn(mod_map);
@@ -182,6 +181,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_postgresql(mod_map);
 	register_pptp(mod_map);
 	register_psn_store(mod_map);
+	register_qq_tcp(mod_map);
 	register_qvod(mod_map);
         register_razor(mod_map);
 	register_rbls(mod_map);

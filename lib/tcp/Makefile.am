@@ -82,7 +82,6 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_munin.cc \
 	lpi_mysql.cc \
 	lpi_mystery_100_star.cc \
-	lpi_mystery_443.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_9000.cc \
 	lpi_mystery_conn.cc \
@@ -108,6 +107,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_postgresql.cc \
 	lpi_pptp.cc \
 	lpi_psn_store.cc \
+	lpi_qq_tcp.cc \
 	lpi_qvod.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
