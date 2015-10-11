@@ -220,6 +220,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_telnet(mod_map);
 	register_telnet_exploit(mod_map);
 	register_tera(mod_map);
+	register_tetrisonline(mod_map);
 	register_tip(mod_map);
 	register_tor(mod_map);
 	register_tpkt_generic(mod_map);

@@ -36,25 +36,34 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-bool match_no_payload(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+/* Only ever seen this on port 80 to hosts owned by Tetris Online. This
+ * may not be exclusive to Tetris Online (i.e. it might be a generic flash
+ * game protocol) but I can't be sure until I see it somewhere else.
+ */
 
-	if (data->observed[0] == 0 && data->observed[1] == 0)
-		return true;
 
-        if (data->payload_len[0] == 0 && data->payload_len[1] == 0)
-                return true;
+static inline bool match_tetrisonline(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (data->server_port != 80 && data->client_port != 80)
+                return false;
+
+        if (MATCH(data->payload[0], 'U', 'S', 'R', ' ')) {
+                if (MATCH(data->payload[1], 'U', 'S', 'R', ' '))
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_no_payload = {
-	LPI_PROTO_NO_PAYLOAD,
-	LPI_CATEGORY_NOPAYLOAD,
-	"No_Payload",
-	0,	/* Must supercede all other protocols */
-	match_no_payload
+static lpi_module_t lpi_tetrisonline = {
+	LPI_PROTO_TETRISONLINE,
+	LPI_CATEGORY_GAMING,
+	"TetrisOnline",
+	5,
+	match_tetrisonline
 };
 
-void register_tcp_no_payload(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_no_payload, mod_map);
+void register_tetrisonline(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_tetrisonline, mod_map);
 }
+

@@ -292,6 +292,7 @@ typedef enum {
         LPI_PROTO_HOLA,
         LPI_PROTO_GUILDWARS2,
 	LPI_PROTO_QQ,
+	LPI_PROTO_TETRISONLINE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

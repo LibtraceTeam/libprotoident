@@ -40,8 +40,6 @@ static inline bool match_msn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_str_either(data, "ANS "))
 		return true;
-	if (match_str_either(data, "USR "))
-		return true;
 	if (match_str_either(data, "VER "))
 		return true;
 
