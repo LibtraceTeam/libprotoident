@@ -37,7 +37,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_qqlive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_qqlive_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
 		if (data->server_port == 53 || data->client_port == 53)
@@ -52,15 +52,15 @@ static inline bool match_qqlive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         return true;
 }
 
-static lpi_module_t lpi_qqlive = {
-	LPI_PROTO_UDP_QQLIVE,
+static lpi_module_t lpi_qqlive_tcp = {
+	LPI_PROTO_QQLIVE,
 	LPI_CATEGORY_P2PTV,
-	"QQLive",
+	"QQLive_TCP",
 	4,
-	match_qqlive
+	match_qqlive_tcp
 };
 
-void register_qqlive(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_qqlive, mod_map);
+void register_qqlive_tcp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_qqlive_tcp, mod_map);
 }
 

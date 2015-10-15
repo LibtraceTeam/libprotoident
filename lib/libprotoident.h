@@ -294,6 +294,7 @@ typedef enum {
 	LPI_PROTO_QQ,
 	LPI_PROTO_TETRISONLINE,
 	LPI_PROTO_TWITCH_IRC,   /* IRC specific to twitch.tv */
+	LPI_PROTO_QQLIVE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

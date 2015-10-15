@@ -108,6 +108,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_pptp.cc \
 	lpi_psn_store.cc \
 	lpi_qq_tcp.cc \
+	lpi_qqlive_tcp.cc \
 	lpi_qvod.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
