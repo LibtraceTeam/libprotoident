@@ -228,6 +228,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_trion(mod_map);
 	register_trojan_win32_generic_sb(mod_map);
 	register_trojan_zeroaccess(mod_map);
+	register_twitch_irc(mod_map);
 	register_viber(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
