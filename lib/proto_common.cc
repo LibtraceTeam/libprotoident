@@ -654,6 +654,14 @@ bool match_emule(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_kaspersky_ke(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+        if (MATCH(payload, 'K', 'E', 0x00, 0x00))
+                return true;
+        return false;
+}
+
 bool match_kaspersky(lpi_data_t *data) {
 
 	/* Traffic is either on TCP port 443 or UDP port 2001.
@@ -667,6 +675,10 @@ bool match_kaspersky(lpi_data_t *data) {
 		if (data->payload_len[0] == 2 && data->payload_len[1] == 2)
 			return true;
 	}
+        if (match_kaspersky_ke(data->payload[0], data->payload_len[0])) {
+                if (match_kaspersky_ke(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 	return false;
 }
 
