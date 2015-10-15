@@ -182,6 +182,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_pptp(mod_map);
 	register_psn_store(mod_map);
 	register_qq_tcp(mod_map);
+	register_qqlive_tcp(mod_map);
 	register_qvod(mod_map);
         register_razor(mod_map);
 	register_rbls(mod_map);

@@ -700,5 +700,34 @@ bool match_tpkt(uint32_t payload, uint32_t len) {
         if (stated_len != len)
                 return false;
         return true;
+}
+
+bool match_qqlive_payload(uint32_t payload, uint32_t len) {
+
+        uint8_t *ptr;
+        uint32_t swap;
+
+        /* This appears to have a 3 byte header. First byte is always 0xfe.
+         * Second and third bytes are the length (minus the 3 byte header).
+         */
+
+        if (len == 0)
+                return true;
+
+        swap = htonl(payload);
+        swap = (swap & 0xffff00) >> 8;
+
+        if (ntohs(swap) != len - 3)
+                return false;
+
+	/* Interestingly, the third and fourth byte always match */
+        swap = htonl(payload);
+        if ((swap & 0xff) != ((swap & 0xff00) >> 8))
+                return false;
+
+        if (MATCH(payload, 0xfe, ANY, ANY, ANY))
+                return true;
+        return false;
 
 }
+

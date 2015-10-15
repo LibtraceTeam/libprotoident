@@ -111,6 +111,7 @@ void register_postgresql(LPIModuleMap *mod_map);
 void register_pptp(LPIModuleMap *mod_map);
 void register_psn_store(LPIModuleMap *mod_map);
 void register_qq_tcp(LPIModuleMap *mod_map);
+void register_qqlive_tcp(LPIModuleMap *mod_map);
 void register_qvod(LPIModuleMap *mod_map);
 void register_razor(LPIModuleMap *mod_map);
 void register_rbls(LPIModuleMap *mod_map);
