@@ -295,6 +295,7 @@ typedef enum {
 	LPI_PROTO_TETRISONLINE,
 	LPI_PROTO_TWITCH_IRC,   /* IRC specific to twitch.tv */
 	LPI_PROTO_QQLIVE,
+	LPI_PROTO_TENCENT_GAMES,        /* Games operated by Tencent */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

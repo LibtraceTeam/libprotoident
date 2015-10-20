@@ -149,6 +149,7 @@ void register_teamviewer(LPIModuleMap *mod_map);
 void register_telecomkey(LPIModuleMap *mod_map);
 void register_telnet(LPIModuleMap *mod_map);
 void register_telnet_exploit(LPIModuleMap *mod_map);
+void register_tencent_games(LPIModuleMap *mod_map);
 void register_tera(LPIModuleMap *mod_map);
 void register_tetrisonline(LPIModuleMap *mod_map);
 void register_tip(LPIModuleMap *mod_map);
