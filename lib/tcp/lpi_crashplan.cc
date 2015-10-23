@@ -40,8 +40,6 @@ static inline bool match_crashplan_16(uint32_t payload, uint32_t len) {
 
         if (len != 16)
                 return false;
-        if (!MATCH(payload, 0x0f, 0xa9, 0x00, 0x00))
-                return false;
         return true;
 
 }
@@ -74,7 +72,7 @@ static lpi_module_t lpi_crashplan = {
 	LPI_PROTO_CRASHPLAN,
 	LPI_CATEGORY_CLOUD,
 	"CrashPlan",
-	5,
+	50,
 	match_crashplan
 };
 

@@ -36,35 +36,42 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* League of Legends: a popular online game circa 2012/2013 */
-static inline bool match_lol(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+/* Vodlocker is basically HTTP, but it uses a non-standard port (8777) and
+ * the capitalisation on the HTTP responses can be a bit inconsistent.
+ * Rather than pollute HTTP with this crap, I think we can get away with
+ * having a separate rule for it */
 
-        if ((data->server_port < 5100 || data->server_port > 5150) &&
-                        (data->client_port < 5100 || data->client_port > 5150))
+static inline bool match_vodlocker(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (data->server_port != 8777 && data->client_port != 8777)
                 return false;
 
-	if (data->payload_len[0] == 44 && data->payload_len[1] == 48)
-		return true;
-	if (data->payload_len[1] == 44 && data->payload_len[0] == 48)
-		return true;
+        if (MATCH(data->payload[0], 'G', 'E', 'T', 0x20)) {
+                if (MATCH(data->payload[1], 'H', 't', 'T', 'P'))
+                        return true;
+                if (MATCH(data->payload[1], 'H', 'T', 'T', 'P'))
+                        return true;
+        }
 
-	if (data->payload_len[0] == 52 && data->payload_len[1] == 48)
-		return true;
-	if (data->payload_len[1] == 52 && data->payload_len[0] == 48)
-		return true;
+        if (MATCH(data->payload[1], 'G', 'E', 'T', 0x20)) {
+                if (MATCH(data->payload[0], 'H', 't', 'T', 'P'))
+                        return true;
+                if (MATCH(data->payload[0], 'H', 'T', 'T', 'P'))
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_lol = {
-	LPI_PROTO_UDP_LOL,
-	LPI_CATEGORY_GAMING,
-	"LeagueOfLegends",
-	35,
-	match_lol
+static lpi_module_t lpi_vodlocker = {
+	LPI_PROTO_VODLOCKER,
+	LPI_CATEGORY_WEB,
+	"Vodlocker",
+	100,
+	match_vodlocker
 };
 
-void register_lol(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_lol, mod_map);
+void register_vodlocker(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_vodlocker, mod_map);
 }
 

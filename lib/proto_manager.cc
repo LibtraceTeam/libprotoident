@@ -232,6 +232,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_trojan_zeroaccess(mod_map);
 	register_twitch_irc(mod_map);
 	register_viber(mod_map);
+	register_vodlocker(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
 	register_weblogic(mod_map);
@@ -275,6 +276,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_checkpoint_rdp(mod_map);
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
+	register_cisco_sslvpn(mod_map);
 	register_csgo(mod_map);
 	register_db2(mod_map);
 	register_dcc_udp(mod_map);

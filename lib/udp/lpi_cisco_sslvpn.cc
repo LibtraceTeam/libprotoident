@@ -36,35 +36,34 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* League of Legends: a popular online game circa 2012/2013 */
-static inline bool match_lol(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_sslvpn(uint32_t payload) {
 
-        if ((data->server_port < 5100 || data->server_port > 5150) &&
-                        (data->client_port < 5100 || data->client_port > 5150))
-                return false;
+        /* Payload looks like SSL, except they've set the version field
+         * to 1.0 (which would be invalid in real SSL) -- oh, Cisco!
+         */
+        if (MATCH(payload, 0x16, 0x01, 0x00, 0x00))
+                return true;
+        return false;
 
-	if (data->payload_len[0] == 44 && data->payload_len[1] == 48)
-		return true;
-	if (data->payload_len[1] == 44 && data->payload_len[0] == 48)
-		return true;
+}
 
-	if (data->payload_len[0] == 52 && data->payload_len[1] == 48)
-		return true;
-	if (data->payload_len[1] == 52 && data->payload_len[0] == 48)
-		return true;
+static inline bool match_cisco_sslvpn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_sslvpn(data->payload[0]) && match_sslvpn(data->payload[1]))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_lol = {
-	LPI_PROTO_UDP_LOL,
-	LPI_CATEGORY_GAMING,
-	"LeagueOfLegends",
-	35,
-	match_lol
+static lpi_module_t lpi_cisco_sslvpn = {
+	LPI_PROTO_UDP_CISCO_SSLVPN,
+	LPI_CATEGORY_TUNNELLING,
+	"CiscoSSLVPN",
+	5,
+	match_cisco_sslvpn
 };
 
-void register_lol(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_lol, mod_map);
+void register_cisco_sslvpn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_cisco_sslvpn, mod_map);
 }
 

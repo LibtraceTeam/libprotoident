@@ -72,7 +72,7 @@ static inline bool match_tunnelbear_40(uint32_t payload, uint32_t len) {
 static inline bool match_tunnelbear_38(uint32_t payload, uint32_t len) {
         if (!MATCH(payload, 0x38, ANY, ANY, ANY))
                 return false;
-        if (len != 14 && len != 126)
+        if (len != 14 && len != 126 && len != 128)
                 return false;
         return true;
 

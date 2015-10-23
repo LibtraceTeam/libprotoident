@@ -296,6 +296,7 @@ typedef enum {
 	LPI_PROTO_TWITCH_IRC,   /* IRC specific to twitch.tv */
 	LPI_PROTO_QQLIVE,
 	LPI_PROTO_TENCENT_GAMES,        /* Games operated by Tencent */
+	LPI_PROTO_VODLOCKER,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -447,6 +448,7 @@ typedef enum {
         LPI_PROTO_UDP_NTP_REFLECT,      /* NTP reflection attack */
         LPI_PROTO_UDP_PUNKBUSTER,
         LPI_PROTO_UDP_ROBOCRAFT,
+        LPI_PROTO_UDP_CISCO_SSLVPN,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

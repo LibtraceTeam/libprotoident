@@ -21,6 +21,7 @@ void register_canon_mfnp(LPIModuleMap *mod_map);
 void register_checkpoint_rdp(LPIModuleMap *mod_map);
 void register_cirn(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
+void register_cisco_sslvpn(LPIModuleMap *mod_map);
 void register_csgo(LPIModuleMap *mod_map);
 void register_db2(LPIModuleMap *mod_map);
 void register_dcc_udp(LPIModuleMap *mod_map);

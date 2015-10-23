@@ -521,6 +521,8 @@ static bool dns_backscatter(uint32_t payload) {
 
 	if ((payload & 0x0000ffff) == 0x00008500)
 		return true;
+	if ((payload & 0x0000ffff) == 0x00008580)
+		return true;
 	if ((payload & 0x0000ffff) == 0x00008400)
 		return true;
 	if ((payload & 0x0000ffff) == 0x00008480)

@@ -158,6 +158,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_trojan_zeroaccess.cc \
 	lpi_twitch_irc.cc \
 	lpi_viber.cc \
+	lpi_vodlocker.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
 	lpi_weblogic.cc \
