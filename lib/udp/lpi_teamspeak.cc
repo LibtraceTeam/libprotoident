@@ -59,7 +59,7 @@ static inline bool match_ts3_resp(uint32_t payload, uint32_t len,
         if ((len == 181 || len == 182) && (porta == 9987 || portb == 9987))
                 return true;
 
-        return;
+        return false;
 }
 
 static inline bool match_teamspeak(lpi_data_t *data, lpi_module_t *mod UNUSED) {
