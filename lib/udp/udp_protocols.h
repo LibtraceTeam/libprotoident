@@ -4,6 +4,7 @@
 #include "proto_manager.h"
 
 void register_aachen_udp(LPIModuleMap *mod_map);
+void register_acercloud(LPIModuleMap *mod_map);
 void register_akamai(LPIModuleMap *mod_map);
 void register_akamai_transfer(LPIModuleMap *mod_map);
 void register_amanda(LPIModuleMap *mod_map);

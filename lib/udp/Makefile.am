@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libprotoident_udp.la
 libprotoident_udp_la_SOURCES = \
 	lpi_aachen_udp.cc \
+	lpi_acercloud.cc \
 	lpi_akamai.cc \
 	lpi_akamai_transfer.cc \
 	lpi_amanda.cc \
