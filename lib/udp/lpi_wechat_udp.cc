@@ -71,15 +71,48 @@ static inline bool match_wechat_downlink_hb(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_wechat_voip(uint32_t payload, uint32_t len) {
+static inline bool match_wechat_voip_a175(uint32_t payload, uint32_t len) {
 
-        if (!MATCH(payload, 0xa1, 0x08, ANY, ANY))
-                return false;
-
-        if (len == 92 || len == 75)
+        if (MATCH(payload, 0xa1, 0x08, ANY, ANY) && len == 75)
                 return true;
 
         return false;
+}
+
+static inline bool match_wechat_voip_a192(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0xa1, 0x08, ANY, ANY) && len == 92)
+                return true;
+
+        return false;
+}
+
+static inline bool match_wechat_voip_a396(uint32_t payload, uint32_t len) {
+	if (len == 0)
+		return true;
+	if (len == 96 && MATCH(payload, 0xa3, ANY, ANY, ANY))
+		return true;
+	return false;
+}
+
+static inline bool match_wechat_voip_d6200(uint32_t payload, uint32_t len) {
+	if (len == 200 && MATCH(payload, 0xd6, ANY, ANY, ANY))
+		return true;
+	return false;
+}
+
+static inline bool match_wechat_voip_d591(uint32_t payload, uint32_t len) {
+
+	if (len == 91 && MATCH(payload, 0xd5, ANY, ANY, ANY))
+		return true;
+	return false;
+}
+
+static inline bool match_wechat_voip_d5104(uint32_t payload, uint32_t len) {
+
+	if (len == 104 && MATCH(payload, 0xd5, ANY, ANY, ANY))
+		return true;
+	return false;
 }
 
 static inline bool match_wechat_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
@@ -95,15 +128,43 @@ static inline bool match_wechat_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) 
                                 data->payload_len[0]))
                         return true;
         }
+
+	/* Lots of different patterns seen when using WeChat to make a voice
+	 * or video call.
+	 */
         
-        if (match_wechat_voip(data->payload[0], data->payload_len[0])) {
-                if (match_wechat_voip(data->payload[1],
+        if (match_wechat_voip_a396(data->payload[0], data->payload_len[0])) {
+                if (match_wechat_voip_a396(data->payload[1],
                                 data->payload_len[1]))
                         return true;
         }
 
-        if (match_wechat_voip(data->payload[1], data->payload_len[1])) {
-                if (match_wechat_voip(data->payload[0],
+        if (match_wechat_voip_d6200(data->payload[0], data->payload_len[0])) {
+                if (match_wechat_voip_d6200(data->payload[1],
+                                data->payload_len[1]))
+                        return true;
+        }
+        
+	if (match_wechat_voip_d591(data->payload[0], data->payload_len[0])) {
+                if (match_wechat_voip_d5104(data->payload[1],
+                                data->payload_len[1]))
+                        return true;
+        }
+
+	if (match_wechat_voip_d591(data->payload[1], data->payload_len[1])) {
+                if (match_wechat_voip_d5104(data->payload[0],
+                                data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_wechat_voip_a192(data->payload[0], data->payload_len[0])) {
+                if (match_wechat_voip_a175(data->payload[1],
+                                data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_wechat_voip_a192(data->payload[1], data->payload_len[1])) {
+                if (match_wechat_voip_a175(data->payload[0],
                                 data->payload_len[0]))
                         return true;
         }
