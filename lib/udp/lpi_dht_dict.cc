@@ -89,6 +89,20 @@ static inline bool match_utp_reply(uint32_t payload, uint32_t len) {
 	return false;
 }
 
+static inline bool match_opentracker_98(uint32_t payload, uint32_t len) {
+        if (len == 98 || len == 109)
+                return true;
+        return false;
+}
+
+static inline bool match_opentracker_01(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x01))
+                return true;
+        return false;
+
+}
+
 static inline bool match_dict_query(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 'd', '1', ':', 'a'))
@@ -217,6 +231,17 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		if (data->payload_len[0] == 0)
 			return true;
 	}
+
+
+        if (match_opentracker_98(data->payload[0], data->payload_len[0])) {
+                if (match_opentracker_01(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        
+        if (match_opentracker_98(data->payload[1], data->payload_len[1])) {
+                if (match_opentracker_01(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }
