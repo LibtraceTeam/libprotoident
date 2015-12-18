@@ -95,9 +95,23 @@ static inline bool match_opentracker_98(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_opentracker_X6(uint32_t payload, uint32_t len) {
+        if (len >= 36 && (len % 10) == 6)
+                return true;
+        return false;
+}
+
 static inline bool match_opentracker_01(uint32_t payload, uint32_t len) {
 
         if (MATCH(payload, 0x00, 0x00, 0x00, 0x01))
+                return true;
+        return false;
+
+}
+
+static inline bool match_opentracker_02(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x02))
                 return true;
         return false;
 
@@ -233,6 +247,16 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	}
 
 
+        if (match_opentracker_X6(data->payload[0], data->payload_len[0])) {
+                if (match_opentracker_02(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        
+        if (match_opentracker_X6(data->payload[1], data->payload_len[1])) {
+                if (match_opentracker_02(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+        
         if (match_opentracker_98(data->payload[0], data->payload_len[0])) {
                 if (match_opentracker_01(data->payload[1], data->payload_len[1]))
                         return true;
