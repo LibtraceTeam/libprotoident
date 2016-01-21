@@ -105,6 +105,8 @@ static inline bool match_wechat_voip_d591(uint32_t payload, uint32_t len) {
 
 	if (len == 91 && MATCH(payload, 0xd5, ANY, ANY, ANY))
 		return true;
+	if (len == 89 && MATCH(payload, 0xd5, ANY, ANY, ANY))
+		return true;
 	return false;
 }
 
