@@ -60,6 +60,16 @@ static inline bool match_spdy_syn_reply(uint32_t payload) {
 
 }
 
+static inline bool match_spdy_ping(uint32_t payload, uint32_t len){
+
+  	if (MATCH(payload, 0x80, 0x03, 0x00, 0x06) && len == 12)
+    		return true;
+  	return false;
+
+}
+
+
+
 static inline bool match_spdy(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_spdy_syn(data->payload[0])) {
@@ -75,6 +85,12 @@ static inline bool match_spdy(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_spdy_syn_reply(data->payload[0]))
                         return true;
         }
+
+	if (match_spdy_settings(data->payload[0]) && data->payload_len[0] == 28){
+		if (match_spdy_ping(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
 	return false;
 }
 
