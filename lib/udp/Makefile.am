@@ -120,6 +120,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_starcraft.cc \
 	lpi_steam.cc \
 	lpi_steamfriends.cc \
+	lpi_steam_inhomebroadcast.cc \
 	lpi_steam_localbroadcast.cc \
 	lpi_storm_worm.cc \
 	lpi_stun.cc \
