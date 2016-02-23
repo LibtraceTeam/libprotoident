@@ -37,16 +37,14 @@
 #include "proto_common.h"
 
 static inline bool match_shuijing_44(uint32_t payload, uint32_t len) {
-        if (len < 180)
-                return false;
         if (MATCH(payload, 0x44, 0x00, 0x00, 0x00))
+                return true;
+        if (MATCH(payload, 0x42, 0x00, 0x00, 0x00))
                 return true;
         return false;
 }
 
 static inline bool match_shuijing_3e(uint32_t payload, uint32_t len) {
-        if (len != 9)
-                return false;
         if (MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
                 return true;
         return false;
