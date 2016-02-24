@@ -36,7 +36,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_qq_chat(lpi_data_t *data) {
 
 	/* QQ 2006 has a version number of 0x0f5f */
         if (match_str_both(data, "\x02\x0f\x5f\x00", "\x02\x0f\x5f\x00"))
@@ -83,6 +83,25 @@ static inline bool match_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 
 	return false;
+}
+
+static inline bool match_qq_video(lpi_data_t *data) {
+
+        /* Observed when using the QQ app to make video calls */
+
+        if (match_str_both(data, "\x28\x00\x00\x00", "\x28\x00\x00\x00"))
+                return true;
+        return false;
+
+}
+
+static inline bool match_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_qq_chat(data))
+                return true;
+        if (match_qq_video(data))
+                return true;
+        return false;
 }
 
 static lpi_module_t lpi_qq = {
