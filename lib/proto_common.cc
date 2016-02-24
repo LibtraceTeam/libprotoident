@@ -688,7 +688,7 @@ bool match_youku_payload(uint32_t pload, uint32_t len) {
 
 	if (len == 0)
                 return true;
-        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x01) && len == 16)
+        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x01))
                 return true;
         if (MATCH(pload, 0x4b, 0x55, 0x00, 0x02))
                 return true;

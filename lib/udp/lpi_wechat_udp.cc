@@ -66,6 +66,8 @@ static inline bool match_wechat_downlink_hb(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCHSTR(payload, "\xd1\x0a\x2d\x0a"))
                 return true;
+        if (MATCHSTR(payload, "\xd1\x0a\x29\x0a"))
+                return true;
 
         return false;
 
