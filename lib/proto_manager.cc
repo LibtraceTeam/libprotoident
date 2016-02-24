@@ -258,6 +258,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 int register_udp_protocols(LPIModuleMap *mod_map) {
 
+	register_360cn(mod_map);
 	register_aachen_udp(mod_map);
 	register_acercloud(mod_map);
 	register_akamai(mod_map);

@@ -3,6 +3,7 @@
 
 #include "proto_manager.h"
 
+void register_360cn(LPIModuleMap *mod_map);
 void register_aachen_udp(LPIModuleMap *mod_map);
 void register_acercloud(LPIModuleMap *mod_map);
 void register_akamai(LPIModuleMap *mod_map);
