@@ -38,7 +38,14 @@
 
 static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 
-	if (len != 64)
+	if (MATCHSTR(payload, "ikro"))
+		return true;
+	if (MATCHSTR(payload, "ikuo"))
+		return true;
+
+
+        /* All the following strings require a 64 byte datagram */
+        if (len != 64)
 		return false;
 
 	if (MATCHSTR(payload, "ihrk"))
@@ -55,11 +62,7 @@ static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCHSTR(payload, "iiro"))
 		return true;
-	if (MATCHSTR(payload, "ikro"))
-		return true;
 	if (MATCHSTR(payload, "ikri"))
-		return true;
-	if (MATCHSTR(payload, "ikuo"))
 		return true;
 	if (MATCHSTR(payload, "ikvk"))
 		return true;

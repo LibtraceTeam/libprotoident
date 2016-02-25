@@ -55,10 +55,17 @@ static inline bool match_quic_version(uint32_t payload) {
 
 static inline bool match_quic_response(uint32_t payload, uint32_t other) {
 
+        uint32_t seq8 = (ntohl(payload) >> 16) & 0xff;
+
         /* Public flags are 0x00 for a packet with a single byte of
          * sequence number and no connection id */
-        if (MATCH(payload, 0x00, 0x01, ANY, ANY))
-                return true;
+        if (MATCH(payload, 0x00, ANY, ANY, ANY)) {
+                /* This *is* UDP, so we might miss some of the first
+                 * few datagrams... */
+                if (seq8 >= 1 && seq8 <= 10)
+                        return true;
+        }
+
 
         /* Otherwise, connection IDs must match for both directions */
         if (MATCH(payload, 0x0c, ANY, ANY, ANY)) {
@@ -102,6 +109,24 @@ static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_quic_response(data->payload[0], data->payload[1]))
                         return true;
         }
+
+
+        /* Matches against an in-progress QUIC flow 
+         * XXX not overly robust, may produce false positives... */
+        if (MATCH(data->payload[0], 0x10, ANY, ANY, ANY)) {
+                if (MATCH(data->payload[1], 0x0c, ANY, ANY, ANY))
+                        return true;
+                if (MATCH(data->payload[1], 0x1c, ANY, ANY, ANY))
+                        return true;
+        }
+
+        if (MATCH(data->payload[1], 0x10, ANY, ANY, ANY)) {
+                if (MATCH(data->payload[0], 0x0c, ANY, ANY, ANY))
+                        return true;
+                if (MATCH(data->payload[0], 0x1c, ANY, ANY, ANY))
+                        return true;
+        }
+
 
 
 	return false;
