@@ -155,6 +155,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_warthunder.cc \
 	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
+	lpi_wolfet.cc \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
 	lpi_xlsp.cc \

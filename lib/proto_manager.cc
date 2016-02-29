@@ -412,6 +412,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_warthunder(mod_map);
 	register_wechat_udp(mod_map);
 	register_winmessage(mod_map);
+	register_wolfet(mod_map);
 	register_worm_22105(mod_map);
 	register_xfire_p2p(mod_map);
 	register_xlsp(mod_map);

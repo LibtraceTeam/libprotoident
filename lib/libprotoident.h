@@ -450,7 +450,8 @@ typedef enum {
         LPI_PROTO_UDP_ROBOCRAFT,
         LPI_PROTO_UDP_CISCO_SSLVPN,
         LPI_PROTO_UDP_ACERCLOUD,
-        LPI_PROTO_360CN,
+        LPI_PROTO_UDP_360CN,
+        LPI_PROTO_UDP_WOLF_ET,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

@@ -93,7 +93,7 @@ static inline bool match_360cn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 }
 
 static lpi_module_t lpi_360cn = {
-	LPI_PROTO_360CN,
+	LPI_PROTO_UDP_360CN,
 	LPI_CATEGORY_MALWARE,
 	"360.cn",
 	50,

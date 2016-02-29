@@ -36,61 +36,51 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_teredo_payload(uint32_t payload, uint32_t len) {
+static inline bool match_wolf_payload(uint32_t payload, uint32_t len) {
 
         if (len == 0)
                 return true;
-        if (MATCH(payload, 0x00, 0x01, 0x00, 0x00)) {
-                if (len == 61 || len == 109 || len == 77)
+        if (!MATCH(payload, 0xff, 0xff, 0xff, 0xff))
+                return false;
+        return true;
+
+}
+
+
+static inline bool match_wolf_et(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        /* Limit to port 27960 for now */
+        if (data->server_port != 27960 && data->client_port != 27960)
+                return false;
+
+	if (!match_wolf_payload(data->payload[0], data->payload_len[0]))
+                return false;
+        if (!match_wolf_payload(data->payload[1], data->payload_len[1]))
+                return false;
+
+        /* One packet is always 14 bytes, the other is always > 800 */
+        if (data->payload_len[0] == 14) {
+                if (data->payload_len[1] == 0 || data->payload_len[1] >= 800)
+                        return true;
+        }
+        if (data->payload_len[1] == 14) {
+                if (data->payload_len[0] == 0 || data->payload_len[0] >= 800)
                         return true;
         }
 
-        /* Matching v6 traffic */
-        if (MATCH(payload, 0x60, 0x00, 0x00, 0x00) && len >= 4) {
-                return true;
-        }
 
-        /* We also see this in flows that have the same 5 tuple as other
-         * Teredo flows */
-
-        if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
-                return false;
-
-        if (len == 48 && MATCH(payload, 0x00, 0x00, ANY, ANY))
-                return true;
-
-
-        return false;
-
+	return false;
 }
 
-
-static inline bool match_teredo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (data->server_port == 53 || data->client_port == 53) {
-		if (data->payload_len[0] == 0)
-	                return false;
-		if (data->payload_len[1] == 0)
-	                return false;
-	}
-
-        if (!match_teredo_payload(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_teredo_payload(data->payload[1], data->payload_len[1]))
-                return false;
-
-        return true;
-}
-
-static lpi_module_t lpi_teredo = {
-	LPI_PROTO_UDP_TEREDO,
-	LPI_CATEGORY_TUNNELLING,
-	"Teredo",
-	6,
-	match_teredo
+static lpi_module_t lpi_wolfet = {
+	LPI_PROTO_UDP_WOLF_ET,
+	LPI_CATEGORY_GAMING,
+	"WolfensteinEnemyTerritory",
+	5,	/* Must be lower priority than Call of Duty */
+	match_wolf_et
 };
 
-void register_teredo(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_teredo, mod_map);
+void register_wolfet(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_wolfet, mod_map);
 }
 
