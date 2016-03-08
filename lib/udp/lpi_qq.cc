@@ -95,12 +95,34 @@ static inline bool match_qq_video(lpi_data_t *data) {
 
 }
 
+static inline bool match_qq_length(uint32_t payload, uint32_t len) {
+
+    uint32_t plen = (ntohl(payload) >> 8) & 0xffff;
+
+    if (!MATCH(payload, 0x02, ANY, ANY, ANY))
+	return false;
+
+    if (plen != len)
+	return false;
+
+    return true;
+
+}
+
 static inline bool match_qq(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_qq_chat(data))
                 return true;
         if (match_qq_video(data))
                 return true;
+
+	if ((data->payload[0] & 0xff000000) == (data->payload[1] & 0xff000000)) {
+	    if (!match_qq_length(data->payload[0], data->payload_len[0]))
+		return false;
+	    if (!match_qq_length(data->payload[1], data->payload_len[1]))
+		return false;
+	    return true;
+	}
         return false;
 }
 
