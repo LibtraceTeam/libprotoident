@@ -73,11 +73,13 @@ void free_protocols(LPIModuleMap *mod_map) {
 
 int register_tcp_protocols(LPIModuleMap *mod_map) {
 
+	register_360safeguard(mod_map);
 	register_afp(mod_map);
 	register_akamai_tcp(mod_map);
 	register_amp(mod_map);
 	register_apple_push(mod_map);
 	register_ares(mod_map);
+	register_badbaidu(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
@@ -168,6 +170,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_netbios(mod_map);
 	register_nntp(mod_map);
 	register_nntps(mod_map);
+	register_norton_backup(mod_map);
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
 	register_omegle(mod_map);
@@ -218,6 +221,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_tds(mod_map);
 	register_teamviewer(mod_map);
 	register_telecomkey(mod_map);
+	register_telegram(mod_map);
 	register_telnet(mod_map);
 	register_telnet_exploit(mod_map);
 	register_tencent_games(mod_map);
@@ -245,6 +249,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_xmpp(mod_map);
 	register_xmpps(mod_map);
 	register_xunlei(mod_map);
+	register_xunlei_accel(mod_map);
 	register_xymon(mod_map);
 	register_yahoo(mod_map);
 	register_yahoo_error(mod_map);
@@ -322,6 +327,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_kademlia(mod_map);
 	register_kaspersky_udp(mod_map);
 	register_kazaa(mod_map);
+	register_kuguo(mod_map);
 	register_l2tp(mod_map);
 	register_lansync_udp(mod_map);
 	register_ldap_ad(mod_map);

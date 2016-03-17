@@ -49,6 +49,16 @@ static inline bool match_quic_version(uint32_t payload) {
                 return true;
         }
 
+        /* Apparently 0x0c and 0x0e can also work here? */
+        if (MATCH(payload, 0x0c, ANY, ANY, ANY)) {
+                return true;
+        }
+
+        if (MATCH(payload, 0x0e, ANY, ANY, ANY)) {
+                return true;
+        }
+
+
         return false;
 
 }
@@ -69,6 +79,11 @@ static inline bool match_quic_response(uint32_t payload, uint32_t other) {
 
         /* Otherwise, connection IDs must match for both directions */
         if (MATCH(payload, 0x0c, ANY, ANY, ANY)) {
+                if ((payload & 0xffffff00) == (other & 0xffffff00))
+                        return true;
+        }
+
+        if (MATCH(payload, 0x0e, ANY, ANY, ANY)) {
                 if ((payload & 0xffffff00) == (other & 0xffffff00))
                         return true;
         }
@@ -120,7 +135,21 @@ static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (MATCH(data->payload[0], 0x00, ANY, ANY, ANY)) {
+                if (MATCH(data->payload[1], 0x0c, ANY, ANY, ANY))
+                        return true;
+                if (MATCH(data->payload[1], 0x1c, ANY, ANY, ANY))
+                        return true;
+        }
+
         if (MATCH(data->payload[1], 0x10, ANY, ANY, ANY)) {
+                if (MATCH(data->payload[0], 0x0c, ANY, ANY, ANY))
+                        return true;
+                if (MATCH(data->payload[0], 0x1c, ANY, ANY, ANY))
+                        return true;
+        }
+
+        if (MATCH(data->payload[1], 0x00, ANY, ANY, ANY)) {
                 if (MATCH(data->payload[0], 0x0c, ANY, ANY, ANY))
                         return true;
                 if (MATCH(data->payload[0], 0x1c, ANY, ANY, ANY))

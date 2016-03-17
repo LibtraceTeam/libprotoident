@@ -36,55 +36,59 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_reordered_dns(lpi_data_t *data) {
+static inline bool match_kuguo_req(uint32_t payload, uint32_t len) {
 
-        /* Unfortunately, UDP can get reordered so if there are multiple
-         * queries in a flow we cannot guarantee that the first response
-         * will have the same ID as the first query.
-         */
-
-
-        /* Just try and match common request / response flag arrangements */
-        if (MATCH(data->payload[0], ANY, ANY, 0x01, 0x00)) {
-                if (MATCH(data->payload[1], ANY, ANY, 0x81, 0x80))
-                        return true;
-        }
-
-        if (MATCH(data->payload[1], ANY, ANY, 0x01, 0x00)) {
-                if (MATCH(data->payload[0], ANY, ANY, 0x81, 0x80))
-                        return true;
-        }
-
+        if (len != 45 && len != 41)
+                return false;
+        if (MATCH(payload, 0x65, ANY, ANY, ANY))
+                return true;
         return false;
-
 
 }
 
-static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_kuguo_resp(uint32_t payload, uint32_t len) {
 
-	/* As loath as I am to do this, we probably shouldn't allow any DNS
-	 * on ports other than 53 */
-	if (data->server_port != 53 && data->client_port != 53)
-		return false;
-
-	if (match_dns(data))
-		return true;
-
-        if (match_reordered_dns(data))
+        if (len == 0)
                 return true;
+
+        if (len > 125 || len <= 45)
+                return false;
+
+        if (MATCH(payload, 0x65, ANY, ANY, ANY))
+                return true;
+        return false;
+
+}
+
+
+
+static inline bool match_kuguo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (data->server_port == 53 || data->client_port == 53)
+                return false;
+
+        if (match_kuguo_req(data->payload[0], data->payload_len[0])) {
+                if (match_kuguo_resp(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_kuguo_req(data->payload[1], data->payload_len[1])) {
+                if (match_kuguo_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_dns_udp = {
-	LPI_PROTO_UDP_DNS,
-	LPI_CATEGORY_SERVICES,
-	"DNS",
-	10,	/* Not a high certainty */
-	match_dns_udp
+static lpi_module_t lpi_kuguo = {
+	LPI_PROTO_UDP_KUGUO,
+	LPI_CATEGORY_STREAMING,
+	"Kuguo",
+	5,
+	match_kuguo
 };
 
-void register_dns_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dns_udp, mod_map);
+void register_kuguo(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_kuguo, mod_map);
 }
 

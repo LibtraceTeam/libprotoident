@@ -3,11 +3,13 @@
 
 #include "proto_manager.h"
 
+void register_360safeguard(LPIModuleMap *mod_map);
 void register_afp(LPIModuleMap *mod_map);
 void register_akamai_tcp(LPIModuleMap *mod_map);
 void register_amp(LPIModuleMap *mod_map);
 void register_apple_push(LPIModuleMap *mod_map);
 void register_ares(LPIModuleMap *mod_map);
+void register_badbaidu(LPIModuleMap *mod_map);
 void register_bitextend(LPIModuleMap *mod_map);
 void register_bittorrent(LPIModuleMap *mod_map);
 void register_blizzard(LPIModuleMap *mod_map);
@@ -97,6 +99,7 @@ void register_ncsoft(LPIModuleMap *mod_map);
 void register_netbios(LPIModuleMap *mod_map);
 void register_nntp(LPIModuleMap *mod_map);
 void register_nntps(LPIModuleMap *mod_map);
+void register_norton_backup(LPIModuleMap *mod_map);
 void register_notes_rpc(LPIModuleMap *mod_map);
 void register_tcp_no_payload(LPIModuleMap *mod_map);
 void register_omegle(LPIModuleMap *mod_map);
@@ -147,6 +150,7 @@ void register_taobao(LPIModuleMap *mod_map);
 void register_tds(LPIModuleMap *mod_map);
 void register_teamviewer(LPIModuleMap *mod_map);
 void register_telecomkey(LPIModuleMap *mod_map);
+void register_telegram(LPIModuleMap *mod_map);
 void register_telnet(LPIModuleMap *mod_map);
 void register_telnet_exploit(LPIModuleMap *mod_map);
 void register_tencent_games(LPIModuleMap *mod_map);
@@ -174,6 +178,7 @@ void register_wuala(LPIModuleMap *mod_map);
 void register_xmpp(LPIModuleMap *mod_map);
 void register_xmpps(LPIModuleMap *mod_map);
 void register_xunlei(LPIModuleMap *mod_map);
+void register_xunlei_accel(LPIModuleMap *mod_map);
 void register_xymon(LPIModuleMap *mod_map);
 void register_yahoo(LPIModuleMap *mod_map);
 void register_yahoo_error(LPIModuleMap *mod_map);

@@ -42,7 +42,7 @@ static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
 	uint8_t *ptr;
         uint8_t version;
 
-        if (len != 48 && len != 68)
+        if (len != 48 && len != 68 && len != 64)
                 return false;
 
 	ptr = (uint8_t *)&payload;
@@ -56,6 +56,25 @@ static inline bool match_ntp_request(uint32_t payload, uint32_t len) {
                 return false;
 
         return true;
+
+}
+
+static inline bool match_version0_request(uint32_t payload, uint32_t len) {
+
+        uint32_t secondbyte = 0;
+
+        if (len != 48)
+                return false;
+
+        /* Only supporting the 'clock good' status for now */
+        if (!MATCH(payload, 0x00, ANY, ANY, ANY))
+                return false;
+
+        secondbyte = ((ntohl(payload) >> 16) & 0xff);
+        if (secondbyte > 4)
+                return false;
+        return true;
+
 
 }
 
@@ -96,6 +115,16 @@ static inline bool match_ntp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         }
 
         if (match_ntp_request(data->payload[1], data->payload_len[1])) {
+                if (match_ntp_response(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_version0_request(data->payload[0], data->payload_len[0])) {
+                if (match_ntp_response(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_version0_request(data->payload[1], data->payload_len[1])) {
                 if (match_ntp_response(data->payload[0], data->payload_len[0]))
                         return true;
         }

@@ -1,10 +1,12 @@
 noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
+	lpi_360safeguard.cc \
 	lpi_afp.cc \
 	lpi_akamai.cc \
 	lpi_amp.cc \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
+	lpi_badbaidu.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
@@ -95,6 +97,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_nntp.cc \
 	lpi_nntps.cc \
 	lpi_nopayload.cc \
+	lpi_norton_backup.cc \
 	lpi_notes_rpc.cc \
 	lpi_omegle.cc \
 	lpi_openvpn.cc \
@@ -144,6 +147,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_tds.cc \
 	lpi_teamviewer.cc \
 	lpi_telecomkey.cc \
+	lpi_telegram.cc \
 	lpi_telnet.cc \
 	lpi_telnet_exploit.cc \
 	lpi_tencent_games.cc \
@@ -171,6 +175,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_xmpp.cc \
 	lpi_xmpps.cc \
 	lpi_xunlei.cc \
+	lpi_xunlei_accel.cc \
 	lpi_xymon.cc \
 	lpi_yahoo.cc \
 	lpi_yahoo_error.cc \

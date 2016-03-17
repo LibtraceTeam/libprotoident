@@ -297,6 +297,11 @@ typedef enum {
 	LPI_PROTO_QQLIVE,
 	LPI_PROTO_TENCENT_GAMES,        /* Games operated by Tencent */
 	LPI_PROTO_VODLOCKER,
+	LPI_PROTO_TELEGRAM,
+	LPI_PROTO_XUNLEI_ACCEL,
+	LPI_PROTO_360SAFEGUARD,         /* Chinese anti-virus */
+	LPI_PROTO_NORTON_BACKUP,
+	LPI_PROTO_BADBAIDU,     /* Weird 1 byte flows from Baidu browser */
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -452,6 +457,7 @@ typedef enum {
         LPI_PROTO_UDP_ACERCLOUD,
         LPI_PROTO_UDP_360CN,
         LPI_PROTO_UDP_WOLF_ET,
+        LPI_PROTO_UDP_KUGUO,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

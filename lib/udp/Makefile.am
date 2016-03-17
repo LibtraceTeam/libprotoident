@@ -65,6 +65,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_kademlia.cc \
 	lpi_kaspersky.cc \
 	lpi_kazaa.cc \
+	lpi_kuguo.cc \
 	lpi_l2tp.cc \
 	lpi_lansync.cc \
 	lpi_ldap_ad.cc \
