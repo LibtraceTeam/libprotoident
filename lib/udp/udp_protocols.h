@@ -66,6 +66,7 @@ void register_isakmp(LPIModuleMap *mod_map);
 void register_jedi_academy(LPIModuleMap *mod_map);
 void register_jedi_udp(LPIModuleMap *mod_map);
 void register_kademlia(LPIModuleMap *mod_map);
+void register_kankan(LPIModuleMap *mod_map);
 void register_kaspersky_udp(LPIModuleMap *mod_map);
 void register_kazaa(LPIModuleMap *mod_map);
 void register_kuguo(LPIModuleMap *mod_map);

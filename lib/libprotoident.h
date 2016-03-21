@@ -459,6 +459,7 @@ typedef enum {
         LPI_PROTO_UDP_WOLF_ET,
         LPI_PROTO_UDP_KUGUO,
         LPI_PROTO_UDP_XUNLEI_JSQ,
+        LPI_PROTO_UDP_KANKAN,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
