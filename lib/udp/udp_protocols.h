@@ -165,6 +165,7 @@ void register_wolfet(LPIModuleMap *mod_map);
 void register_worm_22105(LPIModuleMap *mod_map);
 void register_xfire_p2p(LPIModuleMap *mod_map);
 void register_xlsp(LPIModuleMap *mod_map);
+void register_xunlei_jsq(LPIModuleMap *mod_map);
 void register_xunlei_udp(LPIModuleMap *mod_map);
 void register_youdao_dict(LPIModuleMap *mod_map);
 void register_youku_udp(LPIModuleMap *mod_map);

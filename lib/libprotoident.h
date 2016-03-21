@@ -458,6 +458,7 @@ typedef enum {
         LPI_PROTO_UDP_360CN,
         LPI_PROTO_UDP_WOLF_ET,
         LPI_PROTO_UDP_KUGUO,
+        LPI_PROTO_UDP_XUNLEI_JSQ,
         LPI_PROTO_UDP_KANKAN,
         LPI_PROTO_UDP_QQPCMGR,
 

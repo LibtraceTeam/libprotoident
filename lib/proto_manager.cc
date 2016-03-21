@@ -424,6 +424,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_worm_22105(mod_map);
 	register_xfire_p2p(mod_map);
 	register_xlsp(mod_map);
+	register_xunlei_jsq(mod_map);
 	register_xunlei_udp(mod_map);
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
