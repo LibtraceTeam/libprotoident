@@ -374,6 +374,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_pyzor(mod_map);
 	register_qq(mod_map);
 	register_qqlive(mod_map);
+	register_qqpcmgr(mod_map);
 	register_quake(mod_map);
 	register_quic(mod_map);
 	register_radius(mod_map);

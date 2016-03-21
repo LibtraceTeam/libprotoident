@@ -115,6 +115,7 @@ void register_punkbuster(LPIModuleMap *mod_map);
 void register_pyzor(LPIModuleMap *mod_map);
 void register_qq(LPIModuleMap *mod_map);
 void register_qqlive(LPIModuleMap *mod_map);
+void register_qqpcmgr(LPIModuleMap *mod_map);
 void register_quake(LPIModuleMap *mod_map);
 void register_quic(LPIModuleMap *mod_map);
 void register_radius(LPIModuleMap *mod_map);
