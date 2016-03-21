@@ -325,6 +325,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_jedi_academy(mod_map);
 	register_jedi_udp(mod_map);
 	register_kademlia(mod_map);
+	register_kankan(mod_map);
 	register_kaspersky_udp(mod_map);
 	register_kazaa(mod_map);
 	register_kuguo(mod_map);

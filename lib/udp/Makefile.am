@@ -63,6 +63,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_jedi.cc \
 	lpi_jedi_academy.cc \
 	lpi_kademlia.cc \
+	lpi_kankan.cc \
 	lpi_kaspersky.cc \
 	lpi_kazaa.cc \
 	lpi_kuguo.cc \
