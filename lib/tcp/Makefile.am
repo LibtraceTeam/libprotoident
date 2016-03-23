@@ -2,6 +2,7 @@ noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
 	lpi_360safeguard.cc \
 	lpi_afp.cc \
+	lpi_airdroid.cc \
 	lpi_akamai.cc \
 	lpi_amp.cc \
 	lpi_apple_push.cc \
@@ -24,6 +25,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cvs.cc \
 	lpi_dell_backup.cc \
 	lpi_diablo3.cc \
+	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_duelingnetwork.cc \
@@ -66,9 +68,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_irc.cc \
 	lpi_java.cc \
 	lpi_jedi.cc \
+	lpi_kakao.cc \
+	lpi_kankan_tcp.cc \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
 	lpi_kik.cc \
+	lpi_kuaibo.cc \
 	lpi_ldap.cc \
 	lpi_line.cc \
 	lpi_llp2p.cc \
@@ -111,6 +116,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_pptp.cc \
 	lpi_psn_store.cc \
 	lpi_qq_tcp.cc \
+	lpi_qqdownload.cc \
 	lpi_qqlive_tcp.cc \
 	lpi_qvod.cc \
         lpi_razor.cc \
@@ -151,6 +157,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_telnet.cc \
 	lpi_telnet_exploit.cc \
 	lpi_tencent_games.cc \
+	lpi_tensafe.cc \
 	lpi_tera.cc \
 	lpi_tetrisonline.cc \
 	lpi_tip.cc \
@@ -167,11 +174,13 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_web_junk.cc \
 	lpi_weblogic.cc \
 	lpi_wechat.cc \
+	lpi_weibo.cc \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \
 	lpi_wow.cc \
 	lpi_wuala.cc \
+	lpi_xiami.cc \
 	lpi_xmpp.cc \
 	lpi_xmpps.cc \
 	lpi_xunlei.cc \

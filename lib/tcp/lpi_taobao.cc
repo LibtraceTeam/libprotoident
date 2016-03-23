@@ -86,6 +86,21 @@ static inline bool match_taobao_resp2(uint32_t payload, uint32_t len) {
 
 }
 
+/* Taobao seem to bastardize SSL. The request looks like a standard
+ * TLS handshake, but the response is definitely something custom.
+ */
+static inline bool match_taobao_sslreq(uint32_t payload) {
+        if (MATCH(payload, 0x16, 0x03, 0x01, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_taobao_sslresp(uint32_t payload) {
+        if (MATCH(payload, 0x10, 0x3a, 0xf3, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_taobao(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_taobao_req(data->payload[0], data->payload_len[0])) {
@@ -106,6 +121,16 @@ static inline bool match_taobao(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_taobao_req2(data->payload[1], data->payload_len[1])) {
                 if (match_taobao_resp2(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_taobao_sslreq(data->payload[0])) {
+                if (match_taobao_sslresp(data->payload[1]))
+                        return true;
+        }
+
+        if (match_taobao_sslreq(data->payload[1])) {
+                if (match_taobao_sslresp(data->payload[0]))
                         return true;
         }
 

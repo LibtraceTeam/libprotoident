@@ -445,6 +445,12 @@ bool match_ssl(lpi_data_t *data) {
         if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
                         match_tls_alert(data->payload[0], data->payload_len[0]))
                 return true;
+        if (match_ssl3_handshake(data->payload[0], data->payload_len[0]) &&
+                        match_tls_alert(data->payload[1], data->payload_len[1]))
+                return true;
+        if (match_ssl3_handshake(data->payload[1], data->payload_len[1]) &&
+                        match_tls_alert(data->payload[0], data->payload_len[0]))
+                return true;
 
         /* Need to check for cipher changes too */
         if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
@@ -467,6 +473,16 @@ bool match_ssl(lpi_data_t *data) {
                 return true;
 
 
+        /* Allow TLS content in both directions -- could be multi-path TCP?
+         * Or some form of picking up where a previous connection left off?
+         */
+        if (match_tls_content(data->payload[0], data->payload_len[0]) &&
+                        match_tls_content(data->payload[1], data->payload_len[1]))
+                return true;
+        if (match_tls_content(data->payload[1], data->payload_len[1]) &&
+                        match_tls_content(data->payload[0], data->payload_len[0]))
+                return true;
+        
 
         if ((match_tls_handshake(data->payload[0], data->payload_len[0]) ||
                         match_ssl3_handshake(data->payload[0], data->payload_len[0])) &&

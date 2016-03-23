@@ -36,58 +36,53 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_kuguo_req(uint32_t payload, uint32_t len) {
 
-        if (MATCH(payload, 0x65, ANY, ANY, ANY))
+static inline bool match_dianping_query(uint32_t payload, uint32_t len) {
+        if (len != 1)
+                return false;
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return true;
-        if (MATCH(payload, 0x64, ANY, ANY, ANY))
-                return true;
-        return false;
-
-}
-
-static inline bool match_kuguo_resp(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-
-        if (MATCH(payload, 0x65, ANY, ANY, ANY))
-                return true;
-        if (MATCH(payload, 0x64, ANY, ANY, ANY))
+        if (MATCH(payload, 0x01, 0x00, 0x00, 0x00))
                 return true;
         return false;
-
 }
 
-static inline bool match_kuguo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_dianping_resp(uint32_t payload, uint32_t len) {
+        if (len != 1)
+                return false;
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
 
-        /* Rule is very weak, need to limit to known Kuguo ports */
+static inline bool match_dianping_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 8000 && data->client_port != 8000)
+        if (data->server_port != 80 && data->client_port != 80 && 
+                        data->client_port != 443 && data->server_port != 443)
                 return false;
 
-        if (match_kuguo_req(data->payload[0], data->payload_len[0])) {
-                if (match_kuguo_resp(data->payload[1], data->payload_len[1]))
+        if (match_dianping_query(data->payload[0], data->payload_len[0])) {
+                if (match_dianping_resp(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_kuguo_req(data->payload[1], data->payload_len[1])) {
-                if (match_kuguo_resp(data->payload[0], data->payload_len[0]))
+        if (match_dianping_query(data->payload[1], data->payload_len[1])) {
+                if (match_dianping_resp(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_kuguo = {
-	LPI_PROTO_UDP_KUGUO,
-	LPI_CATEGORY_STREAMING,
-	"Kuguo",
-	200,
-	match_kuguo
+static lpi_module_t lpi_dianping_tcp = {
+	LPI_PROTO_DIANPING,
+	LPI_CATEGORY_MOBILE_APP,
+	"DianpingTCP",
+	210,
+	match_dianping_tcp
 };
 
-void register_kuguo(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_kuguo, mod_map);
+void register_dianping_tcp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_dianping_tcp, mod_map);
 }
 

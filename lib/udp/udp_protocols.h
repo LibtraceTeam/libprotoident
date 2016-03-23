@@ -32,6 +32,7 @@ void register_dhcp(LPIModuleMap *mod_map);
 void register_dht_dict(LPIModuleMap *mod_map);
 void register_dht_other(LPIModuleMap *mod_map);
 void register_diablo2(LPIModuleMap *mod_map);
+void register_dianping_udp(LPIModuleMap *mod_map);
 void register_directconnect_udp(LPIModuleMap *mod_map);
 void register_dns_udp(LPIModuleMap *mod_map);
 void register_dota2(LPIModuleMap *mod_map);

@@ -108,6 +108,8 @@ typedef enum {
 					   local network */
 	LPI_CATEGORY_LOCATION,		/* Location-related services / GPS */
 	LPI_CATEGORY_CACHING,		/* Proxy cache protocols and similar */
+        LPI_CATEGORY_MOBILE_APP,        /* Mobile apps that don't fit any
+                                           other category */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -302,6 +304,15 @@ typedef enum {
 	LPI_PROTO_360SAFEGUARD,         /* Chinese anti-virus */
 	LPI_PROTO_NORTON_BACKUP,
 	LPI_PROTO_BADBAIDU,     /* Weird 1 byte flows from Baidu browser */
+	LPI_PROTO_KAKAO,
+	LPI_PROTO_WEIBO,
+	LPI_PROTO_TENSAFE,
+        LPI_PROTO_KANKAN,
+        LPI_PROTO_AIRDROID,
+        LPI_PROTO_KUAIBO,
+        LPI_PROTO_DIANPING,
+        LPI_PROTO_XIAMI,
+        LPI_PROTO_QQDOWNLOAD,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -461,6 +472,7 @@ typedef enum {
         LPI_PROTO_UDP_XUNLEI_JSQ,
         LPI_PROTO_UDP_KANKAN,
         LPI_PROTO_UDP_QQPCMGR,
+        LPI_PROTO_UDP_DIANPING,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

@@ -75,6 +75,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 	register_360safeguard(mod_map);
 	register_afp(mod_map);
+	register_airdroid(mod_map);
 	register_akamai_tcp(mod_map);
 	register_amp(mod_map);
 	register_apple_push(mod_map);
@@ -97,6 +98,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cvs(mod_map);
 	register_dell_backup(mod_map);
 	register_diablo3(mod_map);
+	register_dianping_tcp(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
 	register_duelingnetwork(mod_map);
@@ -140,9 +142,12 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_irc(mod_map);
 	register_java(mod_map);
 	register_jedi(mod_map);
+	register_kakao(mod_map);
+	register_kankan_tcp(mod_map);
 	register_kaseya(mod_map);
 	register_kaspersky(mod_map);
 	register_kik(mod_map);
+	register_kuaibo(mod_map);
 	register_ldap(mod_map);
 	register_line(mod_map);
 	register_llp2p(mod_map);
@@ -185,6 +190,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_pptp(mod_map);
 	register_psn_store(mod_map);
 	register_qq_tcp(mod_map);
+	register_qqdownload(mod_map);
 	register_qqlive_tcp(mod_map);
 	register_qvod(mod_map);
         register_razor(mod_map);
@@ -225,6 +231,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_telnet(mod_map);
 	register_telnet_exploit(mod_map);
 	register_tencent_games(mod_map);
+	register_tensafe(mod_map);
 	register_tera(mod_map);
 	register_tetrisonline(mod_map);
 	register_tip(mod_map);
@@ -241,11 +248,13 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_web_junk(mod_map);
 	register_weblogic(mod_map);
 	register_wechat(mod_map);
+	register_weibo(mod_map);
 	register_whatsapp(mod_map);
 	register_whois(mod_map);
 	register_winmx(mod_map);
 	register_wow(mod_map);
 	register_wuala(mod_map);
+	register_xiami(mod_map);
 	register_xmpp(mod_map);
 	register_xmpps(mod_map);
 	register_xunlei(mod_map);
@@ -292,6 +301,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_dht_dict(mod_map);
 	register_dht_other(mod_map);
 	register_diablo2(mod_map);
+	register_dianping_udp(mod_map);
 	register_directconnect_udp(mod_map);
 	register_dns_udp(mod_map);
 	register_dota2(mod_map);

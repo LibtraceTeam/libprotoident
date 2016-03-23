@@ -36,58 +36,58 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_kuguo_req(uint32_t payload, uint32_t len) {
+/* TenSafe is an anti-cheat mechanism that is included with major
+ * online games published by Tencent, e.g. Blade N Soul, DNF.
+ */
 
-        if (MATCH(payload, 0x65, ANY, ANY, ANY))
-                return true;
-        if (MATCH(payload, 0x64, ANY, ANY, ANY))
+static inline bool match_tensafe_req(uint32_t payload, uint32_t len) {
+        if (len != 42)
+                return false;
+        if (MATCH(payload, 0x01, 0x00, 0x00, 0x00))
                 return true;
         return false;
-
 }
 
-static inline bool match_kuguo_resp(uint32_t payload, uint32_t len) {
-
+static inline bool match_tensafe_resp(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
 
-        if (MATCH(payload, 0x65, ANY, ANY, ANY))
-                return true;
-        if (MATCH(payload, 0x64, ANY, ANY, ANY))
+        if (len != 50)
+                return false;
+        if (MATCH(payload, 0x01, 0x00, 0x00, 0x00))
                 return true;
         return false;
-
 }
 
-static inline bool match_kuguo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        /* Rule is very weak, need to limit to known Kuguo ports */
+static inline bool match_tensafe(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 8000 && data->client_port != 8000)
-                return false;
+        if (data->server_port == 8080 || data->server_port == 80 || 
+                        data->client_port == 8080 || data->client_port == 80)
+        {
+                if (match_tensafe_req(data->payload[0], data->payload_len[0])) {
+                        if (match_tensafe_resp(data->payload[1], data->payload_len[1]))
+                                return true;
+                }
 
-        if (match_kuguo_req(data->payload[0], data->payload_len[0])) {
-                if (match_kuguo_resp(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
-
-        if (match_kuguo_req(data->payload[1], data->payload_len[1])) {
-                if (match_kuguo_resp(data->payload[0], data->payload_len[0]))
-                        return true;
+                if (match_tensafe_req(data->payload[1], data->payload_len[1])) {
+                        if (match_tensafe_resp(data->payload[0], data->payload_len[0]))
+                                return true;
+                }
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_kuguo = {
-	LPI_PROTO_UDP_KUGUO,
-	LPI_CATEGORY_STREAMING,
-	"Kuguo",
-	200,
-	match_kuguo
+static lpi_module_t lpi_tensafe = {
+	LPI_PROTO_TENSAFE,
+	LPI_CATEGORY_GAMING,
+	"TenSafe",
+	70,
+	match_tensafe
 };
 
-void register_kuguo(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_kuguo, mod_map);
+void register_tensafe(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_tensafe, mod_map);
 }
 

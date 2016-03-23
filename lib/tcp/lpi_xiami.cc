@@ -36,58 +36,31 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_kuguo_req(uint32_t payload, uint32_t len) {
 
-        if (MATCH(payload, 0x65, ANY, ANY, ANY))
-                return true;
-        if (MATCH(payload, 0x64, ANY, ANY, ANY))
-                return true;
-        return false;
+static inline bool match_xiami(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-}
-
-static inline bool match_kuguo_resp(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-
-        if (MATCH(payload, 0x65, ANY, ANY, ANY))
-                return true;
-        if (MATCH(payload, 0x64, ANY, ANY, ANY))
-                return true;
-        return false;
-
-}
-
-static inline bool match_kuguo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        /* Rule is very weak, need to limit to known Kuguo ports */
-
-        if (data->server_port != 8000 && data->client_port != 8000)
-                return false;
-
-        if (match_kuguo_req(data->payload[0], data->payload_len[0])) {
-                if (match_kuguo_resp(data->payload[1], data->payload_len[1]))
+        if (data->payload_len[0] == 187 && data->payload_len[1] == 0) {
+                if (MATCH(data->payload[0], 0xbb, 0x00, 0x00, 0x00))
                         return true;
         }
 
-        if (match_kuguo_req(data->payload[1], data->payload_len[1])) {
-                if (match_kuguo_resp(data->payload[0], data->payload_len[0]))
+        if (data->payload_len[1] == 187 && data->payload_len[0] == 0) {
+                if (MATCH(data->payload[1], 0xbb, 0x00, 0x00, 0x00))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_kuguo = {
-	LPI_PROTO_UDP_KUGUO,
+static lpi_module_t lpi_xiami = {
+	LPI_PROTO_XIAMI,
 	LPI_CATEGORY_STREAMING,
-	"Kuguo",
-	200,
-	match_kuguo
+	"Xiami",
+	34,
+	match_xiami
 };
 
-void register_kuguo(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_kuguo, mod_map);
+void register_xiami(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_xiami, mod_map);
 }
 

@@ -29,6 +29,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_dht_dict.cc \
 	lpi_dht_other.cc \
 	lpi_diablo2.cc \
+	lpi_dianping_udp.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_dota2.cc \

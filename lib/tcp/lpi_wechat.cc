@@ -90,7 +90,9 @@ static inline bool match_wc_ab_big01(uint32_t payload, uint32_t len) {
 
         if (len < 100)
                 return false;
-        if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+        if (len <= 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+                return true;
+        if (len > 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x01))
                 return true;
         return false;
 }

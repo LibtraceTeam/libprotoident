@@ -56,7 +56,29 @@ static inline bool check_length(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_qq_8080(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return false;
+
+        if (ntohl(payload) == len)
+                return true;
+        return false;
+}
+
 static inline bool match_qq_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (data->server_port == 8080 || data->client_port == 8080) {
+                /* Typically traffic to msfwifi.3g.qq.com, only seen on
+                 * mobile QQ clients.
+                 */
+
+                if (match_qq_8080(data->payload[0], data->payload_len[0])) {
+                        if (match_qq_8080(data->payload[1], data->payload_len[1]))
+                                return true;
+                }
+
+        }
+
 
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
 		return false;
