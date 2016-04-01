@@ -680,6 +680,14 @@ static inline bool match_kaspersky_ke(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_kaspersky_ks(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+        if (MATCH(payload, 'K', 'S', 0x00, 0x00))
+                return true;
+        return false;
+}
+
 bool match_kaspersky(lpi_data_t *data) {
 
 	/* Traffic is either on TCP port 443 or UDP port 2001.
@@ -687,14 +695,16 @@ bool match_kaspersky(lpi_data_t *data) {
 	 * One of the endpoints is always in either a Kaspersky range or
 	 * an old PSInet range */
 
-	if (match_str_both(data, "KS\x00\x00", "KS\x00\x00"))
-		return true;
 	if (match_str_both(data, "PI\x00\x00", "PI\x00\x00")) {
 		if (data->payload_len[0] == 2 && data->payload_len[1] == 2)
 			return true;
 	}
         if (match_kaspersky_ke(data->payload[0], data->payload_len[0])) {
                 if (match_kaspersky_ke(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        if (match_kaspersky_ks(data->payload[0], data->payload_len[0])) {
+                if (match_kaspersky_ks(data->payload[1], data->payload_len[1]))
                         return true;
         }
 	return false;

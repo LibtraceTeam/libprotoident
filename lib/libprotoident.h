@@ -473,6 +473,7 @@ typedef enum {
         LPI_PROTO_UDP_KANKAN,
         LPI_PROTO_UDP_QQPCMGR,
         LPI_PROTO_UDP_DIANPING,
+        LPI_PROTO_UDP_XUNYOU,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

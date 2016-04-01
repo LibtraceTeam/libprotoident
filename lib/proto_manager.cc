@@ -436,6 +436,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_xlsp(mod_map);
 	register_xunlei_jsq(mod_map);
 	register_xunlei_udp(mod_map);
+	register_xunyou(mod_map);
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
 	register_zeroaccess_udp(mod_map);

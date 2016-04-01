@@ -168,6 +168,7 @@ void register_xfire_p2p(LPIModuleMap *mod_map);
 void register_xlsp(LPIModuleMap *mod_map);
 void register_xunlei_jsq(LPIModuleMap *mod_map);
 void register_xunlei_udp(LPIModuleMap *mod_map);
+void register_xunyou(LPIModuleMap *mod_map);
 void register_youdao_dict(LPIModuleMap *mod_map);
 void register_youku_udp(LPIModuleMap *mod_map);
 void register_zeroaccess_udp(LPIModuleMap *mod_map);

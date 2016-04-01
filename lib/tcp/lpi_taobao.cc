@@ -98,6 +98,8 @@ static inline bool match_taobao_sslreq(uint32_t payload) {
 static inline bool match_taobao_sslresp(uint32_t payload) {
         if (MATCH(payload, 0x10, 0x3a, 0xf3, 0x00))
                 return true;
+        if (MATCH(payload, 0x10, 0xae, 0xf3, 0x00))
+                return true;
         return false;
 }
 

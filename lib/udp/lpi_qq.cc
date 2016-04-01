@@ -99,13 +99,15 @@ static inline bool match_qq_length(uint32_t payload, uint32_t len) {
 
     uint32_t plen = (ntohl(payload) >> 8) & 0xffff;
 
-    if (!MATCH(payload, 0x02, ANY, ANY, ANY))
-	return false;
-
     if (plen != len)
 	return false;
 
-    return true;
+    if (MATCH(payload, 0x02, ANY, ANY, ANY))
+	return true;
+    if (MATCH(payload, 0x3e, ANY, ANY, 0x02))
+	return true;
+
+    return false;
 
 }
 

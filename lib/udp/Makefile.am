@@ -165,6 +165,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xlsp.cc \
 	lpi_xunlei.cc \
 	lpi_xunlei_jsq.cc \
+	lpi_xunyou.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
 	lpi_zeroaccess_udp.cc \
