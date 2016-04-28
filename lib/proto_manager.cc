@@ -338,7 +338,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_kankan(mod_map);
 	register_kaspersky_udp(mod_map);
 	register_kazaa(mod_map);
-	register_kuguo(mod_map);
+	register_kugou(mod_map);
 	register_l2tp(mod_map);
 	register_lansync_udp(mod_map);
 	register_ldap_ad(mod_map);

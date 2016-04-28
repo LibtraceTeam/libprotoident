@@ -70,7 +70,7 @@ void register_kademlia(LPIModuleMap *mod_map);
 void register_kankan(LPIModuleMap *mod_map);
 void register_kaspersky_udp(LPIModuleMap *mod_map);
 void register_kazaa(LPIModuleMap *mod_map);
-void register_kuguo(LPIModuleMap *mod_map);
+void register_kugou(LPIModuleMap *mod_map);
 void register_l2tp(LPIModuleMap *mod_map);
 void register_lansync_udp(LPIModuleMap *mod_map);
 void register_ldap_ad(LPIModuleMap *mod_map);
