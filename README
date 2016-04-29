@@ -38,7 +38,7 @@ Required Libraries
 libtrace
 	* available from http://research.wand.net.nz/software/libtrace.php
 
-libflowmanager
+libflowmanager 2.0.4 or later
 	* optional, but required to build the tools
 	* available from http://research.wand.net.nz/software/libflowmanager.php
 
