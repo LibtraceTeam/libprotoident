@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -36,9 +36,28 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static bool match_dns_zone_transfer(lpi_data_t *data) {
+static bool match_length_single(uint32_t payload, uint32_t len) {
+
+        uint32_t statedlen;
+
+        if (len == 2) {
+                return true;
+        }
+
+        statedlen = (ntohl(payload) >> 16);
+
+        if (statedlen < 1280) {
+                if (statedlen != len - 2)
+                        return false;
+        }
+
+        return true;
+}
+
+static bool match_dns_tcp_length(lpi_data_t *data) {
 
         uint16_t length;
+        uint32_t id0, id1;
 	void *ptr;
 
         if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
@@ -47,17 +66,21 @@ static bool match_dns_zone_transfer(lpi_data_t *data) {
         if (data->server_port != 53 && data->client_port != 53)
                 return false;
 
-	ptr = (void *)&data->payload[0];
-	length = *((uint16_t *)ptr);
-
-        if (ntohs(length) != data->payload_len[0] - 2)
+        if (!match_length_single(data->payload[0], data->payload_len[0]))
                 return false;
 
-	ptr = (void *)&data->payload[1];
-	length = *((uint16_t *)ptr);
-
-        if (ntohs(length) != data->payload_len[1] - 2)
+        if (!match_length_single(data->payload[1], data->payload_len[1]))
                 return false;
+
+        if (data->payload_len[0] > 2 && data->payload_len[1] > 2) {
+
+                id0 = (ntohl(data->payload[0]) & 0xffff);
+                id1 = (ntohl(data->payload[1]) & 0xffff);
+
+                if (id0 != id1)
+                        return false;
+        }
+
 
         return true;
 }
@@ -67,7 +90,7 @@ static bool match_tcp_dns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_dns(data))
 		return true;
-	if (match_dns_zone_transfer(data))
+	if (match_dns_tcp_length(data))
 		return true;
 	
 	return false;

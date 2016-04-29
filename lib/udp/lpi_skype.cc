@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -146,7 +146,7 @@ static lpi_module_t lpi_skype = {
 	LPI_PROTO_UDP_SKYPE,
 	LPI_CATEGORY_VOIP,
 	"Skype",
-	15,	/* The Skype rules aren't strong, so have a low priority */
+	105,	/* The Skype rules aren't strong, so have a low priority */
 	match_skype
 };
 

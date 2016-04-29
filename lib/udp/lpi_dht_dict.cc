@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -87,6 +87,34 @@ static inline bool match_utp_reply(uint32_t payload, uint32_t len) {
                 return true;
 
 	return false;
+}
+
+static inline bool match_opentracker_98(uint32_t payload, uint32_t len) {
+        if (len == 98 || len == 109)
+                return true;
+        return false;
+}
+
+static inline bool match_opentracker_X6(uint32_t payload, uint32_t len) {
+        if (len >= 36 && (len % 10) == 6)
+                return true;
+        return false;
+}
+
+static inline bool match_opentracker_01(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x01))
+                return true;
+        return false;
+
+}
+
+static inline bool match_opentracker_02(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x02))
+                return true;
+        return false;
+
 }
 
 static inline bool match_dict_query(uint32_t payload, uint32_t len) {
@@ -194,6 +222,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 		if (match_utp_reply(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_dict_reply(data->payload[1], data->payload_len[1]))
+			return true;
 	}
 
 	if (match_utp_query(data->payload[1], data->payload_len[1])) {
@@ -202,6 +232,8 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 				return false;
 		}
 		if (match_utp_reply(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_dict_reply(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
@@ -213,6 +245,27 @@ static inline bool match_dht_dict(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		if (data->payload_len[0] == 0)
 			return true;
 	}
+
+
+        if (match_opentracker_X6(data->payload[0], data->payload_len[0])) {
+                if (match_opentracker_02(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        
+        if (match_opentracker_X6(data->payload[1], data->payload_len[1])) {
+                if (match_opentracker_02(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+        
+        if (match_opentracker_98(data->payload[0], data->payload_len[0])) {
+                if (match_opentracker_01(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        
+        if (match_opentracker_98(data->payload[1], data->payload_len[1])) {
+                if (match_opentracker_01(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }

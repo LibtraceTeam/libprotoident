@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -36,22 +36,27 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* I *think* this is PSN game traffic - it typically appears on UDP port 3658
- * which is commonly used for that but there's no documentation of the
- * protocol anywhere :(
- */
+static inline bool match_psn_payload(uint32_t payload, uint32_t len) {
+
+        if (len == 0)
+                return true;
+
+        /* Seen on udp port 3658 */
+        if (MATCH(payload, 0xff, 0x83, 0xff, 0xfe))
+                return true;
+        /* Seen on udp port 9306 */
+        if (MATCH(payload, 0xff, 0x83, 0xff, 0xfd))
+                return true;
+        return false;
+}
+
+
 static inline bool match_psn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (data->payload_len[0] == 0 &&
-                        MATCH(data->payload[1], 0xff, 0x83, 0xff, 0xfe))
-                return true;
-        if (data->payload_len[1] == 0 &&
-                        MATCH(data->payload[0], 0xff, 0x83, 0xff, 0xfe))
-                return true;
-
-        if (MATCH(data->payload[0], 0xff, 0x83, 0xff, 0xfe) &&
-                        MATCH(data->payload[1],  0xff, 0x83, 0xff, 0xfe))
-                return true;
+        if (match_psn_payload(data->payload[0], data->payload_len[0])) {
+                if (match_psn_payload(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 
 	return false;
 }

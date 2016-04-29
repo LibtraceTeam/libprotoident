@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -77,6 +77,7 @@ typedef struct ident {
 	uint64_t in_pkts;
 	uint64_t out_pkts;
 	double start_ts;
+        double end_ts;
 	lpi_data_t lpi;
 } IdentFlow;
 
@@ -94,6 +95,7 @@ void init_ident_flow(Flow *f, uint8_t dir, double ts) {
 	ident->in_pkts = 0;
 	ident->out_pkts = 0;
 	ident->start_ts = ts;
+        ident->end_ts = ts;
 	lpi_init_data(&ident->lpi);
 	f->extension = ident;
 }
@@ -153,10 +155,11 @@ void display_ident(Flow *f, IdentFlow *ident) {
 	f->id.get_server_ip_str(s_ip);
 	f->id.get_client_ip_str(c_ip);
 
-        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %" PRIu64 " %" PRIu64, 
+        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %.3f %" PRIu64 " %" PRIu64, 
 			proto->name, s_ip, c_ip,
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), ident->start_ts,
+                        ident->end_ts,
 			ident->out_bytes, ident->in_bytes);
 
 	printf("%s ", str);
@@ -254,6 +257,8 @@ void per_packet(libtrace_packet_t *packet) {
         	ident = (IdentFlow *)f->extension;
 		if (tcp && tcp->syn && !tcp->ack)
 			ident->init_dir = dir;
+                if (ident->end_ts < ts)
+                        ident->end_ts = ts;
 	}
 
 	/* Update our own byte and packet counters for reporting purposes */

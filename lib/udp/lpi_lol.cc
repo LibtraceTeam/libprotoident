@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -46,6 +46,11 @@ static inline bool match_lol(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (data->payload_len[0] == 44 && data->payload_len[1] == 48)
 		return true;
 	if (data->payload_len[1] == 44 && data->payload_len[0] == 48)
+		return true;
+
+	if (data->payload_len[0] == 52 && data->payload_len[1] == 48)
+		return true;
+	if (data->payload_len[1] == 52 && data->payload_len[0] == 48)
 		return true;
 
 	return false;

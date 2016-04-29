@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -39,8 +39,6 @@
 static inline bool match_msn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_str_either(data, "ANS "))
-		return true;
-	if (match_str_either(data, "USR "))
 		return true;
 	if (match_str_either(data, "VER "))
 		return true;

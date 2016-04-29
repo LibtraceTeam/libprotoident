@@ -1,20 +1,27 @@
 noinst_LTLIBRARIES = libprotoident_udp.la
 libprotoident_udp_la_SOURCES = \
+	lpi_360cn.cc \
+	lpi_aachen_udp.cc \
+	lpi_acercloud.cc \
 	lpi_akamai.cc \
 	lpi_akamai_transfer.cc \
 	lpi_amanda.cc \
 	lpi_apple_facetime_init.cc \
 	lpi_ares.cc \
+	lpi_arma_server.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
+	lpi_bmdp.cc \
 	lpi_btsync.cc \
 	lpi_canon_mfnp.cc \
 	lpi_checkpoint_rdp.cc \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
+	lpi_cisco_sslvpn.cc \
 	lpi_cod.cc \
+	lpi_csgo.cc \
 	lpi_db2.cc \
 	lpi_dcc.cc \
 	lpi_demonware.cc \
@@ -22,8 +29,10 @@ libprotoident_udp_la_SOURCES = \
 	lpi_dht_dict.cc \
 	lpi_dht_other.cc \
 	lpi_diablo2.cc \
+	lpi_dianping_udp.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
+	lpi_dota2.cc \
 	lpi_driveshare.cc \
 	lpi_dtls.cc \
 	lpi_emule.cc \
@@ -43,8 +52,10 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gnutella_weak.cc \
 	lpi_gprs_tunnel.cc \
 	lpi_gsm.cc \
+	lpi_h1z1.cc \
 	lpi_halflife.cc \
 	lpi_hamachi.cc \
+	lpi_heroes_generals.cc \
 	lpi_icp.cc \
 	lpi_imesh.cc \
 	lpi_ipmsg.cc \
@@ -53,11 +64,14 @@ libprotoident_udp_la_SOURCES = \
 	lpi_jedi.cc \
 	lpi_jedi_academy.cc \
 	lpi_kademlia.cc \
+	lpi_kankan.cc \
 	lpi_kaspersky.cc \
 	lpi_kazaa.cc \
+	lpi_kuguo.cc \
 	lpi_l2tp.cc \
 	lpi_lansync.cc \
 	lpi_ldap_ad.cc \
+	lpi_line_udp.cc \
 	lpi_linkproof.cc \
 	lpi_lol.cc \
 	lpi_mdns.cc \
@@ -85,23 +99,28 @@ libprotoident_udp_la_SOURCES = \
 	lpi_nopayload.cc \
 	lpi_norton.cc \
 	lpi_ntp.cc \
+	lpi_ntp_reflect.cc \
 	lpi_nwn.cc \
 	lpi_opaserv.cc \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
 	lpi_pando.cc \
+	lpi_planetside2.cc \
 	lpi_pplive.cc \
 	lpi_ppstream.cc \
 	lpi_probable_gnutella.cc \
 	lpi_psn.cc \
+	lpi_punkbuster.cc \
 	lpi_pyzor.cc \
 	lpi_qq.cc \
 	lpi_qqlive.cc \
+	lpi_qqpcmgr.cc \
 	lpi_quake.cc \
 	lpi_quic.cc \
 	lpi_radius.cc \
 	lpi_real.cc \
 	lpi_roblox.cc \
+	lpi_robocraft.cc \
 	lpi_rtcp.cc \
 	lpi_rtmfp.cc \
 	lpi_rtp.cc \
@@ -137,15 +156,20 @@ libprotoident_udp_la_SOURCES = \
 	lpi_viber.cc \
 	lpi_vivox.cc \
 	lpi_vxworks_exploit.cc \
+	lpi_warthunder.cc \
 	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
+	lpi_wolfet.cc \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
 	lpi_xlsp.cc \
 	lpi_xunlei.cc \
+	lpi_xunlei_jsq.cc \
+	lpi_xunyou.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
-	lpi_zeroaccess_udp.cc
+	lpi_zeroaccess_udp.cc \
+	lpi_zoom.cc
 
 EXTRA_DIST=udp_protocols.h
 

@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -51,15 +51,31 @@ static inline bool match_teamviewer_payload(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_teamviewer_alt(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x11, 0x30, 0x36, 0x00))
+                return false;
+        return true;
+}
+
 static inline bool match_teamviewer(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+	if (match_teamviewer_payload(data->payload[0], data->payload_len[0])) {
+                if (match_teamviewer_payload(data->payload[1], data->payload_len[1]))
+                        return true;
+                if (match_teamviewer_alt(data->payload[1], data->payload_len[1]))
+                        return true;
 
-	if (!match_teamviewer_payload(data->payload[0], data->payload_len[0]))
-		return false;
-	if (!match_teamviewer_payload(data->payload[1], data->payload_len[1]))
-		return false;
+        }
 
-	return true;
+	if (match_teamviewer_payload(data->payload[1], data->payload_len[1])) {
+                if (match_teamviewer_payload(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_teamviewer_alt(data->payload[0], data->payload_len[0]))
+                        return true;
+
+        }
+
+	return false;
 }
 
 static lpi_module_t lpi_teamviewer = {

@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -81,12 +81,21 @@ static inline bool match_quake(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
 		if (data->payload_len[1] == 33)
 			return true;
+                if (data->server_port == 27960 || data->client_port == 27960) {
+                        if (data->payload_len[1] >= 800 && data->payload_len[1] <= 812)
+                                return true;
+                }
+
         }
         if (data->payload_len[1] == 16) {
                 if (data->payload_len[0] >= 51 && data->payload_len[0] <= 54)
                         return true;
 		if (data->payload_len[0] == 33)
 			return true;
+                if (data->server_port == 27960 || data->client_port == 27960) {
+                        if (data->payload_len[0] >= 800 && data->payload_len[0] <= 812)
+                                return true;
+                }
         }
 	
 

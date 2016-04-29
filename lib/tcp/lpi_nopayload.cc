@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -38,12 +38,13 @@
 
 bool match_no_payload(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (data->observed[0] != 0)
-		return false;
-	if (data->observed[1] != 0)
-		return false;
+	if (data->observed[0] == 0 && data->observed[1] == 0)
+		return true;
 
-	return true;
+        if (data->payload_len[0] == 0 && data->payload_len[1] == 0)
+                return true;
+
+	return false;
 }
 
 static lpi_module_t lpi_no_payload = {

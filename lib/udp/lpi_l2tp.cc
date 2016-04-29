@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -38,14 +38,15 @@
 
 static inline bool match_l2tp_payload(uint32_t payload, uint32_t len) {
 
-	/* Technically the 3rd and 4th bytes are a length field, but we'll
-	 * worry about that once we start seeing L2TP that is not 109
-	 * bytes in size */
+	uint32_t hdrlen = ntohl(payload) & 0xffff;
 
-	if (len == 0)
+        if (len == 0)
 		return true;
 
-	if (!MATCH(payload, 0xc8, 0x02, 0x00, 0x6d))
+        if (len != hdrlen)
+                return false;
+
+	if (!MATCH(payload, 0xc8, 0x02, ANY, ANY))
 		return false;
 
 	return true;

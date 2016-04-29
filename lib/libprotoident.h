@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -108,6 +108,8 @@ typedef enum {
 					   local network */
 	LPI_CATEGORY_LOCATION,		/* Location-related services / GPS */
 	LPI_CATEGORY_CACHING,		/* Proxy cache protocols and similar */
+        LPI_CATEGORY_MOBILE_APP,        /* Mobile apps that don't fit any
+                                           other category */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -272,6 +274,45 @@ typedef enum {
         LPI_PROTO_GIT,
         LPI_PROTO_DUELING_NETWORK,
         LPI_PROTO_LINE,
+        LPI_PROTO_AMP,
+        LPI_PROTO_SPDY,
+        LPI_PROTO_YAHOO_GAMES,
+        LPI_PROTO_DELL_BACKUP,
+        LPI_PROTO_REVOLVER_NBLBT,
+        LPI_PROTO_CRASHPLAN,
+        LPI_PROTO_CLASH_OF_CLANS,
+        LPI_PROTO_TRION,
+        LPI_PROTO_MONGO,
+        LPI_PROTO_LLP2P,
+        LPI_PROTO_HEARTHSTONE,
+        LPI_PROTO_DIABLO3,
+        LPI_PROTO_CACAOWEB,
+        LPI_PROTO_TAOBAO,       /* Custom protocol seen on Taobao CDN */
+        LPI_PROTO_TERA,
+        LPI_PROTO_SILKROADONLINE,       /* Korean MMO */
+        LPI_PROTO_GOOGLE_HANGOUTS,
+        LPI_PROTO_HOLA,
+        LPI_PROTO_GUILDWARS2,
+	LPI_PROTO_QQ,
+	LPI_PROTO_TETRISONLINE,
+	LPI_PROTO_TWITCH_IRC,   /* IRC specific to twitch.tv */
+	LPI_PROTO_QQLIVE,
+	LPI_PROTO_TENCENT_GAMES,        /* Games operated by Tencent */
+	LPI_PROTO_VODLOCKER,
+	LPI_PROTO_TELEGRAM,
+	LPI_PROTO_XUNLEI_ACCEL,
+	LPI_PROTO_360SAFEGUARD,         /* Chinese anti-virus */
+	LPI_PROTO_NORTON_BACKUP,
+	LPI_PROTO_BADBAIDU,     /* Weird 1 byte flows from Baidu browser */
+	LPI_PROTO_KAKAO,
+	LPI_PROTO_WEIBO,
+	LPI_PROTO_TENSAFE,
+        LPI_PROTO_KANKAN,
+        LPI_PROTO_AIRDROID,
+        LPI_PROTO_KUAIBO,
+        LPI_PROTO_DIANPING,
+        LPI_PROTO_XIAMI,
+        LPI_PROTO_QQDOWNLOAD,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -295,7 +336,8 @@ typedef enum {
 	LPI_PROTO_UDP_SPAMFIGHTER,	/* SpamFighter */
 	LPI_PROTO_UDP_TRACEROUTE,
 	LPI_PROTO_UDP_SECONDLIFE,
-	LPI_PROTO_UDP_HL,	/* Halflife */
+	LPI_PROTO_UDP_HL,	/* Halflife, includes derivatives such as
+                                 * CounterStrike and Garry's Mod */
 	LPI_PROTO_UDP_XLSP,	/* XLSP - Xbox Live */
 	LPI_PROTO_UDP_DEMONWARE,	/* Company that does game networking */
 	LPI_PROTO_UDP_IMESH,	/* iMesh */
@@ -408,6 +450,30 @@ typedef enum {
 	LPI_PROTO_UDP_GPRS_TUNNEL,
 	LPI_PROTO_UDP_WECHAT,
 	LPI_PROTO_UDP_NOCTION,
+        LPI_PROTO_UDP_ARMA_SERVER,    /* Includes DayZ */
+        LPI_PROTO_UDP_PLANETSIDE2,
+        LPI_PROTO_UDP_RWTH_AACHEN,      /* RWTH-Aachen University research */
+        LPI_PROTO_UDP_BMDP,      /* Part of Microsoft ADS */
+        LPI_PROTO_UDP_DOTA2,      
+        LPI_PROTO_UDP_LINE, 
+        LPI_PROTO_UDP_ZOOM,
+        LPI_PROTO_UDP_HEROES_GENERALS,  /* Heroes and Generals */ 
+        LPI_PROTO_UDP_WARTHUNDER,
+        LPI_PROTO_UDP_H1Z1,
+        LPI_PROTO_UDP_CS_GLOBAL_OFFENSIVE,
+        LPI_PROTO_UDP_NTP_REFLECT,      /* NTP reflection attack */
+        LPI_PROTO_UDP_PUNKBUSTER,
+        LPI_PROTO_UDP_ROBOCRAFT,
+        LPI_PROTO_UDP_CISCO_SSLVPN,
+        LPI_PROTO_UDP_ACERCLOUD,
+        LPI_PROTO_UDP_360CN,
+        LPI_PROTO_UDP_WOLF_ET,
+        LPI_PROTO_UDP_KUGOU,
+        LPI_PROTO_UDP_XUNLEI_JSQ,
+        LPI_PROTO_UDP_KANKAN,
+        LPI_PROTO_UDP_QQPCMGR,
+        LPI_PROTO_UDP_DIANPING,
+        LPI_PROTO_UDP_XUNYOU,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -416,7 +482,6 @@ typedef enum {
 	LPI_PROTO_MYSTERY_8000,
 	LPI_PROTO_MYSTERY_IG,
 	LPI_PROTO_MYSTERY_CONN,
-	LPI_PROTO_MYSTERY_443,
 	LPI_PROTO_MYSTERY_SYMANTEC,
 	LPI_PROTO_MYSTERY_RXXF,
 	LPI_PROTO_MYSTERY_100_STAR,

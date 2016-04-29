@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -36,6 +36,30 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_reordered_dns(lpi_data_t *data) {
+
+        /* Unfortunately, UDP can get reordered so if there are multiple
+         * queries in a flow we cannot guarantee that the first response
+         * will have the same ID as the first query.
+         */
+
+
+        /* Just try and match common request / response flag arrangements */
+        if (MATCH(data->payload[0], ANY, ANY, 0x01, 0x00)) {
+                if (MATCH(data->payload[1], ANY, ANY, 0x81, 0x80))
+                        return true;
+        }
+
+        if (MATCH(data->payload[1], ANY, ANY, 0x01, 0x00)) {
+                if (MATCH(data->payload[0], ANY, ANY, 0x81, 0x80))
+                        return true;
+        }
+
+        return false;
+
+
+}
+
 static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* As loath as I am to do this, we probably shouldn't allow any DNS
@@ -45,6 +69,9 @@ static inline bool match_dns_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_dns(data))
 		return true;
+
+        if (match_reordered_dns(data))
+                return true;
 
 	return false;
 }

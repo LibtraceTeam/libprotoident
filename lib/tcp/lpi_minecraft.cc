@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -77,6 +77,17 @@ static inline bool match_mc_kick(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
+        /* Ref: http://wiki.vg/Protocol */
+        if (len > 25 || len < 10)
+                return false;
+        if (MATCH(payload, 0x13, 0x00, 0x2f, ANY))
+                return true;
+        if (MATCH(payload, 0x18, 0x00, 0x2f, ANY))
+                return true;
+        return false;
+}
+
 static inline bool match_minecraft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_mc_server_ping(data->payload[0], data->payload_len[0])) {
@@ -90,6 +101,15 @@ static inline bool match_minecraft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 		}
 	}
+
+        if (data->server_port == 25565 || data->client_port == 25565) {
+                if (match_mc_handshake(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_mc_handshake(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+
 	return false;
 }
 

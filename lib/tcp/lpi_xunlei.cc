@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -35,6 +35,34 @@
 #include "libprotoident.h"
 #include "proto_manager.h"
 #include "proto_common.h"
+
+static inline bool match_shuijing_44(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x44, 0x00, 0x00, 0x00))
+                return true;
+        if (MATCH(payload, 0x42, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_shuijing_3e(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_xunlei_3e(uint32_t payload, uint32_t len) {
+        if (len == 132 && MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
+static inline bool match_xunlei_36(uint32_t payload, uint32_t len) {
+        if (len == 51 && MATCH(payload, 0x36, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
 
 static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -72,6 +100,41 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
                 if (data->payload_len[1] == 0)
                         return true;
+        }
+
+
+        /* Pretty sure this is "Thunder Crystal" (a.k.a. Xunlei Shuijing),
+         * a P2P approach to doing CDN. Uses TCP port 4593, usually.
+         * Ref: http://dl.acm.org/citation.cfm?id=2736085
+         *
+         * XXX Should this be a separate protocol?
+         */
+
+        if (match_shuijing_44(data->payload[0], data->payload_len[0])) {
+                if (match_shuijing_3e(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        if (match_shuijing_44(data->payload[1], data->payload_len[1])) {
+                if (match_shuijing_3e(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        
+        /* Almost certainly Xunlei-related, appears on port 8080 to hosts
+         * that are in subnets used by Xunlei. Many IP ranges appear in
+         * http://ipfilter-emule.googlecode.com/svn/trunk/ipfilter-xl/.htaccess?id=htxl
+         */
+
+        if (match_xunlei_3e(data->payload[0], data->payload_len[0])) {
+                if (match_xunlei_36(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_xunlei_3e(data->payload[1], data->payload_len[1])) {
+                if (match_xunlei_36(data->payload[0], data->payload_len[0])) {
+                        return true;
+                }
         }
 
 

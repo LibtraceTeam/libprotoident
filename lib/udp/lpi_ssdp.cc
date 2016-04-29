@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -46,6 +46,19 @@ static inline bool match_ssdp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return false;
 		if (data->client_port != 1900)
 			return false;
+		return true;
+	}
+
+        /* Check for SSDP reflection attacks */
+	if (match_str_either(data, "HTTP")) {
+		/* usually only the source port is 1900 */
+                if (data->server_port != 1900 && data->client_port != 1900)
+			return false;
+
+                /* the request usually has a spoofed address so we won't
+                 * payload in one direction */
+                if (data->payload_len[0] != 0 && data->payload_len[0] != 0)
+                        return false;
 		return true;
 	}
 

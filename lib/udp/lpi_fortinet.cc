@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -38,7 +38,14 @@
 
 static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 
-	if (len != 64)
+	if (MATCHSTR(payload, "ikro"))
+		return true;
+	if (MATCHSTR(payload, "ikuo"))
+		return true;
+
+
+        /* All the following strings require a 64 byte datagram */
+        if (len != 64)
 		return false;
 
 	if (MATCHSTR(payload, "ihrk"))
@@ -55,8 +62,6 @@ static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCHSTR(payload, "iiro"))
 		return true;
-	if (MATCHSTR(payload, "ikro"))
-		return true;
 	if (MATCHSTR(payload, "ikri"))
 		return true;
 	if (MATCHSTR(payload, "ikvk"))
@@ -72,7 +77,11 @@ static inline bool match_fortinet_resp(uint32_t payload, uint32_t len) {
 		return true;
 	if (len == 36 && MATCHSTR(payload, "kowO"))
 		return true;
+	if (len == 44 && MATCHSTR(payload, "kowG"))
+		return true;
 	if (len == 12 && MATCHSTR(payload, "nkwg"))
+		return true;
+	if (len == 32 && MATCHSTR(payload, "khwK"))
 		return true;
 	return false;
 

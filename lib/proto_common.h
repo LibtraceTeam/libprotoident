@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -77,4 +77,5 @@ bool match_youku_payload(uint32_t payload, uint32_t len);
 bool match_emule(lpi_data_t *data);
 bool match_kaspersky(lpi_data_t *data);
 bool match_tpkt(uint32_t payload, uint32_t len);
+bool match_qqlive_payload(uint32_t payload, uint32_t len);
 #endif

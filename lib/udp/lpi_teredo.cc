@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -52,6 +52,9 @@ static bool match_teredo_payload(uint32_t payload, uint32_t len) {
 
         /* We also see this in flows that have the same 5 tuple as other
          * Teredo flows */
+
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return false;
 
         if (len == 48 && MATCH(payload, 0x00, 0x00, ANY, ANY))
                 return true;

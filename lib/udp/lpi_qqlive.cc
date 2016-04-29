@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -36,38 +36,6 @@
 #include "libprotoident.h"
 #include "proto_manager.h"
 #include "proto_common.h"
-
-typedef struct qqlive_header {
-	uint8_t fe;
-	uint16_t len;
-	uint8_t zero;
-} qqlive_hdr_t;
-
-static inline bool match_qqlive_payload(uint32_t payload, uint32_t len) {
-
-        uint8_t *ptr;
-	uint32_t swap;
-
-        /* This appears to have a 3 byte header. First byte is always 0xfe.
-         * Second and third bytes are the length (minus the 3 byte header).
-         */
-
-        if (len == 0)
-                return true;
-
-        if (!MATCH(payload, 0xfe, ANY, ANY, 0x00))
-                return false;
-
-	swap = htonl(payload);
-	swap = (swap & 0xffff00) >> 8;
-
-        if (ntohs(swap) == len - 3)
-                return true;
-
-        return false;
-
-}
-
 
 static inline bool match_qqlive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 

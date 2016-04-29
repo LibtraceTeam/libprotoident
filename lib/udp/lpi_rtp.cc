@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -39,12 +39,14 @@
 static inline bool match_rtp_payload(uint32_t payload, uint32_t len, 
 		uint32_t other_len) {
 
-	if (len < 32)
-		return false;
+	/* This rule seems very weak -- maybe need to capture some known
+         * RTP traffic to try and strengthen it?
+         */
 
-	/* Be stricter about packet length when looking at one-way flows */
+        /* Be stricter about packet length when looking at one-way flows */
 	if (other_len == 0) {
-		if (len != 32 && len != 92 && len != 172)
+		if (len != 32 && len != 92 && len != 172 && 
+                                len != 31 && len != 24)
 			return false;
 	}
 
@@ -60,14 +62,14 @@ static inline bool match_rtp_payload(uint32_t payload, uint32_t len,
 static inline bool match_stun_response(uint32_t payload, uint32_t len) {
 
 	/* Many VOIP phones use STUN for NAT traversal, so the response to
-	 * outgoing RDP is often a STUN packet */
+	 * outgoing RTP is often a STUN packet */
 
-	if (!MATCH(payload, 0x00, 0x01, 0x00, 0x08))
-		return false;
-	if (len != 28)
-		return false;
+	if (len == 28 && MATCH(payload, 0x00, 0x01, 0x00, 0x08))
+		return true;
+        if (len == 12 && MATCH(payload, 0x00, 0x11, 0x00, 0x00))
+                return true;
 
-	return true;
+	return false;
 
 }
 
@@ -110,7 +112,7 @@ static lpi_module_t lpi_rtp = {
 	LPI_PROTO_UDP_RTP,
 	LPI_CATEGORY_VOIP,
 	"RTP",
-	13,
+	33,
 	match_rtp
 };
 

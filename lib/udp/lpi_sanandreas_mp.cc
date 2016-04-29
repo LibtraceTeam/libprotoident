@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -57,6 +57,23 @@ static inline bool match_samp_reply(uint32_t payload, uint32_t len) {
         return false;
 }
 
+
+static inline bool match_ffs_req(uint32_t payload, uint32_t len) {
+        if (len != 4)
+                return false;
+        if (MATCH(payload, 0x40, 0xb1, 0xd1, 0xef))
+                return true;
+        return false;
+}
+
+static inline bool match_ffs_resp(uint32_t payload, uint32_t len) {
+        if (len != 2)
+                return false;
+        if (MATCH(payload, 0x16, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_sanandreas_mp(lpi_data_t *data, 
                 lpi_module_t *mod UNUSED) {
 
@@ -67,6 +84,18 @@ static inline bool match_sanandreas_mp(lpi_data_t *data,
         
         if (match_samp_request(data->payload[1], data->payload_len[1])) {
                 if (match_samp_reply(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        /* Traffic seen on port 7777 for a SA-MP server called
+         * Fight Fun Server (ff-server.com). */
+        if (match_ffs_req(data->payload[1], data->payload_len[1])) {
+                if (match_ffs_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_ffs_req(data->payload[0], data->payload_len[0])) {
+                if (match_ffs_resp(data->payload[1], data->payload_len[1]))
                         return true;
         }
 

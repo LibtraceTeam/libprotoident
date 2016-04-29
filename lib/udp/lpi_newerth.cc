@@ -1,7 +1,7 @@
 /* 
  * This file is part of libprotoident
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
+ * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
  * Author: Shane Alcock
  *
  * With contributions from:
@@ -36,6 +36,20 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_newerth_301(uint32_t payload, uint32_t len) {
+        if (len == 27 && MATCH(payload, 0x00, 0x00, 0x03, 0x01))
+                return true;
+        return false;
+}
+
+static inline bool match_newerth_1c9(uint32_t payload, uint32_t len) {
+        if (len == 4 && MATCH(payload, 0x00, 0x00, 0x01, 0xc9))
+                return true;
+        return false;
+}
+
+
+
 static inline bool match_newerth_payload(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
@@ -48,6 +62,16 @@ static inline bool match_newerth_payload(uint32_t payload, uint32_t len) {
 
 
 static inline bool match_newerth(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_newerth_1c9(data->payload[0], data->payload_len[0])) {
+                if (match_newerth_301(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_newerth_1c9(data->payload[1], data->payload_len[1])) {
+                if (match_newerth_301(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	if (!match_newerth_payload(data->payload[0], data->payload_len[0]))
                 return false;
