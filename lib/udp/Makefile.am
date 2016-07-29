@@ -31,6 +31,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_diablo2.cc \
 	lpi_dianping_udp.cc \
 	lpi_directconnect.cc \
+	lpi_discord.cc \
 	lpi_dns.cc \
 	lpi_dota2.cc \
 	lpi_driveshare.cc \
@@ -42,6 +43,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_esp_encap.cc \
 	lpi_eye.cc \
 	lpi_fasp.cc \
+	lpi_forticlient_sslvpn.cc \
 	lpi_fortinet.cc \
 	lpi_freechal.cc \
 	lpi_funshion.cc \

@@ -42,7 +42,7 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
         /* This is almost all based on observing traffic on port 3074. Not
          * very scientific, but seems more or less right */
 
-
+        /* TODO: come up with a cleaner matching module */
 
         /* We've only ever seen a few of the packet sizes in one-way flows,
          * so let's not match any of the others if there is no response */
@@ -72,6 +72,14 @@ static inline bool match_xlsp_payload(uint32_t payload, uint32_t len,
                 if ((len == 90 || len == 172) && other_len == 138)
                         return true;
                 if (len == 138 && (other_len == 90 || other_len == 172))
+                        return true;
+                if (len == 65 && other_len == 65)
+                        return true;
+                if ((len == 148  || len == 149) &&
+                                (other_len == 115 || other_len == 116))
+                        return true;
+                if ((len == 115  || len == 116) &&
+                                (other_len == 148 || other_len == 149))
                         return true;
 
         }
@@ -239,7 +247,7 @@ static lpi_module_t lpi_xlsp = {
 	LPI_PROTO_UDP_XLSP,
 	LPI_CATEGORY_GAMING,
 	"XboxLive_UDP",
-	6,
+	180,
 	match_xlsp
 };
 

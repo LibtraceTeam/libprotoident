@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_amp.cc 60 2011-02-02 04:07:52Z salcock $
+ * $Id$
  */
 
 #include <string.h>
@@ -36,43 +36,45 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_amp_throughput(lpi_data_t *data) {
-        /* AMP Throughput generally uses port 8826 or 8827 */
-        if (data->server_port != 8826 && data->client_port != 8826
-                        && data->server_port != 8827 &&
-                        data->client_port != 8827)
+static inline bool match_forti_vpn_48(uint32_t payload, uint32_t len) {
+        if (len != 48)
                 return false;
-
-        /* AMP Throughput tests are large one-way data transfers */
-        if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
-                return false;
-
-        /* Packets are always going to be MSS-sized -- assume MTU is no
-         * smaller than 1280 bytes */
-        if (data->payload_len[0] < 1240 && data->payload_len[1] < 1240)
-                return false;
-
-        return true;
-
+        if (MATCHSTR(payload, "\x16\xfe\xff\x00"))
+                return true;
+        return false;
 }
 
-static inline bool match_amp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (match_amp_throughput(data))
+static inline bool match_forti_vpn(uint32_t payload, uint32_t len) {
+        if (MATCHSTR(payload, "\x16\xfe\xff\x00"))
                 return true;
+        return false;
+}
+
+
+static inline bool match_forticlient_sslvpn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_forti_vpn_48(data->payload[0], data->payload_len[0])) {
+                if (match_forti_vpn(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_forti_vpn_48(data->payload[1], data->payload_len[1])) {
+                if (match_forti_vpn(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_amp = {
-	LPI_PROTO_AMP,
-	LPI_CATEGORY_MONITORING,
-	"AMP",
-	240,    /* AMP is not something I'd expect to see outside of Waikato */
-	match_amp
+static lpi_module_t lpi_forticlient_sslvpn = {
+	LPI_PROTO_UDP_FORTICLIENT_SSLVPN,
+	LPI_CATEGORY_TUNNELLING,
+	"FortiClientSSLVPN",
+	12,
+	match_forticlient_sslvpn
 };
 
-void register_amp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_amp, mod_map);
+void register_forticlient_sslvpn(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_forticlient_sslvpn, mod_map);
 }
 

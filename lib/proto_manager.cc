@@ -108,6 +108,8 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_emule(mod_map);
 	register_eye(mod_map);
 	register_fasp(mod_map);
+	register_fb_message(mod_map);
+	register_ffxiv(mod_map);
 	register_flash(mod_map);
 	register_fring(mod_map);
 	register_ftpcontrol(mod_map);
@@ -266,6 +268,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_yahoo_webcam(mod_map);
 	register_youku_tcp(mod_map);
 	register_zabbix(mod_map);
+	register_zero_facebook(mod_map);
 	register_zynga(mod_map);
 	return 0;
 }
@@ -303,6 +306,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_diablo2(mod_map);
 	register_dianping_udp(mod_map);
 	register_directconnect_udp(mod_map);
+	register_discord(mod_map);
 	register_dns_udp(mod_map);
 	register_dota2(mod_map);
 	register_driveshare(mod_map);
@@ -313,6 +317,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	//register_eso(mod_map);
 	register_esp_encap(mod_map);
 	register_eye_udp(mod_map);
+	register_forticlient_sslvpn(mod_map);
 	register_fortinet(mod_map);
 	register_freechal(mod_map);
 	register_funshion_udp(mod_map);

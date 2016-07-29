@@ -313,6 +313,9 @@ typedef enum {
         LPI_PROTO_DIANPING,
         LPI_PROTO_XIAMI,
         LPI_PROTO_QQDOWNLOAD,
+        LPI_PROTO_ZERO_FACEBOOK,
+        LPI_PROTO_FINALFANTASY_XIV,
+        LPI_PROTO_FACEBOOK_MESSENGER,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -474,6 +477,8 @@ typedef enum {
         LPI_PROTO_UDP_QQPCMGR,
         LPI_PROTO_UDP_DIANPING,
         LPI_PROTO_UDP_XUNYOU,
+        LPI_PROTO_UDP_FORTICLIENT_SSLVPN,
+        LPI_PROTO_UDP_DISCORD,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

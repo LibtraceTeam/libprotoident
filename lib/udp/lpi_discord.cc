@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: lpi_amp.cc 60 2011-02-02 04:07:52Z salcock $
+ * $Id$
  */
 
 #include <string.h>
@@ -36,43 +36,55 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_amp_throughput(lpi_data_t *data) {
-        /* AMP Throughput generally uses port 8826 or 8827 */
-        if (data->server_port != 8826 && data->client_port != 8826
-                        && data->server_port != 8827 &&
-                        data->client_port != 8827)
-                return false;
+/* discord.gg */
 
-        /* AMP Throughput tests are large one-way data transfers */
-        if (data->payload_len[0] != 0 && data->payload_len[1] != 0)
-                return false;
+static inline bool discord_payload_match(uint32_t a, uint32_t b) {
 
-        /* Packets are always going to be MSS-sized -- assume MTU is no
-         * smaller than 1280 bytes */
-        if (data->payload_len[0] < 1240 && data->payload_len[1] < 1240)
-                return false;
+        uint32_t bytea = (ntohl(a) >> 24);
+        uint32_t byteb = (ntohl(b) & 0xff);
 
-        return true;
+        if (bytea == byteb && bytea != 0x00) {
+                if (MATCH(a, ANY, 0x00, 0x00, 0x00) &&
+                                MATCH(b, 0x00, 0x00, 0x00, ANY)) {
+                        return true;
+                }
+        }
+
+        bytea = (ntohl(a) & 0xff);
+        byteb = (ntohl(b) >> 24);
+
+        if (bytea == byteb && bytea != 0x00) {
+                if (MATCH(b, ANY, 0x00, 0x00, 0x00) &&
+                                MATCH(a, 0x00, 0x00, 0x00, ANY)) {
+                        return true;
+                }
+        }
+
+        return false;
 
 }
 
-static inline bool match_amp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_discord(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_amp_throughput(data))
-                return true;
+        if (!discord_payload_match(data->payload[0], data->payload[1]))
+                return false;
 
-	return false;
+        if (data->payload_len[0] != 70 || data->payload_len[1] != 70)
+                return false;
+
+
+	return true;
 }
 
-static lpi_module_t lpi_amp = {
-	LPI_PROTO_AMP,
-	LPI_CATEGORY_MONITORING,
-	"AMP",
-	240,    /* AMP is not something I'd expect to see outside of Waikato */
-	match_amp
+static lpi_module_t lpi_discord = {
+	LPI_PROTO_UDP_DISCORD,
+	LPI_CATEGORY_VOIP,
+	"Discord",
+	19,
+	match_discord
 };
 
-void register_amp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_amp, mod_map);
+void register_discord(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_discord, mod_map);
 }
 

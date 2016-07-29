@@ -245,7 +245,7 @@ static lpi_module_t lpi_gnutella_udp = {
 	LPI_PROTO_UDP_GNUTELLA,
 	LPI_CATEGORY_P2P,
 	"Gnutella_UDP",
-	10,	/* Rules are pretty dodgy so make this low priority */
+	110,	/* Rules are pretty dodgy so make this low priority */
 	match_gnutella_udp
 };
 

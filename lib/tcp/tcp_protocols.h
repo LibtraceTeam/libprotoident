@@ -37,6 +37,8 @@ void register_dxp(LPIModuleMap *mod_map);
 void register_ea_games(LPIModuleMap *mod_map);
 void register_emule(LPIModuleMap *mod_map);
 void register_eye(LPIModuleMap *mod_map);
+void register_fb_message(LPIModuleMap *mod_map);
+void register_ffxiv(LPIModuleMap *mod_map);
 void register_flash(LPIModuleMap *mod_map);
 void register_fring(LPIModuleMap *mod_map);
 void register_ftpcontrol(LPIModuleMap *mod_map);
@@ -195,6 +197,7 @@ void register_yahoo_games(LPIModuleMap *mod_map);
 void register_yahoo_webcam(LPIModuleMap *mod_map);
 void register_youku_tcp(LPIModuleMap *mod_map);
 void register_zabbix(LPIModuleMap *mod_map);
+void register_zero_facebook(LPIModuleMap *mod_map);
 void register_zynga(LPIModuleMap *mod_map);
 
 #endif

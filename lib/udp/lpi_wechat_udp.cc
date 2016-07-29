@@ -105,16 +105,19 @@ static inline bool match_wechat_voip_d6200(uint32_t payload, uint32_t len) {
 
 static inline bool match_wechat_voip_d591(uint32_t payload, uint32_t len) {
 
-	if (len == 91 && MATCH(payload, 0xd5, ANY, ANY, ANY))
-		return true;
-	if (len == 89 && MATCH(payload, 0xd5, ANY, ANY, ANY))
+        if (len < 89 || len > 91)
+                return false;
+
+	if (MATCH(payload, 0xd5, ANY, ANY, ANY))
 		return true;
 	return false;
 }
 
 static inline bool match_wechat_voip_d5104(uint32_t payload, uint32_t len) {
 
-	if (len == 104 && MATCH(payload, 0xd5, ANY, ANY, ANY))
+        if (len < 103 || len > 104)
+                return false;
+	if (MATCH(payload, 0xd5, ANY, ANY, ANY))
 		return true;
 	return false;
 }

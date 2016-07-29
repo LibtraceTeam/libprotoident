@@ -88,6 +88,13 @@ static inline bool match_quic_response(uint32_t payload, uint32_t other) {
                         return true;
         }
 
+        /* This is the 4 byte connection ID case */
+        if (MATCH(payload, 0x08, ANY, ANY, ANY)) {
+                if ((payload & 0xffffff00) == (other & 0xffffff00))
+                        return true;
+        }
+
+
         return false;
 
 }
