@@ -38,23 +38,30 @@
 
 static inline bool match_hangout_req(uint32_t payload, uint32_t len) {
 
-        /* Length is always a factor of 114? */
-        if (len % 114 != 0)
-                return false;
+        if ((len % 114) == 0) {
+                if (MATCH(payload, 0x00, 0x70, 0x00, 0x01))
+                        return true;
+        }
 
-        if (MATCH(payload, 0x00, 0x70, 0x00, 0x01))
-                return true;
+        if ((len % 122) == 0) {
+                if (MATCH(payload, 0x00, 0x78, 0x00, 0x01))
+                        return true;
+        }
 
         return false;
 }
 
 static inline bool match_hangout_resp(uint32_t payload, uint32_t len) {
 
-        if (len != 106)
-                return false;
+        if (len == 106) {
+                if (MATCH(payload, 0x00, 0x68, 0x01, 0x01))
+                        return true;
+        }
 
-        if (MATCH(payload, 0x00, 0x68, 0x01, 0x01))
-                return true;
+        if (len == 118) {
+                if (MATCH(payload, 0x00, 0x74, 0x01, 0x01))
+                        return true;
+        }
 
         return false;
 }
@@ -63,6 +70,12 @@ static inline bool match_hangout_resp(uint32_t payload, uint32_t len) {
 static inline bool match_googlehangouts(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         /* Based on traffic seen on port 19305 to google addresses */
+
+        /* Limit this to port 19305 - 19309 */
+        if (data->server_port < 19305 || data->server_port > 19309) {
+                if (data->client_port < 19305 || data->client_port > 19309)
+                        return false;
+        }
 
         if (match_hangout_req(data->payload[0], data->payload_len[0])) {
                 if (match_hangout_resp(data->payload[1], data->payload_len[1]))

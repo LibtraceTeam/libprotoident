@@ -9,6 +9,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_apple_facetime_init.cc \
 	lpi_ares.cc \
 	lpi_arma_server.cc \
+	lpi_arma3_server.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
 	lpi_battlefield.cc \
@@ -94,6 +95,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_qq.cc \
 	lpi_natpmp.cc \
 	lpi_netbios.cc \
+	lpi_netcore_scan.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \
 	lpi_noction.cc \

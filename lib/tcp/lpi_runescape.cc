@@ -44,11 +44,11 @@
 
 static inline bool match_runescape_req(uint32_t payload, uint32_t len) {
 
-	if (len != 1)
-		return false;
-	if (!MATCH(payload, 0x00, 0x00, 0x00, 0x00))
-		return false;
-	return true;
+	if (len == 1 || len == 105) {
+               	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+	        	return true;
+        }
+	return false;
 
 }
 

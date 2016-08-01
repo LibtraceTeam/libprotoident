@@ -46,6 +46,16 @@ static inline bool match_line_108(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_line_110(uint32_t payload, uint32_t len) {
+
+        if (len != 110)
+                return false;
+        if (MATCH(payload, 0xb6, 0x18, 0x00, 0x6a))
+                return true;
+        return false;
+
+}
+
 static inline bool match_line_35(uint32_t payload, uint32_t len) {
 
         if (!MATCH(payload, 0xb6, 0x13, 0x00, 0x06))
@@ -74,6 +84,16 @@ static inline bool match_line_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         }
 
         if (match_line_108(data->payload[1], data->payload_len[1])) {
+                if (match_line_35(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_line_110(data->payload[0], data->payload_len[0])) {
+                if (match_line_35(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_line_110(data->payload[1], data->payload_len[1])) {
                 if (match_line_35(data->payload[0], data->payload_len[0]))
                         return true;
         }

@@ -284,6 +284,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_apple_facetime_init(mod_map);
 	register_ares_udp(mod_map);
 	register_arma_server(mod_map);
+	register_arma3_server(mod_map);
 	register_avast_secure_dns(mod_map);
 	register_backweb(mod_map);
 	register_battlefield(mod_map);
@@ -368,6 +369,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_qq(mod_map);
 	register_natpmp(mod_map);
 	register_netbios_udp(mod_map);
+	register_netcore_scan(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
 	register_noction(mod_map);

@@ -37,50 +37,39 @@
 #include "proto_common.h"
 
 
-static inline bool match_gw2_req(uint32_t payload, uint32_t len) {
+static inline bool match_netcore_scan(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (len < 285 || len > 295)
+        /* Well-known vulnerability in Netcore CPEs, which listen on port
+         * 53413 on the WAN interface.
+         *
+         * Mostly just a major source of UDP scan traffic.
+         */
+
+        if (data->server_port != 53413 && data->client_port != 53413)
                 return false;
-        if (MATCH(payload, 0x50, 0x20, 0x2f, 0x53))
+
+        if (MATCHSTR(data->payload[0], "AAAA") && data->payload_len[0] == 17)
                 return true;
-        return false;
-
-}
-
-static inline bool match_gw2_resp(uint32_t payload, uint32_t len) {
-
-        if (len != 35)
-                return false;
-        if (MATCH(payload, 0x53, 0x54, 0x53, 0x2f))
+        if (MATCHSTR(data->payload[1], "AAAA") && data->payload_len[1] == 17)
                 return true;
-        return false;
 
-}
-
-static inline bool match_guildwars2(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (match_gw2_req(data->payload[1], data->payload_len[1])) {
-                if (match_gw2_resp(data->payload[0], data->payload_len[0]))
-                        return true;
-        }
-
-        if (match_gw2_req(data->payload[0], data->payload_len[0])) {
-                if (match_gw2_resp(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
+        if (MATCHSTR(data->payload[0], "AA\x00\x00"))
+                return true;
+        if (MATCHSTR(data->payload[1], "AA\x00\x00"))
+                return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_guildwars2 = {
-	LPI_PROTO_GUILDWARS2,
-	LPI_CATEGORY_GAMING,
-	"GuildWars2",
-	5,
-	match_guildwars2
+static lpi_module_t lpi_netcore_scan = {
+	LPI_PROTO_UDP_NETCORE,
+	LPI_CATEGORY_MALWARE,
+	"NetcoreScan",
+	199,
+	match_netcore_scan
 };
 
-void register_guildwars2(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_guildwars2, mod_map);
+void register_netcore_scan(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_netcore_scan, mod_map);
 }
 

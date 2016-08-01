@@ -38,12 +38,17 @@
 
 static inline bool match_coc_login(uint32_t payload, uint32_t len) {
 
-        /* First two bytes are 10101 (0x2775)
+        /* First two bytes are 10101 (0x2775) or 10100 (0x2774)
          * Next three bytes are a length field, usually 250-330 bytes */
 
         if (MATCH(payload, 0x27, 0x75, 0x00, 0x01))
                 return true;
         if (MATCH(payload, 0x27, 0x75, 0x00, 0x00))
+                return true;
+
+        if (MATCH(payload, 0x27, 0x74, 0x00, 0x01))
+                return true;
+        if (MATCH(payload, 0x27, 0x74, 0x00, 0x00))
                 return true;
 
         return false;
@@ -52,11 +57,13 @@ static inline bool match_coc_login(uint32_t payload, uint32_t len) {
 
 static inline bool match_coc_encrypt(uint32_t payload, uint32_t len) {
 
-        /* First two bytes are 20000 (0x4e20)
+        /* First two bytes are 20000 (0x4e20) or 20100 (0x4e84)
          * Next three bytes are a length field, always seems to be just
          * under 256 bytes */
 
         if (MATCH(payload, 0x4e, 0x20, 0x00, 0x00))
+                return true;
+        if (MATCH(payload, 0x4e, 0x84, 0x00, 0x00))
                 return true;
 
         return false;
@@ -67,6 +74,7 @@ static inline bool match_clashofclans(lpi_data_t *data, lpi_module_t *mod UNUSED
 
         /* Could limit this to port 9339, but the pattern is probably strong
          * enough by itself */
+        /* Actually, port 1863 is also used... */
 
         if (match_coc_login(data->payload[0], data->payload_len[0])) {
                 if (match_coc_encrypt(data->payload[1], data->payload_len[1]))

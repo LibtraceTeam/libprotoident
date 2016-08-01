@@ -131,6 +131,60 @@ static inline bool match_skype_rule2(lpi_data_t *data) {
 }
 
 
+static inline bool match_meeting_stun_request(uint32_t payload, uint32_t len) {
+
+        if ((ntohl(payload) & 0xffff) != len - 4)
+                return false;
+
+        /* Checking for 0xff + ANY bytes is hard :( */
+        if ((ntohl(payload) & 0xff000000) != 0xff000000)
+                return false;
+
+        if (MATCH(payload, ANY, 0x10, ANY, ANY))
+                return true;
+
+        return false;
+
+}
+
+static inline bool match_meeting_stun_reply(uint32_t payload, uint32_t len) {
+
+        if ((ntohl(payload) & 0xffff) != len - 20)
+                return false;
+
+        if (MATCH(payload, 0x00, 0x01, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x01, 0x01, ANY, ANY))
+                return true;
+
+        return false;
+
+}
+
+static inline bool match_skype_meeting_broadcast(lpi_data_t *data) {
+        /* This protocol is a LOT like STUN, but isn't really STUN. */
+
+        /* TODO get hold of skype for business and double check this */
+
+        if (match_meeting_stun_request(data->payload[0], data->payload_len[0]))
+        {
+                if (match_meeting_stun_reply(data->payload[1],
+                                        data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_meeting_stun_request(data->payload[1], data->payload_len[1]))
+        {
+                if (match_meeting_stun_reply(data->payload[0],
+                                        data->payload_len[0])) {
+                        return true;
+                }
+        }
+
+        return false;
+}
+
 static inline bool match_skype(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_skype_rule1(data))
@@ -138,6 +192,9 @@ static inline bool match_skype(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_skype_rule2(data))
                 return true;
 
+
+        if (match_skype_meeting_broadcast(data))
+                return true;
 
 	return false;
 }

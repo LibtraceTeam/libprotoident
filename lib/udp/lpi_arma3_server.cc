@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_arma_server.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,51 +36,54 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_arma3_server_payload(uint32_t payload, uint32_t len) {
 
-static inline bool match_gw2_req(uint32_t payload, uint32_t len) {
+        uint32_t replen;
 
-        if (len < 285 || len > 295)
-                return false;
-        if (MATCH(payload, 0x50, 0x20, 0x2f, 0x53))
+        if (len == 0)
                 return true;
-        return false;
+
+        if (!MATCH(payload, ANY, ANY, 0xe2, 0x16))
+                return false;
+
+        replen = (payload & 0xffff);
+        if (replen != len)
+                return false;
+
+        return true;
+
 
 }
 
-static inline bool match_gw2_resp(uint32_t payload, uint32_t len) {
+static inline bool match_arma_port_range(lpi_data_t *data) {
 
-        if (len != 35)
-                return false;
-        if (MATCH(payload, 0x53, 0x54, 0x53, 0x2f))
+        if (data->server_port >= 2300 && data->server_port <= 2400)
                 return true;
-        return false;
+        if (data->client_port >= 2300 && data->client_port <= 2400)
+                return true;
 
+        return false;
 }
 
-static inline bool match_guildwars2(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_arma3_server(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_gw2_req(data->payload[1], data->payload_len[1])) {
-                if (match_gw2_resp(data->payload[0], data->payload_len[0]))
-                        return true;
-        }
-
-        if (match_gw2_req(data->payload[0], data->payload_len[0])) {
-                if (match_gw2_resp(data->payload[1], data->payload_len[1]))
+        if (match_arma3_server_payload(data->payload[0], data->payload_len[0])) {
+                if (match_arma3_server_payload(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_guildwars2 = {
-	LPI_PROTO_GUILDWARS2,
+static lpi_module_t lpi_arma3_server = {
+	LPI_PROTO_UDP_ARMA3_SERVER,
 	LPI_CATEGORY_GAMING,
-	"GuildWars2",
-	5,
-	match_guildwars2
+	"ARMA3Server",
+	4,
+	match_arma3_server
 };
 
-void register_guildwars2(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_guildwars2, mod_map);
+void register_arma3_server(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_arma3_server, mod_map);
 }
 
