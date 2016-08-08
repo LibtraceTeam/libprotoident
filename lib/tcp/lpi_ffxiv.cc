@@ -48,7 +48,7 @@ static inline bool match_ff_96(uint32_t payload, uint32_t len) {
 static inline bool match_ff_other(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return false;
-        if (len == 64 || len == 63 || len == 153) {
+        if (len == 64 || len == 63 || len == 153 || len == 154) {
                 if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                         return true;
         }

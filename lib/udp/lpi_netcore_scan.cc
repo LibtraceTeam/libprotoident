@@ -48,9 +48,9 @@ static inline bool match_netcore_scan(lpi_data_t *data, lpi_module_t *mod UNUSED
         if (data->server_port != 53413 && data->client_port != 53413)
                 return false;
 
-        if (MATCHSTR(data->payload[0], "AAAA") && data->payload_len[0] == 17)
+        if (MATCHSTR(data->payload[0], "AAAA"))
                 return true;
-        if (MATCHSTR(data->payload[1], "AAAA") && data->payload_len[1] == 17)
+        if (MATCHSTR(data->payload[1], "AAAA"))
                 return true;
 
         if (MATCHSTR(data->payload[0], "AA\x00\x00"))
