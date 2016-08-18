@@ -36,62 +36,48 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Zero: a modified version of QUIC crypto used by Facebook until TLS 1.3 is
- * available.
- * 
- * See http://cryptologie.net/article/321/real-world-crypto-day-2/ for a bit
- * more detail.
- */
-
-static inline bool match_zero_fb_chlo(uint32_t payload, uint32_t len) {
-
-        if (MATCH(payload, '1', 'Q', 'T', 'V'))
+static inline bool match_netcat_ff00(uint32_t payload, uint32_t len) {
+        if (MATCHSTR(payload, "\xff000000"))
                 return true;
         return false;
 }
 
-
-static inline bool match_zero_fb_shlo(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-        if (MATCH(payload, '1', 'Q', 'T', 'V'))
-                return true;
-        if (MATCH(payload, 0x30, 0x9d, 0x0c, 0x00))
-                return true;
-        if (MATCH(payload, 0x30, 0x9c, 0x0c, 0x00))
+static inline bool match_netcat_ff01(uint32_t payload, uint32_t len) {
+        if (MATCHSTR(payload, "\xff010000"))
                 return true;
         return false;
 }
 
+static inline bool match_netcat_cctv(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_zero_facebook(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+        /* Protocol used by Netcat branded IP Cameras
+         * http://www.netcatcctv.com
+         */
 
-        if (data->server_port != 443 && data->client_port != 443)
-                return false;
-
-        if (match_zero_fb_chlo(data->payload[0], data->payload_len[0])) {
-                if (match_zero_fb_shlo(data->payload[1], data->payload_len[1]))
+        if (match_netcat_ff00(data->payload[0], data->payload_len[0])) {
+                if (match_netcat_ff01(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_zero_fb_chlo(data->payload[1], data->payload_len[1])) {
-                if (match_zero_fb_shlo(data->payload[0], data->payload_len[0]))
+        if (match_netcat_ff00(data->payload[1], data->payload_len[1])) {
+                if (match_netcat_ff01(data->payload[0], data->payload_len[0]))
                         return true;
         }
+
+
 
 	return false;
 }
 
-static lpi_module_t lpi_zero_facebook = {
-	LPI_PROTO_ZERO_FACEBOOK,
-	LPI_CATEGORY_WEB,
-	"Zero_Facebook",
-	5,
-	match_zero_facebook
+static lpi_module_t lpi_netcat_cctv = {
+	LPI_PROTO_NETCAT_CCTV,
+	LPI_CATEGORY_STREAMING,
+	"NetcatCCTV",
+	20,
+	match_netcat_cctv
 };
 
-void register_zero_facebook(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_zero_facebook, mod_map);
+void register_netcat_cctv(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_netcat_cctv, mod_map);
 }
 

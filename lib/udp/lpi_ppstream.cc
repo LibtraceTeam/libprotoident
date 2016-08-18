@@ -102,7 +102,60 @@ static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
 }
 
 
+static inline bool match_1580_ppstream(uint32_t payload, uint32_t len) {
+        if (len == 24) {
+                if (MATCH(payload, 0x15, 0x80, 0x51, 0x10))
+                        return true;
+        }
+        return false;
+}
+
+static inline bool match_1b80_ppstream(uint32_t payload, uint32_t len) {
+        if (len == 27) {
+                if (MATCH(payload, 0x1b, 0x80, 0x4e, 0x0c))
+                        return true;
+        }
+        return false;
+}
+
+static inline bool match_8480_ppstream(uint32_t payload, uint32_t len) {
+        if (len == 132) {
+                if (MATCH(payload, 0x84, 0x80, 0xc0, 0xd1))
+                        return true;
+                if (MATCH(payload, 0x84, 0x80, 0xd1, 0xc0))
+                        return true;
+        }
+        return false;
+}
+
+static inline bool match_any80_ppstream(uint32_t payload) {
+
+        if (MATCH(payload, ANY, 0x80, ANY, ANY))
+                return true;
+        return false;
+}
+
 static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_1580_ppstream(data->payload[0], data->payload_len[0])) {
+                if (match_1b80_ppstream(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_1580_ppstream(data->payload[1], data->payload_len[1])) {
+                if (match_1b80_ppstream(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_8480_ppstream(data->payload[0], data->payload_len[0])) {
+                if (match_any80_ppstream(data->payload[1]))
+                        return true;
+        }
+
+        if (match_8480_ppstream(data->payload[1], data->payload_len[1])) {
+                if (match_any80_ppstream(data->payload[0]))
+                        return true;
+        }
 
 	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
                 return false;

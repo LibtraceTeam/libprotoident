@@ -27,7 +27,7 @@
  * along with libprotoident; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: lpi_zoom.cc 60 2011-02-02 04:07:52Z salcock $
  */
 
 #include <string.h>
@@ -36,62 +36,61 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Zero: a modified version of QUIC crypto used by Facebook until TLS 1.3 is
- * available.
- * 
- * See http://cryptologie.net/article/321/real-world-crypto-day-2/ for a bit
- * more detail.
- */
+static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
 
-static inline bool match_zero_fb_chlo(uint32_t payload, uint32_t len) {
-
-        if (MATCH(payload, '1', 'Q', 'T', 'V'))
+        if (MATCH(payload, 0x01, 0x00, 0x6c, 0x00) && len == 111)
+                return true;
+        if (MATCH(payload, 0x01, 0x00, 0x6a, 0x00) && len == 109)
+                return true;
+        if (MATCH(payload, 0x01, 0x00, 0x83, 0x00) && len == 134)
                 return true;
         return false;
+
 }
 
+static inline bool match_zoom_02(uint32_t payload, uint32_t len) {
 
-static inline bool match_zero_fb_shlo(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
+        if (MATCH(payload, 0x02, 0x00, 0x22, 0x00) && len == 37)
                 return true;
-        if (MATCH(payload, '1', 'Q', 'T', 'V'))
-                return true;
-        if (MATCH(payload, 0x30, 0x9d, 0x0c, 0x00))
-                return true;
-        if (MATCH(payload, 0x30, 0x9c, 0x0c, 0x00))
+        if (MATCH(payload, 0x02, 0x00, 0x24, 0x00) && len == 39)
                 return true;
         return false;
+
 }
 
+static inline bool match_zoom_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_zero_facebook(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+        if (data->server_port != 8801 && data->client_port != 8801) {
+                return false;
+        }
 
-        if (data->server_port != 443 && data->client_port != 443)
+        /* Byte 4 must match in both directions */
+        if ((data->payload[0] & 0xff000000) != (data->payload[1] & 0xff000000))
                 return false;
 
-        if (match_zero_fb_chlo(data->payload[0], data->payload_len[0])) {
-                if (match_zero_fb_shlo(data->payload[1], data->payload_len[1]))
+        if (match_zoom_01(data->payload[0], data->payload_len[0])) {
+                if (match_zoom_02(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_zero_fb_chlo(data->payload[1], data->payload_len[1])) {
-                if (match_zero_fb_shlo(data->payload[0], data->payload_len[0]))
+        if (match_zoom_01(data->payload[1], data->payload_len[1])) {
+                if (match_zoom_02(data->payload[0], data->payload_len[0]))
                         return true;
         }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_zero_facebook = {
-	LPI_PROTO_ZERO_FACEBOOK,
-	LPI_CATEGORY_WEB,
-	"Zero_Facebook",
+static lpi_module_t lpi_zoom_tcp = {
+	LPI_PROTO_ZOOM,
+	LPI_CATEGORY_VOIP,
+	"ZoomTCP",
 	5,
-	match_zero_facebook
+	match_zoom_tcp
 };
 
-void register_zero_facebook(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_zero_facebook, mod_map);
+void register_zoom_tcp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_zoom_tcp, mod_map);
 }
 

@@ -12,6 +12,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_arma3_server.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
+	lpi_baiduyun_p2p.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
 	lpi_bmdp.cc \
@@ -108,6 +109,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_opaserv.cc \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
+	lpi_overwatch.cc \
 	lpi_pando.cc \
 	lpi_planetside2.cc \
 	lpi_pplive.cc \
@@ -172,6 +174,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xunyou.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
+	lpi_yy_udp.cc \
 	lpi_zeroaccess_udp.cc \
 	lpi_zoom.cc
 

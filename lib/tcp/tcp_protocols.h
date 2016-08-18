@@ -104,6 +104,7 @@ void register_mystery_symantec(LPIModuleMap *mod_map);
 void register_mzinga(LPIModuleMap *mod_map);
 void register_ncsoft(LPIModuleMap *mod_map);
 void register_netbios(LPIModuleMap *mod_map);
+void register_netcat_cctv(LPIModuleMap *mod_map);
 void register_nntp(LPIModuleMap *mod_map);
 void register_nntps(LPIModuleMap *mod_map);
 void register_norton_backup(LPIModuleMap *mod_map);
@@ -196,8 +197,10 @@ void register_yahoo_error(LPIModuleMap *mod_map);
 void register_yahoo_games(LPIModuleMap *mod_map);
 void register_yahoo_webcam(LPIModuleMap *mod_map);
 void register_youku_tcp(LPIModuleMap *mod_map);
+void register_yy_tcp(LPIModuleMap *mod_map);
 void register_zabbix(LPIModuleMap *mod_map);
 void register_zero_facebook(LPIModuleMap *mod_map);
+void register_zoom_tcp(LPIModuleMap *mod_map);
 void register_zynga(LPIModuleMap *mod_map);
 
 #endif

@@ -316,6 +316,9 @@ typedef enum {
         LPI_PROTO_ZERO_FACEBOOK,
         LPI_PROTO_FINALFANTASY_XIV,
         LPI_PROTO_FACEBOOK_MESSENGER,
+        LPI_PROTO_YY,
+        LPI_PROTO_NETCAT_CCTV,
+        LPI_PROTO_ZOOM,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -481,6 +484,9 @@ typedef enum {
         LPI_PROTO_UDP_DISCORD,
         LPI_PROTO_UDP_NETCORE,
         LPI_PROTO_UDP_ARMA3_SERVER,
+        LPI_PROTO_UDP_BAIDU_YUN_P2P,
+        LPI_PROTO_UDP_YY,
+        LPI_PROTO_UDP_OVERWATCH,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

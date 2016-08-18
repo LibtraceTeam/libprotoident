@@ -31,6 +31,7 @@
  */
 
 #include <string.h>
+#include <byteswap.h>
 #include "libprotoident.h"
 #include "proto_common.h"
 
@@ -769,5 +770,24 @@ bool match_qqlive_payload(uint32_t payload, uint32_t len) {
                 return true;
         return false;
 
+}
+
+bool match_yy_payload(uint32_t payload, uint32_t len) {
+
+        /* The first four bytes are a length field, but using the
+         * wrong byte order...
+         */
+
+        if (!MATCH(payload, ANY, ANY, 0x00, 0x00))
+                return false;
+
+#if BYTE_ORDER == BIG_ENDIAN
+        if (__bswap_32(payload) == len)
+                return true;
+#else
+        if (payload == len)
+                return true;
+#endif
+        return false;
 }
 
