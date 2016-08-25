@@ -37,13 +37,13 @@
 #include "proto_common.h"
 
 static inline bool match_netcat_ff00(uint32_t payload, uint32_t len) {
-        if (MATCHSTR(payload, "\xff000000"))
+        if (MATCHSTR(payload, "\xff\x00\x00\x00"))
                 return true;
         return false;
 }
 
 static inline bool match_netcat_ff01(uint32_t payload, uint32_t len) {
-        if (MATCHSTR(payload, "\xff010000"))
+        if (MATCHSTR(payload, "\xff\x01\x00\x00"))
                 return true;
         return false;
 }
