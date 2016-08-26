@@ -27,29 +27,17 @@
 #include <string.h>
 
 #ifdef __APPLE__
-#include <machine/endian.h>
 #include <libkern/OSByteOrder.h>
+#define bswap32 OSSwapInt32
+#endif
 
-#define htobe16(x) OSSwapHostToBigInt16(x)
-#define htole16(x) OSSwapHostToLittleInt16(x)
-#define be16toh(x) OSSwapBigToHostInt16(x)
-#define le16toh(x) OSSwapLittleToHostInt16(x)
+#ifdef __FreeBSD__
+#include <sys/endian.h>
+#endif
 
-#define htobe32(x) OSSwapHostToBigInt32(x)
-#define htole32(x) OSSwapHostToLittleInt32(x)
-#define be32toh(x) OSSwapBigToHostInt32(x)
-#define le32toh(x) OSSwapLittleToHostInt32(x)
-
-#define htobe64(x) OSSwapHostToBigInt64(x)
-#define htole64(x) OSSwapHostToLittleInt64(x)
-#define be64toh(x) OSSwapBigToHostInt64(x)
-#define le64toh(x) OSSwapLittleToHostInt64(x)
-
-#define __BIG_ENDIAN    BIG_ENDIAN
-#define __LITTLE_ENDIAN LITTLE_ENDIAN
-#define __BYTE_ORDER    BYTE_ORDER
-#else
+#ifdef __linux__
 #include <byteswap.h>
+#define bswap32 __bswap_32
 #endif
 
 #include "libprotoident.h"
@@ -802,7 +790,7 @@ bool match_yy_payload(uint32_t payload, uint32_t len) {
                 return false;
 
 #if BYTE_ORDER == BIG_ENDIAN
-        if (__bswap_32(payload) == len)
+        if (bswap32(payload) == len)
                 return true;
 #else
         if (payload == len)
