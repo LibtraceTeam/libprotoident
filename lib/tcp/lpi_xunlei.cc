@@ -1,33 +1,27 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include <string.h>
@@ -46,6 +40,12 @@ static inline bool match_shuijing_44(uint32_t payload, uint32_t len) {
 
 static inline bool match_shuijing_3e(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_shuijing_46(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x46, 0x00, 0x00, 0x00))
                 return true;
         return false;
 }
@@ -113,9 +113,13 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_shuijing_44(data->payload[0], data->payload_len[0])) {
                 if (match_shuijing_3e(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_shuijing_46(data->payload[1], data->payload_len[1]))
+                        return true;
         }
         if (match_shuijing_44(data->payload[1], data->payload_len[1])) {
                 if (match_shuijing_3e(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_shuijing_46(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
@@ -123,6 +127,10 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         /* Almost certainly Xunlei-related, appears on port 8080 to hosts
          * that are in subnets used by Xunlei. Many IP ranges appear in
          * http://ipfilter-emule.googlecode.com/svn/trunk/ipfilter-xl/.htaccess?id=htxl
+         * 
+         * Update: the above URL no longer exists, but thankfully archive.org
+         * has saved a copy:
+         *   http://web.archive.org/web/20160410231755/http://ipfilter-emule.googlecode.com/svn/trunk/ipfilter-xl/.htaccess
          */
 
         if (match_xunlei_3e(data->payload[0], data->payload_len[0])) {

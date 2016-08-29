@@ -9,8 +9,10 @@ libprotoident_udp_la_SOURCES = \
 	lpi_apple_facetime_init.cc \
 	lpi_ares.cc \
 	lpi_arma_server.cc \
+	lpi_arma3_server.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
+	lpi_baiduyun_p2p.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
 	lpi_bmdp.cc \
@@ -31,6 +33,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_diablo2.cc \
 	lpi_dianping_udp.cc \
 	lpi_directconnect.cc \
+	lpi_discord.cc \
 	lpi_dns.cc \
 	lpi_dota2.cc \
 	lpi_driveshare.cc \
@@ -42,6 +45,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_esp_encap.cc \
 	lpi_eye.cc \
 	lpi_fasp.cc \
+	lpi_forticlient_sslvpn.cc \
 	lpi_fortinet.cc \
 	lpi_freechal.cc \
 	lpi_funshion.cc \
@@ -92,6 +96,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_qq.cc \
 	lpi_natpmp.cc \
 	lpi_netbios.cc \
+	lpi_netcore_scan.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \
 	lpi_noction.cc \
@@ -104,6 +109,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_opaserv.cc \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
+	lpi_overwatch.cc \
 	lpi_pando.cc \
 	lpi_planetside2.cc \
 	lpi_pplive.cc \
@@ -168,6 +174,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xunyou.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
+	lpi_yy_udp.cc \
 	lpi_zeroaccess_udp.cc \
 	lpi_zoom.cc
 

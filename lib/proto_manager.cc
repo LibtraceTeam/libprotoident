@@ -1,33 +1,27 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011-2015 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include "config.h"
@@ -108,6 +102,8 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_emule(mod_map);
 	register_eye(mod_map);
 	register_fasp(mod_map);
+	register_fb_message(mod_map);
+	register_ffxiv(mod_map);
 	register_flash(mod_map);
 	register_fring(mod_map);
 	register_ftpcontrol(mod_map);
@@ -173,6 +169,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_mzinga(mod_map);
 	register_ncsoft(mod_map);
 	register_netbios(mod_map);
+	register_netcat_cctv(mod_map);
 	register_nntp(mod_map);
 	register_nntps(mod_map);
 	register_norton_backup(mod_map);
@@ -265,7 +262,10 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_yahoo_games(mod_map);
 	register_yahoo_webcam(mod_map);
 	register_youku_tcp(mod_map);
+	register_yy_tcp(mod_map);
 	register_zabbix(mod_map);
+	register_zero_facebook(mod_map);
+	register_zoom_tcp(mod_map);
 	register_zynga(mod_map);
 	return 0;
 }
@@ -281,8 +281,10 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_apple_facetime_init(mod_map);
 	register_ares_udp(mod_map);
 	register_arma_server(mod_map);
+	register_arma3_server(mod_map);
 	register_avast_secure_dns(mod_map);
 	register_backweb(mod_map);
+	register_baiduyun_p2p(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
 	register_bmdp(mod_map);
@@ -303,6 +305,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_diablo2(mod_map);
 	register_dianping_udp(mod_map);
 	register_directconnect_udp(mod_map);
+	register_discord(mod_map);
 	register_dns_udp(mod_map);
 	register_dota2(mod_map);
 	register_driveshare(mod_map);
@@ -313,6 +316,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	//register_eso(mod_map);
 	register_esp_encap(mod_map);
 	register_eye_udp(mod_map);
+	register_forticlient_sslvpn(mod_map);
 	register_fortinet(mod_map);
 	register_freechal(mod_map);
 	register_funshion_udp(mod_map);
@@ -363,6 +367,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_qq(mod_map);
 	register_natpmp(mod_map);
 	register_netbios_udp(mod_map);
+	register_netcore_scan(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
 	register_noction(mod_map);
@@ -374,6 +379,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_opaserv(mod_map);
 	register_openvpn_udp(mod_map);
 	register_orbit_udp(mod_map);
+	register_overwatch(mod_map);
 	register_pando_udp(mod_map);
 	register_planetside2(mod_map);
 	register_pplive(mod_map);
@@ -439,6 +445,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_xunyou(mod_map);
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
+	register_yy_udp(mod_map);
 	register_zeroaccess_udp(mod_map);
 	register_zoom(mod_map);
 	return 0;

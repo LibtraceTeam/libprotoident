@@ -34,6 +34,8 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ea_games.cc \
 	lpi_emule.cc \
 	lpi_eye.cc \
+	lpi_fb_message.cc \
+	lpi_ffxiv.cc \
 	lpi_flash.cc \
 	lpi_fring.cc \
 	lpi_ftpcontrol.cc \
@@ -99,6 +101,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_mzinga.cc \
 	lpi_ncsoft.cc \
 	lpi_netbios.cc \
+	lpi_netcat_cctv.cc \
 	lpi_nntp.cc \
 	lpi_nntps.cc \
 	lpi_nopayload.cc \
@@ -191,7 +194,10 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_yahoo_games.cc \
 	lpi_yahoo_webcam.cc \
 	lpi_youku.cc \
+	lpi_yy_tcp.cc \
 	lpi_zabbix.cc \
+	lpi_zero.cc \
+	lpi_zoom_tcp.cc \
 	lpi_zynga.cc 
 
 EXTRA_DIST=tcp_protocols.h
