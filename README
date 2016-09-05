@@ -103,6 +103,7 @@ There are currently four tools included with libprotoident.
 	 * Port used by the second endpoint
 	 * Transport protocol (6 = TCP, 17 = UDP)
 	 * Unix timestamp when the flow began
+	 * Unix timestamp when the flow ended
 	 * Total bytes sent from first endpoint to second endpoint
 	 * Total bytes sent from second endpoint to first endpoint
 	 * First four bytes of payload sent from first endpoint (in hex)
