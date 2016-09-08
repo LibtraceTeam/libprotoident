@@ -413,6 +413,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Location";
 		case LPI_CATEGORY_CACHING:
 			return "Caching";
+		case LPI_CATEGORY_ICS:
+			return "ICS";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:

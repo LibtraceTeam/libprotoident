@@ -104,6 +104,7 @@ typedef enum {
 	LPI_CATEGORY_CACHING,		/* Proxy cache protocols and similar */
         LPI_CATEGORY_MOBILE_APP,        /* Mobile apps that don't fit any
                                            other category */
+    LPI_CATEGORY_ICS,           /* Industrial control system protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -313,6 +314,7 @@ typedef enum {
         LPI_PROTO_YY,
         LPI_PROTO_NETCAT_CCTV,
         LPI_PROTO_ZOOM,
+        LPI_PROTO_S7COMM,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
