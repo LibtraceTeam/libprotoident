@@ -413,6 +413,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Location";
 		case LPI_CATEGORY_CACHING:
 			return "Caching";
+		case LPI_CATEGORY_MOBILE_APP:
+			return "Mobile App";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:
@@ -425,6 +427,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Unsupported";
 		case LPI_CATEGORY_NO_CATEGORY:
 			return "Uncategorised";
+		case LPI_CATEGORY_LAST:
+			return "Last";
 	}
 
 	return "Invalid_Category";
