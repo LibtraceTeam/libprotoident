@@ -54,7 +54,7 @@ static lpi_module_t lpi_tpkt_generic = {
 	LPI_PROTO_TPKT,
 	LPI_CATEGORY_VOIP, /* Most TPKT stuff is for VOIP, conferencing etc */
 	"TPKT",
-	8,	/* Must come after RDP, but before RTMP */
+	8,	/* Must come after RDP and S7COMM but before RTMP */
 	match_tpkt_generic
 };
 
