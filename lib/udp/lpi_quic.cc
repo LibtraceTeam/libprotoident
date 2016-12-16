@@ -43,6 +43,12 @@ static inline bool match_quic_version(uint32_t payload) {
                 return true;
         }
 
+        /* 0x09 can also work in the case where there is no
+         * diversification nonce in the header */
+        if (MATCH(payload, 0x09, ANY, ANY, ANY)) {
+                return true;
+        }
+
         /* Apparently 0x0c and 0x0e can also work here? */
         if (MATCH(payload, 0x0c, ANY, ANY, ANY)) {
                 return true;
@@ -86,6 +92,12 @@ static inline bool match_quic_response(uint32_t payload, uint32_t other) {
         if (MATCH(payload, 0x08, ANY, ANY, ANY)) {
                 if ((payload & 0xffffff00) == (other & 0xffffff00))
                         return true;
+        }
+
+        /* This is the 4 byte diversification nonce case, with no other
+         * flags set. */
+        if (MATCH(payload, 0x04, ANY, ANY, ANY)) {
+                return true;
         }
 
 

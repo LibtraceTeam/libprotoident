@@ -41,6 +41,11 @@ static inline bool match_isakmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
                 if (data->server_port == 500 && data->client_port == 500)
                         return true;
+                /* Match shadowserver.org scan traffic */
+                if (MATCH(data->payload[0], 0x3e, 0x35, 0xc7, 0x07))
+                        return true;
+                if (MATCH(data->payload[1], 0x3e, 0x35, 0xc7, 0x07))
+                        return true;
                 return false;
         }
 

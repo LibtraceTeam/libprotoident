@@ -45,7 +45,7 @@ static inline bool match_byun_p2p(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
 
-        if (len == 64) {
+        if (len == 64 || len == 32) {
                 if (MATCH(payload, 0x01, ANY, ANY, ANY))
                         return true;
         }

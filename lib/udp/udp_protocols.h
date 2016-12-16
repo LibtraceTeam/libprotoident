@@ -42,6 +42,7 @@ void register_arma_server(LPIModuleMap *mod_map);
 void register_arma3_server(LPIModuleMap *mod_map);
 void register_avast_secure_dns(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
+void register_bacnet(LPIModuleMap *mod_map);
 void register_baiduyun_p2p(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);
 void register_bjnp(LPIModuleMap *mod_map);

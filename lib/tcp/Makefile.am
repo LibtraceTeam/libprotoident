@@ -79,6 +79,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ldap.cc \
 	lpi_line.cc \
 	lpi_llp2p.cc \
+	lpi_maxicloud.cc \
 	lpi_message4u.cc \
 	lpi_minecraft.cc \
 	lpi_mitglieder.cc \

@@ -32,11 +32,13 @@
 
 static inline bool match_aachen_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        /* Regular UDP port 80 probes from RWTH-Aachen University for
-         * research purposes. See http://137.226.113.7/ for more details.
+        /* Regular UDP port 80 and port 443 probes from RWTH-Aachen University
+         * for research purposes. See http://137.226.113.7/ for more details.
          */
 
-        if (data->server_port == 80 || data->client_port == 80) {
+        if (data->server_port == 80 || data->client_port == 80 ||
+                                data->server_port == 443 ||
+                                data->client_port == 443) {
                 if (data->payload_len[0] == 0) {
                         if (data->payload_len[1] != 1055)
                                 return false;

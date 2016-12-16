@@ -52,20 +52,16 @@ static inline bool match_viber_response(uint32_t payload, uint32_t plen) {
 
 }
 
-static inline bool match_viber_aws55(uint32_t payload, uint32_t plen) {
+static inline bool match_viber_aws0c(uint32_t payload, uint32_t plen) {
 
-	if (plen != 55)
-		return false;
 	if (MATCH(payload, ANY, ANY, 0x0c, 0x00))
 		return true;
 	return false;
 
 }
 
-static inline bool match_viber_aws76(uint32_t payload, uint32_t plen) {
+static inline bool match_viber_aws01(uint32_t payload, uint32_t plen) {
 
-	if (plen != 76)
-		return false;
 	if (MATCH(payload, ANY, ANY, 0x01, 0x00))
 		return true;
 	return false;
@@ -94,16 +90,16 @@ static inline bool match_viber_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	}
 
 	/* This targets the viber flow that goes to the AWS server */
-	if (match_viber_aws55(data->payload[0], data->payload_len[0])) {
-		if (match_viber_aws76(data->payload[1], data->payload_len[1])) 
+	if (match_viber_aws0c(data->payload[0], data->payload_len[0])) {
+		if (match_viber_aws01(data->payload[1], data->payload_len[1])) 
 		{
 			if (same_viber_id(data->payload[0], data->payload[1]))
 				return true;
 		}
 	}
 
-	if (match_viber_aws55(data->payload[1], data->payload_len[1])) {
-		if (match_viber_aws76(data->payload[0], data->payload_len[0])) 
+	if (match_viber_aws0c(data->payload[1], data->payload_len[1])) {
+		if (match_viber_aws01(data->payload[0], data->payload_len[0])) 
 		{
 			if (same_viber_id(data->payload[0], data->payload[1]))
 				return true;

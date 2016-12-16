@@ -37,17 +37,17 @@
  */
 
 static inline bool match_fb_msg_104(uint32_t payload, uint32_t len) {
-        if (len != 104)
-                return false;
-        if (MATCH(payload, 0x01, 0x13, 0x00, 0x54))
+        if (len == 104  && MATCH(payload, 0x01, 0x13, 0x00, 0x54))
+                return true;
+        if (len == 116  && MATCH(payload, 0x01, 0x13, 0x00, 0x60))
                 return true;
         return false;
 }
 
 static inline bool match_fb_msg_28(uint32_t payload, uint32_t len) {
-        if (len != 28)
-                return false;
-        if (MATCH(payload, 0x00, 0x03, 0x00, 0x08))
+        if (len == 28 && MATCH(payload, 0x00, 0x03, 0x00, 0x08))
+                return true;
+        if (len == 44 && MATCH(payload, 0x00, 0x03, 0x00, 0x18))
                 return true;
         return false;
 }

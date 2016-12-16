@@ -30,57 +30,48 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_weibo_req(uint32_t payload, uint32_t len) {
 
-        if (len < 230)
-                return false;
+static inline bool match_bacnet_request(uint32_t payload, uint32_t len) {
 
-        if (payload + 4 == len)
+        uint32_t baclen = (ntohl(payload) & 0xffff);
+
+        if (baclen == len && MATCH(payload, 0x81, 0x0a, ANY, ANY))
                 return true;
         return false;
 
 }
 
+static inline bool match_bacnet(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-static inline bool match_weibo_resp(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-        if (len == 30 && MATCH(payload, 0x1a, 0x00, 0x00, 0x00))
-                return true;
-        if (len == 37 && MATCH(payload, 0x21, 0x00, 0x00, 0x00))
-                return true;
-        return false;
-
-}
-
-static inline bool match_weibo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (data->server_port != 8080 && data->client_port != 8080)
+        if (data->server_port != 47808 && data->client_port != 47808)
                 return false;
 
-        if (match_weibo_req(data->payload[0], data->payload_len[0])) {
-                if (match_weibo_resp(data->payload[1], data->payload_len[1]))
+        /* I've only seen scans for this stuff, so don't know what a reply
+         * would look like */
+
+        if (match_bacnet_request(data->payload[0], data->payload_len[0])) {
+                if (data->payload_len[1] == 0)
                         return true;
         }
 
-        if (match_weibo_req(data->payload[1], data->payload_len[1])) {
-                if (match_weibo_resp(data->payload[0], data->payload_len[0]))
+        if (match_bacnet_request(data->payload[1], data->payload_len[1])) {
+                if (data->payload_len[0] == 0)
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_weibo = {
-	LPI_PROTO_WEIBO,
-	LPI_CATEGORY_CHAT,
-	"Weibo",
-	15,
-	match_weibo
+static lpi_module_t lpi_bacnet = {
+	LPI_PROTO_UDP_BACNET,
+	LPI_CATEGORY_REMOTE,    /* XXX Create a new category for building
+                                 * automation?? */
+	"BACnet",
+	23,
+	match_bacnet
 };
 
-void register_weibo(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_weibo, mod_map);
+void register_bacnet(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_bacnet, mod_map);
 }
 

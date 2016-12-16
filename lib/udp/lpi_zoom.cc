@@ -32,8 +32,10 @@
 
 static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
 
-        if (MATCH(payload, 0x01, 0x00, 0x02, ANY) && (len == 107 || len == 109))
-                return true;
+        if (MATCH(payload, 0x01, 0x00, 0x02, ANY)) {
+                if (len == 107 || len == 109 || len == 169)
+                        return true;
+        }
         if (MATCH(payload, 0x01, 0x00, 0x6c, 0x00) && len == 111)
                 return true;
         return false;

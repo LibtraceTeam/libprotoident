@@ -30,54 +30,35 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_fasp_out(uint32_t payload, uint32_t len) {
 
-	if (MATCH(payload, ANY, 0x21, 0x00, 0x00))
-		return true;
+static inline bool match_maxicloud(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	return false;
+        /* MaxiCloud actually uses HTTP, but there is some weird behaviour
+         * with some servers where we see a 1 byte response to the login
+         * POST prior to the actual HTTP response so we can distinguish these
+         * flows as MaxiCloud specifically.
+         */
 
-}
+        if (MATCHSTR(data->payload[0], "POST") && MATCH(data->payload[1],
+                        0x00, 0x00, 0x00, 0x00) && data->payload_len[1] == 1)
+                return true;
 
-static inline bool match_fasp_in(uint32_t payload, uint32_t len) {
-	if (len != 64)
-		return false;
+        if (MATCHSTR(data->payload[1], "POST") && MATCH(data->payload[0],
+                        0x00, 0x00, 0x00, 0x00) && data->payload_len[0] == 1)
+                return true;
 
-	if (MATCH(payload, ANY, 0x20, 0x00, 0x00))
-		return true;
-	
-	return false;
-
-}
-
-static inline bool match_fasp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	/* First byte must match in both directions */
-	if ((data->payload[0] & 0xff) != (data->payload[1] & 0xff)) {
-		return false;
-        }
-
-	if (match_fasp_out(data->payload[0], data->payload_len[0])) {
-		if (match_fasp_in(data->payload[1], data->payload_len[1]))
-			return true;
-	}
-
-	if (match_fasp_out(data->payload[1], data->payload_len[1])) {
-		if (match_fasp_in(data->payload[0], data->payload_len[0]))
-			return true;
-	}
 	return false;
 }
 
-static lpi_module_t lpi_fasp = {
-	LPI_PROTO_UDP_FASP,
-	LPI_CATEGORY_FILES,
-	"FASP",
-	16,
-	match_fasp
+static lpi_module_t lpi_maxicloud = {
+	LPI_PROTO_MAXICLOUD,
+	LPI_CATEGORY_CLOUD,
+	"MaxiCloud",
+	100,
+	match_maxicloud
 };
 
-void register_fasp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_fasp, mod_map);
+void register_maxicloud(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_maxicloud, mod_map);
 }
 

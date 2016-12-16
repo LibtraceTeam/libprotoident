@@ -62,6 +62,13 @@ static inline bool match_avast_secure_dns(lpi_data_t *data,
                         return true;
         }
 
+        /* The requests have no obvious pattern, except being always 512
+         * bytes. */
+        if (match_asd_reply(data->payload[0]) && data->payload_len[1] == 512)
+                return true;
+        if (match_asd_reply(data->payload[1]) && data->payload_len[0] == 512)
+                return true;
+
         if (data->server_port == 443 || data->client_port == 443) {
                 if (match_dns(data)) {
                         return true;

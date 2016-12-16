@@ -315,6 +315,7 @@ typedef enum {
         LPI_PROTO_NETCAT_CCTV,
         LPI_PROTO_ZOOM,
         LPI_PROTO_S7COMM,
+        LPI_PROTO_MAXICLOUD,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -483,6 +484,7 @@ typedef enum {
         LPI_PROTO_UDP_BAIDU_YUN_P2P,
         LPI_PROTO_UDP_YY,
         LPI_PROTO_UDP_OVERWATCH,
+        LPI_PROTO_UDP_BACNET,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

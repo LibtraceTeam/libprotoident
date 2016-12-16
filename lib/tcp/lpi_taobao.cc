@@ -43,21 +43,25 @@
 static inline bool match_taobao_req(uint32_t payload, uint32_t len) {
         /* Byte 4 is a length field, == len - 4 */
 
-        if (len == 202 && MATCH(payload, 0xf5, 0x00, 0x00, 0xc6))
-                return true;
-        if (len == 170 && MATCH(payload, 0xf5, 0x00, 0x00, 0xa6))
-                return true;
+        uint32_t taolen = ntohl(payload & 0xffff);
+
+        if (MATCH(payload, 0xf5, 0x00, ANY, ANY)) {
+                if (taolen == len - 4)
+                        return true;
+        }
+
         return false;
 
 }
 
 static inline bool match_taobao_req2(uint32_t payload, uint32_t len) {
         /* Byte 4 is a length field, == len - 4 */
+        uint32_t taolen = ntohl(payload & 0xffff);
 
-        if (len == 74 && MATCH(payload, 0xf1, 0x00, 0x00, 0x46))
-                return true;
-        if (len == 26 && MATCH(payload, 0xf1, 0x00, 0x00, 0x16))
-                return true;
+        if (MATCH(payload, 0xf1, 0x00, ANY, ANY)) {
+                if (taolen == len - 4)
+                        return true;
+        }
         return false;
 
 }

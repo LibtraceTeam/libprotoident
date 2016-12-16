@@ -12,6 +12,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_arma3_server.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
+        lpi_bacnet.cc \
 	lpi_baiduyun_p2p.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \

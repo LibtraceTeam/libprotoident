@@ -101,7 +101,6 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ea_games(mod_map);
 	register_emule(mod_map);
 	register_eye(mod_map);
-	register_fasp(mod_map);
 	register_fb_message(mod_map);
 	register_ffxiv(mod_map);
 	register_flash(mod_map);
@@ -147,6 +146,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ldap(mod_map);
 	register_line(mod_map);
 	register_llp2p(mod_map);
+	register_maxicloud(mod_map);
 	register_message4u(mod_map);
 	register_minecraft(mod_map);
 	//register_mitglieder(mod_map);
@@ -284,6 +284,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_arma_server(mod_map);
 	register_arma3_server(mod_map);
 	register_avast_secure_dns(mod_map);
+	register_bacnet(mod_map);
 	register_backweb(mod_map);
 	register_baiduyun_p2p(mod_map);
 	register_battlefield(mod_map);
@@ -317,6 +318,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	//register_eso(mod_map);
 	register_esp_encap(mod_map);
 	register_eye_udp(mod_map);
+	register_fasp(mod_map);
 	register_forticlient_sslvpn(mod_map);
 	register_fortinet(mod_map);
 	register_freechal(mod_map);
