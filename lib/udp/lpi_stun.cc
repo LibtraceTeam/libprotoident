@@ -30,6 +30,34 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static bool match_facetime_stun_request(uint32_t payload, uint32_t len) {
+
+        /* Bytes 3 and 4 are the Message Length - the STUN header */
+        if ((ntohl(payload) & 0x0000ffff) != len - 20)
+                return false;
+
+        if (MATCH(payload, 0x0f, 0xe0, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x0f, 0xe1, ANY, ANY))
+                return true;
+        return false;
+
+}
+
+static bool match_facetime_stun_response(uint32_t payload, uint32_t len) {
+
+        /* Bytes 3 and 4 are the Message Length - the STUN header */
+        if ((ntohl(payload) & 0x0000ffff) != len - 20)
+                return false;
+
+        if (MATCH(payload, 0x0e, 0xe0, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x0e, 0xe1, ANY, ANY))
+                return true;
+        return false;
+
+}
+
 static bool match_stun_payload(uint32_t payload, uint32_t len) {
 
         if (len == 0)
@@ -52,12 +80,6 @@ static bool match_stun_payload(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x01, 0x13, ANY, ANY))
                 return true;
 
-        /* Used by Apple facetime */
-        if (MATCH(payload, 0x0e, 0xe0, ANY, ANY))
-                return true;
-        if (MATCH(payload, 0x0f, 0xe0, ANY, ANY))
-                return true;
-
         return false;
 
 }
@@ -73,10 +95,31 @@ static inline bool match_stun(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_str_either(data, "RSP/"))
                 return true;
 
-        if (!match_stun_payload(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_stun_payload(data->payload[1], data->payload_len[1]))
-                return false;
+        if (match_stun_payload(data->payload[0], data->payload_len[0])) {
+                if (match_stun_payload(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_facetime_stun_request(data->payload[0], data->payload_len[0]))
+        {
+                if ((data->payload[0] & 0xff0000) ==
+                                (data->payload[1] & 0xff0000) && 
+                                match_facetime_stun_response(data->payload[1],
+                                        data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_facetime_stun_request(data->payload[1], data->payload_len[1]))
+        {
+                /* Byte 2 must match for both directions */
+                if ((data->payload[0] & 0xff0000) ==
+                                (data->payload[1] & 0xff0000) && 
+                                match_facetime_stun_response(data->payload[0],
+                                        data->payload_len[0])) {
+                        return true;
+                }
+        }
 
 	return true;
 }
