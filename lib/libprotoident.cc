@@ -154,7 +154,7 @@ static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
 		data->seen_syn[dir] = true;
 	}
 
-	if (seq_cmp(seq, data->seqno[dir]) >= 0)
+	if (seq_cmp(seq, data->seqno[dir]) != 0)
 		return 0;
 	//data->seqno[dir] = seq;
 
