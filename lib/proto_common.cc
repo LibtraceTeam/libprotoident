@@ -297,6 +297,14 @@ bool match_file_header(uint32_t payload) {
         if (MATCH(payload, 0xfd, '7', 'z', 'X'))
                 return true;
 
+        /* Microsoft Cabinet Files */
+        if (MATCH(payload, 'M', 'S', 'C', 'F'))
+                return true;
+
+        /* M4A -- be wary of false positives? */
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x20))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.

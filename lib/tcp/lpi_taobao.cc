@@ -50,14 +50,6 @@ static inline bool match_taobao_req(uint32_t payload, uint32_t len) {
                         return true;
         }
 
-        return false;
-
-}
-
-static inline bool match_taobao_req2(uint32_t payload, uint32_t len) {
-        /* Byte 4 is a length field, == len - 4 */
-        uint32_t taolen = ntohl(payload & 0xffff);
-
         if (MATCH(payload, 0xf1, 0x00, ANY, ANY)) {
                 if (taolen == len - 4)
                         return true;
@@ -69,20 +61,16 @@ static inline bool match_taobao_req2(uint32_t payload, uint32_t len) {
 static inline bool match_taobao_resp(uint32_t payload, uint32_t len) {
         /* Byte 4 is a length field, == len - 4 */
 
-        if (len == 58 && MATCH(payload, 0xf3, 0x00, 0x00, 0x36))
-                return true;
+        uint32_t taolen = ntohl(payload & 0xffff);
+
+        if (MATCH(payload, 0xf3, 0x00, ANY, ANY)) {
+                if (taolen == len - 4)
+                        return true;
+        }
         return false;
 
 }
 
-static inline bool match_taobao_resp2(uint32_t payload, uint32_t len) {
-        /* Byte 4 is a length field, == len - 4 */
-
-        if (len == 174 && MATCH(payload, 0xf3, 0x00, 0x00, 0xaa))
-                return true;
-        return false;
-
-}
 
 /* Taobao seem to bastardize SSL. The request looks like a standard
  * TLS handshake, but the response is definitely something custom.
@@ -113,16 +101,6 @@ static inline bool match_taobao(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
-
-        if (match_taobao_req2(data->payload[0], data->payload_len[0])) {
-                if (match_taobao_resp2(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
-
-        if (match_taobao_req2(data->payload[1], data->payload_len[1])) {
-                if (match_taobao_resp2(data->payload[0], data->payload_len[0]))
-                        return true;
-        }
 
         if (match_taobao_sslreq(data->payload[0])) {
                 if (match_taobao_sslresp(data->payload[1]))
