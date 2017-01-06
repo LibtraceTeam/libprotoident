@@ -121,7 +121,7 @@ static inline bool match_stun(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 }
         }
 
-	return true;
+	return false;
 }
 
 static lpi_module_t lpi_stun = {
