@@ -68,6 +68,8 @@ static volatile int done = 0;
 char *local_mac = NULL;
 uint8_t mac_bytes[6];
 
+FlowManager *fm = NULL;
+
 /* This data structure is used to demonstrate how to use the 'extension' 
  * pointer to store custom data for a flow */
 typedef struct unknown {
@@ -177,7 +179,7 @@ void expire_unknown_flows(double ts, bool exp_flag) {
 	lpi_module_t *proto;
 
         /* Loop until libflowmanager has no more expired flows available */
-	while ((expired = lfm_expire_next_flow(ts, exp_flag)) != NULL) {
+	while ((expired = fm->expireNextFlow(ts, exp_flag)) != NULL) {
 
                 UnknownFlow *unk = (UnknownFlow *)expired->extension;
 		
@@ -193,7 +195,7 @@ void expire_unknown_flows(double ts, bool exp_flag) {
 
 		/* VERY IMPORTANT: delete the Flow structure itself, even
 		 * though we did not directly allocate the memory ourselves */
-                delete(expired);
+                fm->releaseFlow(expired);
         }
 }
 
@@ -240,7 +242,7 @@ void per_packet(libtrace_packet_t *packet) {
         /* Match the packet to a Flow - this will create a new flow if
 	 * there is no matching flow already in the Flow map and set the
 	 * is_new flag to true. */
-        f = lfm_match_packet_to_flow(packet, dir, &is_new);
+        f = fm->matchPacketToFlow(packet, dir, &is_new);
 
 	/* Libflowmanager did not like something about that packet - best to
 	 * just ignore it and carry on */
@@ -275,16 +277,8 @@ void per_packet(libtrace_packet_t *packet) {
 	 * it needs from this packet */
 	lpi_update_data(packet, &unk->lpi, dir);
 
-        /* Update TCP state for TCP flows. The TCP state determines how long
-	 * the flow can be idle before being expired by libflowmanager. For
-	 * instance, flows for which we have only seen a SYN will expire much
-	 * quicker than a TCP connection that has completed the handshake */
-        if (tcp) {
-                lfm_check_tcp_flags(f, tcp, dir, ts);
-        }
-
         /* Tell libflowmanager to update the expiry time for this flow */
-        lfm_update_flow_expiry_timeout(f, ts);
+        fm->updateFlowExpiry(f, packet, dir, ts);
 
 
 }
@@ -325,6 +319,8 @@ int main(int argc, char *argv[]) {
 	char *filterstring = NULL;
 	int dir;
 	bool ignore_rfc1918 = false;
+
+        fm = new FlowManager();
 
         packet = trace_create_packet();
         if (packet == NULL) {
@@ -380,20 +376,20 @@ int main(int argc, char *argv[]) {
 
 	/* This tells libflowmanager to ignore any flows where an RFC1918
 	 * private IP address is involved */
-        if (lfm_set_config_option(LFM_CONFIG_IGNORE_RFC1918, 
+        if (fm->setConfigOption(LFM_CONFIG_IGNORE_RFC1918, 
 				&ignore_rfc1918) == 0)
                 return -1;
 
 	/* This tells libflowmanager not to replicate the TCP timewait
 	 * behaviour where closed TCP connections are retained in the Flow
 	 * map for an extra 2 minutes */
-        if (lfm_set_config_option(LFM_CONFIG_TCP_TIMEWAIT, &opt_false) == 0)
+        if (fm->setConfigOption(LFM_CONFIG_TCP_TIMEWAIT, &opt_false) == 0)
                 return -1;
 
 	/* This tells libflowmanager not to utilise the fast expiry rules for
 	 * short-lived UDP connections - these rules are experimental 
 	 * behaviour not in line with recommended "best" practice */
-	if (lfm_set_config_option(LFM_CONFIG_SHORT_UDP, &opt_false) == 0)
+	if (fm->setConfigOption(LFM_CONFIG_SHORT_UDP, &opt_false) == 0)
 		return -1;
 
 
@@ -463,6 +459,7 @@ int main(int argc, char *argv[]) {
         trace_destroy_packet(packet);
         expire_unknown_flows(ts, true);
 	lpi_free_library();
+        delete(fm);
 
         return 0;
 
