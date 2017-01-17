@@ -1,4 +1,4 @@
-AC_INIT(libprotoident, 2.0.7, contact@wand.net.nz)
+AC_INIT(libprotoident, 2.0.10, contact@wand.net.nz)
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR(lib/libprotoident.cc)
@@ -57,7 +57,7 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h s
 
 AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile 
 		tools/find_unknown/Makefile tools/protoident/Makefile
-		tools/live/Makefile tools/arff/Makefile
+		tools/arff/Makefile
 		lib/udp/Makefile lib/tcp/Makefile])
 
 if test "$trace_found" = 0; then

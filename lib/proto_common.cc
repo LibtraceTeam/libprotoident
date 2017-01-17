@@ -1,36 +1,45 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include <string.h>
+
+#ifdef __APPLE__
+#include <libkern/OSByteOrder.h>
+#define bswap32 OSSwapInt32
+#endif
+
+#ifdef __FreeBSD__
+#include <sys/endian.h>
+#endif
+
+#ifdef __linux__
+#include <byteswap.h>
+#define bswap32 __bswap_32
+#endif
+
 #include "libprotoident.h"
 #include "proto_common.h"
 
@@ -284,6 +293,18 @@ bool match_file_header(uint32_t payload) {
 	if (MATCH(payload, 'B', 'Z', 'h', '9'))
 		return true;
 
+        /* xz compression format */
+        if (MATCH(payload, 0xfd, '7', 'z', 'X'))
+                return true;
+
+        /* Microsoft Cabinet Files */
+        if (MATCH(payload, 'M', 'S', 'C', 'F'))
+                return true;
+
+        /* M4A -- be wary of false positives? */
+        if (MATCH(payload, 0x00, 0x00, 0x00, 0x20))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.
@@ -365,9 +386,12 @@ static inline bool match_tls_handshake(uint32_t payload, uint32_t len) {
 static inline bool match_ssl2_handshake(uint32_t payload, uint32_t len) {
         uint32_t stated_len = 0;
 
-        if (!MATCH(payload, 0x80, ANY, 0x01, 0x03))
-                return false;
-        return true;
+        if (MATCH(payload, 0x80, ANY, 0x01, 0x03))
+                return true;
+        if (MATCH(payload, 0x81, ANY, 0x01, 0x03))
+                return true;
+
+        return false;
 }
 
 static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
@@ -387,12 +411,20 @@ static inline bool match_tls_alert(uint32_t payload, uint32_t len) {
 static inline bool match_tls_change(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x14, 0x03, 0x01, ANY))
                 return true;
+        if (MATCH(payload, 0x14, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x14, 0x03, 0x03, ANY))
+                return true;
         return false;
 
 }
 
 static inline bool match_tls_content(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x17, 0x03, 0x01, ANY))
+                return true;
+        if (MATCH(payload, 0x17, 0x03, 0x02, ANY))
+                return true;
+        if (MATCH(payload, 0x17, 0x03, 0x03, ANY))
                 return true;
         return false;
 }
@@ -430,6 +462,12 @@ bool match_ssl(lpi_data_t *data) {
         if (match_tls_handshake(data->payload[1], data->payload_len[1]) &&
                         match_tls_alert(data->payload[0], data->payload_len[0]))
                 return true;
+        if (match_ssl3_handshake(data->payload[0], data->payload_len[0]) &&
+                        match_tls_alert(data->payload[1], data->payload_len[1]))
+                return true;
+        if (match_ssl3_handshake(data->payload[1], data->payload_len[1]) &&
+                        match_tls_alert(data->payload[0], data->payload_len[0]))
+                return true;
 
         /* Need to check for cipher changes too */
         if (match_tls_handshake(data->payload[0], data->payload_len[0]) &&
@@ -452,6 +490,16 @@ bool match_ssl(lpi_data_t *data) {
                 return true;
 
 
+        /* Allow TLS content in both directions -- could be multi-path TCP?
+         * Or some form of picking up where a previous connection left off?
+         */
+        if (match_tls_content(data->payload[0], data->payload_len[0]) &&
+                        match_tls_content(data->payload[1], data->payload_len[1]))
+                return true;
+        if (match_tls_content(data->payload[1], data->payload_len[1]) &&
+                        match_tls_content(data->payload[0], data->payload_len[0]))
+                return true;
+        
 
         if ((match_tls_handshake(data->payload[0], data->payload_len[0]) ||
                         match_ssl3_handshake(data->payload[0], data->payload_len[0])) &&
@@ -505,6 +553,8 @@ static bool dns_backscatter(uint32_t payload) {
 	payload = htonl(payload);
 
 	if ((payload & 0x0000ffff) == 0x00008500)
+		return true;
+	if ((payload & 0x0000ffff) == 0x00008580)
 		return true;
 	if ((payload & 0x0000ffff) == 0x00008400)
 		return true;
@@ -639,6 +689,22 @@ bool match_emule(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_kaspersky_ke(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+        if (MATCH(payload, 'K', 'E', 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_kaspersky_ks(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+        if (MATCH(payload, 'K', 'S', 0x00, 0x00))
+                return true;
+        return false;
+}
+
 bool match_kaspersky(lpi_data_t *data) {
 
 	/* Traffic is either on TCP port 443 or UDP port 2001.
@@ -646,12 +712,18 @@ bool match_kaspersky(lpi_data_t *data) {
 	 * One of the endpoints is always in either a Kaspersky range or
 	 * an old PSInet range */
 
-	if (match_str_both(data, "KS\x00\x00", "KS\x00\x00"))
-		return true;
 	if (match_str_both(data, "PI\x00\x00", "PI\x00\x00")) {
 		if (data->payload_len[0] == 2 && data->payload_len[1] == 2)
 			return true;
 	}
+        if (match_kaspersky_ke(data->payload[0], data->payload_len[0])) {
+                if (match_kaspersky_ke(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        if (match_kaspersky_ks(data->payload[0], data->payload_len[0])) {
+                if (match_kaspersky_ks(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 	return false;
 }
 
@@ -659,7 +731,7 @@ bool match_youku_payload(uint32_t pload, uint32_t len) {
 
 	if (len == 0)
                 return true;
-        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x01) && len == 16)
+        if (MATCH(pload, 0x4b, 0x55, 0x00, 0x01))
                 return true;
         if (MATCH(pload, 0x4b, 0x55, 0x00, 0x02))
                 return true;
@@ -685,5 +757,53 @@ bool match_tpkt(uint32_t payload, uint32_t len) {
         if (stated_len != len)
                 return false;
         return true;
+}
+
+bool match_qqlive_payload(uint32_t payload, uint32_t len) {
+
+        uint8_t *ptr;
+        uint32_t swap;
+
+        /* This appears to have a 3 byte header. First byte is always 0xfe.
+         * Second and third bytes are the length (minus the 3 byte header).
+         */
+
+        if (len == 0)
+                return true;
+
+        swap = htonl(payload);
+        swap = (swap & 0xffff00) >> 8;
+
+        if (ntohs(swap) != len - 3)
+                return false;
+
+	/* Interestingly, the third and fourth byte always match */
+        swap = htonl(payload);
+        if ((swap & 0xff) != ((swap & 0xff00) >> 8))
+                return false;
+
+        if (MATCH(payload, 0xfe, ANY, ANY, ANY))
+                return true;
+        return false;
 
 }
+
+bool match_yy_payload(uint32_t payload, uint32_t len) {
+
+        /* The first four bytes are a length field, but using the
+         * wrong byte order...
+         */
+
+        if (!MATCH(payload, ANY, ANY, 0x00, 0x00))
+                return false;
+
+#if BYTE_ORDER == BIG_ENDIAN
+        if (bswap32(payload) == len)
+                return true;
+#else
+        if (payload == len)
+                return true;
+#endif
+        return false;
+}
+

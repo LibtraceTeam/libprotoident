@@ -1,21 +1,31 @@
 noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
+	lpi_360safeguard.cc \
 	lpi_afp.cc \
+	lpi_airdroid.cc \
 	lpi_akamai.cc \
+	lpi_amp.cc \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
+	lpi_badbaidu.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
 	lpi_btsync.cc \
+	lpi_cacaoweb.cc \
 	lpi_cgp.cc \
 	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \
+	lpi_clashofclans.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \
+	lpi_crashplan.cc \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
+	lpi_dell_backup.cc \
+	lpi_diablo3.cc \
+	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
 	lpi_duelingnetwork.cc \
@@ -24,6 +34,8 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ea_games.cc \
 	lpi_emule.cc \
 	lpi_eye.cc \
+	lpi_fb_message.cc \
+	lpi_ffxiv.cc \
 	lpi_flash.cc \
 	lpi_fring.cc \
 	lpi_ftpcontrol.cc \
@@ -33,8 +45,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_git.cc \
 	lpi_gnutella.cc \
 	lpi_goku.cc \
+	lpi_googlehangouts.cc \
+	lpi_guildwars2.cc \
 	lpi_hamachi.cc \
 	lpi_harveys.cc \
+	lpi_hearthstone.cc \
+	lpi_hola.cc \
 	lpi_http_badport.cc \
 	lpi_http.cc \
 	lpi_http_nonstandard.cc \
@@ -54,15 +70,21 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_irc.cc \
 	lpi_java.cc \
 	lpi_jedi.cc \
+	lpi_kakao.cc \
+	lpi_kankan_tcp.cc \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
 	lpi_kik.cc \
+	lpi_kuaibo.cc \
 	lpi_ldap.cc \
 	lpi_line.cc \
+	lpi_llp2p.cc \
+	lpi_maxicloud.cc \
 	lpi_message4u.cc \
 	lpi_minecraft.cc \
 	lpi_mitglieder.cc \
 	lpi_mms.cc \
+	lpi_mongo.cc \
 	lpi_mp2p.cc \
 	lpi_msn.cc \
 	lpi_msnc.cc \
@@ -70,7 +92,6 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_munin.cc \
 	lpi_mysql.cc \
 	lpi_mystery_100_star.cc \
-	lpi_mystery_443.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_9000.cc \
 	lpi_mystery_conn.cc \
@@ -81,9 +102,11 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_mzinga.cc \
 	lpi_ncsoft.cc \
 	lpi_netbios.cc \
+	lpi_netcat_cctv.cc \
 	lpi_nntp.cc \
 	lpi_nntps.cc \
 	lpi_nopayload.cc \
+	lpi_norton_backup.cc \
 	lpi_notes_rpc.cc \
 	lpi_omegle.cc \
 	lpi_openvpn.cc \
@@ -96,19 +119,25 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_postgresql.cc \
 	lpi_pptp.cc \
 	lpi_psn_store.cc \
+	lpi_qq_tcp.cc \
+	lpi_qqdownload.cc \
+	lpi_qqlive_tcp.cc \
 	lpi_qvod.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
 	lpi_rejection.cc \
+	lpi_revolver_nblbt.cc \
 	lpi_rfb.cc \
 	lpi_rpcscan.cc \
 	lpi_rsync.cc \
 	lpi_rtmp.cc \
 	lpi_rtsp.cc \
 	lpi_runescape.cc \
+	lpi_s7comm.cc \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
+	lpi_silkroadonline.cc \
 	lpi_sip.cc \
 	lpi_skype_tcp.cc \
 	lpi_smb.cc \
@@ -116,6 +145,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_smtps.cc \
 	lpi_socks4.cc \
 	lpi_socks5.cc \
+	lpi_spdy.cc \
 	lpi_speedtest.cc \
 	lpi_spotify.cc \
 	lpi_ssh.cc \
@@ -124,36 +154,52 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_stun.cc \
 	lpi_supl.cc \
 	lpi_svn.cc \
+	lpi_taobao.cc \
 	lpi_tds.cc \
 	lpi_teamviewer.cc \
 	lpi_telecomkey.cc \
+	lpi_telegram.cc \
 	lpi_telnet.cc \
 	lpi_telnet_exploit.cc \
+	lpi_tencent_games.cc \
+	lpi_tensafe.cc \
+	lpi_tera.cc \
+	lpi_tetrisonline.cc \
 	lpi_tip.cc \
 	lpi_tor.cc \
 	lpi_tpkt.cc \
 	lpi_trackmania.cc \
+	lpi_trion.cc \
 	lpi_trojan_win32_generic_sb.cc \
 	lpi_trojan_zeroaccess.cc \
+	lpi_twitch_irc.cc \
 	lpi_viber.cc \
+	lpi_vodlocker.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
 	lpi_weblogic.cc \
 	lpi_wechat.cc \
+	lpi_weibo.cc \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \
 	lpi_wow.cc \
 	lpi_wuala.cc \
+	lpi_xiami.cc \
 	lpi_xmpp.cc \
 	lpi_xmpps.cc \
 	lpi_xunlei.cc \
+	lpi_xunlei_accel.cc \
 	lpi_xymon.cc \
 	lpi_yahoo.cc \
 	lpi_yahoo_error.cc \
+	lpi_yahoo_games.cc \
 	lpi_yahoo_webcam.cc \
 	lpi_youku.cc \
+	lpi_yy_tcp.cc \
 	lpi_zabbix.cc \
+	lpi_zero.cc \
+	lpi_zoom_tcp.cc \
 	lpi_zynga.cc 
 
 EXTRA_DIST=tcp_protocols.h

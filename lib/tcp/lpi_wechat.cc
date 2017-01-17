@@ -1,33 +1,27 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include <string.h>
@@ -36,34 +30,77 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_wc_first(uint32_t payload, uint32_t len) {
-	
-	/* The initial request is always 16 bytes */
-	if (len != 16)
-		return false;
+static inline bool match_wc_pair(uint32_t payloada, uint32_t lena,
+                uint32_t payloadb, uint32_t lenb) {
 
-	if (!MATCH(payload, 0x00, 0x00, 0x00, 0x10))
-		return false;
-	
-	return true;
+        if (lena == 16 && MATCH(payloada, 0x00, 0x00, 0x00, 0x10)) {
+                if (lenb == 16 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x10))
+                        return true;
+                if (lenb == 18 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x12))
+                        return true;
+        }
+
+        if (lena == 21 && MATCH(payloada, 0x00, 0x00, 0x00, 0x15)) {
+                if (lenb == 25 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x19))
+                        return true;
+        }
+
+        return false;
+
 
 }
 
-static inline bool match_wc_second(uint32_t payload, uint32_t len) {
-	if (len == 0)
-		return true;
-	
-	/* The response is either 16 or 18 bytes in size.
-	 * Technically, more values could be possible but until we see
-	 * them in the wild I'll just match on 16 and 18.
-	 */
+static inline bool match_wc_ab_request(uint32_t payload, uint32_t len) {
+        /* This is 0xab, followed by 4 bytes of length for the first
+         * packet.
+         */
 
-	if (len == 16 && MATCH(payload, 0x00, 0x00, 0x00, 0x10))
-		return true;
-	if (len == 18 && MATCH(payload, 0x00, 0x00, 0x00, 0x12))
-		return true;
+        if (len <= 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+                return true;
 
-	return false;
+        if (MATCH(payload, 0xab, 0x00, 0x00, 0x01))
+                return true;
+        return false;
+
+}
+
+static inline bool match_wc_ab_big02(uint32_t payload, uint32_t len) {
+        /* again 0xab followed by length, except this time the length is
+         * for the entire flow.
+         */
+        if (len <= 255)
+                return false;
+
+        /* Flows are unlikely to need a full 4 bytes for length so I'm
+         * going to stick 0x00 in the top byte for now */
+        if (MATCH(payload, 0xab, 0x00, ANY, ANY)) {
+                return true;
+        }
+        return false;
+        
+}
+
+static inline bool match_wc_ab_big01(uint32_t payload, uint32_t len) {
+
+        if (len < 100)
+                return false;
+        if (len <= 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+                return true;
+        if (len > 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x01))
+                return true;
+        return false;
+}
+
+static inline bool match_wc_ab_reply(uint32_t payload, uint32_t len) {
+        /* All replies appear to be 41 bytes */
+
+        if (len != 41)
+                return false;
+
+        if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
 }
 
 static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
@@ -87,15 +124,35 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (!valid_port)
 		return false;
 
-	if (match_wc_first(data->payload[0], data->payload_len[0])) {
-		if (match_wc_second(data->payload[1], data->payload_len[1]))
-			return true;
+	if (match_wc_pair(data->payload[0], data->payload_len[0],
+                        data->payload[1], data->payload_len[1])) {
+		return true;
 	}
 	
-	if (match_wc_first(data->payload[1], data->payload_len[1])) {
-		if (match_wc_second(data->payload[0], data->payload_len[0]))
-			return true;
+	if (match_wc_pair(data->payload[1], data->payload_len[1],
+                        data->payload[0], data->payload_len[0])) {
+		return true;
 	}
+	
+        if (match_wc_ab_request(data->payload[0], data->payload_len[0])) {
+                if (match_wc_ab_reply(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_wc_ab_request(data->payload[1], data->payload_len[1])) {
+                if (match_wc_ab_reply(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_wc_ab_big01(data->payload[0], data->payload_len[0])) {
+                if (match_wc_ab_big02(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_wc_ab_big01(data->payload[1], data->payload_len[1])) {
+                if (match_wc_ab_big02(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 

@@ -1,33 +1,27 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include <string.h>
@@ -131,6 +125,60 @@ static inline bool match_skype_rule2(lpi_data_t *data) {
 }
 
 
+static inline bool match_meeting_stun_request(uint32_t payload, uint32_t len) {
+
+        if ((ntohl(payload) & 0xffff) != len - 4)
+                return false;
+
+        /* Checking for 0xff + ANY bytes is hard :( */
+        if ((ntohl(payload) & 0xff000000) != 0xff000000)
+                return false;
+
+        if (MATCH(payload, ANY, 0x10, ANY, ANY))
+                return true;
+
+        return false;
+
+}
+
+static inline bool match_meeting_stun_reply(uint32_t payload, uint32_t len) {
+
+        if ((ntohl(payload) & 0xffff) != len - 20)
+                return false;
+
+        if (MATCH(payload, 0x00, 0x01, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x01, 0x01, ANY, ANY))
+                return true;
+
+        return false;
+
+}
+
+static inline bool match_skype_meeting_broadcast(lpi_data_t *data) {
+        /* This protocol is a LOT like STUN, but isn't really STUN. */
+
+        /* TODO get hold of skype for business and double check this */
+
+        if (match_meeting_stun_request(data->payload[0], data->payload_len[0]))
+        {
+                if (match_meeting_stun_reply(data->payload[1],
+                                        data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_meeting_stun_request(data->payload[1], data->payload_len[1]))
+        {
+                if (match_meeting_stun_reply(data->payload[0],
+                                        data->payload_len[0])) {
+                        return true;
+                }
+        }
+
+        return false;
+}
+
 static inline bool match_skype(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_skype_rule1(data))
@@ -139,6 +187,9 @@ static inline bool match_skype(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
 
 
+        if (match_skype_meeting_broadcast(data))
+                return true;
+
 	return false;
 }
 
@@ -146,7 +197,7 @@ static lpi_module_t lpi_skype = {
 	LPI_PROTO_UDP_SKYPE,
 	LPI_CATEGORY_VOIP,
 	"Skype",
-	15,	/* The Skype rules aren't strong, so have a low priority */
+	105,	/* The Skype rules aren't strong, so have a low priority */
 	match_skype
 };
 

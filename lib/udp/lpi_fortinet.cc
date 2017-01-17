@@ -1,33 +1,27 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include <string.h>
@@ -38,7 +32,14 @@
 
 static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 
-	if (len != 64)
+	if (MATCHSTR(payload, "ikro"))
+		return true;
+	if (MATCHSTR(payload, "ikuo"))
+		return true;
+
+
+        /* All the following strings require a 64 byte datagram */
+        if (len != 64)
 		return false;
 
 	if (MATCHSTR(payload, "ihrk"))
@@ -55,8 +56,6 @@ static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCHSTR(payload, "iiro"))
 		return true;
-	if (MATCHSTR(payload, "ikro"))
-		return true;
 	if (MATCHSTR(payload, "ikri"))
 		return true;
 	if (MATCHSTR(payload, "ikvk"))
@@ -72,7 +71,11 @@ static inline bool match_fortinet_resp(uint32_t payload, uint32_t len) {
 		return true;
 	if (len == 36 && MATCHSTR(payload, "kowO"))
 		return true;
+	if (len == 44 && MATCHSTR(payload, "kowG"))
+		return true;
 	if (len == 12 && MATCHSTR(payload, "nkwg"))
+		return true;
+	if (len == 32 && MATCHSTR(payload, "khwK"))
 		return true;
 	return false;
 

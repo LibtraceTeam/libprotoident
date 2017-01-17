@@ -1,14 +1,15 @@
-libprotoident 2.0.7
+libprotoident 2.0.10
 
 ---------------------------------------------------------------------------
-Copyright (c) 2011, 2012 The University of Waikato, Hamilton, New Zealand.
+Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
 All rights reserved.
 
 This code has been developed by the University of Waikato WAND
 research group. For further information please see http://www.wand.net.nz/.
 ---------------------------------------------------------------------------
 
-See the file COPYING for full licensing details for this software.
+See the file COPYING and COPYING.LESSER for full licensing details for this
+software.
 
 Report and bugs, questions or comments to contact@wand.net.nz
 
@@ -19,10 +20,10 @@ Authors:
 	Shane Alcock
 
 With contributions from:
-	Donald Neal
-	Aaron Murrihy
-	Paweł Foremski <pjf@iitis.pl>
-	Fabian Weisshaar <elnappo@nerdpol.io>
+    Donald Neal
+    Aaron Murrihy
+    Paweł Foremski <pjf@iitis.pl>
+    Fabian Weisshaar <elnappo@nerdpol.io>
 
 Introduction
 ============
@@ -38,7 +39,7 @@ Required Libraries
 libtrace
 	* available from http://research.wand.net.nz/software/libtrace.php
 
-libflowmanager
+libflowmanager 2.0.4 or later
 	* optional, but required to build the tools
 	* available from http://research.wand.net.nz/software/libflowmanager.php
 
@@ -102,6 +103,7 @@ There are currently four tools included with libprotoident.
 	 * Port used by the second endpoint
 	 * Transport protocol (6 = TCP, 17 = UDP)
 	 * Unix timestamp when the flow began
+	 * Unix timestamp when the flow ended
 	 * Total bytes sent from first endpoint to second endpoint
 	 * Total bytes sent from second endpoint to first endpoint
 	 * First four bytes of payload sent from first endpoint (in hex)

@@ -1,33 +1,27 @@
-/* 
- * This file is part of libprotoident
+/*
  *
- * Copyright (c) 2011 The University of Waikato, Hamilton, New Zealand.
- * Author: Shane Alcock
- *
- * With contributions from:
- *      Aaron Murrihy
- *      Donald Neal
- *
+ * Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
  * All rights reserved.
  *
- * This code has been developed by the University of Waikato WAND 
+ * This file is part of libprotoident.
+ *
+ * This code has been developed by the University of Waikato WAND
  * research group. For further information please see http://www.wand.net.nz/
  *
  * libprotoident is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * libprotoident is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with libprotoident; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * $Id$
+ *
  */
 
 #include <string.h>
@@ -55,9 +49,26 @@ static inline bool match_openvpn_handshake(uint32_t pl_a, uint32_t pl_b) {
 		if (MATCH(pl_b, 0x37, ANY, ANY, ANY))
 			return true;
 	}
-	
-	
+
 	return false;
+
+}
+
+static inline bool match_tunnelbear_40(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x40, ANY, ANY, ANY))
+                return false;
+        if (len != 26)
+                return false;
+        return true;
+
+}
+
+static inline bool match_tunnelbear_38(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x38, ANY, ANY, ANY))
+                return false;
+        if (len != 14 && len != 126 && len != 128)
+                return false;
+        return true;
 
 }
 
@@ -67,13 +78,26 @@ static inline bool match_openvpn_udp(lpi_data_t *data, lpi_module_t *mod UNUSED)
 	 * add a port-based condition as well. Default port for OpenVPN
 	 * is UDP 1194 */
 
-	if (data->server_port != 1194 && data->client_port != 1194) {
-		return false;
+	if (data->server_port == 1194 || data->client_port == 1194) {
+                /* Just match the two-way stuff for now */
+                if (match_openvpn_handshake(data->payload[0],
+                                data->payload[1]))
+                        return true;
 	}
 
-	/* Just match the two-way stuff for now */
-	if (match_openvpn_handshake(data->payload[0], data->payload[1])) 
-		return true;
+
+        /* These are based on traffic seen involving TunnelBear hosts */
+        if (match_tunnelbear_40(data->payload[0], data->payload_len[0])) {
+                if (match_tunnelbear_38(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_tunnelbear_40(data->payload[1], data->payload_len[1])) {
+                if (match_tunnelbear_38(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+
 	return false;
 }
 
