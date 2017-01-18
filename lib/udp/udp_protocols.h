@@ -174,6 +174,7 @@ void register_sql_worm(LPIModuleMap *mod_map);
 void register_ssdp(LPIModuleMap *mod_map);
 void register_starcraft(LPIModuleMap *mod_map);
 void register_steamfriends(LPIModuleMap *mod_map);
+void register_steam_inhomebroadcast(LPIModuleMap *mod_map);
 void register_steam_localbroadcast(LPIModuleMap *mod_map);
 void register_steam_udp(LPIModuleMap *mod_map);
 void register_storm_worm(LPIModuleMap *mod_map);
