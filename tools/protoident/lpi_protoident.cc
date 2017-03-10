@@ -281,7 +281,7 @@ static void per_result(libtrace_t *trace, libtrace_thread_t *sender,
                 return;
 
         resultstr = (char *)result->value.ptr;
-        //printf("%s", resultstr);
+        printf("%s", resultstr);
         free(resultstr);
 
 }
@@ -386,7 +386,7 @@ static void cleanup_signal(int sig) {
 static void usage(char *prog) {
 
 	printf("Usage details for %s\n\n", prog);
-	printf("%s [-l <mac>] [-T] [-b] [-d <dir>] [-f <filter>] [-R] [-H] inputURI [inputURI ...]\n\n", prog);
+	printf("%s [-l <mac>] [-T] [-b] [-d <dir>] [-f <filter>] [-R] [-H] [-t <threads>] inputURI [inputURI ...]\n\n", prog);
 	printf("Options:\n");
 	printf("  -l <mac>	Determine direction based on <mac> representing the 'inside' \n			portion of the network\n");
 	printf("  -T		Use trace direction tags to determine direction\n");
@@ -395,6 +395,7 @@ static void usage(char *prog) {
 	printf("  -f <filter>	Ignore flows that do not match the given BPF filter\n");
 	printf("  -R 		Ignore flows involving private RFC 1918 address space\n");
 	printf("  -H		Ignore flows that do not meet the criteria for an SPNAT hole\n");
+        printf("  -t <threads>  Share the workload over the given number of threads\n");
 	exit(0);
 
 }
@@ -408,6 +409,7 @@ int main(int argc, char *argv[]) {
         double ts;
 	char *filterstring = NULL;
 	int dir;
+        int threads = 1;
 
         libtrace_callback_set_t *processing, *reporter;
 
@@ -429,7 +431,7 @@ int main(int argc, char *argv[]) {
         trace_set_stopping_cb(reporter, stop_reporter);
         trace_set_result_cb(reporter, per_result);
 
-	while ((opt = getopt(argc, argv, "l:bHd:f:RhT")) != EOF) {
+	while ((opt = getopt(argc, argv, "l:bHd:f:RhTt:")) != EOF) {
                 switch (opt) {
 			case 'l':
 				opts.local_mac = optarg;
@@ -457,6 +459,11 @@ int main(int argc, char *argv[]) {
 			case 'T':
 				opts.dir_method = DIR_METHOD_TRACE;
 				break;
+                        case 't':
+                                threads = atoi(optarg);
+                                if (threads <= 0)
+                                        threads = 1;
+                                break;
                 	case 'h':
 			default:
 				usage(argv[0]);
@@ -513,7 +520,7 @@ int main(int argc, char *argv[]) {
                         return -1;
                 }
 
-                trace_set_perpkt_threads(currenttrace, 3);
+                trace_set_perpkt_threads(currenttrace, threads);
 
                 trace_set_combiner(currenttrace, &combiner_unordered,
                         (libtrace_generic_t){0});
