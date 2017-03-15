@@ -185,7 +185,7 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts) {
 	char c_ip[100];
         char pload_out[100];
         char pload_in[100];
-        char *str = (char *)malloc(750);
+        char *str;
 	lpi_module_t *proto;
 
 	if (opts->only_dir0 && ident->init_dir == 1)
@@ -205,15 +205,16 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts) {
                 if (ident->lpi.payload_len[0] == 0 && ident->in_pkts <= 3)
                         return NULL;
         }
-	
+
 	proto = lpi_guess_protocol(&ident->lpi);
-	
+
 	f->id.get_server_ip_str(s_ip);
 	f->id.get_client_ip_str(c_ip);
 
 	dump_payload(ident->lpi, 0, pload_out, 500);
 	dump_payload(ident->lpi, 1, pload_in, 500);
-        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %.3f %" PRIu64 " %" PRIu64 "%s %s\n", 
+        str = (char *)malloc(750);
+        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %.3f %" PRIu64 " %" PRIu64 "%s %s\n",
 			proto->name, s_ip, c_ip,
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), ident->start_ts,
@@ -222,10 +223,6 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts) {
                         pload_out, pload_in);
 
         return str;
-
-	//printf("\n");
-
-
 }
 
 /* Expires all flows that libflowmanager believes have been idle for too
