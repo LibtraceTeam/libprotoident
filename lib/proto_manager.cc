@@ -418,6 +418,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_starcraft(mod_map);
 	register_steamfriends(mod_map);
 	register_steam_localbroadcast(mod_map);
+	register_steam_inhomebroadcast(mod_map);
 	register_steam_udp(mod_map);
 	register_storm_worm(mod_map);
 	register_stun(mod_map);
