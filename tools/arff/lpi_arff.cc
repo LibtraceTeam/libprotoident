@@ -68,6 +68,7 @@
 #include <math.h>
 
 #include <libtrace.h>
+#include <libtrace_parallel.h>
 #include <libflowmanager.h>
 #include <libprotoident.h>
 
@@ -79,17 +80,24 @@ enum {
 	DIR_METHOD_PORT
 };
 
-int dir_method = DIR_METHOD_PORT;
-
-bool only_dir0 = false;
-bool only_dir1 = false;
-
-bool require_both = false;
-
+libtrace_t *currenttrace;
 static volatile int done = 0;
 
-char *local_mac = NULL;
-uint8_t mac_bytes[6];
+struct globalopts {
+
+        int dir_method;
+        bool only_dir0 ;
+        bool only_dir1 ;
+        bool require_both ;
+        bool nat_hole ;
+        bool ignore_rfc1918 ;
+        char *local_mac ;
+        uint8_t mac_bytes[6];
+};
+
+struct threadlocal {
+        FlowManager *flowmanager;
+};
 
 struct ident_stats {
 	uint64_t pkts;
@@ -120,6 +128,57 @@ typedef struct ident {
 	lpi_data_t lpi;
 } IdentFlow;
 
+
+static void *start_processing(libtrace_t *trace, libtrace_thread_t *thread,
+                void *global) {
+
+        bool opt_true = true;
+        bool opt_false = false;
+        struct globalopts *opts = (struct globalopts *)global;
+
+        struct threadlocal *tl = (struct threadlocal *)malloc(sizeof(
+                        struct threadlocal));
+        tl->flowmanager = new FlowManager();
+
+        /* This tells libflowmanager to ignore any flows where an RFC1918
+         * private IP address is involved */
+        if (tl->flowmanager->setConfigOption(LFM_CONFIG_IGNORE_RFC1918, 
+                                &(opts->ignore_rfc1918)) == 0) {
+                fprintf(stderr, "Failed to set IGNORE RFC 1918 option in libflowmanager\n");
+        }
+
+        /* This tells libflowmanager not to replicate the TCP timewait
+         * behaviour where closed TCP connections are retained in the Flow
+         * map for an extra 2 minutes */
+        if (tl->flowmanager->setConfigOption(LFM_CONFIG_TCP_TIMEWAIT,
+                                &opt_false) == 0) {
+                fprintf(stderr, "Failed to set TCP TIMEWAIT option in libflowmanager\n");
+        }
+
+        /* This tells libflowmanager not to utilise the fast expiry rules for
+         * short-lived UDP connections - these rules are experimental 
+         * behaviour not in line with recommended "best" practice */
+        if (tl->flowmanager->setConfigOption(LFM_CONFIG_SHORT_UDP,
+                                &opt_false) == 0) {
+                fprintf(stderr, "Failed to set SHORT UDP option in libflowmanager\n");
+        }
+
+        return tl;
+}
+
+
+static void *start_reporter(libtrace_t *trace, libtrace_thread_t *thread,
+                void *global) {
+        return NULL;
+}
+
+static void stop_reporter(libtrace_t *trace, libtrace_thread_t *thread,
+                void *global, void *tls) {
+        if (tls)
+                free(tls);
+}
+
+
 /* Initialises the custom data for the given flow. Allocates memory for a
  * IdentFlow structure and ensures that the extension pointer points at
  * it.
@@ -147,23 +206,50 @@ void init_ident_flow(Flow *f, uint8_t dir, double ts)
 	f->extension = ident;
 }
 
-void display_ident(Flow *f, IdentFlow *ident)
+static void dump_len_stats(struct ident_stats *is, char *space, int spacelen) {
+
+        if (is->pkts == 0) {
+                snprintf(space, spacelen - 1, ",0,0,0,0");
+        } else {
+                snprintf(space, spacelen - 1, ",%u,%.0f,%u,%.0f",
+                        is->pktlen_min, is->pktlen_mean, is->pktlen_max,
+                        sqrt(is->pktlen_std / is->pkts));
+        }
+}
+
+static void dump_iat_stats(struct ident_stats *is, char *space, int spacelen) {
+
+        if (is->pkts == 0) {
+                snprintf(space, spacelen - 1, ",0,0,0,0");
+        } else {
+                snprintf(space, spacelen - 1, ",%u,%.0f,%u,%.0f",
+                        is->iat_min, is->iat_mean, is->iat_max,
+                        sqrt(is->iat_std / is->pkts));
+        }
+}
+
+
+char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts)
 {
-	char s_ip[500];
-	char c_ip[500];
-	char str[1000];
-	lpi_module_t *proto;
+	char s_ip[100];
+	char c_ip[100];
+        char len_stats_out[200];
+        char len_stats_in[200];
+        char iat_stats_out[200];
+        char iat_stats_in[200];
+        char *str;
+        lpi_module_t *proto;
 	struct ident_stats *is;
 	int i;
 
-	if (only_dir0 && ident->init_dir == 1)
-		return;
-	if (only_dir1 && ident->init_dir == 0)
-		return;
-	if (require_both) {
+	if (opts->only_dir0 && ident->init_dir == 1)
+		return NULL;
+	if (opts->only_dir1 && ident->init_dir == 0)
+		return NULL;
+	if (opts->require_both) {
 		if (ident->lpi.payload_len[0] == 0 ||
 		    ident->lpi.payload_len[1] == 0) {
-			return;
+			return NULL;
 		}
 	}
 
@@ -172,44 +258,25 @@ void display_ident(Flow *f, IdentFlow *ident)
 	f->id.get_server_ip_str(s_ip);
 	f->id.get_client_ip_str(c_ip);
 
+        str = (char *)malloc(750);
+
+        dump_len_stats(&ident->out, len_stats_out, 200);
+        dump_len_stats(&ident->in, len_stats_in, 200);
+        dump_iat_stats(&ident->out, iat_stats_out, 200);
+        dump_iat_stats(&ident->in, iat_stats_in, 200);
+
 	/* basic statistics */
-	printf("%s,%d,%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64,
+	snprintf(str, 749,
+                "%s,%d,%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+                "%s%s%s%s,%.0f,%f\n",
 		proto->name, f->id.get_protocol(),
-		ident->out.pkts, ident->out.bytes, ident->in.pkts, ident->in.bytes);
+		ident->out.pkts, ident->out.bytes, ident->in.pkts,
+                ident->in.bytes, len_stats_out, len_stats_in,
+                iat_stats_out, iat_stats_in,
+                (ident->last_ts - ident->start_ts) * 1000000.0,
+                ident->start_ts);
 
-	/* print packet length statistics */
-	is = &ident->out;
-	for (i = 0; i < 2; i++) {
-		if (is->pkts == 0) {
-			printf(",0,0,0,0");
-		} else {
-			printf(",%u,%.0f,%u,%.0f",
-				is->pktlen_min, is->pktlen_mean, is->pktlen_max,
-				sqrt(is->pktlen_std / is->pkts));
-		}
-		is = &ident->in;
-	}
-
-	/* print inter-arrival time statistics */
-	is = &ident->out;
-	for (i = 0; i < 2; i++) {
-		if (is->pkts == 0) {
-			printf(",0,0,0,0");
-		} else {
-			printf(",%u,%.0f,%u,%.0f",
-				is->iat_min, is->iat_mean, is->iat_max,
-				sqrt(is->iat_std / is->pkts));
-		}
-		is = &ident->in;
-	}
-
-	/* print total flow duration */
-	printf(",%.0f", (ident->last_ts - ident->start_ts) * 1000000.0);
-
-	/* print flow start time */
-	printf(",%f", ident->start_ts);
-
-	printf("\n");
+        return str;
 }
 
 /* Expires all flows that libflowmanager believes have been idle for too
@@ -218,25 +285,60 @@ void display_ident(Flow *f, IdentFlow *ident)
  * want the stats for all the still-active flows). Otherwise, only flows
  * that have been idle for longer than their expiry timeout will be expired.
  */
-void expire_ident_flows(double ts, bool exp_flag)
+void expire_ident_flows(libtrace_t *trace, libtrace_thread_t *thread,
+                struct globalopts *opts, FlowManager *fm,
+                double ts, bool exp_flag)
 {
 	Flow *expired;
 	lpi_module_t *proto;
+        char *result = NULL;
 
 	/* Loop until libflowmanager has no more expired flows available */
-	while ((expired = lfm_expire_next_flow(ts, exp_flag)) != NULL) {
+	while ((expired = fm->expireNextFlow(ts, exp_flag)) != NULL) {
 
 		IdentFlow *ident = (IdentFlow *)expired->extension;
 
-		display_ident(expired, ident);
+		result = display_ident(expired, ident, opts);
+                if (result) {
+                        trace_publish_result(trace, thread, ts,
+                                (libtrace_generic_t){.ptr=result},
+                                RESULT_USER);
+                }
 		/* Don't forget to free our custom data structure */
 		free(ident);
 
-		/* VERY IMPORTANT: delete the Flow structure itself, even
-		 * though we did not directly allocate the memory ourselves */
-		delete(expired);
+		fm->releaseFlow(expired);
 	}
 }
+
+static void stop_processing(libtrace_t *trace, libtrace_thread_t *thread,
+                void *global, void *tls) {
+
+        struct globalopts *opts = (struct globalopts *)global;
+        struct threadlocal *tl = (struct threadlocal *)tls;
+
+        expire_ident_flows(trace, thread, opts, tl->flowmanager, 0, true);
+        delete(tl->flowmanager);
+        free(tl);
+
+
+}
+
+
+static void per_result(libtrace_t *trace, libtrace_thread_t *sender,
+                void *global, void *tls, libtrace_result_t *result) {
+
+        char *resultstr;
+
+        if (result->type != RESULT_USER)
+                return;
+
+        resultstr = (char *)result->value.ptr;
+        printf("%s", resultstr);
+        free(resultstr);
+
+}
+
 
 /** Update flow statistics */
 void per_packet_flow(libtrace_packet_t *packet, IdentFlow *ident, int dir, 
@@ -294,8 +396,9 @@ void per_packet_flow(libtrace_packet_t *packet, IdentFlow *ident, int dir,
 }
 
 /** This function receives each packet from libtrace */
-void per_packet(libtrace_packet_t *packet)
-{
+static libtrace_packet_t *per_packet(libtrace_t *trace,
+                libtrace_thread_t *thread, void *global, void *tls,
+                libtrace_packet_t *packet) {
 	Flow *f;
 	IdentFlow *ident = NULL;
 	uint8_t dir;
@@ -306,43 +409,46 @@ void per_packet(libtrace_packet_t *packet)
 	double ts;
 
 	uint16_t l3_type;
+        struct globalopts *opts = (struct globalopts *)global;
+        struct threadlocal *tl = (struct threadlocal *)tls;
+
 
 	/* Libflowmanager only deals with IP traffic, so ignore anything
 	 * that does not have an IP header */
 	l3 = trace_get_layer3(packet, &l3_type, NULL);
 	if (l3_type != TRACE_ETHERTYPE_IP && l3_type != TRACE_ETHERTYPE_IPV6)
-		return;
-	if (l3 == NULL) return;
+		return packet;
+	if (l3 == NULL) return packet;
 
 	/* Expire all suitably idle flows */
 	ts = trace_get_seconds(packet);
-	expire_ident_flows(ts, false);
+	expire_ident_flows(trace, thread, opts, tl->flowmanager, ts, false);
 
 	/* Determine packet direction
 	 * 0 is output, 1 is input */
-	switch (dir_method) {
+	switch (opts->dir_method) {
 		case DIR_METHOD_TRACE:
 			dir = trace_get_direction(packet);
 			break;
 		case DIR_METHOD_MAC:
-			dir = mac_get_direction(packet, mac_bytes);
+			dir = mac_get_direction(packet, opts->mac_bytes);
 			break;
 		case DIR_METHOD_PORT:
 			dir = port_get_direction(packet);
 	}
 
 	if (dir != 0 && dir != 1)
-		return;
+		return packet;
 
 	/* Match the packet to a Flow - this will create a new flow if
 	 * there is no matching flow already in the Flow map and set the
 	 * is_new flag to true. */
-	f = lfm_match_packet_to_flow(packet, dir, &is_new);
+	f = tl->flowmanager->matchPacketToFlow(packet, dir, &is_new);
 
 	/* Libflowmanager did not like something about that packet - best to
 	 * just ignore it and carry on */
 	if (f == NULL) {
-		return;
+		return packet;
 	}
 
 	tcp = trace_get_tcp(packet);
@@ -364,28 +470,24 @@ void per_packet(libtrace_packet_t *packet)
 	 * it needs from this packet */
 	lpi_update_data(packet, &ident->lpi, dir);
 
-	/* Update TCP state for TCP flows. The TCP state determines how long
-	 * the flow can be idle before being expired by libflowmanager. For
-	 * instance, flows for which we have only seen a SYN will expire much
-	 * quicker than a TCP connection that has completed the handshake */
-	if (tcp) {
-		lfm_check_tcp_flags(f, tcp, dir, ts);
-	}
-
 	/* Tell libflowmanager to update the expiry time for this flow */
-	lfm_update_flow_expiry_timeout(f, ts);
+	tl->flowmanager->updateFlowExpiry(f, packet, dir, ts);
+        return packet;
 }
 
 static void cleanup_signal(int sig)
 {
 	(void)sig;
-	done = 1;
+        if (!done) {
+        	done = 1;
+                trace_pstop(currenttrace);
+        }
 }
 
 static void usage(char *prog)
 {
 	printf("Usage details for %s\n\n", prog);
-	printf("%s [-l <mac>] [-T] [-b] [-d <dir>] [-f <filter>] [-R] inputURI [inputURI ...]\n\n", prog);
+	printf("%s [-l <mac>] [-T] [-b] [-d <dir>] [-f <filter>] [-R] [-t <threads>] inputURI [inputURI ...]\n\n", prog);
 	printf("Options:\n");
 	printf("  -l <mac>     Determine direction based on <mac> representing the 'inside'\n");
 	printf("               portion of the network\n");
@@ -395,6 +497,7 @@ static void usage(char *prog)
 	printf("               direction\n");
 	printf("  -f <filter>  Ignore flows that do not match the given BPF filter\n");
 	printf("  -R           Ignore flows involving private RFC 1918 address space\n");
+        printf("  -t <threads>  Share the workload over the given number of threads\n");
 	exit(0);
 }
 
@@ -403,7 +506,9 @@ int main(int argc, char *argv[])
 	libtrace_t *trace;
 	libtrace_packet_t *packet;
 	libtrace_filter_t *filter = NULL;
-	struct sigaction sigact; 
+	struct sigaction sigact;
+        struct globalopts opts;
+        int threads = 1;
 
 	bool opt_true = true;
 	bool opt_false = false;
@@ -414,37 +519,56 @@ int main(int argc, char *argv[])
 	int dir;
 	bool ignore_rfc1918 = false;
 
-	packet = trace_create_packet();
-	if (packet == NULL) {
-		perror("Creating libtrace packet");
-		return -1;
-	}
+        libtrace_callback_set_t *processing, *reporter;
 
-	while ((opt = getopt(argc, argv, "l:bd:f:RhT")) != EOF) {
+        opts.dir_method = DIR_METHOD_PORT;
+        opts.only_dir0 = false;
+        opts.only_dir1 = false;
+        opts.require_both = false;
+        opts.nat_hole = false;
+        opts.ignore_rfc1918 = false;
+        opts.local_mac = NULL;
+
+        processing = trace_create_callback_set();
+        trace_set_starting_cb(processing, start_processing);
+        trace_set_stopping_cb(processing, stop_processing);
+        trace_set_packet_cb(processing, per_packet);
+
+        reporter = trace_create_callback_set();
+        trace_set_starting_cb(reporter, start_reporter);
+        trace_set_stopping_cb(reporter, stop_reporter);
+        trace_set_result_cb(reporter, per_result);
+
+	while ((opt = getopt(argc, argv, "l:bd:f:RhTt:")) != EOF) {
 		switch (opt) {
 			case 'l':
-				local_mac = optarg;
-				dir_method = DIR_METHOD_MAC;
+				opts.local_mac = optarg;
+				opts.dir_method = DIR_METHOD_MAC;
 				break;
 			case 'b':
-				require_both = true;
+				opts.require_both = true;
 				break;
 			case 'd':
 				dir = atoi(optarg);
 				if (dir == 0)
-					only_dir0 = true;
+					opts.only_dir0 = true;
 				if (dir == 1)
-					only_dir1 = true;
+					opts.only_dir1 = true;
 				break;
 			case 'f':
 				filterstring = optarg;
 				break;
 			case 'R':
-				ignore_rfc1918 = true;
+				opts.ignore_rfc1918 = true;
 				break;
 			case 'T':
-				dir_method = DIR_METHOD_TRACE;
+				opts.dir_method = DIR_METHOD_TRACE;
 				break;
+                        case 't':
+                                threads = atoi(optarg);
+                                if (threads <= 0)
+                                        threads = 1;
+                                break;
 			case 'h':
 			default:
 				usage(argv[0]);
@@ -455,30 +579,12 @@ int main(int argc, char *argv[])
 		filter = trace_create_filter(filterstring);
 	}
 
-	if (local_mac != NULL) {
-		if (convert_mac_string(local_mac, mac_bytes) < 0) {
-			fprintf(stderr, "Invalid MAC: %s\n", local_mac);
-			return 1;
-		}
-	}
-
-	/* This tells libflowmanager to ignore any flows where an RFC1918
-	 * private IP address is involved */
-	if (lfm_set_config_option(LFM_CONFIG_IGNORE_RFC1918, &ignore_rfc1918) == 0)
-		return -1;
-
-	/* This tells libflowmanager not to replicate the TCP timewait
-	 * behaviour where closed TCP connections are retained in the Flow
-	 * map for an extra 2 minutes */
-	if (lfm_set_config_option(LFM_CONFIG_TCP_TIMEWAIT, &opt_false) == 0)
-		return -1;
-
-	/* This tells libflowmanager not to utilise the fast expiry rules for
-	 * short-lived UDP connections - these rules are experimental 
-	 * behaviour not in line with recommended "best" practice */
-	if (lfm_set_config_option(LFM_CONFIG_SHORT_UDP, &opt_false) == 0)
-		return -1;
-
+        if (opts.local_mac != NULL) {
+                if (convert_mac_string(opts.local_mac, opts.mac_bytes) < 0) {
+                        fprintf(stderr, "Invalid MAC: %s\n", opts.local_mac);
+                        return 1;
+                }
+        }
 
 	sigact.sa_handler = cleanup_signal;
 	sigemptyset(&sigact.sa_mask);
@@ -494,34 +600,8 @@ int main(int argc, char *argv[])
 		return -1;
 
 	for (i = optind; i < argc; i++) {
-
+                if (done) break;
 		fprintf(stderr, "%s\n", argv[i]);
-
-		/* Bog-standard libtrace stuff for reading trace files */
-		trace = trace_create(argv[i]);
-
-		if (!trace) {
-			perror("Creating libtrace trace");
-			return -1;
-		}
-
-		if (trace_is_err(trace)) {
-			trace_perror(trace, "Opening trace file");
-			trace_destroy(trace);
-			continue;
-		}
-
-		if (filter && trace_config(trace, TRACE_OPTION_FILTER, filter) == -1) {
-			trace_perror(trace, "Configuring filter");
-			trace_destroy(trace);
-			return -1;
-		}
-
-		if (trace_start(trace) == -1) {
-			trace_perror(trace, "Starting trace");
-			trace_destroy(trace);
-			continue;
-		}
 
 		/* printf arff file header */
 		printf("@relation '%s'\n", argv[i]);
@@ -553,30 +633,49 @@ int main(int argc, char *argv[])
 		printf("\n");
 		printf("@data\n");
 
-		while (trace_read_packet(trace, packet) > 0) {
-			ts = trace_get_seconds(packet);
-			per_packet(packet);
-			if (done) {
-				break;
-			}
+		/* Bog-standard libtrace stuff for reading trace files */
+		currenttrace = trace_create(argv[i]);
+
+		if (!currenttrace) {
+			perror("Creating libtrace trace");
+			return -1;
 		}
 
-		if (done)
-			break;
-
-		if (trace_is_err(trace)) {
-			trace_perror(trace, "Reading packets");
-			trace_destroy(trace);
+		if (trace_is_err(currenttrace)) {
+			trace_perror(currenttrace, "Opening trace file");
+			trace_destroy(currenttrace);
 			continue;
 		}
 
-		trace_destroy(trace);
+		if (filter && trace_config(currenttrace, TRACE_OPTION_FILTER, filter) == -1) {
+			trace_perror(currenttrace, "Configuring filter");
+			trace_destroy(currenttrace);
+			return -1;
+		}
+
+
+                trace_set_perpkt_threads(currenttrace, threads);
+
+                trace_set_combiner(currenttrace, &combiner_unordered,
+                        (libtrace_generic_t){0});
+
+                trace_set_hasher(currenttrace, HASHER_BIDIRECTIONAL, NULL, NULL);
+
+                if (trace_pstart(currenttrace, &opts, processing, reporter) == -1) {
+                        trace_perror(currenttrace, "Starting trace");
+                        trace_destroy(currenttrace);
+                        continue;
+                }
+
+                trace_join(currenttrace);
+                trace_destroy(currenttrace);
+
+
 	}
 
-	trace_destroy_packet(packet);
-	if (!done)
-		expire_ident_flows(ts, true);
-	lpi_free_library();
+        trace_destroy_callback_set(processing);
+        trace_destroy_callback_set(reporter);
+        lpi_free_library();
 
 	return 0;
 }
