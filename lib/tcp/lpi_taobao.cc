@@ -43,7 +43,7 @@
 static inline bool match_taobao_req(uint32_t payload, uint32_t len) {
         /* Byte 4 is a length field, == len - 4 */
 
-        uint32_t taolen = ntohl(payload & 0xffff);
+        uint32_t taolen = ntohl(payload) & 0xffff;
 
         if (MATCH(payload, 0xf5, 0x00, ANY, ANY)) {
                 if (taolen == len - 4)
@@ -61,7 +61,7 @@ static inline bool match_taobao_req(uint32_t payload, uint32_t len) {
 static inline bool match_taobao_resp(uint32_t payload, uint32_t len) {
         /* Byte 4 is a length field, == len - 4 */
 
-        uint32_t taolen = ntohl(payload & 0xffff);
+        uint32_t taolen = ntohl(payload) & 0xffff;
 
         if (MATCH(payload, 0xf3, 0x00, ANY, ANY)) {
                 if (taolen == len - 4)
