@@ -110,6 +110,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_funshion_tcp(mod_map);
 	register_gamespy_tcp(mod_map);
 	register_git(mod_map);
+	register_glupteba(mod_map);
 	register_gnutella(mod_map);
 	register_goku(mod_map);
 	register_googlehangouts(mod_map);
@@ -250,6 +251,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_whatsapp(mod_map);
 	register_whois(mod_map);
 	register_winmx(mod_map);
+	register_wns(mod_map);
 	register_wow(mod_map);
 	register_wuala(mod_map);
 	register_xiami(mod_map);
@@ -281,6 +283,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_amanda(mod_map);
 	register_apple_facetime_init(mod_map);
 	register_ares_udp(mod_map);
+	register_arksurvival(mod_map);
 	register_arma_server(mod_map);
 	register_arma3_server(mod_map);
 	register_avast_secure_dns(mod_map);

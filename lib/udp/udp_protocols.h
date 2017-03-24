@@ -38,6 +38,7 @@ void register_akamai_transfer(LPIModuleMap *mod_map);
 void register_amanda(LPIModuleMap *mod_map);
 void register_apple_facetime_init(LPIModuleMap *mod_map);
 void register_ares_udp(LPIModuleMap *mod_map);
+void register_arksurvival(LPIModuleMap *mod_map);
 void register_arma_server(LPIModuleMap *mod_map);
 void register_arma3_server(LPIModuleMap *mod_map);
 void register_avast_secure_dns(LPIModuleMap *mod_map);

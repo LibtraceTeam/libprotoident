@@ -43,6 +43,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
 	lpi_git.cc \
+	lpi_glupteba.cc \
 	lpi_gnutella.cc \
 	lpi_goku.cc \
 	lpi_googlehangouts.cc \
@@ -183,6 +184,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \
+	lpi_wns.cc \
 	lpi_wow.cc \
 	lpi_wuala.cc \
 	lpi_xiami.cc \
