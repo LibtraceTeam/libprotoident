@@ -113,6 +113,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_openvpn.cc \
 	lpi_palringo.cc \
 	lpi_paltalk.cc \
+	lpi_pandatv.cc \
 	lpi_pando.cc \
 	lpi_pdbox.cc \
 	lpi_pop3.cc \

@@ -141,6 +141,7 @@ void register_omegle(LPIModuleMap *mod_map);
 void register_openvpn(LPIModuleMap *mod_map);
 void register_palringo(LPIModuleMap *mod_map);
 void register_paltalk(LPIModuleMap *mod_map);
+void register_pandatv(LPIModuleMap *mod_map);
 void register_pando(LPIModuleMap *mod_map);
 void register_pdbox(LPIModuleMap *mod_map);
 void register_pop3(LPIModuleMap *mod_map);

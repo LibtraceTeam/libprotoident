@@ -31,6 +31,7 @@
 #include "proto_manager.h"
 
 void register_360cn(LPIModuleMap *mod_map);
+void register_360p2p(LPIModuleMap *mod_map);
 void register_aachen_udp(LPIModuleMap *mod_map);
 void register_acercloud(LPIModuleMap *mod_map);
 void register_akamai(LPIModuleMap *mod_map);
@@ -143,6 +144,7 @@ void register_orbit_udp(LPIModuleMap *mod_map);
 void register_overwatch(LPIModuleMap *mod_map);
 void register_pando_udp(LPIModuleMap *mod_map);
 void register_planetside2(LPIModuleMap *mod_map);
+void register_portmap_rpc(LPIModuleMap *mod_map);
 void register_pplive(LPIModuleMap *mod_map);
 void register_ppstream(LPIModuleMap *mod_map);
 void register_probable_gnutella(LPIModuleMap *mod_map);

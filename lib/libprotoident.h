@@ -318,6 +318,7 @@ typedef enum {
         LPI_PROTO_MAXICLOUD,
         LPI_PROTO_GLUPTEBA,
         LPI_PROTO_WNS,
+        LPI_PROTO_PANDATV,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -489,6 +490,8 @@ typedef enum {
         LPI_PROTO_UDP_OVERWATCH,
         LPI_PROTO_UDP_BACNET,
         LPI_PROTO_UDP_ARK_SURVIVAL,
+        LPI_PROTO_UDP_360P2P,
+        LPI_PROTO_UDP_PORTMAP_RPC,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

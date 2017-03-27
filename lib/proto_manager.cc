@@ -180,6 +180,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_openvpn(mod_map);
 	register_palringo(mod_map);
 	register_paltalk(mod_map);
+	register_pandatv(mod_map);
 	register_pando(mod_map);
 	register_pdbox(mod_map);
 	register_pop3(mod_map);
@@ -276,6 +277,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 int register_udp_protocols(LPIModuleMap *mod_map) {
 
 	register_360cn(mod_map);
+	register_360p2p(mod_map);
 	register_aachen_udp(mod_map);
 	register_acercloud(mod_map);
 	register_akamai(mod_map);
@@ -388,6 +390,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_overwatch(mod_map);
 	register_pando_udp(mod_map);
 	register_planetside2(mod_map);
+	register_portmap_rpc(mod_map);
 	register_pplive(mod_map);
 	register_ppstream(mod_map);
 	//register_probable_gnutella(mod_map);

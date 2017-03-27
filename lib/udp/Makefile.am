@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libprotoident_udp.la
 libprotoident_udp_la_SOURCES = \
 	lpi_360cn.cc \
+	lpi_360p2p.cc \
 	lpi_aachen_udp.cc \
 	lpi_acercloud.cc \
 	lpi_akamai.cc \
@@ -114,6 +115,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_overwatch.cc \
 	lpi_pando.cc \
 	lpi_planetside2.cc \
+	lpi_portmap_rpc.cc \
 	lpi_pplive.cc \
 	lpi_ppstream.cc \
 	lpi_probable_gnutella.cc \
