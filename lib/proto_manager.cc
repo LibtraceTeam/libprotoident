@@ -91,6 +91,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cryptic(mod_map);
 	register_cvs(mod_map);
 	register_dell_backup(mod_map);
+	register_destiny(mod_map);
 	register_diablo3(mod_map);
 	register_dianping_tcp(mod_map);
 	register_directconnect(mod_map);
@@ -101,6 +102,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ea_games(mod_map);
 	register_emule(mod_map);
 	register_eye(mod_map);
+	register_facebook_turn(mod_map);
 	register_fb_message(mod_map);
 	register_ffxiv(mod_map);
 	register_flash(mod_map);
@@ -188,6 +190,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_postgresql(mod_map);
 	register_pptp(mod_map);
 	register_psn_store(mod_map);
+	register_qcloud_ilvb(mod_map);
 	register_qq_tcp(mod_map);
 	register_qqdownload(mod_map);
 	register_qqlive_tcp(mod_map);
@@ -299,6 +302,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_canon_mfnp(mod_map);
 	register_callofduty(mod_map);
 	register_checkpoint_rdp(mod_map);
+	register_chivalry(mod_map);
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
@@ -378,6 +382,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_netcore_scan(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
+	register_nintendo(mod_map);
 	register_noction(mod_map);
 	register_noe(mod_map);
 	register_norton(mod_map);

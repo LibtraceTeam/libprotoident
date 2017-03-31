@@ -24,6 +24,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
 	lpi_dell_backup.cc \
+	lpi_destiny.cc \
 	lpi_diablo3.cc \
 	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
@@ -34,6 +35,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ea_games.cc \
 	lpi_emule.cc \
 	lpi_eye.cc \
+	lpi_facebook_turn.cc \
 	lpi_fb_message.cc \
 	lpi_ffxiv.cc \
 	lpi_flash.cc \
@@ -121,6 +123,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_postgresql.cc \
 	lpi_pptp.cc \
 	lpi_psn_store.cc \
+	lpi_qcloud_ilvb.cc \
 	lpi_qq_tcp.cc \
 	lpi_qqdownload.cc \
 	lpi_qqlive_tcp.cc \

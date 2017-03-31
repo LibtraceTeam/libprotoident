@@ -319,6 +319,9 @@ typedef enum {
         LPI_PROTO_GLUPTEBA,
         LPI_PROTO_WNS,
         LPI_PROTO_PANDATV,
+        LPI_PROTO_FACEBOOK_TURN,
+        LPI_PROTO_DESTINY,
+        LPI_PROTO_QCLOUD_ILVB,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -492,6 +495,8 @@ typedef enum {
         LPI_PROTO_UDP_ARK_SURVIVAL,
         LPI_PROTO_UDP_360P2P,
         LPI_PROTO_UDP_PORTMAP_RPC,
+        LPI_PROTO_UDP_NINTENDO,
+        LPI_PROTO_UDP_CHIVALRY,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

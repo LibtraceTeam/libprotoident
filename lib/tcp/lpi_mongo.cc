@@ -31,59 +31,41 @@
 #include "proto_common.h"
 
 /* Mongo protocol uses the first four bytes as a length field */
-
 static inline bool match_mongo_req(uint32_t payload, uint32_t len) {
 
-        if (len == 134 && MATCH(payload, 0x86, 0x00, 0x00, 0x00))
-                return true;
-        if (len == 133 && MATCH(payload, 0x85, 0x00, 0x00, 0x00))
-                return true;
-        if (len == 132 && MATCH(payload, 0x84, 0x00, 0x00, 0x00))
-                return true;
+        uint32_t mongolen = ntohl(payload);
+
+        /* Most requests are very small */
+        if (MATCH(payload, ANY, 0x00, 0x00, 0x00) ||
+                        MATCH(payload, ANY, 0x01, 0x00, 0x00)) {
+                /* Some mongo libraries manage to split requests across
+                 * multiple packets, so we can't do a direct length
+                 * match :(
+                 */
+                if (mongolen >= len)
+                        return true;
+        }
 
         return false;
+
 }
 
 static inline bool match_mongo_reply(uint32_t payload, uint32_t len) {
 
-        if (len == 0)
+        uint32_t mongolen = ntohl(payload);
+
+        /* If reply is short, mongolen should match the packet length */
+        if (mongolen == len)
                 return true;
 
-        /* Only ever seen MTU sized packets as these responses */
-        if (MATCH(payload, 0x84, 0x0c, 0x00, 0x00))
-                return true;
-        if (MATCH(payload, 0x83, 0x0c, 0x00, 0x00))
-                return true;
-        if (MATCH(payload, 0x82, 0x0c, 0x00, 0x00))
-                return true;
+        /* If mongolen is large, packet len should be MTU-sized. Here,
+         * we'll assume an MTU of at least 1400 (sorry, people with
+         * tons of encapsulation) */
+        if (mongolen > len) {
+                if (len >= 1400)
+                        return true;
+        }
 
-        return false;
-}
-
-static inline bool match_mongo_short_req(uint32_t payload, uint32_t len) {
-        if (len == 58 && MATCH(payload, 0x3a, 0x00, 0x00, 0x00))
-                return true;
-        return false;
-
-}
-
-static inline bool match_mongo_short_reply(uint32_t payload, uint32_t len) {
-        if (len == 212 && MATCH(payload, 0xd4, 0x00, 0x00, 0x00))
-                return true;
-        return false;
-
-}
-
-static inline bool match_mongo_short_req_0601(uint32_t payload, uint32_t len) {
-        if (len == 39 && MATCH(payload, 0x06, 0x01, 0x00, 0x00))
-                return true;
-        return false;
-
-}
-
-static inline bool match_mongo_short_reply_c2(uint32_t payload, uint32_t len) {
-        if (len == 194 && MATCH(payload, 0xc2, 0x00, 0x00, 0x00))
-                return true;
         return false;
 
 }
@@ -98,29 +80,8 @@ static inline bool match_mongo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_mongo_reply(data->payload[1], data->payload_len[1]))
                         return true;
         }
-
         if (match_mongo_req(data->payload[1], data->payload_len[1])) {
                 if (match_mongo_reply(data->payload[0], data->payload_len[0]))
-                        return true;
-        }
-
-        if (match_mongo_short_req(data->payload[0], data->payload_len[0])) {
-                if (match_mongo_short_reply(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
-
-        if (match_mongo_short_req(data->payload[1], data->payload_len[1])) {
-                if (match_mongo_short_reply(data->payload[0], data->payload_len[0]))
-                        return true;
-        }
-
-        if (match_mongo_short_req_0601(data->payload[0], data->payload_len[0])) {
-                if (match_mongo_short_reply_c2(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
-
-        if (match_mongo_short_req_0601(data->payload[1], data->payload_len[1])) {
-                if (match_mongo_short_reply_c2(data->payload[0], data->payload_len[0]))
                         return true;
         }
 	return false;
@@ -130,7 +91,7 @@ static lpi_module_t lpi_mongo = {
 	LPI_PROTO_MONGO,
 	LPI_CATEGORY_DATABASES,
 	"MongoDB",
-	8,
+        88,
 	match_mongo
 };
 

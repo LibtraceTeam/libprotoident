@@ -31,12 +31,41 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_qqlive_p2p(uint32_t payload) {
+
+        if (MATCH(payload, 0x1a, 0x10, 0x01, 0x20))
+                return true;
+        return false;
+}
+
+static inline bool match_qqlive_p2p_fe0a(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0xfe, 0x0a, 0x00, 0x00) && len == 13)
+                return true;
+        return false;
+
+}
+
 static inline bool match_qqlive(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (data->payload_len[0] == 0 || data->payload_len[1] == 0) {
 		if (data->server_port == 53 || data->client_port == 53)
 			return false;
 	}
+
+        if (match_qqlive_p2p(data->payload[0])) {
+                if (match_qqlive_p2p(data->payload[1]))
+                        return true;
+                if (match_qqlive_p2p_fe0a(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_qqlive_p2p(data->payload[1])) {
+                if (match_qqlive_p2p(data->payload[0]))
+                        return true;
+                if (match_qqlive_p2p_fe0a(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
         if (!match_qqlive_payload(data->payload[0], data->payload_len[0]))
                 return false;

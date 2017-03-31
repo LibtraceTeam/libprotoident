@@ -34,7 +34,7 @@
 
 static inline bool match_glup_hello(uint32_t payload, uint32_t len) {
 
-        if (len == 6 && MATCH(payload, 'H', 'E', 'L', 'L'))
+        if (MATCH(payload, 'H', 'E', 'L', 'L'))
                 return true;
         return false;
 }
@@ -45,7 +45,7 @@ static inline bool match_glup_id(uint32_t payload, uint32_t len) {
          * going to assume the ID has a similar length.
          */
 
-        if (len == 18 || len == 19) {
+        if (len >= 18 && len <= 25) {
                 /* Always begins with @ */
                 if (MATCH(payload, '@', ANY, ANY, ANY))
                         return true;
@@ -60,9 +60,15 @@ static inline bool match_glupteba(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_glup_id(data->payload[1], data->payload_len[1])) {
                         return true;
                 }
+                if (match_glup_hello(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
         }
         if (match_glup_hello(data->payload[1], data->payload_len[1])) {
                 if (match_glup_id(data->payload[0], data->payload_len[0])) {
+                        return true;
+                }
+                if (match_glup_hello(data->payload[0], data->payload_len[0])) {
                         return true;
                 }
         }

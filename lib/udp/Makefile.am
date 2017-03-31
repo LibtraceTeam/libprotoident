@@ -22,6 +22,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_btsync.cc \
 	lpi_canon_mfnp.cc \
 	lpi_checkpoint_rdp.cc \
+	lpi_chivalry.cc \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
@@ -102,6 +103,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_netcore_scan.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \
+	lpi_nintendo.cc \
 	lpi_noction.cc \
 	lpi_noe.cc \
 	lpi_nopayload.cc \

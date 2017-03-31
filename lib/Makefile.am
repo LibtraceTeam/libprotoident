@@ -11,3 +11,4 @@ INCLUDES=@ADD_INCLS@
 libprotoident_la_LIBADD = @ADD_LIBS@ tcp/libprotoident_tcp.la \
 	udp/libprotoident_udp.la
 libprotoident_la_LDFLAGS = @ADD_LDFLAGS@ -version-info 2:10:0
+libprotoident_la_CPPFLAGS = -Werror
