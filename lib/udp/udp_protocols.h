@@ -70,6 +70,7 @@ void register_directconnect_udp(LPIModuleMap *mod_map);
 void register_discord(LPIModuleMap *mod_map);
 void register_dns_udp(LPIModuleMap *mod_map);
 void register_dota2(LPIModuleMap *mod_map);
+void register_doyo(LPIModuleMap *mod_map);
 void register_driveshare(LPIModuleMap *mod_map);
 void register_dtls(LPIModuleMap *mod_map);
 void register_emule_udp(LPIModuleMap *mod_map);

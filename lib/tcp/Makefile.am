@@ -8,6 +8,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
 	lpi_badbaidu.cc \
+	lpi_bitcoin.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
 	lpi_blizzard.cc \
@@ -80,6 +81,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_kik.cc \
 	lpi_kuaibo.cc \
 	lpi_ldap.cc \
+	lpi_lifeforge.cc \
 	lpi_line.cc \
 	lpi_llp2p.cc \
 	lpi_maxicloud.cc \

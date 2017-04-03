@@ -75,6 +75,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_apple_push(mod_map);
 	register_ares(mod_map);
 	register_badbaidu(mod_map);
+	register_bitcoin(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
 	register_blizzard(mod_map);
@@ -147,6 +148,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_kik(mod_map);
 	register_kuaibo(mod_map);
 	register_ldap(mod_map);
+	register_lifeforge(mod_map);
 	register_line(mod_map);
 	register_llp2p(mod_map);
 	register_maxicloud(mod_map);
@@ -319,6 +321,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_discord(mod_map);
 	register_dns_udp(mod_map);
 	register_dota2(mod_map);
+	register_doyo(mod_map);
 	register_driveshare(mod_map);
 	register_dtls(mod_map);
 	register_emule_udp(mod_map);

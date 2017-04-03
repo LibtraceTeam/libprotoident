@@ -322,6 +322,8 @@ typedef enum {
         LPI_PROTO_FACEBOOK_TURN,
         LPI_PROTO_DESTINY,
         LPI_PROTO_QCLOUD_ILVB,
+        LPI_PROTO_BITCOIN,
+        LPI_PROTO_LIFEFORGE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -497,6 +499,7 @@ typedef enum {
         LPI_PROTO_UDP_PORTMAP_RPC,
         LPI_PROTO_UDP_NINTENDO,
         LPI_PROTO_UDP_CHIVALRY,
+        LPI_PROTO_UDP_DOYO,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

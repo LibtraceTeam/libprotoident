@@ -40,6 +40,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_discord.cc \
 	lpi_dns.cc \
 	lpi_dota2.cc \
+	lpi_doyo.cc \
 	lpi_driveshare.cc \
 	lpi_dtls.cc \
 	lpi_emule.cc \
