@@ -131,6 +131,7 @@ void register_mystery_e9(LPIModuleMap *mod_map);
 void register_mystery_qq(LPIModuleMap *mod_map);
 void register_natpmp(LPIModuleMap *mod_map);
 void register_netbios_udp(LPIModuleMap *mod_map);
+void register_netcat_cctv_udp(LPIModuleMap *mod_map);
 void register_netcore_scan(LPIModuleMap *mod_map);
 void register_netflow(LPIModuleMap *mod_map);
 void register_newerth(LPIModuleMap *mod_map);

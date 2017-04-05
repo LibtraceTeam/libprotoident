@@ -101,6 +101,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_qq.cc \
 	lpi_natpmp.cc \
 	lpi_netbios.cc \
+	lpi_netcat_cctv_udp.cc \
 	lpi_netcore_scan.cc \
 	lpi_netflow.cc \
 	lpi_newerth.cc \

@@ -29,6 +29,7 @@
 #include "proto_manager.h"
 
 void register_360safeguard(LPIModuleMap *mod_map);
+void register_acestream(LPIModuleMap *mod_map);
 void register_afp(LPIModuleMap *mod_map);
 void register_airdroid(LPIModuleMap *mod_map);
 void register_akamai_tcp(LPIModuleMap *mod_map);

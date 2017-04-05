@@ -68,6 +68,7 @@ void free_protocols(LPIModuleMap *mod_map) {
 int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 	register_360safeguard(mod_map);
+	register_acestream(mod_map);
 	register_afp(mod_map);
 	register_airdroid(mod_map);
 	register_akamai_tcp(mod_map);
@@ -382,6 +383,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_qq(mod_map);
 	register_natpmp(mod_map);
 	register_netbios_udp(mod_map);
+	register_netcat_cctv_udp(mod_map);
 	register_netcore_scan(mod_map);
 	register_netflow(mod_map);
 	register_newerth(mod_map);
