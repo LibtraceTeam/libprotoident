@@ -381,6 +381,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_99(mod_map);
 	register_mystery_e9(mod_map);
 	register_mystery_qq(mod_map);
+	register_n2ping(mod_map);
 	register_natpmp(mod_map);
 	register_netbios_udp(mod_map);
 	register_netcat_cctv_udp(mod_map);
@@ -413,6 +414,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_quake(mod_map);
 	register_quic(mod_map);
 	register_radius(mod_map);
+	register_ramsey_dash(mod_map);
 	register_real(mod_map);
 	register_roblox(mod_map);
 	register_robocraft(mod_map);
@@ -447,6 +449,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_traceroute(mod_map);
 	register_tremulous(mod_map);
 	register_tvants(mod_map);
+	register_ubisoft_games(mod_map);
 	register_udp_no_payload(mod_map);
 	register_unreal(mod_map);
 	register_ventrilo(mod_map);

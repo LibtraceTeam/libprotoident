@@ -99,6 +99,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mystery_99.cc \
 	lpi_mystery_e9.cc \
 	lpi_mystery_qq.cc \
+	lpi_n2ping.cc \
 	lpi_natpmp.cc \
 	lpi_netbios.cc \
 	lpi_netcat_cctv_udp.cc \
@@ -132,6 +133,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_quake.cc \
 	lpi_quic.cc \
 	lpi_radius.cc \
+	lpi_ramseydash.cc \
 	lpi_real.cc \
 	lpi_roblox.cc \
 	lpi_robocraft.cc \
@@ -166,6 +168,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_traceroute.cc \
 	lpi_tremulous.cc \
 	lpi_tvants.cc \
+	lpi_ubisoft_games.cc \
 	lpi_unreal.cc \
 	lpi_ventrilo.cc \
 	lpi_viber.cc \

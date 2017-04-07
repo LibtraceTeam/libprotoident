@@ -502,6 +502,9 @@ typedef enum {
         LPI_PROTO_UDP_CHIVALRY,
         LPI_PROTO_UDP_DOYO,
         LPI_PROTO_UDP_NETCAT_CCTV,
+        LPI_PROTO_UDP_N2PING,
+        LPI_PROTO_UDP_RAMSEY_DASH,
+        LPI_PROTO_UDP_UBISOFT_GAMES,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
