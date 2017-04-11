@@ -338,6 +338,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_funshion_udp(mod_map);
 	register_gamespy(mod_map);
 	register_garena(mod_map);
+	register_gearsofwar(mod_map);
 	register_gnutella_udp(mod_map);
 	register_gnutella2_udp(mod_map);
 	register_gnutella_weak(mod_map);
@@ -445,9 +446,11 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_teamviewer_udp(mod_map);
 	register_teredo(mod_map);
 	register_tftp(mod_map);
+	register_thecrew(mod_map);
 	register_thq(mod_map);
 	register_traceroute(mod_map);
 	register_tremulous(mod_map);
+	register_turbovpn(mod_map);
 	register_tvants(mod_map);
 	register_ubisoft_games(mod_map);
 	register_udp_no_payload(mod_map);

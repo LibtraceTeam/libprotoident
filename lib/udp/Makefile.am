@@ -56,6 +56,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
 	lpi_garena.cc \
+	lpi_gearsofwar.cc \
 	lpi_gnutella.cc \
 	lpi_gnutella2.cc \
 	lpi_gnutella_weak.cc \
@@ -164,9 +165,11 @@ libprotoident_udp_la_SOURCES = \
 	lpi_teamviewer.cc \
 	lpi_teredo.cc \
 	lpi_tftp.cc \
+	lpi_thecrew.cc \
 	lpi_thq.cc \
 	lpi_traceroute.cc \
 	lpi_tremulous.cc \
+	lpi_turbovpn.cc \
 	lpi_tvants.cc \
 	lpi_ubisoft_games.cc \
 	lpi_unreal.cc \

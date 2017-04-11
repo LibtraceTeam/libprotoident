@@ -100,6 +100,11 @@ static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
                         return true;
         }
 
+        if (len == 4) {
+                if (MATCH(payload, 0x03, 0x03, 0x80, 0x02))
+                        return true;
+        }
+
         return false;
 
 }

@@ -30,57 +30,42 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_lifeforge_login(uint32_t payload, uint32_t len) {
+static inline bool match_thecrew_hello(uint32_t payload, uint32_t len) {
 
-        uint32_t plen = bswap_le_to_host32(payload);
-
-        /* I've only seen 0x25 in here, but that may vary depending on
-         * username length? */
-        if (MATCH(payload, ANY, 0x00, 0x00, 0x00)) {
-                if (len == plen + 4)
+        if (MATCHSTR(payload, "\xff\xff\xff\xff")) {
+                if (len == 50)
+                        return true;
+                if (len == 39)
+                        return true;
+                if (len == 60)
                         return true;
         }
-
-        return false;
-}
-
-static inline bool match_lifeforge_ping(uint32_t payload, uint32_t len) {
-
-        if (MATCH(payload, 0x0e, 0x00, 0x00, 0x00)) {
-                if (len == 18)
-                        return true;
-                if (len == 34)
-                        return true;
-        }
-
         return false;
 
 }
 
-static inline bool match_lifeforge(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_thecrew(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_lifeforge_login(data->payload[0], data->payload_len[0])) {
-                if (match_lifeforge_ping(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
+        if (data->server_port != 3001 && data->client_port != 3001)
+                return false;
 
-        if (match_lifeforge_login(data->payload[1], data->payload_len[1])) {
-                if (match_lifeforge_ping(data->payload[0], data->payload_len[0]))
+        if (match_thecrew_hello(data->payload[0], data->payload_len[0])) {
+                if (match_thecrew_hello(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_lifeforge = {
-	LPI_PROTO_LIFEFORGE,
+static lpi_module_t lpi_thecrew = {
+	LPI_PROTO_UDP_THE_CREW,
 	LPI_CATEGORY_GAMING,
-	"LifeForge",
-	150,
-	match_lifeforge
+	"TheCrew",
+	75,
+	match_thecrew
 };
 
-void register_lifeforge(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_lifeforge, mod_map);
+void register_thecrew(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_thecrew, mod_map);
 }
 
