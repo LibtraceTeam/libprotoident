@@ -113,6 +113,7 @@ void register_ldap(LPIModuleMap *mod_map);
 void register_lifeforge(LPIModuleMap *mod_map);
 void register_line(LPIModuleMap *mod_map);
 void register_llp2p(LPIModuleMap *mod_map);
+void register_maplestory_china(LPIModuleMap *mod_map);
 void register_maxicloud(LPIModuleMap *mod_map);
 void register_message4u(LPIModuleMap *mod_map);
 void register_minecraft(LPIModuleMap *mod_map);

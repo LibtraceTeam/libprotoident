@@ -152,6 +152,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_lifeforge(mod_map);
 	register_line(mod_map);
 	register_llp2p(mod_map);
+	register_maplestory_china(mod_map);
 	register_maxicloud(mod_map);
 	register_message4u(mod_map);
 	register_minecraft(mod_map);
