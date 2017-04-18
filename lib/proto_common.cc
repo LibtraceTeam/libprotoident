@@ -305,6 +305,10 @@ bool match_file_header(uint32_t payload) {
         if (MATCH(payload, 0x00, 0x00, 0x00, 0x20))
                 return true;
 
+        /* TIFF */
+        if (MATCH(payload, 0x49, 0x49, 0x2a, 0x00))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.
