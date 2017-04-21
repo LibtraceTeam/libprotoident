@@ -98,6 +98,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_dianping_tcp(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
+	register_douyu(mod_map);
 	register_duelingnetwork(mod_map);
 	register_dvrns(mod_map);
 	register_dxp(mod_map);
@@ -175,6 +176,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_mystery_symantec(mod_map);
 	register_mzinga(mod_map);
 	register_ncsoft(mod_map);
+	register_ndt_tput(mod_map);
 	register_netbios(mod_map);
 	register_netcat_cctv(mod_map);
 	register_nntp(mod_map);
@@ -203,6 +205,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_rbls(mod_map);
 	register_rdp(mod_map);
 	register_rejection(mod_map);
+	register_relay(mod_map);
 	register_revolver_nblbt(mod_map);
 	register_rfb(mod_map);
 	register_rpcscan(mod_map);

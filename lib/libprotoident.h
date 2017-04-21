@@ -326,6 +326,9 @@ typedef enum {
         LPI_PROTO_LIFEFORGE,
         LPI_PROTO_ACESTREAM,
         LPI_PROTO_MAPLESTORY_CHINA,
+        LPI_PROTO_NDT_TPUT,
+        LPI_PROTO_RELAY,
+        LPI_PROTO_DOUYU,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

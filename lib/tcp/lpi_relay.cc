@@ -30,52 +30,35 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_kakao_req(uint32_t payload, uint32_t len) {
+/* https://docs.syncthing.net/specs/relay-v1.html */
 
-        if (len < 250)
-                return false;
-        if (MATCH(payload, 0x00, 0x01, 0x00, 0x00))
+static inline bool match_relay_magic(uint32_t payload) {
+        if (MATCH(payload, 0x9e, 0x79, 0xbc, 0x40))
                 return true;
         return false;
 
 }
 
-static inline bool match_kakao_resp(uint32_t payload, uint32_t len) {
+static inline bool match_relay(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (payload + 4 == len)
-                return true;
-        return false;
-
-}
-
-static inline bool match_kakao(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (match_kakao_req(data->payload[0], data->payload_len[0])) {
-                if (match_kakao_resp(data->payload[1], 
-                                data->payload_len[1])) {
+        if (match_relay_magic(data->payload[0])) {
+                if (match_relay_magic(data->payload[1]))
                         return true;
-                }
         }
 
-        if (match_kakao_req(data->payload[1], data->payload_len[1])) {
-                if (match_kakao_resp(data->payload[0], 
-                                data->payload_len[0])) {
-                        return true;
-                }
-        }
 
 	return false;
 }
 
-static lpi_module_t lpi_kakao = {
-	LPI_PROTO_KAKAO,
-	LPI_CATEGORY_CHAT,
-	"Kakao",
-	43,
-	match_kakao
+static lpi_module_t lpi_relay = {
+	LPI_PROTO_RELAY,
+	LPI_CATEGORY_NAT,
+	"Relay",
+	5,
+	match_relay
 };
 
-void register_kakao(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_kakao, mod_map);
+void register_relay(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_relay, mod_map);
 }
 

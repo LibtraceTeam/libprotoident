@@ -33,7 +33,7 @@
 /* Mongo protocol uses the first four bytes as a length field */
 static inline bool match_mongo_req(uint32_t payload, uint32_t len) {
 
-        uint32_t mongolen = ntohl(payload);
+        uint32_t mongolen = bswap_le_to_host32(payload);
 
         /* Most requests are very small */
         if (MATCH(payload, ANY, 0x00, 0x00, 0x00) ||
@@ -52,7 +52,7 @@ static inline bool match_mongo_req(uint32_t payload, uint32_t len) {
 
 static inline bool match_mongo_reply(uint32_t payload, uint32_t len) {
 
-        uint32_t mongolen = ntohl(payload);
+        uint32_t mongolen = bswap_le_to_host32(payload);
 
         /* If reply is short, mongolen should match the packet length */
         if (mongolen == len)

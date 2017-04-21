@@ -31,6 +31,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
+	lpi_douyu.cc \
 	lpi_duelingnetwork.cc \
 	lpi_dvrns.cc \
 	lpi_dxp.cc \
@@ -108,6 +109,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_mystery_symantec.cc \
 	lpi_mzinga.cc \
 	lpi_ncsoft.cc \
+	lpi_ndt_tput.cc \
 	lpi_netbios.cc \
 	lpi_netcat_cctv.cc \
 	lpi_nntp.cc \
@@ -136,6 +138,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
 	lpi_rejection.cc \
+	lpi_relay.cc \
 	lpi_revolver_nblbt.cc \
 	lpi_rfb.cc \
 	lpi_rpcscan.cc \
