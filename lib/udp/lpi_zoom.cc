@@ -68,6 +68,7 @@ static inline bool match_zoom_stream_hello(uint32_t payload, uint32_t len) {
                 if (MATCH(payload, 0x1f, 0x01, 0x01, 0x00))
                         return true;
         }
+        return false;
 
 }
 
