@@ -50,6 +50,10 @@ static inline bool match_gow_port(uint32_t sp, uint32_t cp) {
                 return true;
         if (sp == 30600 || cp == 30600)
                 return true;
+        if (sp == 31000 || cp == 31000)
+                return true;
+        if (sp == 30800 || cp == 30800)
+                return true;
         if (sp == 30000 || cp == 30000)
                 return true;
 
