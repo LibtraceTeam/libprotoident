@@ -178,6 +178,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_tensafe.cc \
 	lpi_tera.cc \
 	lpi_tetrisonline.cc \
+	lpi_thedivision.cc \
 	lpi_tip.cc \
 	lpi_tor.cc \
 	lpi_tpkt.cc \

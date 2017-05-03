@@ -245,6 +245,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_tensafe(mod_map);
 	register_tera(mod_map);
 	register_tetrisonline(mod_map);
+	register_thedivision(mod_map);
 	register_tip(mod_map);
 	register_tor(mod_map);
 	register_tpkt_generic(mod_map);
@@ -354,6 +355,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_halflife(mod_map);
 	register_hamachi_udp(mod_map);
 	register_heroes_generals(mod_map);
+	register_hots(mod_map);
 	register_icp(mod_map);
 	register_imesh_udp(mod_map);
 	register_ipmsg(mod_map);

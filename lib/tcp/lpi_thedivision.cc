@@ -30,39 +30,41 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_notes_rpc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+/* Tom Clancy's The Division -- Ubisoft game */
 
-	/* Notes RPC is a proprietary protocol and I haven't been able to
-         * find anything to confirm or disprove any of this. 
-         *
-         * As a result, this rule is pretty iffy as it is based on a bunch
-         * of flows observed going to 1 server using port 1352. There is
-         * no documented basis for this (unlike most other rules)
-         */
-
-        if (data->server_port != 1352 && data->client_port != 1352)
-                return false;
-
-        if (!match_str_either(data, "\x78\x00\x00\x00"))
-                return false;
-
-        if (MATCH(data->payload[0], ANY, ANY, 0x00, 0x00) &&
-                        MATCH(data->payload[1], ANY, ANY, 0x00, 0x00))
+static inline bool match_div_36(uint32_t payload, uint32_t len) {
+        if (len == 36 && MATCH(payload, 0x46, 0x01, 0x02, 0x20))
                 return true;
-	
+        return false;
+}
+
+static inline bool match_div_8(uint32_t payload, uint32_t len) {
+        if (len == 8 && MATCH(payload, 0x0e, 0x01, 0x00, 0x04))
+                return true;
+        return false;
+}
+
+static inline bool match_thedivision(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        /* Port 55000? */
+
+        if (match_div_36(data->payload[0], data->payload_len[0])) {
+                if (match_div_8(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_notes_rpc = {
-	LPI_PROTO_NOTES_RPC,
-	LPI_CATEGORY_REMOTE,
-	"Lotus_Notes_RPC",
-	200,	/* Don't really trust this rule that much :/ */
-	match_notes_rpc
+static lpi_module_t lpi_thedivision = {
+	LPI_PROTO_THE_DIVISION,
+	LPI_CATEGORY_GAMING,
+	"Hearthstone",
+	5,
+	match_thedivision
 };
 
-void register_notes_rpc(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_notes_rpc, mod_map);
+void register_thedivision(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_thedivision, mod_map);
 }
 

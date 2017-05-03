@@ -331,6 +331,7 @@ typedef enum {
         LPI_PROTO_DOUYU,
         LPI_PROTO_IDRIVE_SYNC,
         LPI_PROTO_TWITCASTING,
+        LPI_PROTO_THE_DIVISION,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -515,6 +516,7 @@ typedef enum {
         LPI_PROTO_UDP_TURBOVPN,
         LPI_PROTO_UDP_GEARSOFWAR,
         LPI_PROTO_UDP_RDP,
+        LPI_PROTO_UDP_HOTS,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

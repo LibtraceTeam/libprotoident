@@ -96,6 +96,7 @@ void register_h1z1(LPIModuleMap *mod_map);
 void register_halflife(LPIModuleMap *mod_map);
 void register_hamachi_udp(LPIModuleMap *mod_map);
 void register_heroes_generals(LPIModuleMap *mod_map);
+void register_hots(LPIModuleMap *mod_map);
 void register_icp(LPIModuleMap *mod_map);
 void register_imesh_udp(LPIModuleMap *mod_map);
 void register_ipmsg(LPIModuleMap *mod_map);

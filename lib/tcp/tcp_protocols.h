@@ -206,6 +206,7 @@ void register_tencent_games(LPIModuleMap *mod_map);
 void register_tensafe(LPIModuleMap *mod_map);
 void register_tera(LPIModuleMap *mod_map);
 void register_tetrisonline(LPIModuleMap *mod_map);
+void register_thedivision(LPIModuleMap *mod_map);
 void register_tip(LPIModuleMap *mod_map);
 void register_tor(LPIModuleMap *mod_map);
 void register_tpkt_generic(LPIModuleMap *mod_map);
