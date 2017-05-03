@@ -64,6 +64,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_http_tunnel.cc \
 	lpi_ica.cc \
 	lpi_id.cc \
+	lpi_idrivesync.cc \
 	lpi_imap.cc \
 	lpi_imaps.cc \
 	lpi_imesh.cc \
@@ -184,6 +185,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_trion.cc \
 	lpi_trojan_win32_generic_sb.cc \
 	lpi_trojan_zeroaccess.cc \
+	lpi_twitcasting.cc \
 	lpi_twitch_irc.cc \
 	lpi_viber.cc \
 	lpi_vodlocker.cc \

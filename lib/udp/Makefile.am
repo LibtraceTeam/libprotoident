@@ -135,6 +135,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_quic.cc \
 	lpi_radius.cc \
 	lpi_ramseydash.cc \
+	lpi_rdp_udp.cc \
 	lpi_real.cc \
 	lpi_roblox.cc \
 	lpi_robocraft.cc \

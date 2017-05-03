@@ -55,7 +55,9 @@ static inline bool match_byun_p2p(uint32_t payload, uint32_t len) {
 
 static inline bool match_baiduyun_p2p(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 7273 && data->client_port != 7273)
+        if (data->server_port != 7273 && data->client_port != 7273 &&
+                        data->server_port != 7274 &&
+                        data->client_port != 7274)
                 return false;
 
 

@@ -30,44 +30,40 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_cms_hello(uint32_t payload, uint32_t len) {
+static inline bool match_idrivesync_hello(uint32_t payload) {
 
-        if (len == 16 || len == 536) {
-                if (MATCH(payload, 0x0e, 0x00, 0x8d, 0x00))
-                        return true;
-                if (MATCH(payload, 0x0e, 0x00, 0x8e, 0x00))
-                        return true;
-        }
+        if (MATCH(payload, '@', 'I', 'D', 'E'))
+                return true;
         return false;
 
 }
 
-static inline bool match_maplestory_china(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_idrivesync(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        /* Can also restrict to ports 8585 and 8586 if required */
-
-        if (match_cms_hello(data->payload[0], data->payload_len[0])) {
-                if (data->payload_len[1] == 42)
+        if (match_idrivesync_hello(data->payload[0])) {
+                if (match_idrivesync_hello(data->payload[1]))
+                        return true;
+                if (data->payload_len[1] == 0)
                         return true;
         }
 
-        if (match_cms_hello(data->payload[1], data->payload_len[1])) {
-                if (data->payload_len[0] == 42)
+        if (match_idrivesync_hello(data->payload[1])) {
+                if (data->payload_len[0] == 0)
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_maplestory_china = {
-	LPI_PROTO_MAPLESTORY_CHINA,
-	LPI_CATEGORY_GAMING,
-	"MaplestoryChina",
-	12,
-	match_maplestory_china
+static lpi_module_t lpi_idrivesync = {
+	LPI_PROTO_IDRIVE_SYNC,
+	LPI_CATEGORY_CLOUD,
+	"IDriveSync",
+	5,
+	match_idrivesync
 };
 
-void register_maplestory_china(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_maplestory_china, mod_map);
+void register_idrivesync(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_idrivesync, mod_map);
 }
 

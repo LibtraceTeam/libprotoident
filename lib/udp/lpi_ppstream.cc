@@ -165,6 +165,16 @@ static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (match_1480_ppstream(data->payload[0], data->payload_len[0])) {
+                if (match_1b80_ppstream(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_1480_ppstream(data->payload[1], data->payload_len[1])) {
+                if (match_1b80_ppstream(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
         if (match_8480_ppstream(data->payload[0], data->payload_len[0])) {
                 if (match_any80_ppstream(data->payload[1]))
                         return true;

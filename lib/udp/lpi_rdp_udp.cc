@@ -30,44 +30,36 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_cms_hello(uint32_t payload, uint32_t len) {
 
-        if (len == 16 || len == 536) {
-                if (MATCH(payload, 0x0e, 0x00, 0x8d, 0x00))
-                        return true;
-                if (MATCH(payload, 0x0e, 0x00, 0x8e, 0x00))
-                        return true;
-        }
+static inline bool match_rdp_init(uint32_t payload, uint32_t len) {
+
+        if (len == 1232 && MATCHSTR(payload, "\xff\xff\xff\xff"))
+                return true;
         return false;
 
 }
 
-static inline bool match_maplestory_china(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_rdp_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        /* Can also restrict to ports 8585 and 8586 if required */
+        /* Seen both 3389 and 4732 used as ports */
 
-        if (match_cms_hello(data->payload[0], data->payload_len[0])) {
-                if (data->payload_len[1] == 42)
-                        return true;
-        }
-
-        if (match_cms_hello(data->payload[1], data->payload_len[1])) {
-                if (data->payload_len[0] == 42)
+        if (match_rdp_init(data->payload[0], data->payload_len[0])) {
+                if (match_rdp_init(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_maplestory_china = {
-	LPI_PROTO_MAPLESTORY_CHINA,
-	LPI_CATEGORY_GAMING,
-	"MaplestoryChina",
-	12,
-	match_maplestory_china
+static lpi_module_t lpi_rdp_udp = {
+	LPI_PROTO_UDP_RDP,
+	LPI_CATEGORY_REMOTE,
+	"RDP_UDP",
+	200,
+	match_rdp_udp
 };
 
-void register_maplestory_china(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_maplestory_china, mod_map);
+void register_rdp_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rdp_udp, mod_map);
 }
 

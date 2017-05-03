@@ -164,6 +164,7 @@ void register_quake(LPIModuleMap *mod_map);
 void register_quic(LPIModuleMap *mod_map);
 void register_radius(LPIModuleMap *mod_map);
 void register_ramsey_dash(LPIModuleMap *mod_map);
+void register_rdp_udp(LPIModuleMap *mod_map);
 void register_real(LPIModuleMap *mod_map);
 void register_roblox(LPIModuleMap *mod_map);
 void register_robocraft(LPIModuleMap *mod_map);

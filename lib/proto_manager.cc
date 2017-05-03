@@ -131,6 +131,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_http_tunnel(mod_map);
 	register_ica(mod_map);
 	register_id(mod_map);
+	register_idrivesync(mod_map);
 	register_imap(mod_map);
 	register_imaps(mod_map);
 	register_imesh(mod_map);
@@ -251,6 +252,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_trion(mod_map);
 	register_trojan_win32_generic_sb(mod_map);
 	register_trojan_zeroaccess(mod_map);
+	register_twitcasting(mod_map);
 	register_twitch_irc(mod_map);
 	register_viber(mod_map);
 	register_vodlocker(mod_map);
@@ -420,6 +422,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_quic(mod_map);
 	register_radius(mod_map);
 	register_ramsey_dash(mod_map);
+	register_rdp_udp(mod_map);
 	register_real(mod_map);
 	register_roblox(mod_map);
 	register_robocraft(mod_map);
