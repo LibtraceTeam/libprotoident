@@ -79,6 +79,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_bitcoin(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
+	register_blackdesert(mod_map);
 	register_blizzard(mod_map);
 	register_btsync(mod_map);
 	register_cacaoweb(mod_map);

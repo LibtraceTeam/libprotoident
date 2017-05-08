@@ -30,7 +30,47 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_vivox_request(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x80, 0x7f, 0x00, 0x00) & len == 112)
+                return true;
+        return false;
+
+}
+
+static inline bool match_vivox_reply(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x80, 0x7f, 0x00, 0x00) & len == 99)
+                return true;
+        return false;
+
+}
+
+static inline bool match_vivox_stun(uint32_t payload, uint32_t len) {
+
+        /* Vivox mixes a whole bunch of RTP(?) and STUN together
+         * when it starts up, so sometimes the STUN replies arrive
+         * first. */
+        if (MATCH(payload, 0x01, 0x01, 0x00, 0x70) & len == 132)
+                return true;
+        return false;
+
+}
+
 static inline bool match_vivox(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_vivox_request(data->payload[0], data->payload_len[0])) {
+                if (match_vivox_stun(data->payload[1], data->payload_len[1]))
+                        return true;
+                if (match_vivox_reply(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        if (match_vivox_request(data->payload[1], data->payload_len[1])) {
+                if (match_vivox_stun(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_vivox_reply(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	/* Seen this to Vivox servers, so I'm going to make the logical
          * assumption */

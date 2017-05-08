@@ -40,6 +40,7 @@ void register_badbaidu(LPIModuleMap *mod_map);
 void register_bitcoin(LPIModuleMap *mod_map);
 void register_bitextend(LPIModuleMap *mod_map);
 void register_bittorrent(LPIModuleMap *mod_map);
+void register_blackdesert(LPIModuleMap *mod_map);
 void register_blizzard(LPIModuleMap *mod_map);
 void register_btsync(LPIModuleMap *mod_map);
 void register_cacaoweb(LPIModuleMap *mod_map);

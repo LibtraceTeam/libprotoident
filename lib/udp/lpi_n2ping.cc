@@ -45,11 +45,16 @@ static inline bool match_n2ping_header(uint32_t payload) {
 
 static inline bool match_n2ping(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 44778 && data->client_port != 44778) {
-                return false;
+        bool validport = false;
+
+        if (data->server_port == 44778 || data->client_port == 44778) {
+                validport = true;
+        }
+        if (data->server_port == 23 || data->client_port == 23) {
+                validport = true;
         }
 
-        if (match_n2ping_header(data->payload[0]) &&
+        if (validport && match_n2ping_header(data->payload[0]) &&
                         match_n2ping_header(data->payload[1])) {
                 if (data->payload_len[0] < 100)
                         return true;

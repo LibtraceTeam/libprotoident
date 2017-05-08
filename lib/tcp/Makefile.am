@@ -12,6 +12,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_bitcoin.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
+	lpi_blackdesert.cc \
 	lpi_blizzard.cc \
 	lpi_btsync.cc \
 	lpi_cacaoweb.cc \

@@ -332,6 +332,7 @@ typedef enum {
         LPI_PROTO_IDRIVE_SYNC,
         LPI_PROTO_TWITCASTING,
         LPI_PROTO_THE_DIVISION,
+        LPI_PROTO_BLACKDESERT,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

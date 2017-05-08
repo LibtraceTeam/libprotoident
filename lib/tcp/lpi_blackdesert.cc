@@ -30,53 +30,54 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Heroes of the Storm -- Blizzard MOBA */
+/* First two bytes definitely look like a little-endian length
+ * field, so we could use that to match more reply types */
 
-static inline bool match_hots_zero(uint32_t payload, uint32_t len) {
+/* Port 9991, 9992 and 9993 */
 
-        if (len == 20 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+static inline bool match_bdo_request(uint32_t payload, uint32_t len) {
+
+        if (len == 111 && MATCH(payload, 0x6f, 0x00, 0x01, 0x9d))
                 return true;
         return false;
+
 }
 
-static inline bool match_hots_other(uint32_t payload, uint32_t len) {
+static inline bool match_bdo_reply(uint32_t payload, uint32_t len) {
 
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x01, 0x00))
+        if (len == 112 && MATCH(payload, 0x70, 0x00, 0x01, ANY))
                 return true;
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x02, 0x00))
-                return true;
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x00, 0x00))
-                return true;
+
         return false;
+
 }
 
-static inline bool match_hots(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_blackdesert(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 1119 && data->client_port != 1119)
-                return false;
 
-        if (match_hots_zero(data->payload[0], data->payload_len[0])) {
-                if (match_hots_other(data->payload[1], data->payload_len[1]))
+        if (match_bdo_request(data->payload[0], data->payload_len[0])) {
+                if (match_bdo_reply(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_hots_zero(data->payload[0], data->payload_len[0])) {
-                if (match_hots_other(data->payload[1], data->payload_len[1]))
+
+        if (match_bdo_request(data->payload[1], data->payload_len[1])) {
+                if (match_bdo_reply(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_hots = {
-	LPI_PROTO_UDP_HOTS,
+static lpi_module_t lpi_blackdesert = {
+	LPI_PROTO_BLACKDESERT,
 	LPI_CATEGORY_GAMING,
-	"Hearthstone",
-	101,
-	match_hots
+	"BlackDesertOnline",
+	12,
+	match_blackdesert
 };
 
-void register_hots(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_hots, mod_map);
+void register_blackdesert(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_blackdesert, mod_map);
 }
 
