@@ -30,59 +30,52 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Heroes of the Storm -- Blizzard MOBA */
 
-static inline bool match_hots_zero(uint32_t payload, uint32_t len) {
+/* APK name = com.dianshijia.tvlive */
+/* Published by New Zealand ibestv Trading Limited (?) */
 
-        if (len == 20 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+static inline bool match_dsj_req(uint32_t payload, uint32_t len) {
+        if (len == 20 && MATCHSTR(payload, "\xff\x03\x00\x00"))
                 return true;
-        return false;
-}
-
-static inline bool match_hots_other(uint32_t payload, uint32_t len) {
-
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x01, 0x00))
-                return true;
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x02, 0x00))
-                return true;
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x03, 0x00))
-                return true;
-        if (len == 20 && MATCH(payload, ANY, ANY, 0x00, 0x00)) {
-                if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
-                        return false;
-                return true;
-        }
 
         return false;
 }
 
-static inline bool match_hots(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_dsj_reply(uint32_t payload, uint32_t len) {
+        if (len == 20 && MATCHSTR(payload, "\xff\x05\x00\x00"))
+                return true;
+        if (len == 20 && MATCHSTR(payload, "\xff\x03\x01\x00"))
+                return true;
 
-        if (data->server_port != 1119 && data->client_port != 1119)
-                return false;
+        return false;
+}
 
-        if (match_hots_zero(data->payload[0], data->payload_len[0])) {
-                if (match_hots_other(data->payload[1], data->payload_len[1]))
+static inline bool match_dianshijia(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+
+        if (match_dsj_req(data->payload[0], data->payload_len[0])) {
+                if (match_dsj_reply(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_hots_zero(data->payload[0], data->payload_len[0])) {
-                if (match_hots_other(data->payload[1], data->payload_len[1]))
+
+        if (match_dsj_req(data->payload[1], data->payload_len[1])) {
+                if (match_dsj_reply(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_hots = {
-	LPI_PROTO_UDP_HOTS,
-	LPI_CATEGORY_GAMING,
-	"Hearthstone",
-	101,
-	match_hots
+static lpi_module_t lpi_dianshijia = {
+	LPI_PROTO_UDP_DIANSHIJIA,
+	LPI_CATEGORY_P2PTV,             /* I think... */
+	"Dianshijia",
+	100,
+	match_dianshijia
 };
 
-void register_hots(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_hots, mod_map);
+void register_dianshijia(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_dianshijia, mod_map);
 }
 

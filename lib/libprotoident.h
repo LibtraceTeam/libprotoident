@@ -333,6 +333,10 @@ typedef enum {
         LPI_PROTO_TWITCASTING,
         LPI_PROTO_THE_DIVISION,
         LPI_PROTO_BLACKDESERT,
+        LPI_PROTO_REALVNC,
+        LPI_PROTO_DOGECOIN,
+        LPI_PROTO_FUCKCOIN,
+        LPI_PROTO_OURWORLD,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -518,6 +522,8 @@ typedef enum {
         LPI_PROTO_UDP_GEARSOFWAR,
         LPI_PROTO_UDP_RDP,
         LPI_PROTO_UDP_HOTS,
+        LPI_PROTO_UDP_VPNMASTER,
+        LPI_PROTO_UDP_DIANSHIJIA,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

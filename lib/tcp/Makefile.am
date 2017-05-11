@@ -32,6 +32,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
 	lpi_dns.cc \
+	lpi_dogecoin.cc \
 	lpi_douyu.cc \
 	lpi_duelingnetwork.cc \
 	lpi_dvrns.cc \
@@ -46,6 +47,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fring.cc \
 	lpi_ftpcontrol.cc \
 	lpi_ftpdata.cc \
+	lpi_fuckcoin.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
 	lpi_git.cc \
@@ -121,6 +123,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_notes_rpc.cc \
 	lpi_omegle.cc \
 	lpi_openvpn.cc \
+	lpi_ourworld.cc \
 	lpi_palringo.cc \
 	lpi_paltalk.cc \
 	lpi_pandatv.cc \
@@ -139,6 +142,7 @@ libprotoident_tcp_la_SOURCES = \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
+	lpi_realvnc.cc \
 	lpi_rejection.cc \
 	lpi_relay.cc \
 	lpi_revolver_nblbt.cc \

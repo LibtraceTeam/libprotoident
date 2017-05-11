@@ -99,6 +99,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_dianping_tcp(mod_map);
 	register_directconnect(mod_map);
 	register_dns_tcp(mod_map);
+	register_dogecoin(mod_map);
 	register_douyu(mod_map);
 	register_duelingnetwork(mod_map);
 	register_dvrns(mod_map);
@@ -113,6 +114,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_fring(mod_map);
 	register_ftpcontrol(mod_map);
 	register_ftpdata(mod_map);
+	register_fuckcoin(mod_map);
 	register_funshion_tcp(mod_map);
 	register_gamespy_tcp(mod_map);
 	register_git(mod_map);
@@ -188,6 +190,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_tcp_no_payload(mod_map);
 	register_omegle(mod_map);
 	register_openvpn(mod_map);
+	register_ourworld(mod_map);
 	register_palringo(mod_map);
 	register_paltalk(mod_map);
 	register_pandatv(mod_map);
@@ -206,6 +209,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
         register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
+	register_realvnc(mod_map);
 	register_rejection(mod_map);
 	register_relay(mod_map);
 	register_revolver_nblbt(mod_map);
@@ -326,6 +330,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_dht_other(mod_map);
 	register_diablo2(mod_map);
 	register_dianping_udp(mod_map);
+	register_dianshijia(mod_map);
 	register_directconnect_udp(mod_map);
 	register_discord(mod_map);
 	register_dns_udp(mod_map);
@@ -468,6 +473,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ventrilo(mod_map);
 	register_viber_udp(mod_map);
 	register_vivox(mod_map);
+	register_vpnmaster(mod_map);
 	register_vxworks_exploit(mod_map);
 	register_warthunder(mod_map);
 	register_wechat_udp(mod_map);

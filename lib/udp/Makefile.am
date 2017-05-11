@@ -36,6 +36,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_dht_other.cc \
 	lpi_diablo2.cc \
 	lpi_dianping_udp.cc \
+	lpi_dianshijia.cc \
 	lpi_directconnect.cc \
 	lpi_discord.cc \
 	lpi_dns.cc \
@@ -178,6 +179,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ventrilo.cc \
 	lpi_viber.cc \
 	lpi_vivox.cc \
+	lpi_vpnmaster.cc \
 	lpi_vxworks_exploit.cc \
 	lpi_warthunder.cc \
 	lpi_wechat_udp.cc \
