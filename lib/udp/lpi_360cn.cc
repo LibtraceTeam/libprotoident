@@ -33,11 +33,7 @@
 /* Not 100% sure what this is but:
  *  - it's on port 53 but is definitely not DNS
  *  - involves servers owned by 360.cn, who 'supposedly' are antivirus experts
- *  - most of these same servers are contacted by various known malware, 
-      particularly Zegost variants
  *  - the protocol appears to be a custom encryption protocol
- *
- * In all likelihood, this is the C&C protocol for some nasty Chinese backdoor.
  */
 
 
@@ -88,7 +84,7 @@ static inline bool match_360cn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_360cn = {
 	LPI_PROTO_UDP_360CN,
-	LPI_CATEGORY_MALWARE,
+	LPI_CATEGORY_SECURITY,
 	"360.cn",
 	50,
 	match_360cn
