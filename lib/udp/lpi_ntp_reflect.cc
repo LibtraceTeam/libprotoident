@@ -31,7 +31,7 @@
 #include "proto_common.h"
 
 
-static inline bool match_monlist(uint32_t payload) {
+static inline bool match_monlist(uint32_t payload, uint32_t len) {
 
         if (len == 0)
                 return true;
@@ -71,12 +71,12 @@ static inline bool match_ntp_reflect(lpi_data_t *data, lpi_module_t *mod UNUSED)
         if (data->server_port != 123 && data->client_port != 123)
                 return false;
 
-        if (match_monlist(data->payload[0])) {
+        if (match_monlist(data->payload[0], data->payload_len[0])) {
                 if (match_monlist_reply(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_monlist(data->payload[1])) {
+        if (match_monlist(data->payload[1], data->payload_len[1])) {
                 if (match_monlist_reply(data->payload[0], data->payload_len[0]))
                         return true;
         }
