@@ -127,6 +127,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_pplive.cc \
 	lpi_ppstream.cc \
 	lpi_probable_gnutella.cc \
+	lpi_ps4_remoteplay.cc \
 	lpi_psn.cc \
 	lpi_punkbuster.cc \
 	lpi_pyzor.cc \

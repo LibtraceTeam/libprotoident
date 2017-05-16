@@ -78,11 +78,7 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         replen = ntohl(payload) >> 24;
 
         if (replen == len - 1) {
-                /* Older protocol version */
-                if (MATCH(payload, ANY, 0x00, 0x2f, ANY))
-                        return true;
-                /* Most recent protocol version (02/08/16) */
-                if (MATCH(payload, ANY, 0x00, 0xd2, ANY))
+                if (MATCH(payload, ANY, 0x00, ANY, ANY))
                         return true;
         }
 
@@ -143,7 +139,7 @@ static lpi_module_t lpi_minecraft = {
 	LPI_PROTO_MINECRAFT,
 	LPI_CATEGORY_GAMING,
 	"Minecraft",
-	5,
+	35,
 	match_minecraft
 };
 

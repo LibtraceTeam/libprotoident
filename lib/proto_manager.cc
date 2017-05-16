@@ -420,6 +420,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_pplive(mod_map);
 	register_ppstream(mod_map);
 	//register_probable_gnutella(mod_map);
+	register_ps4_remoteplay(mod_map);
 	register_psn(mod_map);
 	register_punkbuster(mod_map);
 	register_pyzor(mod_map);

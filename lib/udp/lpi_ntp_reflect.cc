@@ -33,6 +33,9 @@
 
 static inline bool match_monlist(uint32_t payload) {
 
+        if (len == 0)
+                return true;
+
         if (MATCH(payload, 0x17, 0x00, 0x03, 0x2a))
                 return true;
         return false;
@@ -48,10 +51,16 @@ static inline bool match_monlist_reply(uint32_t payload, uint32_t len) {
         /* NTPv2 reply */
         if (MATCH(payload, 0x97, 0x00, 0x03, 0x2a))
                 return true;
+        if (MATCH(payload, 0xd7, 0x00, 0x03, 0x2a))
+                return true;
 
         /* NTPv3 reply */
         if (MATCH(payload, 0x9f, 0x00, 0x03, 0x2a))
                 return true;
+        if (MATCH(payload, 0xdf, 0x00, 0x03, 0x2a))
+                return true;
+
+
 
         return false;
 

@@ -47,6 +47,8 @@ static inline bool match_hots_other(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 20 && MATCH(payload, ANY, ANY, 0x03, 0x00))
                 return true;
+        if (len == 20 && MATCH(payload, ANY, ANY, 0x04, 0x00))
+                return true;
         if (len == 20 && MATCH(payload, ANY, ANY, 0x00, 0x00)) {
                 if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                         return false;
@@ -58,7 +60,14 @@ static inline bool match_hots_other(uint32_t payload, uint32_t len) {
 
 static inline bool match_hots(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 1119 && data->client_port != 1119)
+        bool validport = false;
+
+        if (data->server_port == 1119 || data->client_port == 1119)
+                validport = true;
+        if (data->server_port == 3724 || data->client_port == 3724)
+                validport = true;
+
+        if (!validport)
                 return false;
 
         if (match_hots_zero(data->payload[0], data->payload_len[0])) {

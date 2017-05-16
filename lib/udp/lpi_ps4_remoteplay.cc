@@ -30,46 +30,43 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_cms_hello(uint32_t payload, uint32_t len) {
+static inline bool valid_port(uint16_t porta, uint16_t portb) {
 
-        if (len == 16 || len == 536) {
-                if (MATCH(payload, 0x0e, 0x00, 0x8d, 0x00))
-                        return true;
-                if (MATCH(payload, 0x0e, 0x00, 0x8e, 0x00))
-                        return true;
-                if (MATCH(payload, 0x0e, 0x00, 0x8f, 0x00))
-                        return true;
-        }
+        if (porta == 9296 || portb == 9296)
+                return true;
+        if (porta == 9297 || portb == 9297)
+                return true;
+
         return false;
-
 }
 
-static inline bool match_maplestory_china(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ps4_remoteplay(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        /* Can also restrict to ports 8585 and 8586 if required */
+        if (!valid_port(data->server_port, data->client_port))
+                return false;
 
-        if (match_cms_hello(data->payload[0], data->payload_len[0])) {
-                if (data->payload_len[1] == 42)
-                        return true;
-        }
+        /* Examples that I have are 88 bytes, but this probably depends on
+         * lengths of user and device names */
+        if (data->payload_len[0] != data->payload_len[1])
+                return false;
 
-        if (match_cms_hello(data->payload[1], data->payload_len[1])) {
-                if (data->payload_len[0] == 42)
+        if (MATCH(data->payload[0], 0x01, 0x00, 0x00, 0x00)) {
+                if (MATCH(data->payload[1], 0x01, 0x00, 0x00, 0x00))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_maplestory_china = {
-	LPI_PROTO_MAPLESTORY_CHINA,
+static lpi_module_t lpi_ps4_remoteplay = {
+	LPI_PROTO_UDP_PS4_REMOTEPLAY,
 	LPI_CATEGORY_GAMING,
-	"MaplestoryChina",
-	12,
-	match_maplestory_china
+	"PS4_RemotePlay",
+	150,
+	match_ps4_remoteplay
 };
 
-void register_maplestory_china(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_maplestory_china, mod_map);
+void register_ps4_remoteplay(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ps4_remoteplay, mod_map);
 }
 

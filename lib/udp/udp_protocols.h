@@ -156,6 +156,7 @@ void register_portmap_rpc(LPIModuleMap *mod_map);
 void register_pplive(LPIModuleMap *mod_map);
 void register_ppstream(LPIModuleMap *mod_map);
 void register_probable_gnutella(LPIModuleMap *mod_map);
+void register_ps4_remoteplay(LPIModuleMap *mod_map);
 void register_psn(LPIModuleMap *mod_map);
 void register_punkbuster(LPIModuleMap *mod_map);
 void register_pyzor(LPIModuleMap *mod_map);
