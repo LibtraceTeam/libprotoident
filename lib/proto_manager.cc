@@ -122,6 +122,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_gnutella(mod_map);
 	register_goku(mod_map);
 	register_googlehangouts(mod_map);
+	register_graalonlineera(mod_map);
 	register_guildwars2(mod_map);
 	register_hamachi(mod_map);
 	register_harveys(mod_map);

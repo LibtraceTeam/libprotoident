@@ -83,6 +83,7 @@ void register_glupteba(LPIModuleMap *mod_map);
 void register_gnutella(LPIModuleMap *mod_map);
 void register_goku(LPIModuleMap *mod_map);
 void register_googlehangouts(LPIModuleMap *mod_map);
+void register_graalonlineera(LPIModuleMap *mod_map);
 void register_guildwars2(LPIModuleMap *mod_map);
 void register_hamachi(LPIModuleMap *mod_map);
 void register_harveys(LPIModuleMap *mod_map);

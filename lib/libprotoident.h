@@ -337,6 +337,7 @@ typedef enum {
         LPI_PROTO_DOGECOIN,
         LPI_PROTO_FUCKCOIN,
         LPI_PROTO_OURWORLD,
+        LPI_PROTO_GRAAL_ONLINE_ERA,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
