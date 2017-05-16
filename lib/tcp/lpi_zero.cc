@@ -57,6 +57,8 @@ static inline bool match_zero_fb_shlo(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x30, 0x11, 0x0f, 0x00))
                 return true;
+        if (MATCH(payload, 0x30, 0x14, 0x05, 0x00))
+                return true;
         if (MATCH(payload, 0x30, ANY, 0x00, 0x00))
                 return true;
         return false;
