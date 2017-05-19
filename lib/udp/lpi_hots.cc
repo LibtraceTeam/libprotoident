@@ -75,8 +75,8 @@ static inline bool match_hots(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
-        if (match_hots_zero(data->payload[0], data->payload_len[0])) {
-                if (match_hots_other(data->payload[1], data->payload_len[1]))
+        if (match_hots_zero(data->payload[1], data->payload_len[1])) {
+                if (match_hots_other(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
