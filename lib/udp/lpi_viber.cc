@@ -33,7 +33,7 @@
 /* Thanks to Remy Mudingay for providing traces to identify this protocol */
 
 static inline bool match_viber_request(uint32_t payload, uint32_t plen) {
-	if (plen != 12)
+	if (plen != 12 && plen != 16)
 		return false;
 	if (MATCH(payload, ANY, ANY, 0x03, 0x00))
 		return true;
@@ -82,10 +82,14 @@ static inline bool match_viber_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (match_viber_request(data->payload[0], data->payload_len[0])) {
 		if (match_viber_response(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_viber_request(data->payload[1], data->payload_len[1]))
+			return true;
 	}
 
 	if (match_viber_request(data->payload[1], data->payload_len[1])) {
 		if (match_viber_response(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_viber_request(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
