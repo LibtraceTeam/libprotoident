@@ -451,6 +451,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_spotify_bcast(mod_map);
 	register_sql_worm(mod_map);
 	register_ssdp(mod_map);
+	register_starcitizen(mod_map);
 	register_starcraft(mod_map);
 	register_steamfriends(mod_map);
 	register_steam_localbroadcast(mod_map);
@@ -478,6 +479,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_vpnmaster(mod_map);
 	register_vxworks_exploit(mod_map);
 	register_warthunder(mod_map);
+	register_webex(mod_map);
 	register_wechat_udp(mod_map);
 	register_winmessage(mod_map);
 	register_wolfet(mod_map);

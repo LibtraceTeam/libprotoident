@@ -157,6 +157,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_spotify_bcast.cc \
 	lpi_sql_worm.cc \
 	lpi_ssdp.cc \
+	lpi_starcitizen.cc \
 	lpi_starcraft.cc \
 	lpi_steam.cc \
 	lpi_steamfriends.cc \
@@ -183,6 +184,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_vpnmaster.cc \
 	lpi_vxworks_exploit.cc \
 	lpi_warthunder.cc \
+	lpi_webex.cc \
 	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
 	lpi_wolfet.cc \

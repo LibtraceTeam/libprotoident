@@ -526,6 +526,8 @@ typedef enum {
         LPI_PROTO_UDP_VPNMASTER,
         LPI_PROTO_UDP_DIANSHIJIA,
         LPI_PROTO_UDP_PS4_REMOTEPLAY,
+        LPI_PROTO_UDP_STARCITIZEN,
+        LPI_PROTO_UDP_WEBEX,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

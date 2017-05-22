@@ -49,6 +49,8 @@ static inline bool match_hots_other(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 20 && MATCH(payload, ANY, ANY, 0x04, 0x00))
                 return true;
+        if (len == 20 && MATCH(payload, ANY, ANY, 0x05, 0x00))
+                return true;
         if (len == 20 && MATCH(payload, ANY, ANY, 0x00, 0x00)) {
                 if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                         return false;
