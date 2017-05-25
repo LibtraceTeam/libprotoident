@@ -6,6 +6,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_airdroid.cc \
 	lpi_akamai.cc \
 	lpi_amp.cc \
+	lpi_appearin.cc \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
 	lpi_badbaidu.cc \

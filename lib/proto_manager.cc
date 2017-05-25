@@ -73,6 +73,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_airdroid(mod_map);
 	register_akamai_tcp(mod_map);
 	register_amp(mod_map);
+	register_appearin(mod_map);
 	register_apple_push(mod_map);
 	register_ares(mod_map);
 	register_badbaidu(mod_map);
