@@ -195,6 +195,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_trojan_zeroaccess.cc \
 	lpi_twitcasting.cc \
 	lpi_twitch_irc.cc \
+	lpi_vainglory.cc \
 	lpi_viber.cc \
 	lpi_vodlocker.cc \
 	lpi_warcraft3.cc \
@@ -202,6 +203,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_weblogic.cc \
 	lpi_wechat.cc \
 	lpi_weibo.cc \
+	lpi_weiqi.cc \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \

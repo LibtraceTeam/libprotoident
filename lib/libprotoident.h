@@ -339,6 +339,8 @@ typedef enum {
         LPI_PROTO_OURWORLD,
         LPI_PROTO_GRAAL_ONLINE_ERA,
         LPI_PROTO_APPEAR_IN,
+        LPI_PROTO_VAINGLORY,
+        LPI_PROTO_WEIQI,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

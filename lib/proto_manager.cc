@@ -262,6 +262,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_trojan_zeroaccess(mod_map);
 	register_twitcasting(mod_map);
 	register_twitch_irc(mod_map);
+	register_vainglory(mod_map);
 	register_viber(mod_map);
 	register_vodlocker(mod_map);
 	register_warcraft3(mod_map);
@@ -269,6 +270,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_weblogic(mod_map);
 	register_wechat(mod_map);
 	register_weibo(mod_map);
+	register_weiqi(mod_map);
 	register_whatsapp(mod_map);
 	register_whois(mod_map);
 	register_winmx(mod_map);
