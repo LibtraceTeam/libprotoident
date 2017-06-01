@@ -91,6 +91,7 @@ void register_gearsofwar(LPIModuleMap *mod_map);
 void register_gnutella_udp(LPIModuleMap *mod_map);
 void register_gnutella2_udp(LPIModuleMap *mod_map);
 void register_gnutella_weak(LPIModuleMap *mod_map);
+void register_gotomeeting(LPIModuleMap *mod_map);
 void register_gprs_tunnel(LPIModuleMap *mod_map);
 void register_gsm(LPIModuleMap *mod_map);
 void register_h1z1(LPIModuleMap *mod_map);

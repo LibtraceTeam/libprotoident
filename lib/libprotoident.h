@@ -533,6 +533,7 @@ typedef enum {
         LPI_PROTO_UDP_STARCITIZEN,
         LPI_PROTO_UDP_WEBEX,
         LPI_PROTO_UDP_HALO_ONLINE,
+        LPI_PROTO_UDP_GOTOMEETING,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

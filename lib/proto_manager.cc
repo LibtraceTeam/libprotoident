@@ -360,6 +360,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_gnutella_udp(mod_map);
 	register_gnutella2_udp(mod_map);
 	register_gnutella_weak(mod_map);
+	register_gotomeeting(mod_map);
 	register_gprs_tunnel(mod_map);
 	register_gsm(mod_map);
 	register_h1z1(mod_map);

@@ -61,6 +61,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gnutella.cc \
 	lpi_gnutella2.cc \
 	lpi_gnutella_weak.cc \
+	lpi_gotomeeting.cc \
 	lpi_gprs_tunnel.cc \
 	lpi_gsm.cc \
 	lpi_h1z1.cc \

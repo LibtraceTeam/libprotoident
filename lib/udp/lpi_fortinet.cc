@@ -60,6 +60,8 @@ static inline bool match_fortinet_req(uint32_t payload, uint32_t len) {
 		return true;
 	if (MATCHSTR(payload, "ikvk"))
 		return true;
+	if (MATCHSTR(payload, "ikvo"))
+		return true;
 
 	return false;
 
@@ -76,6 +78,8 @@ static inline bool match_fortinet_resp(uint32_t payload, uint32_t len) {
 	if (len == 12 && MATCHSTR(payload, "nkwg"))
 		return true;
 	if (len == 32 && MATCHSTR(payload, "khwK"))
+		return true;
+	if (len == 64 && MATCHSTR(payload, "kkw+"))
 		return true;
 	return false;
 
