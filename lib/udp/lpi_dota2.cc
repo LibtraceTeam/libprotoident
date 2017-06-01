@@ -69,6 +69,22 @@ static inline bool match_dota2_0212(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_dota2_512(uint32_t payload, uint32_t len) {
+
+        if (len == 512 && MATCH(payload, 0x20, 0x0e, 0x00, 0x0d))
+                return true;
+        return false;
+
+}
+
+static inline bool match_dota2_24(uint32_t payload, uint32_t len) {
+
+        if (len == 24 && MATCH(payload, 0x21, 0x0d, ANY, ANY))
+                return true;
+        return false;
+
+}
+
 
 static inline bool match_dota2(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -89,6 +105,16 @@ static inline bool match_dota2(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_dota2_0100(data->payload[1], data->payload_len[1])) {
                 if (match_dota2_0212(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_dota2_512(data->payload[0], data->payload_len[0])) {
+                if (match_dota2_24(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_dota2_512(data->payload[1], data->payload_len[1])) {
+                if (match_dota2_24(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
