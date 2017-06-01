@@ -95,6 +95,7 @@ void register_gprs_tunnel(LPIModuleMap *mod_map);
 void register_gsm(LPIModuleMap *mod_map);
 void register_h1z1(LPIModuleMap *mod_map);
 void register_halflife(LPIModuleMap *mod_map);
+void register_haloonline(LPIModuleMap *mod_map);
 void register_hamachi_udp(LPIModuleMap *mod_map);
 void register_heroes_generals(LPIModuleMap *mod_map);
 void register_hots(LPIModuleMap *mod_map);

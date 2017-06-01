@@ -65,6 +65,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_gsm.cc \
 	lpi_h1z1.cc \
 	lpi_halflife.cc \
+	lpi_haloonline.cc \
 	lpi_hamachi.cc \
 	lpi_heroes_generals.cc \
 	lpi_hots.cc \

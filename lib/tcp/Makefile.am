@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
 	lpi_360safeguard.cc \
+	lpi_4d.cc \
 	lpi_acestream.cc \
 	lpi_afp.cc \
 	lpi_airdroid.cc \

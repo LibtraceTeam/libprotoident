@@ -68,6 +68,7 @@ void free_protocols(LPIModuleMap *mod_map) {
 int register_tcp_protocols(LPIModuleMap *mod_map) {
 
 	register_360safeguard(mod_map);
+	register_4d(mod_map);
 	register_acestream(mod_map);
 	register_afp(mod_map);
 	register_airdroid(mod_map);
@@ -363,6 +364,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_gsm(mod_map);
 	register_h1z1(mod_map);
 	register_halflife(mod_map);
+	register_haloonline(mod_map);
 	register_hamachi_udp(mod_map);
 	register_heroes_generals(mod_map);
 	register_hots(mod_map);
