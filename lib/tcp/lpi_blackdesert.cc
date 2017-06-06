@@ -47,6 +47,8 @@ static inline bool match_bdo_reply(uint32_t payload, uint32_t len) {
 
         if (len == 112 && MATCH(payload, 0x70, 0x00, 0x01, ANY))
                 return true;
+        if (len == 113 && MATCH(payload, 0x71, 0x00, 0x01, ANY))
+                return true;
 
         return false;
 

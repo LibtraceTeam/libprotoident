@@ -30,54 +30,39 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* MMO game from Gaijin Entertainment. Uses UDP ports 20010+ */
+static inline bool match_tankix_19(uint32_t payload, uint32_t len) {
 
-static inline bool match_warthunder_req(uint32_t payload, uint32_t len) {
-
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0a))
-                return true;
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0b))
-                return true;
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x05))
-                return true;
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x14))
+        if (MATCHSTR(payload, "\xff\x00\x00\x00") && len == 19)
                 return true;
         return false;
-
 }
 
-static inline bool match_warthunder_resp(uint32_t payload, uint32_t len) {
 
-        if (len == 48 && MATCH(payload, 0xc0, 0x00, ANY, ANY))
-                return true;
-        return false;
+static inline bool match_tankix(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-}
-
-static inline bool match_warthunder(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (match_warthunder_req(data->payload[1], data->payload_len[1])){
-                if (match_warthunder_resp(data->payload[0], data->payload_len[0]))
+        /* Port 5050 */
+        if (match_tankix_19(data->payload[0], data->payload_len[0])) {
+                if (MATCHSTR(data->payload[1], "\xff\x00\x00\x00"))
                         return true;
         }
 
-        if (match_warthunder_req(data->payload[0], data->payload_len[0])){
-                if (match_warthunder_resp(data->payload[1], data->payload_len[1]))
+        if (match_tankix_19(data->payload[1], data->payload_len[1])) {
+                if (MATCHSTR(data->payload[0], "\xff\x00\x00\x00"))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_warthunder = {
-	LPI_PROTO_UDP_WARTHUNDER,
+static lpi_module_t lpi_tankix = {
+	LPI_PROTO_TANKIX,
 	LPI_CATEGORY_GAMING,
-	"WarThunder",
-	9,
-	match_warthunder
+	"TankiX",
+	52,
+	match_tankix
 };
 
-void register_warthunder(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_warthunder, mod_map);
+void register_tankix(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_tankix, mod_map);
 }
 

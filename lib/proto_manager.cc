@@ -242,6 +242,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_stun_tcp(mod_map);
 	register_supl(mod_map);
 	register_svn(mod_map);
+	register_tankix(mod_map);
 	register_taobao(mod_map);
 	register_tds(mod_map);
 	register_teamviewer(mod_map);

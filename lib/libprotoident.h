@@ -342,6 +342,7 @@ typedef enum {
         LPI_PROTO_VAINGLORY,
         LPI_PROTO_WEIQI,
         LPI_PROTO_4D,
+        LPI_PROTO_TANKIX,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

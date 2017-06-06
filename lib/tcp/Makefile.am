@@ -175,6 +175,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_stun.cc \
 	lpi_supl.cc \
 	lpi_svn.cc \
+	lpi_tankix.cc \
 	lpi_taobao.cc \
 	lpi_tds.cc \
 	lpi_teamviewer.cc \
