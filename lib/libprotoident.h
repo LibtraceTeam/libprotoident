@@ -536,6 +536,8 @@ typedef enum {
         LPI_PROTO_UDP_WEBEX,
         LPI_PROTO_UDP_HALO_ONLINE,
         LPI_PROTO_UDP_GOTOMEETING,
+        LPI_PROTO_UDP_CROSSOUT,
+        LPI_PROTO_UDP_UMEYE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

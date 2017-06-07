@@ -328,6 +328,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
+	register_crossout(mod_map);
 	register_csgo(mod_map);
 	register_db2(mod_map);
 	register_dcc_udp(mod_map);
@@ -480,6 +481,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_tvants(mod_map);
 	register_ubisoft_games(mod_map);
 	register_udp_no_payload(mod_map);
+	register_umeye(mod_map);
 	register_unreal(mod_map);
 	register_ventrilo(mod_map);
 	register_viber_udp(mod_map);

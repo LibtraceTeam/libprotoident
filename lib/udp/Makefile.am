@@ -27,6 +27,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
 	lpi_cod.cc \
+	lpi_crossout.cc \
 	lpi_csgo.cc \
 	lpi_db2.cc \
 	lpi_dcc.cc \
@@ -179,6 +180,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_turbovpn.cc \
 	lpi_tvants.cc \
 	lpi_ubisoft_games.cc \
+	lpi_umeye.cc \
 	lpi_unreal.cc \
 	lpi_ventrilo.cc \
 	lpi_viber.cc \
