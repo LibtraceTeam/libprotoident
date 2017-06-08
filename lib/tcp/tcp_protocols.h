@@ -148,6 +148,7 @@ void register_ncsoft(LPIModuleMap *mod_map);
 void register_ndt_tput(LPIModuleMap *mod_map);
 void register_netbios(LPIModuleMap *mod_map);
 void register_netcat_cctv(LPIModuleMap *mod_map);
+void register_netmfp(LPIModuleMap *mod_map);
 void register_nntp(LPIModuleMap *mod_map);
 void register_nntps(LPIModuleMap *mod_map);
 void register_norton_backup(LPIModuleMap *mod_map);

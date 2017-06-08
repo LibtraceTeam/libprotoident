@@ -120,6 +120,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ndt_tput.cc \
 	lpi_netbios.cc \
 	lpi_netcat_cctv.cc \
+	lpi_netmfp.cc \
 	lpi_nntp.cc \
 	lpi_nntps.cc \
 	lpi_nopayload.cc \

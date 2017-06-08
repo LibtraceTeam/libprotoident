@@ -344,6 +344,7 @@ typedef enum {
         LPI_PROTO_4D,
         LPI_PROTO_TANKIX,
         LPI_PROTO_IPSHARKK,
+        LPI_PROTO_NET_MFP,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

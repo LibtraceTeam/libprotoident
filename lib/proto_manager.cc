@@ -187,6 +187,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ndt_tput(mod_map);
 	register_netbios(mod_map);
 	register_netcat_cctv(mod_map);
+	register_netmfp(mod_map);
 	register_nntp(mod_map);
 	register_nntps(mod_map);
 	register_norton_backup(mod_map);
