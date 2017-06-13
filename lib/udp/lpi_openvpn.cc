@@ -72,6 +72,24 @@ static inline bool match_tunnelbear_38(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_wscribe_40(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x40, ANY, ANY, ANY))
+                return false;
+        if (len != 98)
+                return false;
+        return true;
+
+}
+
+static inline bool match_wscribe_38(uint32_t payload, uint32_t len) {
+        if (!MATCH(payload, 0x38, ANY, ANY, ANY))
+                return false;
+        if (len != 86)
+                return false;
+        return true;
+
+}
+
 static inline bool match_openvpn_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* The payload matching alone isn't very strong, so I'm going to
@@ -97,6 +115,19 @@ static inline bool match_openvpn_udp(lpi_data_t *data, lpi_module_t *mod UNUSED)
                         return true;
         }
 
+
+        /* Similar for Windscribe */
+        if (data->server_port == 443 || data->client_port == 443) {
+                if (match_wscribe_40(data->payload[0], data->payload_len[0])) {
+                        if (match_wscribe_38(data->payload[1], data->payload_len[1]))
+                                return true;
+                }
+
+                if (match_wscribe_40(data->payload[1], data->payload_len[1])) {
+                        if (match_wscribe_38(data->payload[0], data->payload_len[0]))
+                                return true;
+                }
+        }
 
 	return false;
 }

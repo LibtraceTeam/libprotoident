@@ -169,6 +169,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_socks4.cc \
 	lpi_socks5.cc \
 	lpi_spdy.cc \
+	lpi_speedin.cc \
 	lpi_speedtest.cc \
 	lpi_spotify.cc \
 	lpi_ssh.cc \

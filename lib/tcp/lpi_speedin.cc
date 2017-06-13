@@ -30,50 +30,54 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Gordon Ramsey Dash -- mobile game */
+/* Speedin a.k.a. InVPN -- VPN for accessing Chinese content from outside
+ * of China.
+ */
+static inline bool match_speedin_3byte(uint32_t payload, uint32_t len) {
 
-static inline bool match_rdash_56da(uint32_t payload, uint32_t len) {
-
-        if (len == 24 && MATCH(payload, 0x56, 0xda, 0x00, 0x00))
+        if (len == 3 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return true;
         return false;
-
 }
 
-static inline bool match_rdash_da57(uint32_t payload, uint32_t len) {
+static inline bool match_speedin_other(uint32_t payload, uint32_t len) {
+        if (len <= 90 || len >= 115)
+                return false;
 
-        if (len >= 140 && len <= 230 && MATCH(payload, 0xda, 0x57, ANY, ANY))
+        if (MATCH(payload, 0x23, 0x00, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x03, 0x00, ANY, ANY))
                 return true;
         return false;
-
 }
 
-static inline bool match_ramsey_dash(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_speedin(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_rdash_56da(data->payload[0], data->payload_len[0])) {
-                if (match_rdash_da57(data->payload[1], data->payload_len[1]))
+        if (data->server_port != 12000 && data->client_port != 12000)
+                return false;
+
+        if (match_speedin_3byte(data->payload[0], data->payload_len[0])) {
+                if (match_speedin_other(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_rdash_56da(data->payload[1], data->payload_len[1])) {
-                if (match_rdash_da57(data->payload[0], data->payload_len[0]))
+        if (match_speedin_3byte(data->payload[1], data->payload_len[1])) {
+                if (match_speedin_other(data->payload[0], data->payload_len[0]))
                         return true;
         }
-
-
 
 	return false;
 }
 
-static lpi_module_t lpi_ramsey_dash = {
-	LPI_PROTO_UDP_RAMSEY_DASH,
-	LPI_CATEGORY_GAMING,
-	"RamseyDash",
-	12,
-	match_ramsey_dash
+static lpi_module_t lpi_speedin = {
+	LPI_PROTO_SPEEDIN,
+	LPI_CATEGORY_TUNNELLING,
+	"Speedin",
+	22,
+	match_speedin
 };
 
-void register_ramsey_dash(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ramsey_dash, mod_map);
+void register_speedin(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_speedin, mod_map);
 }
 

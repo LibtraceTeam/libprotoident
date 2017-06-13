@@ -92,6 +92,23 @@ static inline bool match_xunlei_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) 
         }
 
 
+        /* Traffic seen while operating the Thunder client, not sure on exact
+         * purpose but can lead to large flows. Rule is not very strong, since
+         * the payload seems random.
+         */
+        if (data->server_port == 12345 || data->client_port == 12345) {
+                if (data->payload[0] != 0 && data->payload[1] != 0) {
+                        if (data->payload_len[0] >= 39) {
+                                if (data->payload_len[0] <= 43) {
+                                        if (data->payload_len[1] >= 39) {
+                                                if (data->payload_len[1] <= 43)
+                                                        return true;
+                                        }
+                                }
+                        }
+                }
+        }
+
         if (match_str_both(data, "\x32\x00\x00\x00", "\x32\x00\x00\x00"))
                 return true;
         if (match_str_both(data, "\x36\x00\x00\x00", "\x36\x00\x00\x00"))
@@ -157,7 +174,7 @@ static lpi_module_t lpi_xunlei_udp = {
 	LPI_PROTO_UDP_XUNLEI,
 	LPI_CATEGORY_P2P,
 	"Xunlei_UDP",
-	3,
+	203,
 	match_xunlei_udp
 };
 

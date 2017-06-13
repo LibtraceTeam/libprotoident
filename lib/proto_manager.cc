@@ -236,6 +236,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_socks4(mod_map);
 	register_socks5(mod_map);
 	register_spdy(mod_map);
+	register_speedin(mod_map);
 	register_speedtest(mod_map);
 	register_spotify(mod_map);
 	register_ssh(mod_map);
