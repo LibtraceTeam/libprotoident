@@ -172,6 +172,7 @@ void register_radius(LPIModuleMap *mod_map);
 void register_ramsey_dash(LPIModuleMap *mod_map);
 void register_rdp_udp(LPIModuleMap *mod_map);
 void register_real(LPIModuleMap *mod_map);
+void register_risingstorm(LPIModuleMap *mod_map);
 void register_roblox(LPIModuleMap *mod_map);
 void register_robocraft(LPIModuleMap *mod_map);
 void register_rtcp(LPIModuleMap *mod_map);

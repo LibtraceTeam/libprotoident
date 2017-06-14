@@ -445,6 +445,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ramsey_dash(mod_map);
 	register_rdp_udp(mod_map);
 	register_real(mod_map);
+	register_risingstorm(mod_map);
 	register_roblox(mod_map);
 	register_robocraft(mod_map);
 	register_rtcp(mod_map);
