@@ -37,14 +37,17 @@ static inline bool match_arma3_server_payload(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
 
-        if (!MATCH(payload, ANY, ANY, 0xe2, 0x16))
-                return false;
-
         replen = (payload & 0xffff);
         if (replen != len)
                 return false;
 
-        return true;
+        if (MATCH(payload, ANY, ANY, 0xe2, 0x16))
+                return true;
+        if (MATCH(payload, ANY, ANY, 0x60, 0xcf))
+                return true;
+
+
+        return false;
 
 
 }

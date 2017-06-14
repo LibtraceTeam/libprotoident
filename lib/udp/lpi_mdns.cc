@@ -32,7 +32,30 @@
 
 /* Multicast DNS */
 
+static inline bool match_unicast_mdns(lpi_data_t *data) {
+        if (data->server_port != 5353 && data->client_port != 5353) {
+                return false;
+        }
+
+        /* Only time I've ever seen this is Russian hackers trying
+         * to get more info about the local network.  */
+
+        if (MATCH(data->payload[0], 0x00, 0x00, 0x84, 0x00)) {
+                if (MATCH(data->payload[1], 0x00, 0x00, 0x00, 0x00))
+                        return true;
+        }
+
+        if (MATCH(data->payload[1], 0x00, 0x00, 0x84, 0x00)) {
+                if (MATCH(data->payload[0], 0x00, 0x00, 0x00, 0x00))
+                        return true;
+        }
+        return false;
+}
+
 static inline bool match_mdns(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_unicast_mdns(data))
+                return true;
 
 	if (data->server_port != 5353)
 		return false;
