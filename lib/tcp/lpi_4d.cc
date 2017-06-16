@@ -48,6 +48,18 @@ static inline bool match_4d_other(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_4d_len72(uint32_t payload, uint32_t len) {
+        if (len == 72 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_4d_len12(uint32_t payload, uint32_t len) {
+        if (len == 12 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_4d(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_4d_5f(data->payload[0], data->payload_len[0])) {
@@ -57,6 +69,16 @@ static inline bool match_4d(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_4d_5f(data->payload[1], data->payload_len[1])) {
                 if (match_4d_other(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_4d_len72(data->payload[0], data->payload_len[0])) {
+                if (match_4d_len12(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_4d_len72(data->payload[1], data->payload_len[1])) {
+                if (match_4d_len12(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

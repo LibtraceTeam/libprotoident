@@ -93,6 +93,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_cod_waw(mod_map);
 	register_conquer(mod_map);
 	register_crashplan(mod_map);
+	register_crossfire_tcp(mod_map);
 	register_cryptic(mod_map);
 	register_cvs(mod_map);
 	register_dell_backup(mod_map);
@@ -147,7 +148,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
 	register_ipop(mod_map);
-	register_ipsharkk(mod_map);
+	//register_ipsharkk(mod_map);
 	register_irc(mod_map);
 	register_java(mod_map);
 	register_jedi(mod_map);
@@ -330,6 +331,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
+	register_crossfire(mod_map);
 	register_crossout(mod_map);
 	register_csgo(mod_map);
 	register_db2(mod_map);

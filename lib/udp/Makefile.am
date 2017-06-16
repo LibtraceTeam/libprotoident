@@ -27,6 +27,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
 	lpi_cod.cc \
+	lpi_crossfire.cc \
 	lpi_crossout.cc \
 	lpi_csgo.cc \
 	lpi_db2.cc \

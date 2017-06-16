@@ -57,6 +57,7 @@ void register_chivalry(LPIModuleMap *mod_map);
 void register_cirn(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
 void register_cisco_sslvpn(LPIModuleMap *mod_map);
+void register_crossfire(LPIModuleMap *mod_map);
 void register_crossout(LPIModuleMap *mod_map);
 void register_csgo(LPIModuleMap *mod_map);
 void register_db2(LPIModuleMap *mod_map);

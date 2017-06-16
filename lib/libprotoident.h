@@ -346,6 +346,7 @@ typedef enum {
         LPI_PROTO_IPSHARKK,
         LPI_PROTO_NET_MFP,
         LPI_PROTO_SPEEDIN,
+        LPI_PROTO_CROSSFIRE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -541,6 +542,7 @@ typedef enum {
         LPI_PROTO_UDP_CROSSOUT,
         LPI_PROTO_UDP_UMEYE,
         LPI_PROTO_UDP_RISING_STORM,
+        LPI_PROTO_UDP_CROSSFIRE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

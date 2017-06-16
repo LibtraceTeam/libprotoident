@@ -54,6 +54,7 @@ void register_clubbox(LPIModuleMap *mod_map);
 void register_cod_waw(LPIModuleMap *mod_map);
 void register_conquer(LPIModuleMap *mod_map);
 void register_crashplan(LPIModuleMap *mod_map);
+void register_crossfire_tcp(LPIModuleMap *mod_map);
 void register_cryptic(LPIModuleMap *mod_map);
 void register_cvs(LPIModuleMap *mod_map);
 void register_dell_backup(LPIModuleMap *mod_map);

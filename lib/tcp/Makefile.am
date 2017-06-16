@@ -26,6 +26,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \
 	lpi_crashplan.cc \
+	lpi_crossfire_tcp.cc \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
 	lpi_dell_backup.cc \
