@@ -32,11 +32,13 @@
 
 static inline bool match_cf_tcp(uint32_t payload, uint32_t len) {
 
-        uint32_t hlen = (ntohl(payload) >> 8) & 0xffff;
+        uint32_t hlen = bswap_le_to_host32(payload & 0xffff00) >> 8;
 
         if (len < 1350 && hlen != len - 7)
                 return false;
         if (MATCH(payload, 0xf1, ANY, ANY, 0x01))
+                return true;
+        if (MATCH(payload, 0xf1, ANY, ANY, 0x00))
                 return true;
         return false;
 }
