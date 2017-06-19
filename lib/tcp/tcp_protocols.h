@@ -57,6 +57,7 @@ void register_crashplan(LPIModuleMap *mod_map);
 void register_crossfire_tcp(LPIModuleMap *mod_map);
 void register_cryptic(LPIModuleMap *mod_map);
 void register_cvs(LPIModuleMap *mod_map);
+void register_dash(LPIModuleMap *mod_map);
 void register_dell_backup(LPIModuleMap *mod_map);
 void register_destiny(LPIModuleMap *mod_map);
 void register_diablo3(LPIModuleMap *mod_map);

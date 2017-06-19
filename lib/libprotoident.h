@@ -347,6 +347,7 @@ typedef enum {
         LPI_PROTO_NET_MFP,
         LPI_PROTO_SPEEDIN,
         LPI_PROTO_CROSSFIRE,
+        LPI_PROTO_DASH,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

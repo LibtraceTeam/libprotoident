@@ -67,6 +67,8 @@ static inline bool match_shuijing_3b(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 31 && MATCH(payload, 0x3b, 0x00, 0x00, 0x00))
                 return true;
+        if (len == 29 && MATCH(payload, 0x3b, 0x00, 0x00, 0x00))
+                return true;
         return false;
 }
 

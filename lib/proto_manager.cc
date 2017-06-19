@@ -96,6 +96,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_crossfire_tcp(mod_map);
 	register_cryptic(mod_map);
 	register_cvs(mod_map);
+	register_dash(mod_map);
 	register_dell_backup(mod_map);
 	register_destiny(mod_map);
 	register_diablo3(mod_map);
@@ -148,7 +149,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
 	register_ipop(mod_map);
-	//register_ipsharkk(mod_map);
+	register_ipsharkk(mod_map);
 	register_irc(mod_map);
 	register_java(mod_map);
 	register_jedi(mod_map);
