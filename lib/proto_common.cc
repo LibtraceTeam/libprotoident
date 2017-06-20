@@ -317,6 +317,10 @@ bool match_file_header(uint32_t payload) {
         if (MATCH(payload, 'V', 'B', 'S', 'P'))
                 return true;
 
+        /* Old coralreef trace files! */
+        if (MATCHSTR(payload, "\xff\xff\x44\x00"))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.
