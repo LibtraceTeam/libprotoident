@@ -78,9 +78,17 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         replen = ntohl(payload) >> 24;
 
         if (replen == len - 1) {
-                if (MATCH(payload, ANY, 0x00, ANY, ANY))
+                if (MATCH(payload, ANY, 0x00, ANY, ANY) && len - 1 <= 255)
+                        return true;
+                if (MATCH(payload, ANY, 0x01, ANY, ANY) && len - 1 >= 256)
                         return true;
         }
+
+        /* Some handshakes seem to be undersized? */
+        if (len == 189 && MATCH(payload, 0xbb, 0x01, 0x01, 0x10))
+                return true;
+        if (len == 190 && MATCH(payload, 0xbc, 0x01, 0x01, 0x11))
+                return true;
 
         return false;
 }

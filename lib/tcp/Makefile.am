@@ -5,6 +5,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_acestream.cc \
 	lpi_afp.cc \
 	lpi_airdroid.cc \
+	lpi_airmedia.cc \
 	lpi_akamai.cc \
 	lpi_amp.cc \
 	lpi_appearin.cc \

@@ -39,6 +39,8 @@ static inline bool match_cms_hello(uint32_t payload, uint32_t len) {
                         return true;
                 if (MATCH(payload, 0x0e, 0x00, 0x8f, 0x00))
                         return true;
+                if (MATCH(payload, 0x0e, 0x00, 0x90, 0x00))
+                        return true;
         }
         return false;
 

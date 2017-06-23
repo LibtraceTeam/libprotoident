@@ -91,6 +91,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_linkproof.cc \
 	lpi_lol.cc \
 	lpi_mdns.cc \
+	lpi_merakicloud.cc \
 	lpi_moh.cc \
 	lpi_mp2p.cc \
 	lpi_msn_cache.cc \

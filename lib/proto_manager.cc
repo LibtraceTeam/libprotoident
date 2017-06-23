@@ -72,6 +72,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_acestream(mod_map);
 	register_afp(mod_map);
 	register_airdroid(mod_map);
+	register_airmedia(mod_map);
 	register_akamai_tcp(mod_map);
 	register_amp(mod_map);
 	register_appearin(mod_map);
@@ -396,6 +397,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_linkproof(mod_map);
 	register_lol(mod_map);
 	register_mdns(mod_map);
+	register_merakicloud(mod_map);
 	register_moh(mod_map);
 	register_mp2p_udp(mod_map);
 	register_msn_cache(mod_map);

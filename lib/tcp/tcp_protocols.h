@@ -33,6 +33,7 @@ void register_4d(LPIModuleMap *mod_map);
 void register_acestream(LPIModuleMap *mod_map);
 void register_afp(LPIModuleMap *mod_map);
 void register_airdroid(LPIModuleMap *mod_map);
+void register_airmedia(LPIModuleMap *mod_map);
 void register_akamai_tcp(LPIModuleMap *mod_map);
 void register_amp(LPIModuleMap *mod_map);
 void register_appearin(LPIModuleMap *mod_map);

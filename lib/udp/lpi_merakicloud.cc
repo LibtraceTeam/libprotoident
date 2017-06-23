@@ -31,45 +31,31 @@
 #include "proto_common.h"
 
 
-static inline bool match_bc_version(uint32_t payload, uint32_t len) {
+static inline bool match_merakicloud(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (len >= 24 && MATCH(payload, 0xf9, 0xbe, 0xb4, 0xd9))
-                return true;
-        return false;
-}
+        /* Port 7351 */
 
-static inline bool match_bc_version_reply(uint32_t payload, uint32_t len) {
-
-        if (len >= 24 && MATCH(payload, 0xf9, 0xbe, 0xb4, 0xd9))
-                return true;
-        return false;
-}
-
-static inline bool match_bitcoin(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (match_bc_version(data->payload[0], data->payload_len[0])) {
-                if (match_bc_version_reply(data->payload[1], data->payload_len[1]))
+        /* This may just be a user id of some sort -- need to see multiple
+         * users to confirm this is a fixed pattern.
+         */
+        if (MATCH(data->payload[0], 0xfe, 0xf7, 0x28, 0x91)) {
+                if (MATCH(data->payload[1], 0xfe, 0xf7, 0x28, 0x91)) {
                         return true;
+                }
         }
-
-        if (match_bc_version(data->payload[1], data->payload_len[1])) {
-                if (match_bc_version_reply(data->payload[0], data->payload_len[0]))
-                        return true;
-        }
-
 
 	return false;
 }
 
-static lpi_module_t lpi_bitcoin = {
-	LPI_PROTO_BITCOIN,
-	LPI_CATEGORY_ECOMMERCE,
-	"Bitcoin",
-	5,
-	match_bitcoin
+static lpi_module_t lpi_merakicloud = {
+	LPI_PROTO_UDP_MERAKICLOUD,
+	LPI_CATEGORY_CLOUD,
+	"MerakiCloud",
+	34,
+	match_merakicloud
 };
 
-void register_bitcoin(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_bitcoin, mod_map);
+void register_merakicloud(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_merakicloud, mod_map);
 }
 

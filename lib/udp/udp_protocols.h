@@ -121,6 +121,7 @@ void register_line_udp(LPIModuleMap *mod_map);
 void register_linkproof(LPIModuleMap *mod_map);
 void register_lol(LPIModuleMap *mod_map);
 void register_mdns(LPIModuleMap *mod_map);
+void register_merakicloud(LPIModuleMap *mod_map);
 void register_moh(LPIModuleMap *mod_map);
 void register_mp2p_udp(LPIModuleMap *mod_map);
 void register_msn_cache(LPIModuleMap *mod_map);
