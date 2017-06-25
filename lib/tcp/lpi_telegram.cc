@@ -54,6 +54,15 @@ static inline bool match_abridged_telegram_query(uint32_t payload, uint32_t len)
 
         }
 
+        /* All 1s in the length field means the next three bytes are a
+         * length field. In this case, the first packet will almost
+         * certainly be MSS sized.
+         */
+        if (MATCH(payload, 0xef, 0x7f, ANY, ANY)) {
+                if (len >= 1300)
+                        return true;
+        }
+
         return false;
 }
 
