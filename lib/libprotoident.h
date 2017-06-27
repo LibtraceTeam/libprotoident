@@ -349,6 +349,7 @@ typedef enum {
         LPI_PROTO_CROSSFIRE,
         LPI_PROTO_DASH,
         LPI_PROTO_AIRMEDIA,
+        LPI_PROTO_GIOP,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -546,6 +547,8 @@ typedef enum {
         LPI_PROTO_UDP_RISING_STORM,
         LPI_PROTO_UDP_CROSSFIRE,
         LPI_PROTO_UDP_MERAKICLOUD,
+        LPI_PROTO_UDP_SNAPVPN,
+        LPI_PROTO_UDP_DAHUA,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

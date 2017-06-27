@@ -55,6 +55,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fuckcoin.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_giop.cc \
 	lpi_git.cc \
 	lpi_glupteba.cc \
 	lpi_gnutella.cc \

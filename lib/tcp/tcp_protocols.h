@@ -83,6 +83,7 @@ void register_ftpdata(LPIModuleMap *mod_map);
 void register_fuckcoin(LPIModuleMap *mod_map);
 void register_funshion_tcp(LPIModuleMap *mod_map);
 void register_gamespy_tcp(LPIModuleMap *mod_map);
+void register_giop(LPIModuleMap *mod_map);
 void register_git(LPIModuleMap *mod_map);
 void register_glupteba(LPIModuleMap *mod_map);
 void register_gnutella(LPIModuleMap *mod_map);

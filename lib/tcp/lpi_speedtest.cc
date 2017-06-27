@@ -41,7 +41,7 @@ static inline bool match_speedtest_hi(uint32_t payload, uint32_t len) {
 
 static inline bool match_speedtest_bighi(uint32_t payload, uint32_t len) {
 
-        if (len == 40 && MATCH(payload, 'H', 'I', 0x20, '8'))
+        if (len == 40 && MATCH(payload, 'H', 'I', 0x20, ANY))
                 return true;
         return false;
 

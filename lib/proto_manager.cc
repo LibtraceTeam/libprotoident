@@ -122,6 +122,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_fuckcoin(mod_map);
 	register_funshion_tcp(mod_map);
 	register_gamespy_tcp(mod_map);
+	register_giop(mod_map);
 	register_git(mod_map);
 	register_glupteba(mod_map);
 	register_gnutella(mod_map);
@@ -336,6 +337,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_crossfire(mod_map);
 	register_crossout(mod_map);
 	register_csgo(mod_map);
+	register_dahua(mod_map);
 	register_db2(mod_map);
 	register_dcc_udp(mod_map);
 	register_demonware(mod_map);
@@ -462,6 +464,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_sip_udp(mod_map);
 	register_skype(mod_map);
 	register_slp(mod_map);
+	register_snapvpn(mod_map);
 	register_snmp(mod_map);
 	register_sopcast(mod_map);
 	register_spamfighter(mod_map);

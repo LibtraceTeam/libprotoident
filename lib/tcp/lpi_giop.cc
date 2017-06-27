@@ -31,31 +31,32 @@
 #include "proto_common.h"
 
 
-static inline bool match_portmap_rpc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_giop(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 111 && data->client_port != 111)
-                return false;
-
-        if (data->payload_len[0] > 0 && data->payload_len[1] > 0) {
-                if (data->payload[0] != data->payload[1])
-                        return false;
+        if (MATCH(data->payload[0], 'G', 'I', 'O', 'P')) {
+                if (MATCH(data->payload[1], 'G', 'I', 'O', 'P'))
+                        return true;
+                if (data->payload_len[1] == 0)
+                        return true;
         }
 
-        if (data->payload_len[0] == 46 || data->payload_len[1] == 46)
-                return true;
+        if (MATCH(data->payload[1], 'G', 'I', 'O', 'P')) {
+                if (data->payload_len[0] == 0)
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_portmap_rpc = {
-	LPI_PROTO_UDP_PORTMAP_RPC,
-	LPI_CATEGORY_SERVICES,
-	"PortmapRPC",
-	220,
-	match_portmap_rpc
+static lpi_module_t lpi_giop = {
+	LPI_PROTO_GIOP,
+	LPI_CATEGORY_REMOTE,
+	"GIOP",
+	5,
+	match_giop
 };
 
-void register_portmap_rpc(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_portmap_rpc, mod_map);
+void register_giop(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_giop, mod_map);
 }
 

@@ -30,32 +30,34 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+/* Chinese IP surveillance Cameras */
 
-static inline bool match_portmap_rpc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (data->server_port != 111 && data->client_port != 111)
-                return false;
-
-        if (data->payload_len[0] > 0 && data->payload_len[1] > 0) {
-                if (data->payload[0] != data->payload[1])
-                        return false;
-        }
-
-        if (data->payload_len[0] == 46 || data->payload_len[1] == 46)
+static inline bool match_dahua_p2p(uint32_t payload, uint32_t len) {
+        if (len == 44 && MATCHSTR(payload, "\xff\xfe\xff\xe7"))
                 return true;
+        return false;
+
+}
+
+static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_dahua_p2p(data->payload[0], data->payload_len[0])) {
+                if (match_dahua_p2p(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_portmap_rpc = {
-	LPI_PROTO_UDP_PORTMAP_RPC,
-	LPI_CATEGORY_SERVICES,
-	"PortmapRPC",
-	220,
-	match_portmap_rpc
+static lpi_module_t lpi_dahua = {
+	LPI_PROTO_UDP_DAHUA,
+	LPI_CATEGORY_STREAMING,
+	"Dahua",
+	13,
+	match_dahua
 };
 
-void register_portmap_rpc(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_portmap_rpc, mod_map);
+void register_dahua(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_dahua, mod_map);
 }
 

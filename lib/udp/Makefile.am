@@ -30,6 +30,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_crossfire.cc \
 	lpi_crossout.cc \
 	lpi_csgo.cc \
+	lpi_dahua.cc \
 	lpi_db2.cc \
 	lpi_dcc.cc \
 	lpi_demonware.cc \
@@ -157,6 +158,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_sip.cc \
 	lpi_skype.cc \
 	lpi_slp.cc \
+	lpi_snapvpn.cc \
 	lpi_snmp.cc \
 	lpi_sopcast.cc \
 	lpi_spamfighter.cc \
