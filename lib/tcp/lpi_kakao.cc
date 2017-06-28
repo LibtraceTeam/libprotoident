@@ -32,7 +32,7 @@
 
 static inline bool match_kakao_req(uint32_t payload, uint32_t len) {
 
-        if (len < 399)
+        if (len < 250)
                 return false;
         if (MATCH(payload, 0x00, 0x01, 0x00, 0x00))
                 return true;

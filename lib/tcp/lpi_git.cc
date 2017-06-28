@@ -38,6 +38,7 @@ static inline bool match_git_header(uint32_t payload, uint32_t len) {
         if (len == 0)
                 return true;
 
+        memset(headerstr, 0, 4);
         for (i = 0; i < 4; i++) {
                 headerstr[i] = (char)(*pl);
                 pl++;

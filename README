@@ -1,7 +1,7 @@
-libprotoident 2.0.10
+libprotoident 2.0.11
 
 ---------------------------------------------------------------------------
-Copyright (c) 2011-2016 The University of Waikato, Hamilton, New Zealand.
+Copyright (c) 2011-2017 The University of Waikato, Hamilton, New Zealand.
 All rights reserved.
 
 This code has been developed by the University of Waikato WAND
@@ -24,6 +24,7 @@ With contributions from:
     Aaron Murrihy
     Paweł Foremski <pjf@iitis.pl>
     Fabian Weisshaar <elnappo@nerdpol.io>
+    Jeroen Roovers
 
 Introduction
 ============
@@ -36,10 +37,10 @@ some tools that can be used to perform simple analysis of traffic flows.
 
 Required Libraries
 ==================
-libtrace
+libtrace 4.0.1 or later
 	* available from http://research.wand.net.nz/software/libtrace.php
 
-libflowmanager 2.0.4 or later
+libflowmanager 3.0.0 or later
 	* optional, but required to build the tools
 	* available from http://research.wand.net.nz/software/libflowmanager.php
 
@@ -208,7 +209,7 @@ There are currently four tools included with libprotoident.
          * Flow start time (as a Unix timestamp)
 
  * lpi_live   (DEPRECATED)
-  
+
    Description:
    	This tool reports byte and packet counts (both inbound and outbound)
 	for each identified protocol in real-time. Identification of a flow
@@ -261,7 +262,7 @@ There are currently four tools included with libprotoident.
 		- out_curr_flows = outbound flows active at the period end
 	* The application protocol being measured
 	* The value for the measured statistic
-		
+
 API
 ===
 
@@ -270,15 +271,15 @@ use the libprotoident API. The API is very simple and the best way to learn it
 is to examine how the existing tools work. The source for the tools is
 located in the tools/ directory.
 
-The tools use libflowmanager to do the flow tracking, using functions beginning
-with 'lfm_'. You will probably want to incorporate this into your own tool.
-Usage of libprotoident itself is through functions beginning with 'lpi_'.
+The tools use libflowmanager to do the flow tracking, using an instance of a
+FlowManager class. You will probably want to incorporate this into your own
+tool. Usage of libprotoident itself is through functions beginning with 'lpi_'.
 
-The libprotoident API functions themselves are documented in 
+The libprotoident API functions themselves are documented in
 lib/libprotoident.h if you need further guidance.
 
-Further documentation of the API can also be found at 
+Further documentation of the API can also be found at
 http://wand.net.nz/trac/libprotoident/wiki/DeveloperDocs
 
-If all else fails, drop us a line at contact@wand.net.nz.	
+If all else fails, drop us a line at contact@wand.net.nz.
 

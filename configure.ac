@@ -1,4 +1,4 @@
-AC_INIT(libprotoident, 2.0.10, contact@wand.net.nz)
+AC_INIT(libprotoident, 2.0.11, contact@wand.net.nz)
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR(lib/libprotoident.cc)
@@ -50,7 +50,7 @@ AC_ARG_WITH(tools,
 AC_CHECK_LIB([trace], [trace_get_payload_length],,trace_found=0)
 
 if test "$build_tools" = yes; then
-	AC_CHECK_LIB([flowmanager], [lfm_release_flow],,lfm_found=0)
+	AC_CHECK_LIB([flowmanager], [lfm_version_three],,lfm_found=0)
 fi
 
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])

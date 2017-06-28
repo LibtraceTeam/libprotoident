@@ -52,6 +52,19 @@ static inline bool match_dtls(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		if (data->payload_len[0] == 0)
 			return true;
 	}
+
+        if (MATCHSTR(data->payload[0], "\x16\xfe\xff\x00")) {
+                if (data->payload_len[1] == 0)
+                        return true;
+                if (MATCHSTR(data->payload[1], "\x16\xfe\xff\x00"))
+                        return true;
+        }
+
+	if (MATCHSTR(data->payload[1], "\x16\xfe\xff\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
 	return false;
 }
 

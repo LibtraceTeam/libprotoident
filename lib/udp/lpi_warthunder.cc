@@ -38,6 +38,8 @@ static inline bool match_warthunder_req(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0b))
                 return true;
+        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x05))
+                return true;
         if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x14))
                 return true;
         return false;

@@ -70,6 +70,14 @@ static inline bool match_360_03resp(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_360_p2pupdate(uint32_t payload, uint32_t len) {
+
+        if (len == 68 && MATCH(payload, 0x01, 0xaa, 0x4b, 0x79))
+                return true;
+        return false;
+
+}
+
 static inline bool match_360safeguard(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         /* These patterns have been regularly seen on a machine with 360
@@ -95,6 +103,13 @@ static inline bool match_360safeguard(lpi_data_t *data, lpi_module_t *mod UNUSED
 
         if (match_360_03req(data->payload[1], data->payload_len[1])) {
                 if (match_360_03resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        /* Have observed unencrypted traffic that appears to be downloading a
+         * .cab file to update 360 safeguard. */
+        if (match_360_p2pupdate(data->payload[0], data->payload_len[0])) {
+                if (match_360_p2pupdate(data->payload[1], data->payload_len[1]))
                         return true;
         }
 

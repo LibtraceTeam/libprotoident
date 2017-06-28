@@ -31,7 +31,7 @@
 #include "proto_common.h"
 
 static inline bool match_forti_vpn_48(uint32_t payload, uint32_t len) {
-        if (len != 48)
+        if (len != 48 && len != 192)
                 return false;
         if (MATCHSTR(payload, "\x16\xfe\xff\x00"))
                 return true;

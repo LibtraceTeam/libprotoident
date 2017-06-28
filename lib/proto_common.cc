@@ -305,6 +305,22 @@ bool match_file_header(uint32_t payload) {
         if (MATCH(payload, 0x00, 0x00, 0x00, 0x20))
                 return true;
 
+        /* TIFF */
+        if (MATCH(payload, 0x49, 0x49, 0x2a, 0x00))
+                return true;
+
+        /* LZMA */
+        if (MATCH(payload, 0x5d, 0x00, 0x00, 0x80))
+                return true;
+
+        /* Source engine BSP file */
+        if (MATCH(payload, 'V', 'B', 'S', 'P'))
+                return true;
+
+        /* Old coralreef trace files! */
+        if (MATCHSTR(payload, "\xff\xff\x44\x00"))
+                return true;
+
         /* I'm pretty sure the following are files of some type or another.
          * They crop up pretty often in our test data sets, so I'm going to
          * put them in here.
@@ -805,5 +821,26 @@ bool match_yy_payload(uint32_t payload, uint32_t len) {
                 return true;
 #endif
         return false;
+}
+
+
+/* Byte swapping functions for various inttypes */
+uint64_t byteswap64(uint64_t num)
+{
+        return (byteswap32((num&0xFFFFFFFF00000000ULL)>>32))
+              |((uint64_t)byteswap32(num&0x00000000FFFFFFFFULL)<<32);
+}
+
+uint32_t byteswap32(uint32_t num)
+{
+        return ((num&0x000000FFU)<<24)
+                | ((num&0x0000FF00U)<<8)
+                | ((num&0x00FF0000U)>>8)
+                | ((num&0xFF000000U)>>24);
+}
+
+uint16_t byteswap16(uint16_t num)
+{
+        return ((num<<8)&0xFF00)|((num>>8)&0x00FF);
 }
 

@@ -30,9 +30,10 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_rtmp_server_handshake(uint32_t payload, uint32_t len) {
+static inline bool match_rtmp_server_handshake(uint32_t payload, uint32_t len,
+                bool defaultport) {
 
-	if (len < 4)
+	if (len < 4 && !defaultport)
 		return false;
 
 	/* Standard RTMP handshake types */	
@@ -73,10 +74,20 @@ static inline bool match_rtmp_client_handshake(uint32_t payload, uint32_t len) {
 
 static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+        bool defaultport = false;
+
+        if (data->server_port == 1935 || data->client_port == 1935)
+                defaultport = true;
+
+        /* Facebook live streaming wants to use port 80 sometimes and they
+         * love sending 1 byte handshakes :( */
+        if (data->server_port == 80 || data->client_port == 80)
+                defaultport = true;
+
 	if (match_rtmp_client_handshake(data->payload[0], data->payload_len[0]))
 	{
 		if (match_rtmp_server_handshake(data->payload[1], 
-				data->payload_len[1])) {
+				data->payload_len[1], defaultport)) {
 			return true;
 		}
 	}
@@ -84,7 +95,7 @@ static inline bool match_rtmp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (match_rtmp_client_handshake(data->payload[1], data->payload_len[1]))
 	{
 		if (match_rtmp_server_handshake(data->payload[0], 
-				data->payload_len[0])) {
+				data->payload_len[0], defaultport)) {
 			return true;
 		}
 	}
@@ -95,7 +106,7 @@ static lpi_module_t lpi_rtmp = {
 	LPI_PROTO_RTMP,
 	LPI_CATEGORY_STREAMING,
 	"RTMP",
-	16,	/* Not a strong rule */
+	169,	/* Not a strong rule */
 	match_rtmp
 };
 

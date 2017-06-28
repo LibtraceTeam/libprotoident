@@ -95,68 +95,59 @@ static inline bool match_ppstream_payload(uint32_t payload, uint32_t len) {
         return false;
 }
 
-
-static inline bool match_1580_ppstream(uint32_t payload, uint32_t len) {
-        if (len == 24) {
-                if (MATCH(payload, 0x15, 0x80, 0x51, 0x10))
-                        return true;
-        }
-        return false;
-}
-
-static inline bool match_1b80_ppstream(uint32_t payload, uint32_t len) {
-        if (len == 27) {
-                if (MATCH(payload, 0x1b, 0x80, 0x4e, 0x0c))
-                        return true;
-        }
-        return false;
-}
-
 static inline bool match_8480_ppstream(uint32_t payload, uint32_t len) {
-        if (len == 132) {
-                if (MATCH(payload, 0x84, 0x80, 0xc0, 0xd1))
-                        return true;
-                if (MATCH(payload, 0x84, 0x80, 0xd1, 0xc0))
-                        return true;
-        }
+
+
+        if (len == 132 && MATCH(payload, 0x84, 0x80, 0xc0, 0xd1))
+                return true;
+        if (len == 132 && MATCH(payload, 0x84, 0x80, 0xd1, 0xc0))
+                return true;
+
         return false;
 }
 
-static inline bool match_any80_ppstream(uint32_t payload) {
 
-        if (MATCH(payload, ANY, 0x80, ANY, ANY))
-                return true;
+static inline bool match_80_ppstream(uint32_t payload, uint32_t len) {
+
+        uint32_t hlen = ntohl(payload) >> 24;
+
+        if (MATCH(payload, ANY, 0x80, ANY, ANY)) {
+                if (len == hlen )
+                        return true;
+
+                /* There must be a minimum datagram size */
+                if (len == 24 && hlen < 24)
+                        return true;
+        }
+
         return false;
+
+
 }
 
 static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_1580_ppstream(data->payload[0], data->payload_len[0])) {
-                if (match_1b80_ppstream(data->payload[1], data->payload_len[1]))
-                        return true;
-        }
-
-        if (match_1580_ppstream(data->payload[1], data->payload_len[1])) {
-                if (match_1b80_ppstream(data->payload[0], data->payload_len[0]))
+	if (match_ppstream_payload(data->payload[0], data->payload_len[0])) {
+                if (match_ppstream_payload(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
         if (match_8480_ppstream(data->payload[0], data->payload_len[0])) {
-                if (match_any80_ppstream(data->payload[1]))
+                if (MATCH(data->payload[1], ANY, 0x80, ANY, ANY))
                         return true;
         }
 
         if (match_8480_ppstream(data->payload[1], data->payload_len[1])) {
-                if (match_any80_ppstream(data->payload[0]))
+                if (MATCH(data->payload[0], ANY, 0x80, ANY, ANY))
                         return true;
         }
 
-	if (!match_ppstream_payload(data->payload[0], data->payload_len[0]))
-                return false;
-        if (!match_ppstream_payload(data->payload[1], data->payload_len[1]))
-                return false;
+        if (match_80_ppstream(data->payload[0], data->payload_len[0])) {
+                if (match_80_ppstream(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 
-        return true;
+        return false;
 
 
 }
@@ -165,7 +156,7 @@ static lpi_module_t lpi_ppstream = {
 	LPI_PROTO_UDP_PPSTREAM,
 	LPI_CATEGORY_P2PTV,
 	"PPStream",
-	5,
+	150,
 	match_ppstream
 };
 

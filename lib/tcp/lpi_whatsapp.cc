@@ -58,7 +58,7 @@ static inline bool match_wa_second(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_wa_second_20(uint32_t payload, uint32_t len) {
-	uint32_t walen = ntohl(payload >> 8);
+	uint32_t walen = ntohl(payload) >> 8;
 
         if (len == 0)
 		return true;

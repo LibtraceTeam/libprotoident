@@ -78,13 +78,17 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         replen = ntohl(payload) >> 24;
 
         if (replen == len - 1) {
-                /* Older protocol version */
-                if (MATCH(payload, ANY, 0x00, 0x2f, ANY))
+                if (MATCH(payload, ANY, 0x00, ANY, ANY) && len - 1 <= 255)
                         return true;
-                /* Most recent protocol version (02/08/16) */
-                if (MATCH(payload, ANY, 0x00, 0xd2, ANY))
+                if (MATCH(payload, ANY, 0x01, ANY, ANY) && len - 1 >= 256)
                         return true;
         }
+
+        /* Some handshakes seem to be undersized? */
+        if (len == 189 && MATCH(payload, 0xbb, 0x01, 0x01, 0x10))
+                return true;
+        if (len == 190 && MATCH(payload, 0xbc, 0x01, 0x01, 0x11))
+                return true;
 
         return false;
 }
@@ -97,6 +101,11 @@ static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
          */
         if (len == 173) {
                 if (MATCH(payload, 0xab, 0x01, 0x01, 0x00))
+                        return true;
+        }
+
+        if (len == 4) {
+                if (MATCH(payload, 0x03, 0x03, 0x80, 0x02))
                         return true;
         }
 
@@ -138,7 +147,7 @@ static lpi_module_t lpi_minecraft = {
 	LPI_PROTO_MINECRAFT,
 	LPI_CATEGORY_GAMING,
 	"Minecraft",
-	5,
+	35,
 	match_minecraft
 };
 

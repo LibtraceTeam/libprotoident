@@ -30,19 +30,21 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool obs_pplive_req(uint32_t len) {
+static inline bool obs_pplive_req(uint32_t payload, uint32_t len) {
 	/* There's always a 94 byte packet involved */
+        if (payload == 0)
+                return false;
 	if (len == 94)
 		return true;
 	return false;
 }
 
-static inline bool obs_pplive_resp(uint32_t len) {
-	if (len == 0)
+static inline bool obs_pplive_resp(uint32_t len, bool knownport) {
+	if (len == 0 && knownport)
 		return true;
 	if (len == 94)
 		return true;
-	if (len == 49)
+	if (len == 49 && knownport)
 		return true;
 	return false;
 }
@@ -51,24 +53,22 @@ static inline bool obs_pplive_resp(uint32_t len) {
 static inline bool match_obscure_pplive(lpi_data_t *data) {
 
 	/* This is pretty tough stuff to match - the 4 bytes of payload
-	 * is random, but the packet sizes seem consistent. It also seems to
-	 * only occur on certain ports.
+	 * is random, but the packet sizes seem consistent. 
 	 *
 	 * DPI tools suggest this traffic is pplive, so we'll go with that
 	 * in the absence of any other documentation :/
 	 */
+        bool knownport = false;
 
-	/* Port 5041 and 8303 are the ports that this traffic is
-	 * typically seen on  */
-	if (data->server_port != 5041 && data->server_port != 8303 &&
-			data->client_port != 5041 && data->client_port != 8303)
-		return false;
+        /* Restrict non-94 byte responses to port 5041 */
+        if (data->server_port == 5041 || data->client_port == 5041)
+                knownport = true;
 
-	if (obs_pplive_req(data->payload_len[0]) && 
-			obs_pplive_resp(data->payload_len[1]))
+	if (obs_pplive_req(data->payload[0], data->payload_len[0]) && 
+			obs_pplive_resp(data->payload_len[1], knownport))
 		return true;
-	if (obs_pplive_req(data->payload_len[1]) && 
-			obs_pplive_resp(data->payload_len[0]))
+	if (obs_pplive_req(data->payload[1], data->payload_len[1]) && 
+			obs_pplive_resp(data->payload_len[0], knownport))
 		return true;
 
 	return false;
@@ -104,7 +104,7 @@ static lpi_module_t lpi_pplive = {
 	LPI_PROTO_UDP_PPLIVE,
 	LPI_CATEGORY_P2PTV,
 	"PPLive",
-	3,
+	203,
 	match_pplive
 };
 

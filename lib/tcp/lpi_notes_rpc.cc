@@ -40,6 +40,9 @@ static inline bool match_notes_rpc(lpi_data_t *data, lpi_module_t *mod UNUSED) {
          * no documented basis for this (unlike most other rules)
          */
 
+        if (data->server_port != 1352 && data->client_port != 1352)
+                return false;
+
         if (!match_str_either(data, "\x78\x00\x00\x00"))
                 return false;
 
@@ -55,7 +58,7 @@ static lpi_module_t lpi_notes_rpc = {
 	LPI_PROTO_NOTES_RPC,
 	LPI_CATEGORY_REMOTE,
 	"Lotus_Notes_RPC",
-	10,	/* Don't really trust this rule that much :/ */
+	200,	/* Don't really trust this rule that much :/ */
 	match_notes_rpc
 };
 

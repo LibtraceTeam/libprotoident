@@ -54,7 +54,27 @@ static inline bool match_zoom_02(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_zoom(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_zoom_05(uint32_t payload) {
+        if (MATCH(payload, 0x05, 0x10, 0x01, 0x00))
+                return true;
+        if (MATCH(payload, 0x05, 0x0f, 0x01, 0x00))
+                return true;
+        return false;
+
+}
+
+static inline bool match_zoom_stream_hello(uint32_t payload, uint32_t len) {
+
+        /* Seen 85 and 86 so far */
+        if (len >= 80 && len <= 90) {
+                if (MATCH(payload, 0x1f, 0x01, 0x01, 0x00))
+                        return true;
+        }
+        return false;
+
+}
+
+static inline bool match_zoom_manager(lpi_data_t *data) {
 
         if (data->server_port != 8801 && data->client_port != 8801) {
                 return false;
@@ -74,8 +94,32 @@ static inline bool match_zoom(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (match_zoom_05(data->payload[0]) && match_zoom_05(data->payload[1]))
+                return true;
 
 	return false;
+}
+
+static inline bool match_zoom_stream(lpi_data_t *data) {
+
+        if (match_zoom_stream_hello(data->payload[0], data->payload_len[0])) {
+                if (match_zoom_stream_hello(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        return false;
+
+}
+
+static inline bool match_zoom(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_zoom_manager(data))
+                return true;
+
+        if (match_zoom_stream(data))
+                return true;
+
+        return false;
 }
 
 static lpi_module_t lpi_zoom = {

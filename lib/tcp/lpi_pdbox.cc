@@ -39,7 +39,7 @@ static inline bool match_pdbox(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_pdbox = {
 	LPI_PROTO_PDBOX,
-	LPI_CATEGORY_P2PTV,
+	LPI_CATEGORY_CLOUD,
 	"PDBOX",
 	3,
 	match_pdbox

@@ -43,6 +43,8 @@ static inline bool match_wc_pair(uint32_t payloada, uint32_t lena,
         if (lena == 21 && MATCH(payloada, 0x00, 0x00, 0x00, 0x15)) {
                 if (lenb == 25 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x19))
                         return true;
+                if (lenb == 21 && MATCH(payloadb, 0x00, 0x00, 0x00, 0x15))
+                        return true;
         }
 
         return false;
@@ -110,7 +112,7 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	 * This is not unique to WeChat though, so we need to be careful.
 	 */
 
-	/* Only observed on port 80, 443 or 8080. Because the payload 
+	/* Only observed on port 80, 443, 14000 or 8080. Because the payload
 	 * signature is not entirely unique to WeChat, let's restrict matches
 	 * to flows using those ports unless it shows up on other ports.
 	 */
@@ -119,6 +121,8 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (data->server_port == 8080 || data->client_port == 8080)
 		valid_port = true;
 	if (data->server_port == 443 || data->client_port == 443)
+		valid_port = true;
+	if (data->server_port == 14000 || data->client_port == 14000)
 		valid_port = true;
 
 	if (!valid_port)
