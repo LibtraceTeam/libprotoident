@@ -211,10 +211,10 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts) {
 	f->id.get_server_ip_str(s_ip);
 	f->id.get_client_ip_str(c_ip);
 
-	dump_payload(ident->lpi, 0, pload_out, 500);
-	dump_payload(ident->lpi, 1, pload_in, 500);
+	dump_payload(ident->lpi, 0, pload_out, 100);
+	dump_payload(ident->lpi, 1, pload_in, 100);
         str = (char *)malloc(750);
-        snprintf(str, 1000, "%s %s %s %u %u %u %.3f %.3f %" PRIu64 " %" PRIu64 " %s %s\n",
+        snprintf(str, 750, "%s %s %s %u %u %u %.3f %.3f %" PRIu64 " %" PRIu64 " %s %s\n",
 			proto->name, s_ip, c_ip,
                         f->id.get_server_port(), f->id.get_client_port(),
                         f->id.get_protocol(), ident->start_ts,
