@@ -550,6 +550,8 @@ typedef enum {
         LPI_PROTO_UDP_MERAKICLOUD,
         LPI_PROTO_UDP_SNAPVPN,
         LPI_PROTO_UDP_DAHUA,
+        LPI_PROTO_UDP_STARLEAF,
+        LPI_PROTO_UDP_FOSCAM,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

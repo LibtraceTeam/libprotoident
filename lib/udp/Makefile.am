@@ -56,6 +56,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_fasp.cc \
 	lpi_forticlient_sslvpn.cc \
 	lpi_fortinet.cc \
+	lpi_foscam.cc \
 	lpi_freechal.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
@@ -167,6 +168,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ssdp.cc \
 	lpi_starcitizen.cc \
 	lpi_starcraft.cc \
+	lpi_starleaf.cc \
 	lpi_steam.cc \
 	lpi_steamfriends.cc \
 	lpi_steam_inhomebroadcast.cc \

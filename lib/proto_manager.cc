@@ -363,6 +363,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_fasp(mod_map);
 	register_forticlient_sslvpn(mod_map);
 	register_fortinet(mod_map);
+	register_foscam(mod_map);
 	register_freechal(mod_map);
 	register_funshion_udp(mod_map);
 	register_gamespy(mod_map);
@@ -473,6 +474,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ssdp(mod_map);
 	register_starcitizen(mod_map);
 	register_starcraft(mod_map);
+	register_starleaf(mod_map);
 	register_steamfriends(mod_map);
 	register_steam_localbroadcast(mod_map);
 	register_steam_inhomebroadcast(mod_map);
