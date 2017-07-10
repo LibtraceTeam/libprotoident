@@ -68,6 +68,8 @@ static inline bool match_callofduty(lpi_data_t *data, lpi_module_t *mod UNUSED) 
         if (data->payload_len[0] == 13) {
                 if (data->payload_len[1] > 880)
                         return true;
+                if (data->payload_len[1] >= 230 && data->payload_len[1] <= 250)
+                        return true;
         }
 
         /* Other packet size combos */

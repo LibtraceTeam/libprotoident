@@ -53,6 +53,15 @@ static inline bool match_rtp_payload(uint32_t payload, uint32_t len,
 
 }
 
+static inline bool match_rtp_806d(uint32_t payload, uint32_t len) {
+
+        /* Common pattern we see on our local videoconf server */
+        if (len == 24 && MATCH(payload, 0x80, 0x6d, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
 static inline bool match_stun_response(uint32_t payload, uint32_t len) {
 
 	/* Many VOIP phones use STUN for NAT traversal, so the response to
@@ -75,6 +84,19 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return false;
 	}
 
+        if (match_rtp_806d(data->payload[0], data->payload_len[0])) {
+                if (match_rtp_payload(data->payload[1], data->payload_len[1],
+                                data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_rtp_806d(data->payload[1], data->payload_len[1])) {
+                if (match_rtp_payload(data->payload[0], data->payload_len[0],
+                                data->payload_len[1]))
+                        return true;
+        }
+
+
 	if (match_rtp_payload(data->payload[0], data->payload_len[0], 
 			data->payload_len[1])) {
 		if (match_stun_response(data->payload[1], data->payload_len[1]))
@@ -84,9 +106,9 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			uint32_t a = ntohl(data->payload[0]) & 0xffff0000;
 			uint32_t b = ntohl(data->payload[1]) & 0xffff0000;
 
-			if (a != b)
-				return false;
-			return true;
+			if (a == b)
+				return true;
+			return false;
 		}
 		if (data->payload_len[1] == 0)
 			return true;

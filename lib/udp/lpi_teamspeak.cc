@@ -50,7 +50,7 @@ static inline bool match_ts3_resp(uint32_t payload, uint32_t len,
          * seen so far are either 181 or 182 bytes. Enforce the expected
          * TeamSpeak port in this case, just to be safe.
          */
-        if ((len == 181 || len == 182) && (porta == 9987 || portb == 9987))
+        if ((len >= 180 && len <= 182) && (porta == 9987 || portb == 9987))
                 return true;
 
         return false;

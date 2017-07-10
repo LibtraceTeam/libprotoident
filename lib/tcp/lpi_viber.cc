@@ -47,6 +47,24 @@ static inline bool match_viber_in(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_viber_4244_req(uint32_t payload, uint32_t len) {
+
+        if (len == 96 && MATCH(payload, 0x60, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+
+}
+
+static inline bool match_viber_4244_resp(uint32_t payload, uint32_t len) {
+
+        if (len == 56 && MATCH(payload, 0x38, 0x00, ANY, 0x04))
+                return true;
+        if (len == 56 && MATCH(payload, 0x38, 0x00, ANY, 0x05))
+                return true;
+        return false;
+
+}
+
 static inline bool match_viber_out(uint32_t payload, uint32_t len) {
 
 	/* Again, bytes 1 and 2 are the length */
@@ -81,6 +99,18 @@ static inline bool match_viber(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 				return true;
 		}
 	}
+
+        /* Seen on port 4244 */
+
+        if (match_viber_4244_req(data->payload[0], data->payload_len[0])) {
+                if (match_viber_4244_resp(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_viber_4244_req(data->payload[1], data->payload_len[1])) {
+                if (match_viber_4244_resp(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 	return false;
 }
 

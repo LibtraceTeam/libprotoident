@@ -55,10 +55,12 @@ static inline bool match_byun_p2p(uint32_t payload, uint32_t len) {
 
 static inline bool match_baiduyun_p2p(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+        /*
         if (data->server_port != 7273 && data->client_port != 7273 &&
                         data->server_port != 7274 &&
                         data->client_port != 7274)
                 return false;
+        */
 
 
         if (match_byun_p2p(data->payload[0], data->payload_len[0])) {
@@ -74,7 +76,7 @@ static lpi_module_t lpi_baiduyun_p2p = {
 	LPI_PROTO_UDP_BAIDU_YUN_P2P,
 	LPI_CATEGORY_P2P,
 	"BaiduYunP2P",
-	100,
+	220,
 	match_baiduyun_p2p
 };
 

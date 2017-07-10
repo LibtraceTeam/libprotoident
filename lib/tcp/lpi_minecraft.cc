@@ -85,6 +85,8 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         }
 
         /* Some handshakes seem to be undersized? */
+        if (len == 187 && MATCH(payload, 0xb9, 0x01, 0x01, 0x0e))
+                return true;
         if (len == 189 && MATCH(payload, 0xbb, 0x01, 0x01, 0x10))
                 return true;
         if (len == 190 && MATCH(payload, 0xbc, 0x01, 0x01, 0x11))
@@ -103,6 +105,9 @@ static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
                 if (MATCH(payload, 0xab, 0x01, 0x01, 0x00))
                         return true;
         }
+
+        if (len == 24 && MATCH(payload, 0x17, 0x00, 0xcf, 0x02))
+                return true;
 
         if (len == 4) {
                 if (MATCH(payload, 0x03, 0x03, 0x80, 0x02))
