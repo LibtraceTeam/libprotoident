@@ -417,6 +417,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "ICS";
 		case LPI_CATEGORY_MOBILE_APP:
 			return "Mobile App";
+		case LPI_CATEGORY_IPCAMERAS:
+			return "IP Cameras";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:

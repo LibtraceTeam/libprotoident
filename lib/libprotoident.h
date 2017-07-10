@@ -105,6 +105,7 @@ typedef enum {
         LPI_CATEGORY_MOBILE_APP,        /* Mobile apps that don't fit any
                                            other category */
     LPI_CATEGORY_ICS,           /* Industrial control system protocols */
+        LPI_CATEGORY_IPCAMERAS,         /* IP Surveillance Camera protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */

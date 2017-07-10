@@ -55,7 +55,7 @@ static inline bool match_umeye(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_umeye = {
 	LPI_PROTO_UDP_UMEYE,
-	LPI_CATEGORY_STREAMING,
+	LPI_CATEGORY_IPCAMERAS,
 	"Umeye",
 	101,
 	match_umeye

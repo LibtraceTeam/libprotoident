@@ -50,7 +50,7 @@ static inline bool match_netcat_cctv_udp(lpi_data_t *data,
 
 static lpi_module_t lpi_netcat_cctv_udp = {
 	LPI_PROTO_UDP_NETCAT_CCTV,
-	LPI_CATEGORY_STREAMING,
+	LPI_CATEGORY_IPCAMERAS,
 	"NetcatCCTV_UDP",
 	22,
 	match_netcat_cctv_udp
