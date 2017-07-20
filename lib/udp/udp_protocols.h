@@ -64,6 +64,7 @@ void register_dahua(LPIModuleMap *mod_map);
 void register_db2(LPIModuleMap *mod_map);
 void register_dcc_udp(LPIModuleMap *mod_map);
 void register_demonware(LPIModuleMap *mod_map);
+void register_destiny_udp(LPIModuleMap *mod_map);
 void register_dhcp(LPIModuleMap *mod_map);
 void register_dht_dict(LPIModuleMap *mod_map);
 void register_dht_other(LPIModuleMap *mod_map);

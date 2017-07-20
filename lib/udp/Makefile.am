@@ -34,6 +34,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_db2.cc \
 	lpi_dcc.cc \
 	lpi_demonware.cc \
+	lpi_destiny_udp.cc \
 	lpi_dhcp.cc \
 	lpi_dht_dict.cc \
 	lpi_dht_other.cc \

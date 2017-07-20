@@ -274,6 +274,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_vainglory(mod_map);
 	register_viber(mod_map);
 	register_vodlocker(mod_map);
+	register_vpnunlimited_tcp(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
 	register_weblogic(mod_map);
@@ -341,6 +342,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_db2(mod_map);
 	register_dcc_udp(mod_map);
 	register_demonware(mod_map);
+	register_destiny_udp(mod_map);
 	register_dhcp(mod_map);
 	register_dht_dict(mod_map);
 	register_dht_other(mod_map);

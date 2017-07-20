@@ -72,6 +72,11 @@ static inline bool match_stun_response(uint32_t payload, uint32_t len) {
         if (len == 12 && MATCH(payload, 0x00, 0x11, 0x00, 0x00))
                 return true;
 
+        /* Facebook-specific STUN? Message type 0x003 is not defined in
+         * any official STUN documentation */
+        if (len == 126 && MATCH(payload, 0x00, 0x03, 0x00, 0x6a))
+                return true;
+
 	return false;
 
 }

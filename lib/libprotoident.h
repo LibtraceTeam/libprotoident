@@ -351,6 +351,7 @@ typedef enum {
         LPI_PROTO_DASH,
         LPI_PROTO_AIRMEDIA,
         LPI_PROTO_GIOP,
+        LPI_PROTO_VPN_UNLIMITED,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -552,6 +553,7 @@ typedef enum {
         LPI_PROTO_UDP_DAHUA,
         LPI_PROTO_UDP_STARLEAF,
         LPI_PROTO_UDP_FOSCAM,
+        LPI_PROTO_UDP_DESTINY,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
