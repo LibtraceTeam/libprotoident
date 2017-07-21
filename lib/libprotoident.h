@@ -352,6 +352,7 @@ typedef enum {
         LPI_PROTO_AIRMEDIA,
         LPI_PROTO_GIOP,
         LPI_PROTO_VPN_UNLIMITED,
+        LPI_PROTO_TENFIVECOIN,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

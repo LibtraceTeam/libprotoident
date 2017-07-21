@@ -219,6 +219,7 @@ void register_telegram(LPIModuleMap *mod_map);
 void register_telnet(LPIModuleMap *mod_map);
 void register_telnet_exploit(LPIModuleMap *mod_map);
 void register_tencent_games(LPIModuleMap *mod_map);
+void register_tenfivecoin(LPIModuleMap *mod_map);
 void register_tensafe(LPIModuleMap *mod_map);
 void register_tera(LPIModuleMap *mod_map);
 void register_tetrisonline(LPIModuleMap *mod_map);

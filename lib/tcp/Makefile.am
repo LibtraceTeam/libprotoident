@@ -191,6 +191,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_telnet.cc \
 	lpi_telnet_exploit.cc \
 	lpi_tencent_games.cc \
+	lpi_tenfivecoin.cc \
 	lpi_tensafe.cc \
 	lpi_tera.cc \
 	lpi_tetrisonline.cc \

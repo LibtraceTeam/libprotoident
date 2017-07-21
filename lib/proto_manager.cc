@@ -258,6 +258,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_telnet(mod_map);
 	register_telnet_exploit(mod_map);
 	register_tencent_games(mod_map);
+	register_tenfivecoin(mod_map);
 	register_tensafe(mod_map);
 	register_tera(mod_map);
 	register_tetrisonline(mod_map);

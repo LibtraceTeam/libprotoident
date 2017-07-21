@@ -49,7 +49,7 @@ static inline bool match_4d_other(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_4d_len72(uint32_t payload, uint32_t len) {
-        if (len == 72 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+        if (len == 72 && MATCH(payload, 0x00, 0x00, 0x00, 0x48))
                 return true;
         return false;
 }

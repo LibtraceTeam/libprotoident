@@ -243,6 +243,7 @@ void expire_ident_flows(libtrace_t *trace, libtrace_thread_t *thread,
         Flow *expired;
 	lpi_module_t *proto;
         char *result = NULL;
+        libtrace_generic_t gen;
 
         /* Loop until libflowmanager has no more expired flows available */
 	while ((expired = fm->expireNextFlow(ts, exp_flag)) != NULL) {
@@ -250,9 +251,9 @@ void expire_ident_flows(libtrace_t *trace, libtrace_thread_t *thread,
                 IdentFlow *ident = (IdentFlow *)expired->extension;
 		result = display_ident(expired, ident, opts);
                 if (result) {
+                        gen.ptr = result;
                         trace_publish_result(trace, thread, ident->end_ts,
-                                        (libtrace_generic_t){.ptr=result},
-                                        RESULT_USER);
+                                        gen,  RESULT_USER);
                 }
 		/* Don't forget to free our custom data structure */
                 free(ident);
