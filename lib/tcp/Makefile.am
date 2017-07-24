@@ -12,6 +12,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
 	lpi_badbaidu.cc \
+	lpi_baofeng_tcp.cc \
 	lpi_bitcoin.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \

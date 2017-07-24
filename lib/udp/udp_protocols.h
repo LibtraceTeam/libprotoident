@@ -46,6 +46,7 @@ void register_avast_secure_dns(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);
 void register_bacnet(LPIModuleMap *mod_map);
 void register_baiduyun_p2p(LPIModuleMap *mod_map);
+void register_baofeng_udp(LPIModuleMap *mod_map);
 void register_battlefield(LPIModuleMap *mod_map);
 void register_bjnp(LPIModuleMap *mod_map);
 void register_bmdp(LPIModuleMap *mod_map);

@@ -79,6 +79,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_apple_push(mod_map);
 	register_ares(mod_map);
 	register_badbaidu(mod_map);
+	register_baofeng_tcp(mod_map);
 	register_bitcoin(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
@@ -325,6 +326,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_bacnet(mod_map);
 	register_backweb(mod_map);
 	register_baiduyun_p2p(mod_map);
+	register_baofeng_udp(mod_map);
 	register_battlefield(mod_map);
 	register_bjnp(mod_map);
 	register_bmdp(mod_map);

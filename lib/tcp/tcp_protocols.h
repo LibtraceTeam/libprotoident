@@ -40,6 +40,7 @@ void register_appearin(LPIModuleMap *mod_map);
 void register_apple_push(LPIModuleMap *mod_map);
 void register_ares(LPIModuleMap *mod_map);
 void register_badbaidu(LPIModuleMap *mod_map);
+void register_baofeng_tcp(LPIModuleMap *mod_map);
 void register_bitcoin(LPIModuleMap *mod_map);
 void register_bitextend(LPIModuleMap *mod_map);
 void register_bittorrent(LPIModuleMap *mod_map);

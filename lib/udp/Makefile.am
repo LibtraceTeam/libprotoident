@@ -16,6 +16,7 @@ libprotoident_udp_la_SOURCES = \
         lpi_backweb.cc \
         lpi_bacnet.cc \
 	lpi_baiduyun_p2p.cc \
+	lpi_baofeng_udp.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
 	lpi_bmdp.cc \
