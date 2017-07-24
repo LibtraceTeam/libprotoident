@@ -31,16 +31,9 @@
 #include "proto_common.h"
 
 
-static inline bool match_baofeng_9(uint32_t payload, uint32_t len) {
+static inline bool match_baofeng_52(uint32_t payload, uint32_t len) {
 
-        if (len == 9 && MATCH(payload, 0x52, 0x00, 0x00, 0x00))
-                return true;
-        return false;
-}
-
-static inline bool match_baofeng_144(uint32_t payload, uint32_t len) {
-
-        if (len == 144 && MATCH(payload, 0x52, 0x00, 0x00, 0x00))
+        if (MATCH(payload, 0x52, 0x00, 0x00, 0x00))
                 return true;
         return false;
 }
@@ -49,13 +42,8 @@ static inline bool match_baofeng_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED)
 
         if (data->server_port == 7909 || data->client_port == 7909) {
 
-                if (match_baofeng_9(data->payload[0], data->payload_len[0])) {
-                        if (match_baofeng_144(data->payload[1], data->payload_len[1]))
-                                return true;
-                }
-
-                if (match_baofeng_9(data->payload[1], data->payload_len[1])) {
-                        if (match_baofeng_144(data->payload[0], data->payload_len[0]))
+                if (match_baofeng_52(data->payload[1], data->payload_len[1])) {
+                        if (match_baofeng_52(data->payload[0], data->payload_len[0]))
                                 return true;
                 }
 
