@@ -354,6 +354,8 @@ typedef enum {
         LPI_PROTO_VPN_UNLIMITED,
         LPI_PROTO_TENFIVECOIN,
         LPI_PROTO_BAOFENG,
+        LPI_PROTO_TALESRUNNER,
+        LPI_PROTO_ANTCOIN,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

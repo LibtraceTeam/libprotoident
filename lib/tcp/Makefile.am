@@ -8,6 +8,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_airmedia.cc \
 	lpi_akamai.cc \
 	lpi_amp.cc \
+	lpi_antcoin.cc \
 	lpi_appearin.cc \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
@@ -183,6 +184,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_stun.cc \
 	lpi_supl.cc \
 	lpi_svn.cc \
+	lpi_talesrunner.cc \
 	lpi_tankix.cc \
 	lpi_taobao.cc \
 	lpi_tds.cc \

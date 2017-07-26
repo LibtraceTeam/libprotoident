@@ -75,6 +75,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_airmedia(mod_map);
 	register_akamai_tcp(mod_map);
 	register_amp(mod_map);
+	register_antcoin(mod_map);
 	register_appearin(mod_map);
 	register_apple_push(mod_map);
 	register_ares(mod_map);
@@ -250,6 +251,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_stun_tcp(mod_map);
 	register_supl(mod_map);
 	register_svn(mod_map);
+	register_talesrunner(mod_map);
 	register_tankix(mod_map);
 	register_taobao(mod_map);
 	register_tds(mod_map);
