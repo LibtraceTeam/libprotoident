@@ -49,6 +49,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_eye.cc \
 	lpi_facebook_turn.cc \
 	lpi_fb_message.cc \
+	lpi_fbcdn_ssl.cc \
 	lpi_ffxiv.cc \
 	lpi_flash.cc \
 	lpi_fring.cc \

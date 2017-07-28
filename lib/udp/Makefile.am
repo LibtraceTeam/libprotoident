@@ -184,6 +184,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_tftp.cc \
 	lpi_thecrew.cc \
 	lpi_thq.cc \
+	lpi_torchlight2.cc \
 	lpi_traceroute.cc \
 	lpi_tremulous.cc \
 	lpi_turbovpn.cc \

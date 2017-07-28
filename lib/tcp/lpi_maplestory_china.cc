@@ -51,6 +51,8 @@ static inline bool match_cms_alt(uint32_t payload, uint32_t len) {
         if (len == 16) {
                 if (MATCH(payload, 0x0e, 0x00, 0xba, 0x00))
                         return true;
+                if (MATCH(payload, 0x0e, 0x00, 0xbb, 0x00))
+                        return true;
         }
         return false;
 }

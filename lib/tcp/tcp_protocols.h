@@ -77,6 +77,7 @@ void register_emule(LPIModuleMap *mod_map);
 void register_eye(LPIModuleMap *mod_map);
 void register_facebook_turn(LPIModuleMap *mod_map);
 void register_fb_message(LPIModuleMap *mod_map);
+void register_fbcdn_ssl(LPIModuleMap *mod_map);
 void register_ffxiv(LPIModuleMap *mod_map);
 void register_flash(LPIModuleMap *mod_map);
 void register_fring(LPIModuleMap *mod_map);
