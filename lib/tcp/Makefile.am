@@ -165,6 +165,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_rtsp.cc \
 	lpi_runescape.cc \
 	lpi_s7comm.cc \
+	lpi_saprouter.cc \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
 	lpi_silkroadonline.cc \

@@ -232,6 +232,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_rtsp(mod_map);
 	register_runescape(mod_map);
 	register_s7comm(mod_map);
+	register_saprouter(mod_map);
 	register_second_life(mod_map);
 	register_shoutcast(mod_map);
 	register_silkroadonline(mod_map);

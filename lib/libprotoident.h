@@ -357,6 +357,7 @@ typedef enum {
         LPI_PROTO_TALESRUNNER,
         LPI_PROTO_ANTCOIN,
         LPI_PROTO_FBCDN_SSL,
+        LPI_PROTO_SAPROUTER,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

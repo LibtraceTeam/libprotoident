@@ -193,6 +193,7 @@ void register_rtmp(LPIModuleMap *mod_map);
 void register_rtsp(LPIModuleMap *mod_map);
 void register_runescape(LPIModuleMap *mod_map);
 void register_s7comm(LPIModuleMap *mod_map);
+void register_saprouter(LPIModuleMap *mod_map);
 void register_second_life(LPIModuleMap *mod_map);
 void register_shoutcast(LPIModuleMap *mod_map);
 void register_silkroadonline(LPIModuleMap *mod_map);
