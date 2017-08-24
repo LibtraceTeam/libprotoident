@@ -94,9 +94,9 @@ static inline bool match_wc_ab_big01(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_wc_ab_reply(uint32_t payload, uint32_t len) {
-        /* All replies appear to be 41 bytes */
+        /* All replies appear to be 41 or 53 bytes */
 
-        if (len != 41)
+        if (len != 41 && len != 53)
                 return false;
 
         if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))

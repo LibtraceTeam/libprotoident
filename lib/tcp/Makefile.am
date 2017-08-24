@@ -52,6 +52,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fbcdn_ssl.cc \
 	lpi_ffxiv.cc \
 	lpi_flash.cc \
+	lpi_fliggy.cc \
 	lpi_fring.cc \
 	lpi_ftpcontrol.cc \
 	lpi_ftpdata.cc \

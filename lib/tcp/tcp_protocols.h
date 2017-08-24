@@ -80,6 +80,7 @@ void register_fb_message(LPIModuleMap *mod_map);
 void register_fbcdn_ssl(LPIModuleMap *mod_map);
 void register_ffxiv(LPIModuleMap *mod_map);
 void register_flash(LPIModuleMap *mod_map);
+void register_fliggy(LPIModuleMap *mod_map);
 void register_fring(LPIModuleMap *mod_map);
 void register_ftpcontrol(LPIModuleMap *mod_map);
 void register_ftpdata(LPIModuleMap *mod_map);

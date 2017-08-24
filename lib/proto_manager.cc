@@ -119,6 +119,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_fbcdn_ssl(mod_map);
 	register_ffxiv(mod_map);
 	register_flash(mod_map);
+	register_fliggy(mod_map);
 	register_fring(mod_map);
 	register_ftpcontrol(mod_map);
 	register_ftpdata(mod_map);
