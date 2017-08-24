@@ -78,19 +78,19 @@ static inline bool match_airdroid_33(uint32_t payload, uint32_t len) {
 
         /* Needs some proper testing against real airdroid traffic */
         if (len == 33) {
-                byte == (ordered & 0xff);
+                byte = (ordered & 0xff);
                 if (!is_hexdigit(byte))
                         return false;
 
-                byte == ((ordered >> 8) & 0xff);
+                byte = ((ordered >> 8) & 0xff);
                 if (!is_hexdigit(byte))
                         return false;
 
-                byte == ((ordered >> 16) & 0xff);
+                byte = ((ordered >> 16) & 0xff);
                 if (!is_hexdigit(byte))
                         return false;
 
-                byte == ((ordered >> 24) & 0xff);
+                byte = ((ordered >> 24) & 0xff);
                 if (!is_hexdigit(byte))
                         return false;
 
