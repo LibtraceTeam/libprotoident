@@ -201,6 +201,7 @@ void register_silkroadonline(LPIModuleMap *mod_map);
 void register_sip(LPIModuleMap *mod_map);
 void register_skype_tcp(LPIModuleMap *mod_map);
 void register_smb(LPIModuleMap *mod_map);
+void register_smite_tcp(LPIModuleMap *mod_map);
 void register_smtp(LPIModuleMap *mod_map);
 void register_smtps(LPIModuleMap *mod_map);
 void register_socks4(LPIModuleMap *mod_map);

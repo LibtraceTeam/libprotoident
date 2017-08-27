@@ -161,6 +161,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_sip.cc \
 	lpi_skype.cc \
 	lpi_slp.cc \
+	lpi_smite.cc \
 	lpi_snapvpn.cc \
 	lpi_snmp.cc \
 	lpi_sopcast.cc \

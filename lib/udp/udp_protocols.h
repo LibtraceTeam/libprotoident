@@ -190,6 +190,7 @@ void register_serialnumberd(LPIModuleMap *mod_map);
 void register_sip_udp(LPIModuleMap *mod_map);
 void register_skype(LPIModuleMap *mod_map);
 void register_slp(LPIModuleMap *mod_map);
+void register_smite(LPIModuleMap *mod_map);
 void register_snapvpn(LPIModuleMap *mod_map);
 void register_snmp(LPIModuleMap *mod_map);
 void register_sopcast(LPIModuleMap *mod_map);

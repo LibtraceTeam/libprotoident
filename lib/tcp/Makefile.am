@@ -173,6 +173,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_sip.cc \
 	lpi_skype_tcp.cc \
 	lpi_smb.cc \
+	lpi_smite_tcp.cc \
 	lpi_smtp.cc \
 	lpi_smtps.cc \
 	lpi_socks4.cc \

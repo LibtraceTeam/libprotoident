@@ -240,6 +240,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_sip(mod_map);
 	register_skype_tcp(mod_map);
 	register_smb(mod_map);
+	register_smite_tcp(mod_map);
 	register_smtp(mod_map);
 	register_smtps(mod_map);
 	register_socks4(mod_map);
@@ -475,6 +476,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_sip_udp(mod_map);
 	register_skype(mod_map);
 	register_slp(mod_map);
+	register_smite(mod_map);
 	register_snapvpn(mod_map);
 	register_snmp(mod_map);
 	register_sopcast(mod_map);

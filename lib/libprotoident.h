@@ -359,6 +359,7 @@ typedef enum {
         LPI_PROTO_FBCDN_SSL,
         LPI_PROTO_SAPROUTER,
         LPI_PROTO_FLIGGY,
+        LPI_PROTO_SMITE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -563,6 +564,7 @@ typedef enum {
         LPI_PROTO_UDP_DESTINY,
         LPI_PROTO_UDP_BAOFENG,
         LPI_PROTO_UDP_TORCHLIGHT2,
+        LPI_PROTO_UDP_SMITE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

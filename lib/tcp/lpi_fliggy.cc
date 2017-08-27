@@ -30,6 +30,8 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+
+/* Bytes 3 and 4 are a length field */
 static inline bool match_fliggy_req(uint32_t payload, uint32_t len) {
 
         uint32_t hlen = ntohl(payload) & 0xffff;
@@ -46,8 +48,13 @@ static inline bool match_fliggy_req(uint32_t payload, uint32_t len) {
 
 static inline bool match_fliggy_resp(uint32_t payload, uint32_t len) {
 
-        /* Usually, but not always 174 bytes */
+        /* Usually, but not always 174 bytes -- I'm guessing sometimes
+         * messages get merged?
+         */
         if (MATCH(payload, 0xd3, 0x00, 0x00, 0xaa))
+                return true;
+
+        if (len == 58 && MATCH(payload, 0xd3, 0x00, 0x00, 0x36))
                 return true;
         return false;
 
