@@ -61,6 +61,7 @@ void register_cisco_sslvpn(LPIModuleMap *mod_map);
 void register_crossfire(LPIModuleMap *mod_map);
 void register_crossout(LPIModuleMap *mod_map);
 void register_csgo(LPIModuleMap *mod_map);
+void register_csoriginal(LPIModuleMap *mod_map);
 void register_dahua(LPIModuleMap *mod_map);
 void register_db2(LPIModuleMap *mod_map);
 void register_dcc_udp(LPIModuleMap *mod_map);

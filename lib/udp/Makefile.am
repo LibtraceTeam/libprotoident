@@ -31,6 +31,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_crossfire.cc \
 	lpi_crossout.cc \
 	lpi_csgo.cc \
+	lpi_csoriginal.cc \
 	lpi_dahua.cc \
 	lpi_db2.cc \
 	lpi_dcc.cc \

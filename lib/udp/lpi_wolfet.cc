@@ -34,7 +34,7 @@ static inline bool match_wolf_payload(uint32_t payload, uint32_t len) {
 
         if (len == 0)
                 return true;
-        if (!MATCH(payload, 0xff, 0xff, 0xff, 0xff))
+        if (!MATCHSTR(payload, "\xff\xff\xff\xff"))
                 return false;
         return true;
 
@@ -52,15 +52,24 @@ static inline bool match_wolf_et(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (!match_wolf_payload(data->payload[1], data->payload_len[1]))
                 return false;
 
-        /* One packet is always 14 bytes, the other is always > 800 */
-        if (data->payload_len[0] == 14) {
-                if (data->payload_len[1] == 0 || data->payload_len[1] >= 800)
+        /* getinfo packet is always 15 bytes, the other is always 250-350 */
+        if (data->payload_len[0] == 15) {
+                if (data->payload_len[1] == 0 || (data->payload_len[1] >= 250
+                                && data->payload_len[1] < 350))
                         return true;
         }
-        if (data->payload_len[1] == 14) {
-                if (data->payload_len[0] == 0 || data->payload_len[0] >= 800)
+
+        if (data->payload_len[1] == 15) {
+                if (data->payload_len[0] == 0 || (data->payload_len[0] >= 250
+                                && data->payload_len[0] < 350))
                         return true;
         }
+
+        /* getservers packets are 17 bytes, response may vary a lot (?) */
+        if (data->payload_len[0] == 17)
+                return true;
+        if (data->payload_len[1] == 17)
+                return true;
 
 
 	return false;
@@ -70,7 +79,7 @@ static lpi_module_t lpi_wolfet = {
 	LPI_PROTO_UDP_WOLF_ET,
 	LPI_CATEGORY_GAMING,
 	"WolfensteinEnemyTerritory",
-	5,	/* Must be lower priority than Call of Duty */
+	50,	/* Must be lower priority than Call of Duty */
 	match_wolf_et
 };
 

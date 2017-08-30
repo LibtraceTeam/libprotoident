@@ -160,7 +160,7 @@ static lpi_module_t lpi_callofduty = {
 	LPI_PROTO_UDP_COD,
 	LPI_CATEGORY_GAMING,
 	"Call_of_Duty",
-	6,	/* Must be lower priority than XLSP */
+	60,	/* Must be lower priority than XLSP */
 	match_callofduty
 };
 

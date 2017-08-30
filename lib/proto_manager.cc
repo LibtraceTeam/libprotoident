@@ -345,6 +345,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_crossfire(mod_map);
 	register_crossout(mod_map);
 	register_csgo(mod_map);
+	register_csoriginal(mod_map);
 	register_dahua(mod_map);
 	register_db2(mod_map);
 	register_dcc_udp(mod_map);
