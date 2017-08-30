@@ -282,6 +282,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_vainglory(mod_map);
 	register_viber(mod_map);
 	register_vodlocker(mod_map);
+	register_vpnrobot_tcp(mod_map);
 	register_vpnunlimited_tcp(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
@@ -514,6 +515,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_viber_udp(mod_map);
 	register_vivox(mod_map);
 	register_vpnmaster(mod_map);
+	register_vpnrobot_udp(mod_map);
 	register_vxworks_exploit(mod_map);
 	register_warthunder(mod_map);
 	register_webex(mod_map);

@@ -243,6 +243,7 @@ void register_twitch_irc(LPIModuleMap *mod_map);
 void register_vainglory(LPIModuleMap *mod_map);
 void register_viber(LPIModuleMap *mod_map);
 void register_vodlocker(LPIModuleMap *mod_map);
+void register_vpnrobot_tcp(LPIModuleMap *mod_map);
 void register_vpnunlimited_tcp(LPIModuleMap *mod_map);
 void register_warcraft3(LPIModuleMap *mod_map);
 void register_web_junk(LPIModuleMap *mod_map);

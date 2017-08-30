@@ -360,6 +360,7 @@ typedef enum {
         LPI_PROTO_SAPROUTER,
         LPI_PROTO_FLIGGY,
         LPI_PROTO_SMITE,
+        LPI_PROTO_VPNROBOT,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -566,6 +567,7 @@ typedef enum {
         LPI_PROTO_UDP_TORCHLIGHT2,
         LPI_PROTO_UDP_SMITE,
         LPI_PROTO_UDP_COUNTERSTRIKE_16,
+        LPI_PROTO_UDP_VPNROBOT,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

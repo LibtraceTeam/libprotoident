@@ -215,6 +215,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_vainglory.cc \
 	lpi_viber.cc \
 	lpi_vodlocker.cc \
+	lpi_vpnrobot_tcp.cc \
 	lpi_vpnunlimited_tcp.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \

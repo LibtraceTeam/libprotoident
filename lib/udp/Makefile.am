@@ -198,6 +198,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_viber.cc \
 	lpi_vivox.cc \
 	lpi_vpnmaster.cc \
+	lpi_vpnrobot_udp.cc \
 	lpi_vxworks_exploit.cc \
 	lpi_warthunder.cc \
 	lpi_webex.cc \

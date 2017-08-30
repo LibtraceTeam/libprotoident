@@ -228,6 +228,7 @@ void register_ventrilo(LPIModuleMap *mod_map);
 void register_viber_udp(LPIModuleMap *mod_map);
 void register_vivox(LPIModuleMap *mod_map);
 void register_vpnmaster(LPIModuleMap *mod_map);
+void register_vpnrobot_udp(LPIModuleMap *mod_map);
 void register_vxworks_exploit(LPIModuleMap *mod_map);
 void register_warthunder(LPIModuleMap *mod_map);
 void register_webex(LPIModuleMap *mod_map);
