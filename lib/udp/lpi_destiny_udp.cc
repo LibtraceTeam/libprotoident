@@ -33,11 +33,13 @@
 static inline bool match_destiny_299(uint32_t payload, uint32_t len) {
         if (len == 299 && MATCH(payload, 0x00, 0x00, 0x00, 0x01))
                 return true;
+        return false;
 }
 
 static inline bool match_destiny_423(uint32_t payload, uint32_t len) {
         if (len == 423 && MATCH(payload, 0x00, 0x00, 0x00, 0x01))
                 return true;
+        return false;
 }
 
 static inline bool match_destiny_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
