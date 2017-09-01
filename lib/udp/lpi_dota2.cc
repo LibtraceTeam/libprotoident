@@ -71,8 +71,12 @@ static inline bool match_dota2_0212(uint32_t payload, uint32_t len) {
 
 static inline bool match_dota2_512(uint32_t payload, uint32_t len) {
 
-        if (len == 512 && MATCH(payload, 0x20, 0x0e, 0x00, 0x0d))
-                return true;
+        if (len == 512) {
+                if (MATCH(payload, 0x20, 0x0e, 0x00, 0x0d))
+                        return true;
+                if (MATCH(payload, 0x20, 0x10, 0x00, 0x0d))
+                        return true;
+        }
         return false;
 
 }
@@ -80,6 +84,8 @@ static inline bool match_dota2_512(uint32_t payload, uint32_t len) {
 static inline bool match_dota2_24(uint32_t payload, uint32_t len) {
 
         if (len == 24 && MATCH(payload, 0x21, 0x0d, ANY, ANY))
+                return true;
+        if (len == 26 && MATCH(payload, 0x21, 0x0d, ANY, ANY))
                 return true;
         return false;
 

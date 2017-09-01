@@ -361,6 +361,7 @@ typedef enum {
         LPI_PROTO_FLIGGY,
         LPI_PROTO_SMITE,
         LPI_PROTO_VPNROBOT,
+        LPI_PROTO_VMWARE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

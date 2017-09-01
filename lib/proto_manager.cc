@@ -281,6 +281,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_twitch_irc(mod_map);
 	register_vainglory(mod_map);
 	register_viber(mod_map);
+	register_vmware(mod_map);
 	register_vodlocker(mod_map);
 	register_vpnrobot_tcp(mod_map);
 	register_vpnunlimited_tcp(mod_map);
