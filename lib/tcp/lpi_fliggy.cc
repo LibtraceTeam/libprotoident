@@ -36,7 +36,8 @@ static inline bool match_fliggy_req(uint32_t payload, uint32_t len) {
 
         uint32_t hlen = ntohl(payload) & 0xffff;
 
-        if (MATCH(payload, 0xd1, 0x00, ANY, ANY)) {
+        if (MATCH(payload, 0xd1, 0x00, ANY, ANY) ||
+                        MATCH(payload, 0xd5, 0x00, ANY, ANY)) {
                 if (hlen == len - 4)
                         return true;
                 /* Try to account for messages that are longer than one MTU */
