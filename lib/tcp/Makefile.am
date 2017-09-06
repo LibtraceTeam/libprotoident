@@ -41,6 +41,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_dns.cc \
 	lpi_dogecoin.cc \
 	lpi_douyu.cc \
+	lpi_douyu_chat.cc \
 	lpi_duelingnetwork.cc \
 	lpi_dvrns.cc \
 	lpi_dxp.cc \
@@ -92,6 +93,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_irc.cc \
 	lpi_java.cc \
 	lpi_jedi.cc \
+	lpi_jx3online.cc \
 	lpi_kakao.cc \
 	lpi_kankan_tcp.cc \
 	lpi_kaseya.cc \

@@ -63,6 +63,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_freechal.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_gangsofspace.cc \
 	lpi_garena.cc \
 	lpi_gearsofwar.cc \
 	lpi_gnutella.cc \
@@ -183,6 +184,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_teamspeak.cc \
 	lpi_teamviewer.cc \
 	lpi_teredo.cc \
+	lpi_tf2.cc \
 	lpi_tftp.cc \
 	lpi_thecrew.cc \
 	lpi_thq.cc \
