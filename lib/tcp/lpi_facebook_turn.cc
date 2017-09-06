@@ -37,6 +37,10 @@ static inline bool match_fbturn_request(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 114 && MATCH(payload, 0x00, 0x70, 0x00, 0x01))
                 return true;
+        if (len == 110 && MATCH(payload, 0x00, 0x6c, 0x00, 0x01))
+                return true;
+        if (len == 122 && MATCH(payload, 0x00, 0x78, 0x00, 0x01))
+                return true;
         return false;
 }
 
@@ -44,6 +48,8 @@ static inline bool match_fbturn_reply(uint32_t payload, uint32_t len) {
         /* 0x40 == len - 2, 0x0101 == binding accepted */
 
         if (len == 66 && MATCH(payload, 0x00, 0x40, 0x01, 0x01))
+                return true;
+        if (len == 82 && MATCH(payload, 0x00, 0x50, 0x01, 0x01))
                 return true;
         return false;
 }

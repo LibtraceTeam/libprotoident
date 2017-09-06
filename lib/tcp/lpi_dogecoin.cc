@@ -35,6 +35,8 @@ static inline bool match_dc_magic(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0xc0, 0xc0, 0xc0, 0xc0)) {
                 if (len >= 125 && len <= 129) 
                         return true;
+                if (len == 142)
+                        return true;
         }
         return false;
 

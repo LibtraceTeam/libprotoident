@@ -52,6 +52,14 @@ static inline bool match_wa_first_20(uint32_t payload, uint32_t len) {
 	return false;
 }
 
+static inline bool match_ed_first(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 'E', 'D', 0x00, 0x01))
+                return true;
+        if (len == 1 && MATCH(payload, 'E', 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
 
 static inline bool match_wa_second(uint32_t payload, uint32_t len) {
 	if (len == 0)
@@ -102,7 +110,15 @@ static inline bool match_whatsapp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 
-        
+        if (match_ed_first(data->payload[0], data->payload_len[0])) {
+		if (match_wa_second_20(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+        if (match_ed_first(data->payload[1], data->payload_len[1])) {
+		if (match_wa_second_20(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
 	return false;
 
