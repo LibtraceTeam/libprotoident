@@ -46,8 +46,11 @@ static inline bool match_thecrew_hello(uint32_t payload, uint32_t len) {
 
 static inline bool match_thecrew(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 3001 && data->client_port != 3001)
+        if (data->server_port != 3001 && data->client_port != 3001 &&
+                        data->server_port != 10000 &&
+                        data->client_port != 10000) {
                 return false;
+        }
 
         if (match_thecrew_hello(data->payload[0], data->payload_len[0])) {
                 if (match_thecrew_hello(data->payload[1], data->payload_len[1]))
