@@ -33,7 +33,7 @@
 static inline bool match_cacaoweb_header(uint32_t payload, uint32_t len) {
         if (!MATCH(payload, 0x84, 0x95, 0xa6, 0xbe))
                 return false;
-        if (len == 51 || len == 56)
+        if (len == 51 || len == 56 || len == 54)
                 return true;
         return false;
 
