@@ -75,13 +75,25 @@ static inline bool match_wow_s2c(uint32_t payload, uint32_t len) {
 
 
 static inline bool match_wow_2016(uint32_t payload, uint32_t len) {
-        if (len == 47) {
+        if (len == 47 || len == 48) {
                 if (MATCHSTR(payload, "WORL"))
                         return true;
         }
         return false;
 
 }
+
+
+static inline bool match_china_wow(uint32_t payload, uint32_t len) {
+        if (len == 57 || len == 59) {
+                if (MATCH(payload, 0x05, 0x01, 0x93, 0x01))
+                        return true;
+        }
+        return false;
+
+}
+
+
 
 static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -108,6 +120,23 @@ static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
                 }
         }
+
+        /* Chinese WOW is a little different */
+        if (data->server_port == 8001 || data->client_port == 8001) {
+                if (match_wow_2016(data->payload[0], data->payload_len[0])) {
+                        if (match_wow_2016(data->payload[1], data->payload_len[1]))
+                                return true;
+
+                        if (match_china_wow(data->payload[1], data->payload_len[1]))
+                                return true;
+                }
+
+                if (match_wow_2016(data->payload[1], data->payload_len[1])) {
+                        if (match_china_wow(data->payload[0], data->payload_len[0]))
+                                return true;
+                }
+        }
+
 
 	return false;
 }
