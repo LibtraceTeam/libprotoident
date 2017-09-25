@@ -170,6 +170,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ldap(mod_map);
 	register_lifeforge(mod_map);
 	register_line(mod_map);
+	register_litecoin(mod_map);
 	register_llp2p(mod_map);
 	register_maplestory_china(mod_map);
 	register_maxicloud(mod_map);
@@ -348,6 +349,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
+	register_combatarms(mod_map);
 	register_crossfire(mod_map);
 	register_crossout(mod_map);
 	register_csgo(mod_map);

@@ -364,6 +364,7 @@ typedef enum {
         LPI_PROTO_VMWARE,
         LPI_PROTO_DOUYU_CHAT,
         LPI_PROTO_JX3ONLINE,
+        LPI_PROTO_LITECOIN,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -573,6 +574,7 @@ typedef enum {
         LPI_PROTO_UDP_VPNROBOT,
         LPI_PROTO_UDP_TF2,
         LPI_PROTO_UDP_GANGSOFSPACE,
+        LPI_PROTO_UDP_COMBATARMS,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

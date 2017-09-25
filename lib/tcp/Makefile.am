@@ -103,6 +103,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ldap.cc \
 	lpi_lifeforge.cc \
 	lpi_line.cc \
+	lpi_litecoin.cc \
 	lpi_llp2p.cc \
 	lpi_maplestory_china.cc \
 	lpi_maxicloud.cc \
