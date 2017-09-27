@@ -45,7 +45,7 @@ static inline bool match_tf2_39(uint32_t payload, uint32_t len) {
 static inline bool is_okport(lpi_data_t *data) {
         if (data->server_port == 27015 && data->client_port == 27015)
                 return true;
-        if (data->server_port == 27005 && data->client_port == 27005)
+        if (data->server_port == 27005 || data->client_port == 27005)
                 return true;
         return false;
 }
