@@ -93,7 +93,15 @@ static inline bool match_china_wow(uint32_t payload, uint32_t len) {
 
 }
 
-
+static inline bool chinese_wow_port(lpi_data_t *data) {
+        if (data->server_port >= 8000 && data->server_port <= 8002)
+                return true;
+        if (data->client_port >= 8000 && data->client_port <= 8002)
+                return true;
+        if (data->server_port == 443 || data->client_port == 443)
+                return true;
+        return false;
+}
 
 static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
@@ -122,7 +130,7 @@ static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         }
 
         /* Chinese WOW is a little different */
-        if (data->server_port == 8001 || data->client_port == 8001) {
+        if (chinese_wow_port(data)) {
                 if (match_wow_2016(data->payload[0], data->payload_len[0])) {
                         if (match_wow_2016(data->payload[1], data->payload_len[1]))
                                 return true;
