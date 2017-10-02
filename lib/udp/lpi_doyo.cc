@@ -61,6 +61,11 @@ static inline bool match_doyo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (match_doyo_nonzero(data->payload[0], data->payload_len[0])) {
+                if (match_doyo_nonzero(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
 	return false;
 }
 
