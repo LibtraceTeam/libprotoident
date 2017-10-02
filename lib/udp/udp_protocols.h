@@ -163,6 +163,7 @@ void register_openvpn_udp(LPIModuleMap *mod_map);
 void register_orbit_udp(LPIModuleMap *mod_map);
 void register_overwatch(LPIModuleMap *mod_map);
 void register_pando_udp(LPIModuleMap *mod_map);
+void register_panipani(LPIModuleMap *mod_map);
 void register_planetside2(LPIModuleMap *mod_map);
 void register_portmap_rpc(LPIModuleMap *mod_map);
 void register_pplive(LPIModuleMap *mod_map);

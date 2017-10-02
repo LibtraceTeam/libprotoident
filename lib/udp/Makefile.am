@@ -134,6 +134,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_orbit.cc \
 	lpi_overwatch.cc \
 	lpi_pando.cc \
+	lpi_panipani.cc \
 	lpi_planetside2.cc \
 	lpi_portmap_rpc.cc \
 	lpi_pplive.cc \

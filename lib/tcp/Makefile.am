@@ -188,6 +188,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ssh.cc \
 	lpi_ssl.cc \
 	lpi_steam.cc \
+	lpi_stratum.cc \
 	lpi_stun.cc \
 	lpi_supl.cc \
 	lpi_svn.cc \
@@ -230,6 +231,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \
+	lpi_wizard101.cc \
 	lpi_wns.cc \
 	lpi_wow.cc \
 	lpi_wuala.cc \

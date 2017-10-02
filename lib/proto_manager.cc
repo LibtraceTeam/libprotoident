@@ -255,6 +255,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ssh(mod_map);
 	register_ssl(mod_map);
 	register_steam(mod_map);
+	register_stratum(mod_map);
 	register_stun_tcp(mod_map);
 	register_supl(mod_map);
 	register_svn(mod_map);
@@ -297,6 +298,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_whatsapp(mod_map);
 	register_whois(mod_map);
 	register_winmx(mod_map);
+	register_wizard101(mod_map);
 	register_wns(mod_map);
 	register_wow(mod_map);
 	register_wuala(mod_map);
@@ -454,6 +456,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_orbit_udp(mod_map);
 	register_overwatch(mod_map);
 	register_pando_udp(mod_map);
+	register_panipani(mod_map);
 	register_planetside2(mod_map);
 	register_portmap_rpc(mod_map);
 	register_pplive(mod_map);
