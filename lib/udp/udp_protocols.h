@@ -59,6 +59,7 @@ void register_cirn(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
 void register_cisco_sslvpn(LPIModuleMap *mod_map);
 void register_combatarms(LPIModuleMap *mod_map);
+void register_combatarms_p2p(LPIModuleMap *mod_map);
 void register_crossfire(LPIModuleMap *mod_map);
 void register_crossout(LPIModuleMap *mod_map);
 void register_csgo(LPIModuleMap *mod_map);

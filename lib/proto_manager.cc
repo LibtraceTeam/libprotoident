@@ -352,6 +352,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
 	register_combatarms(mod_map);
+	register_combatarms_p2p(mod_map);
 	register_crossfire(mod_map);
 	register_crossout(mod_map);
 	register_csgo(mod_map);

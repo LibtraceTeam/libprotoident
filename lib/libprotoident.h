@@ -577,6 +577,7 @@ typedef enum {
         LPI_PROTO_UDP_TF2,
         LPI_PROTO_UDP_GANGSOFSPACE,
         LPI_PROTO_UDP_COMBATARMS,
+        LPI_PROTO_UDP_COMBATARMS_P2P,
         LPI_PROTO_UDP_PANIPANI,
 
 	/* Patterns that we can match, but do not know the protocol */

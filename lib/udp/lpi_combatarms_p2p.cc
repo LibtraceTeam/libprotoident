@@ -30,42 +30,51 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_arms_5(uint32_t payload, uint32_t len) {
-        if (len == 5 && MATCH(payload, 0x00, 0xf1, 0x37, 0x13))
+static inline bool match_arms_p2p_ping(uint32_t payload, uint32_t len) {
+        if (len == 28 && MATCH(payload, 0x00, 0x00, 0xc0, 0x00))
+                return true;
+        if (len == 28 && MATCH(payload, 0x00, 0x00, 0xc0, 0x01))
                 return true;
         return false;
 }
 
-static inline bool match_arms_any(uint32_t payload, uint32_t len) {
-        if (len < 100 && MATCH(payload, 0x00, 0xf1, 0x37, 0x13))
+static inline bool match_arms_p2p_pong(uint32_t payload, uint32_t len) {
+        if (len == 28 && MATCH(payload, 0x00, 0x00, 0xc0, 0x00))
+                return true;
+        if (len == 28 && MATCH(payload, 0x00, 0x00, 0xc0, 0x01))
+                return true;
+        if (len == 0)
                 return true;
         return false;
 }
 
-static inline bool match_combatarms(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_combatarms_p2p(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (match_arms_5(data->payload[0],data->payload_len[0])) {
-                if (match_arms_any(data->payload[1], data->payload_len[1]))
+        /* Another protocol, probably used for direct player to
+         * player communication. */
+
+        if (match_arms_p2p_ping(data->payload[0], data->payload_len[0])) {
+                if (match_arms_p2p_pong(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
-        if (match_arms_5(data->payload[1],data->payload_len[1])) {
-                if (match_arms_any(data->payload[0], data->payload_len[0]))
+        if (match_arms_p2p_ping(data->payload[1], data->payload_len[1])) {
+                if (match_arms_p2p_pong(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_combatarms = {
-	LPI_PROTO_UDP_COMBATARMS,
+static lpi_module_t lpi_combatarms_p2p = {
+	LPI_PROTO_UDP_COMBATARMS_P2P,
 	LPI_CATEGORY_GAMING,
-	"CombatArms",
-	40,
-	match_combatarms
+	"CombatArms_P2P",
+	140,
+	match_combatarms_p2p
 };
 
-void register_combatarms(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_combatarms, mod_map);
+void register_combatarms_p2p(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_combatarms_p2p, mod_map);
 }
 
