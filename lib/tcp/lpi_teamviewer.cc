@@ -37,7 +37,7 @@ static inline bool match_teamviewer_payload(uint32_t payload, uint32_t len) {
 	if (!MATCH(payload, 0x17, 0x24, ANY, ANY))
 		return false;
 
-	if ((ntohl(payload) & 0xff) != len - 5)
+	if (len < 256 && (ntohl(payload) & 0xff) != len - 5)
 		return false;
 	
 	return true;
@@ -76,7 +76,7 @@ static lpi_module_t lpi_teamviewer = {
 	LPI_PROTO_TEAMVIEWER,
 	LPI_CATEGORY_REMOTE,
 	"Teamviewer",
-	4,
+	40,
 	match_teamviewer
 };
 
