@@ -31,8 +31,10 @@
 #include "proto_common.h"
 
 static inline bool match_xmip_header(uint32_t payload, uint32_t len) {
-        if (len == 112 && MATCH(payload, 0x12, 0x20, 0xd0, 0x07))
-                return true;
+        if (MATCH(payload, 0x12, 0x20, 0xd0, 0x07)) {
+                if (len == 112 || len == 120 || len == 184)
+                        return true;
+        }
         return false;
 }
 
