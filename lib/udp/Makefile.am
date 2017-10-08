@@ -59,6 +59,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_esp_encap.cc \
 	lpi_eye.cc \
 	lpi_fasp.cc \
+	lpi_feitwo.cc \
 	lpi_forticlient_sslvpn.cc \
 	lpi_fortinet.cc \
 	lpi_foscam.cc \

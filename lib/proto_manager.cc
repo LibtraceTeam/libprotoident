@@ -382,6 +382,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_esp_encap(mod_map);
 	register_eye_udp(mod_map);
 	register_fasp(mod_map);
+	register_feitwo(mod_map);
 	register_forticlient_sslvpn(mod_map);
 	register_fortinet(mod_map);
 	register_foscam(mod_map);

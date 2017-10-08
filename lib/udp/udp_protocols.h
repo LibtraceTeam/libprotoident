@@ -89,6 +89,7 @@ void register_eso(LPIModuleMap *mod_map);
 void register_esp_encap(LPIModuleMap *mod_map);
 void register_eye_udp(LPIModuleMap *mod_map);
 void register_fasp(LPIModuleMap *mod_map);
+void register_feitwo(LPIModuleMap *mod_map);
 void register_forticlient_sslvpn(LPIModuleMap *mod_map);
 void register_fortinet(LPIModuleMap *mod_map);
 void register_foscam(LPIModuleMap *mod_map);
