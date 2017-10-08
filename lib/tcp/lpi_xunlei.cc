@@ -56,6 +56,12 @@ static inline bool match_shuijing_46(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_shuijing_43(uint32_t payload, uint32_t len) {
+        if (len == 9 && MATCH(payload, 0x43, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_xunlei_3e(uint32_t payload, uint32_t len) {
         if (len == 132 && MATCH(payload, 0x3e, 0x00, 0x00, 0x00))
                 return true;
@@ -123,6 +129,8 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
                 if (match_shuijing_44(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_shuijing_43(data->payload[1], data->payload_len[1]))
+                        return true;
                 if (match_shuijing_41(data->payload[1], data->payload_len[1]))
                         return true;
         }
@@ -132,6 +140,8 @@ static inline bool match_xunlei(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_shuijing_46(data->payload[0], data->payload_len[0]))
                         return true;
                 if (match_shuijing_44(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_shuijing_43(data->payload[0], data->payload_len[0]))
                         return true;
                 if (match_shuijing_41(data->payload[0], data->payload_len[0]))
                         return true;

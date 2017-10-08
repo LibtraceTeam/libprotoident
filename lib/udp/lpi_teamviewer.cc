@@ -42,7 +42,7 @@ static inline bool match_tv_payload(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_teamviewer_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_teamviewer_classic_udp(lpi_data_t *data) {
 
 	if (!match_tv_payload(data->payload[0], data->payload_len[0]))
 		return false;
@@ -52,11 +52,31 @@ static inline bool match_teamviewer_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 	return true;
 }
 
+static inline bool match_teamviewer_96(uint32_t payload, uint32_t len) {
+        if (len == 0)
+                return true;
+        if (len == 96 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_teamviewer_udp(lpi_data_t *data, lpi_module_t *module UNUSED) {
+
+        if (match_teamviewer_classic_udp(data))
+                return true;
+
+        if (match_teamviewer_96(data->payload[0], data->payload_len[0])) {
+                if (match_teamviewer_96(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+        return false;
+}
+
 static lpi_module_t lpi_teamviewer = {
 	LPI_PROTO_UDP_TEAMVIEWER,
 	LPI_CATEGORY_REMOTE,
 	"TeamViewer_UDP",
-	10,
+	15,
 	match_teamviewer_udp
 };
 

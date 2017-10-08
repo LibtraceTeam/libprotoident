@@ -88,15 +88,19 @@ static inline bool match_wc_ab_big01(uint32_t payload, uint32_t len) {
                 return false;
         if (len <= 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x00))
                 return true;
-        if (len > 255 && MATCH(payload, 0xab, 0x00, 0x00, 0x01))
+        if (len > 255 && len < 512 && MATCH(payload, 0xab, 0x00, 0x00, 0x01))
+                return true;
+        if (len >= 512 && len < 768 && MATCH(payload, 0xab, 0x00, 0x00, 0x02))
+                return true;
+        if (len >= 768 && len < 1024 && MATCH(payload, 0xab, 0x00, 0x00, 0x03))
                 return true;
         return false;
 }
 
 static inline bool match_wc_ab_reply(uint32_t payload, uint32_t len) {
-        /* All replies appear to be 41 bytes */
+        /* All replies appear to be 41 or 53 bytes */
 
-        if (len != 41)
+        if (len != 41 && len != 53)
                 return false;
 
         if (MATCH(payload, 0xab, 0x00, 0x00, 0x00))
@@ -104,6 +108,20 @@ static inline bool match_wc_ab_reply(uint32_t payload, uint32_t len) {
         return false;
 
 }
+
+/* This appears to be some sort of SSL ripoff */
+static inline bool match_wc_ssl_111(uint32_t payload, uint32_t len) {
+        if (len == 111 && MATCH(payload, 0x16, 0xf1, 0x03, 0x00))
+                return true;
+        return false;
+}
+
+static inline bool match_wc_ssl_166(uint32_t payload, uint32_t len) {
+        if (len == 166 && MATCH(payload, 0x16, 0xf1, 0x03, 0x00))
+                return true;
+        return false;
+}
+
 
 static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	bool valid_port = false;
@@ -155,6 +173,16 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_wc_ab_big01(data->payload[1], data->payload_len[1])) {
                 if (match_wc_ab_big02(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_wc_ssl_111(data->payload[0], data->payload_len[0])) {
+                if (match_wc_ssl_166(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_wc_ssl_111(data->payload[1], data->payload_len[1])) {
+                if (match_wc_ssl_166(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

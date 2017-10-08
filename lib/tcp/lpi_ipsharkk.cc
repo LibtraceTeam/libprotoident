@@ -42,7 +42,7 @@ static inline bool match_ipsharkk_ssl(uint32_t payload) {
 
 static inline bool match_ipsharkk_4f(uint32_t payload) {
 
-        if (MATCH(payload, 0x4f, 0x1b, 0x4d, 0x07))
+        if (MATCH(payload, 0x4f, 0x1b, 0x4d, ANY))
                 return true;
         return false;
 }

@@ -68,10 +68,12 @@ static inline bool match_gnutella_maint(lpi_data_t *data) {
          * UDP requests */
 
         /* PING */
+        /*
         if (data->payload_len[0] == 23 && data->payload_len[1] < 100)
                 return true;
         if (data->payload_len[1] == 23 && data->payload_len[0] < 100)
                 return true;
+        */
 
         /* 727 byte packets are matched with 81 or 86 byte packets */
         if (data->payload_len[0] == 727 && (data->payload_len[1] == 81 ||
@@ -127,14 +129,6 @@ static inline bool match_gnutella_maint(lpi_data_t *data) {
                 return true;
 
 
-        /* Responses to 35 byte requests range between 136 and 180 bytes */
-        if (data->payload_len[0] == 35 && (data->payload_len[1] <= 180 &&
-                        data->payload_len[1] >= 136))
-                return true;
-        if (data->payload_len[1] == 35 && (data->payload_len[0] <= 180 &&
-                        data->payload_len[0] >= 136))
-                return true;
-
         /* 29 byte requests seem to be met with 80-100 byte responses OR
          * a 46 byte response */
         if (data->payload_len[0] == 29) {
@@ -158,13 +152,6 @@ static inline bool match_gnutella_maint(lpi_data_t *data) {
                         data->payload_len[0] >= 138))
                 return true;
 
-        /* 86 byte requests seem to be met with 100-225 byte responses */
-        if (data->payload_len[0] == 86 && (data->payload_len[1] <= 225 &&
-                        data->payload_len[1] >= 100))
-                return true;
-        if (data->payload_len[1] == 86 && (data->payload_len[0] <= 225 &&
-                        data->payload_len[0] >= 100))
-                return true;
 
         /* 193 matches 108 or 111 */
         if (data->payload_len[0] == 193 && (data->payload_len[1] == 108 ||
@@ -174,32 +161,6 @@ static inline bool match_gnutella_maint(lpi_data_t *data) {
                         data->payload_len[0] == 111))
                 return true;
 
-        /* The response to 73 bytes tends to vary in size */
-        if (data->payload_len[0] == 73)
-                return true;
-        if (data->payload_len[1] == 73)
-                return true;
-
-        /* The response to 96 bytes tends to vary in size */
-        if (data->payload_len[0] == 96)
-                return true;
-        if (data->payload_len[1] == 96)
-                return true;
-
-        /* The response to 28 bytes tends to vary in size, but is less than 
-         * 200 */
-        if (data->payload_len[0] == 28 && data->payload_len[1] < 200)
-                return true;
-        if (data->payload_len[1] == 28 && data->payload_len[0] < 200)
-                return true;
-
-        /* Same for 31 bytes */
-        if (data->payload_len[0] == 31 && data->payload_len[1] < 200 &&
-			data->payload_len[1] >= 40)
-                return true;
-        if (data->payload_len[1] == 31 && data->payload_len[0] < 200 &&
-			data->payload_len[0] >= 40)
-                return true;
 
         return false;
 

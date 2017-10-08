@@ -85,12 +85,34 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         }
 
         /* Some handshakes seem to be undersized? */
+        if (len == 187 && MATCH(payload, 0xb9, 0x01, 0x01, 0x0e))
+                return true;
         if (len == 189 && MATCH(payload, 0xbb, 0x01, 0x01, 0x10))
                 return true;
         if (len == 190 && MATCH(payload, 0xbc, 0x01, 0x01, 0x11))
                 return true;
 
         return false;
+}
+
+static inline bool match_mc_v5_handshake(uint32_t payload, uint32_t len) {
+
+        uint32_t replen;
+        uint32_t serverlen;
+
+        replen = ntohl(payload) >> 24;
+        serverlen = ntohl(payload) & 0xff;
+
+        if (replen == len - 1 && len - 1 <= 255) {
+                if (!MATCH(payload, ANY, 0x00, 0x05, ANY))
+                        return false;
+                if (serverlen != replen - 6)
+                        return false;
+                return true;
+        }
+
+        return false;
+
 }
 
 static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
@@ -103,6 +125,14 @@ static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
                 if (MATCH(payload, 0xab, 0x01, 0x01, 0x00))
                         return true;
         }
+
+        if (len == 174) {
+                if (MATCH(payload, 0xac, 0x01, 0x01, 0x00))
+                        return true;
+        }
+
+        if (len == 24 && MATCH(payload, 0x17, 0x00, 0xcf, 0x02))
+                return true;
 
         if (len == 4) {
                 if (MATCH(payload, 0x03, 0x03, 0x80, 0x02))
@@ -139,6 +169,18 @@ static inline bool match_minecraft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+
+        /* Some servers running old versions of MC are annoying and send
+         * single byte packets */
+        if (match_mc_v5_handshake(data->payload[0], data->payload_len[0])) {
+                if (data->payload_len[1] == 1)
+                        return true;
+        }
+
+        if (match_mc_v5_handshake(data->payload[1], data->payload_len[1])) {
+                if (data->payload_len[0] == 1)
+                        return true;
+        }
 
 	return false;
 }

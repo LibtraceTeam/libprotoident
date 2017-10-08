@@ -33,11 +33,15 @@
 static inline bool match_360p2p_request(uint32_t payload, uint32_t len) {
         if (len == 72 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return true;
+        if (len == 40 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
         return false;
 }
 
 static inline bool match_360p2p_reply(uint32_t payload, uint32_t len) {
         if (len == 40 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
+                return true;
+        if (len == 30 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return true;
         if (len == 50 && MATCH(payload, 0x00, 0x00, 0x00, 0x00))
                 return true;

@@ -53,6 +53,52 @@ static inline bool match_airdroid_resp(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_airdroid_get(uint32_t payload) {
+
+        if (MATCH(payload, 'G', 'E', 'T', 0x20))
+                return true;
+        return false;
+}
+
+static inline bool is_hexdigit(uint32_t byte) {
+
+        if (byte < 0x30)
+                return false;
+        if (byte > 0x39 && byte < 0x61)
+                return false;
+        if (byte > 0x66)
+                return false;
+        return true;
+}
+
+static inline bool match_airdroid_33(uint32_t payload, uint32_t len) {
+
+        uint32_t ordered = ntohl(payload);
+        uint32_t byte;
+
+        /* Needs some proper testing against real airdroid traffic */
+        if (len == 33) {
+                byte = (ordered & 0xff);
+                if (!is_hexdigit(byte))
+                        return false;
+
+                byte = ((ordered >> 8) & 0xff);
+                if (!is_hexdigit(byte))
+                        return false;
+
+                byte = ((ordered >> 16) & 0xff);
+                if (!is_hexdigit(byte))
+                        return false;
+
+                byte = ((ordered >> 24) & 0xff);
+                if (!is_hexdigit(byte))
+                        return false;
+
+                return true;
+        }
+        return false;
+}
+
 static inline bool match_airdroid(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_airdroid_req(data->payload[0], data->payload_len[0])) {
@@ -63,6 +109,17 @@ static inline bool match_airdroid(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_airdroid_req(data->payload[1], data->payload_len[1])) {
                 if (match_airdroid_resp(data->payload[0], data->payload_len[0]))
                         return true;
+        }
+
+        if (data->server_port == 9991 || data->client_port == 9991) {
+                if (match_airdroid_33(data->payload[0], data->payload_len[0])) {
+                        if (match_airdroid_get(data->payload[1]))
+                                return true;
+                }
+                if (match_airdroid_33(data->payload[1], data->payload_len[1])) {
+                        if (match_airdroid_get(data->payload[0]))
+                                return true;
+                }
         }
 
 	return false;

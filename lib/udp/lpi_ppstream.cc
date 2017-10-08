@@ -125,6 +125,26 @@ static inline bool match_80_ppstream(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_any84(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, ANY, 0x84, ANY, ANY)) {
+                if (len >= 1065 && len <= 1100)
+                        return true;
+        }
+        return false;
+}
+
+static inline bool match_any80(uint32_t payload, uint32_t len) {
+
+        /* Only examples so far are 0x25806144, len=33 -- need to
+         * see more users to confirm if this is a constant payload */
+        if (MATCH(payload, ANY, 0x80, ANY, ANY)) {
+                if (len == 33)
+                        return true;
+        }
+        return false;
+}
+
 static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_ppstream_payload(data->payload[0], data->payload_len[0])) {
@@ -144,6 +164,16 @@ static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_80_ppstream(data->payload[0], data->payload_len[0])) {
                 if (match_80_ppstream(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_any84(data->payload[0], data->payload_len[0])) {
+                if (match_any80(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_any80(data->payload[0], data->payload_len[0])) {
+                if (match_any84(data->payload[1], data->payload_len[1]))
                         return true;
         }
 

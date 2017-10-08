@@ -41,7 +41,7 @@ static inline bool match_speedin_3byte(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_speedin_other(uint32_t payload, uint32_t len) {
-        if (len <= 90 || len >= 115)
+        if (len <= 75 || len >= 115)
                 return false;
 
         if (MATCH(payload, 0x23, 0x00, ANY, ANY))
@@ -51,9 +51,20 @@ static inline bool match_speedin_other(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_port(uint16_t server, uint16_t client) {
+        if (server == 12000 || client == 12000)
+                return true;
+
+        if (server == 11100 || client == 11100)
+                return true;
+
+        return false;
+}
+
+
 static inline bool match_speedin(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 12000 && data->client_port != 12000)
+        if (!match_port(data->server_port, data->client_port))
                 return false;
 
         if (match_speedin_3byte(data->payload[0], data->payload_len[0])) {

@@ -46,6 +46,26 @@ static inline bool match_rdp_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_rdp_init(data->payload[0], data->payload_len[0])) {
                 if (match_rdp_init(data->payload[1], data->payload_len[1]))
                         return true;
+
+                if (data->server_port == 4732 || data->client_port == 4732) {
+                        if (data->payload[1] != 0 && data->payload_len[1] == 1232)
+                                return true;
+                }
+                if (data->server_port == 3389 || data->client_port == 3389) {
+                        if (data->payload[1] != 0 && data->payload_len[1] == 1232)
+                                return true;
+                }
+        }
+
+        if (match_rdp_init(data->payload[1], data->payload_len[1])) {
+                if (data->server_port == 4732 || data->client_port == 4732) {
+                        if (data->payload[0] != 0 && data->payload_len[0] == 1232)
+                                return true;
+                }
+                if (data->server_port == 3389 || data->client_port == 3389) {
+                        if (data->payload[0] != 0 && data->payload_len[0] == 1232)
+                                return true;
+                }
         }
 
 	return false;

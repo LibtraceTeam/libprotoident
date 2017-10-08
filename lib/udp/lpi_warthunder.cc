@@ -34,13 +34,15 @@
 
 static inline bool match_warthunder_req(uint32_t payload, uint32_t len) {
 
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0a))
+        if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x0a"))
                 return true;
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x0b))
+        if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x0b"))
                 return true;
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x05))
+        if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x05"))
                 return true;
-        if (len == 52 && MATCH(payload, 0xcf, 0xff, 0x00, 0x14))
+        if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x04"))
+                return true;
+        if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x14"))
                 return true;
         return false;
 

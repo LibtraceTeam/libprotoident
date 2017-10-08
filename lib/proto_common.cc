@@ -317,6 +317,21 @@ bool match_file_header(uint32_t payload) {
         if (MATCH(payload, 'V', 'B', 'S', 'P'))
                 return true;
 
+        /* TTF */
+        if (MATCH(payload, 0x00, 0x01, 0x00, 0x00))
+                return true;
+        if (MATCH(payload, 'O', 'T', 'T', 'O'))
+                return true;
+
+        /* WOF2 TTCF */
+        if (MATCH(payload, 't', 't', 'c', 'f'))
+                return true;
+
+        /* REBASE -- restriction enzyme database
+         * A bit niche, but might be fairly common at universities? */
+        if (MATCH(payload, 0x20, 0x0a, 'R', 'E'))
+                return true;
+
         /* Old coralreef trace files! */
         if (MATCHSTR(payload, "\xff\xff\x44\x00"))
                 return true;

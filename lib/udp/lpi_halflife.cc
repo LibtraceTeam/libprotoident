@@ -68,10 +68,12 @@ static inline bool match_halflife(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (!match_halflife_ports(data))
                 return false;
 
+        /*
         if (match_halflife_generic(data->payload[0], data->payload_len[0])) {
                 if (match_halflife_generic(data->payload[1], data->payload_len[1]))
                         return true;
         }
+        */
 
 
 	return false;
@@ -81,7 +83,7 @@ static lpi_module_t lpi_halflife = {
 	LPI_PROTO_UDP_HL,
 	LPI_CATEGORY_GAMING,
 	"HalfLife",
-	20,     /* Make sure this comes after other similar game protocols,
+	100,     /* Make sure this comes after other similar game protocols,
                  * e.g. ARMA, Quake */
 	match_halflife
 };

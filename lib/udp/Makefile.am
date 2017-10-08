@@ -16,6 +16,7 @@ libprotoident_udp_la_SOURCES = \
         lpi_backweb.cc \
         lpi_bacnet.cc \
 	lpi_baiduyun_p2p.cc \
+	lpi_baofeng_udp.cc \
 	lpi_battlefield.cc \
 	lpi_bjnp.cc \
 	lpi_bmdp.cc \
@@ -27,13 +28,17 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
 	lpi_cod.cc \
+	lpi_combatarms.cc \
+	lpi_combatarms_p2p.cc \
 	lpi_crossfire.cc \
 	lpi_crossout.cc \
 	lpi_csgo.cc \
+	lpi_csoriginal.cc \
 	lpi_dahua.cc \
 	lpi_db2.cc \
 	lpi_dcc.cc \
 	lpi_demonware.cc \
+	lpi_destiny_udp.cc \
 	lpi_dhcp.cc \
 	lpi_dht_dict.cc \
 	lpi_dht_other.cc \
@@ -56,9 +61,11 @@ libprotoident_udp_la_SOURCES = \
 	lpi_fasp.cc \
 	lpi_forticlient_sslvpn.cc \
 	lpi_fortinet.cc \
+	lpi_foscam.cc \
 	lpi_freechal.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_gangsofspace.cc \
 	lpi_garena.cc \
 	lpi_gearsofwar.cc \
 	lpi_gnutella.cc \
@@ -128,6 +135,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_orbit.cc \
 	lpi_overwatch.cc \
 	lpi_pando.cc \
+	lpi_panipani.cc \
 	lpi_planetside2.cc \
 	lpi_portmap_rpc.cc \
 	lpi_pplive.cc \
@@ -158,6 +166,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_sip.cc \
 	lpi_skype.cc \
 	lpi_slp.cc \
+	lpi_smite.cc \
 	lpi_snapvpn.cc \
 	lpi_snmp.cc \
 	lpi_sopcast.cc \
@@ -167,6 +176,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ssdp.cc \
 	lpi_starcitizen.cc \
 	lpi_starcraft.cc \
+	lpi_starleaf.cc \
 	lpi_steam.cc \
 	lpi_steamfriends.cc \
 	lpi_steam_inhomebroadcast.cc \
@@ -177,9 +187,11 @@ libprotoident_udp_la_SOURCES = \
 	lpi_teamspeak.cc \
 	lpi_teamviewer.cc \
 	lpi_teredo.cc \
+	lpi_tf2.cc \
 	lpi_tftp.cc \
 	lpi_thecrew.cc \
 	lpi_thq.cc \
+	lpi_torchlight2.cc \
 	lpi_traceroute.cc \
 	lpi_tremulous.cc \
 	lpi_turbovpn.cc \
@@ -191,6 +203,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_viber.cc \
 	lpi_vivox.cc \
 	lpi_vpnmaster.cc \
+	lpi_vpnrobot_udp.cc \
 	lpi_vxworks_exploit.cc \
 	lpi_warthunder.cc \
 	lpi_webex.cc \

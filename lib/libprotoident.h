@@ -105,6 +105,7 @@ typedef enum {
         LPI_CATEGORY_MOBILE_APP,        /* Mobile apps that don't fit any
                                            other category */
     LPI_CATEGORY_ICS,           /* Industrial control system protocols */
+        LPI_CATEGORY_IPCAMERAS,         /* IP Surveillance Camera protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -350,6 +351,22 @@ typedef enum {
         LPI_PROTO_DASH,
         LPI_PROTO_AIRMEDIA,
         LPI_PROTO_GIOP,
+        LPI_PROTO_VPN_UNLIMITED,
+        LPI_PROTO_TENFIVECOIN,
+        LPI_PROTO_BAOFENG,
+        LPI_PROTO_TALESRUNNER,
+        LPI_PROTO_ANTCOIN,
+        LPI_PROTO_FBCDN_SSL,
+        LPI_PROTO_SAPROUTER,
+        LPI_PROTO_FLIGGY,
+        LPI_PROTO_SMITE,
+        LPI_PROTO_VPNROBOT,
+        LPI_PROTO_VMWARE,
+        LPI_PROTO_DOUYU_CHAT,
+        LPI_PROTO_JX3ONLINE,
+        LPI_PROTO_LITECOIN,
+        LPI_PROTO_STRATUM,
+        LPI_PROTO_WIZARD101,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -549,6 +566,19 @@ typedef enum {
         LPI_PROTO_UDP_MERAKICLOUD,
         LPI_PROTO_UDP_SNAPVPN,
         LPI_PROTO_UDP_DAHUA,
+        LPI_PROTO_UDP_STARLEAF,
+        LPI_PROTO_UDP_FOSCAM,
+        LPI_PROTO_UDP_DESTINY,
+        LPI_PROTO_UDP_BAOFENG,
+        LPI_PROTO_UDP_TORCHLIGHT2,
+        LPI_PROTO_UDP_SMITE,
+        LPI_PROTO_UDP_COUNTERSTRIKE_16,
+        LPI_PROTO_UDP_VPNROBOT,
+        LPI_PROTO_UDP_TF2,
+        LPI_PROTO_UDP_GANGSOFSPACE,
+        LPI_PROTO_UDP_COMBATARMS,
+        LPI_PROTO_UDP_COMBATARMS_P2P,
+        LPI_PROTO_UDP_PANIPANI,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

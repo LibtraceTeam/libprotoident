@@ -30,21 +30,34 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_wa_first(uint32_t payload) {
+static inline bool match_wa_first(uint32_t payload, uint32_t len) {
 
 	if (MATCH(payload, 'W', 'A', 0x01, 0x02))
 		return true;
 	if (MATCH(payload, 'W', 'A', 0x01, 0x05))
 		return true;
+
+        if (len == 1 && MATCH(payload, 'W', 0x00, 0x00, 0x00))
+                return true;
 	return false;
 
 }
 
-static inline bool match_wa_first_20(uint32_t payload) {
+static inline bool match_wa_first_20(uint32_t payload, uint32_t len) {
         /* New protocol version? 2.0? */
 	if (MATCH(payload, 'W', 'A', 0x02, 0x00))
 		return true;
+        if (len == 1 && MATCH(payload, 'W', 0x00, 0x00, 0x00))
+                return true;
 	return false;
+}
+
+static inline bool match_ed_first(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 'E', 'D', 0x00, 0x01))
+                return true;
+        if (len == 1 && MATCH(payload, 'E', 0x00, 0x00, 0x00))
+                return true;
+        return false;
 }
 
 
@@ -77,27 +90,35 @@ static inline bool match_whatsapp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	 * either port 443 or 5222
 	 */
 
-	if (match_wa_first(data->payload[0])) {
+	if (match_wa_first(data->payload[0], data->payload_len[0])) {
 		if (match_wa_second(data->payload[1], data->payload_len[1]))
 			return true;
 	}
 	
-	if (match_wa_first(data->payload[1])) {
+	if (match_wa_first(data->payload[1], data->payload_len[1])) {
 		if (match_wa_second(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
-	if (match_wa_first_20(data->payload[0])) {
+	if (match_wa_first_20(data->payload[0], data->payload_len[0])) {
 		if (match_wa_second_20(data->payload[1], data->payload_len[1]))
 			return true;
 	}
 	
-	if (match_wa_first_20(data->payload[1])) {
+	if (match_wa_first_20(data->payload[1], data->payload_len[1])) {
 		if (match_wa_second_20(data->payload[0], data->payload_len[0]))
 			return true;
 	}
 
-        
+        if (match_ed_first(data->payload[0], data->payload_len[0])) {
+		if (match_wa_second_20(data->payload[1], data->payload_len[1]))
+			return true;
+	}
+
+        if (match_ed_first(data->payload[1], data->payload_len[1])) {
+		if (match_wa_second_20(data->payload[0], data->payload_len[0]))
+			return true;
+	}
 
 	return false;
 

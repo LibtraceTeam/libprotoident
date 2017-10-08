@@ -65,7 +65,7 @@ static inline bool match_netcat_cctv(lpi_data_t *data, lpi_module_t *mod UNUSED)
 
 static lpi_module_t lpi_netcat_cctv = {
 	LPI_PROTO_NETCAT_CCTV,
-	LPI_CATEGORY_STREAMING,
+	LPI_CATEGORY_IPCAMERAS,
 	"NetcatCCTV",
 	20,
 	match_netcat_cctv

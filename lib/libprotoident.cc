@@ -100,6 +100,26 @@ void lpi_free_library() {
 	free_protocols(&TCP_protocols);
 	free_protocols(&UDP_protocols);
 
+   if (lpi_icmp != NULL) {
+      delete lpi_icmp;
+      lpi_icmp = NULL;
+   }
+
+   if (lpi_unsupported != NULL) {
+      delete lpi_unsupported;
+      lpi_unsupported = NULL;
+   }
+
+   if (lpi_unknown_tcp != NULL) {
+      delete lpi_unknown_tcp;
+      lpi_unknown_tcp = NULL;
+   }
+
+   if (lpi_unknown_udp != NULL) {
+      delete lpi_unknown_udp;
+      lpi_unknown_udp = NULL;
+   }
+
 	init_called = false;
 }
 
@@ -417,6 +437,8 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "ICS";
 		case LPI_CATEGORY_MOBILE_APP:
 			return "Mobile App";
+		case LPI_CATEGORY_IPCAMERAS:
+			return "IP Cameras";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:

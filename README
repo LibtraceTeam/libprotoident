@@ -1,4 +1,4 @@
-libprotoident 2.0.11
+libprotoident 2.0.12
 
 ---------------------------------------------------------------------------
 Copyright (c) 2011-2017 The University of Waikato, Hamilton, New Zealand.
@@ -25,6 +25,7 @@ With contributions from:
     Paweł Foremski <pjf@iitis.pl>
     Fabian Weisshaar <elnappo@nerdpol.io>
     Jeroen Roovers
+    Jiri Havranek
 
 Introduction
 ============

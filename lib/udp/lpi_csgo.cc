@@ -34,7 +34,7 @@
  * map 'mg_de_dust' in other flows between the same endpoints).
  */
 
-static inline bool match_csgo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_ff_csgo(lpi_data_t *data) {
 
         if (!match_str_both(data, "\xff\xff\xff\xff", "\xff\xff\xff\xff"))
                 return false;
@@ -43,6 +43,37 @@ static inline bool match_csgo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         if (data->payload_len[1] == 33 && data->payload_len[0] == 18)
                 return true;
+
+	return false;
+}
+
+static inline bool match_sdping(uint32_t payload) {
+        if (MATCH(payload, 0x01, 0x00, 's', 'd'))
+                return true;
+        return false;
+}
+
+static inline bool match_sdpong(uint32_t payload) {
+        if (MATCH(payload, 0x02, 0x12, 'T', 'l'))
+                return true;
+        return false;
+}
+
+static inline bool match_csgo(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_ff_csgo(data)) {
+                return true;
+        }
+
+        if (match_sdping(data->payload[0])) {
+                if (match_sdpong(data->payload[1]))
+                        return true;
+        }
+
+        if (match_sdping(data->payload[1])) {
+                if (match_sdpong(data->payload[0]))
+                        return true;
+        }
 
 	return false;
 }

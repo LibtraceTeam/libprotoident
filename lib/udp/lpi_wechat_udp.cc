@@ -88,6 +88,8 @@ static inline bool match_wechat_voip_a396(uint32_t payload, uint32_t len) {
 		return true;
 	if (len == 96 && MATCH(payload, 0xa3, ANY, ANY, ANY))
 		return true;
+	if (len == 95 && MATCH(payload, 0xa3, ANY, ANY, ANY))
+		return true;
 	return false;
 }
 

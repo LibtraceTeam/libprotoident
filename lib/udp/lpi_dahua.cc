@@ -51,7 +51,7 @@ static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 static lpi_module_t lpi_dahua = {
 	LPI_PROTO_UDP_DAHUA,
-	LPI_CATEGORY_STREAMING,
+	LPI_CATEGORY_IPCAMERAS,
 	"Dahua",
 	13,
 	match_dahua

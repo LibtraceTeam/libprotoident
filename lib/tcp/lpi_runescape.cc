@@ -42,7 +42,11 @@ static inline bool match_runescape_req(uint32_t payload, uint32_t len) {
                	if (MATCH(payload, 0x00, 0x00, 0x00, 0x00))
 	        	return true;
         }
-	return false;
+
+        if (len == 9 && MATCH(payload, 0x00, ANY, ANY, ANY))
+                return true;
+
+        return false;
 
 }
 

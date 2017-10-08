@@ -33,6 +33,8 @@
 static inline bool match_hearthstone_req(uint32_t payload, uint32_t len) {
         if (len == 16 && MATCH(payload, 0x10, 0x00, 0x00, 0x00))
                 return true;
+        if (len == 22 && MATCH(payload, 0x10, 0x00, 0x00, 0x00))
+                return true;
         return false;
 }
 

@@ -68,6 +68,8 @@ static inline bool match_callofduty(lpi_data_t *data, lpi_module_t *mod UNUSED) 
         if (data->payload_len[0] == 13) {
                 if (data->payload_len[1] > 880)
                         return true;
+                if (data->payload_len[1] >= 225 && data->payload_len[1] <= 250)
+                        return true;
         }
 
         /* Other packet size combos */
@@ -158,7 +160,7 @@ static lpi_module_t lpi_callofduty = {
 	LPI_PROTO_UDP_COD,
 	LPI_CATEGORY_GAMING,
 	"Call_of_Duty",
-	6,	/* Must be lower priority than XLSP */
+	60,	/* Must be lower priority than XLSP */
 	match_callofduty
 };
 

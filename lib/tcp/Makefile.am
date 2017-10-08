@@ -8,10 +8,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_airmedia.cc \
 	lpi_akamai.cc \
 	lpi_amp.cc \
+	lpi_antcoin.cc \
 	lpi_appearin.cc \
 	lpi_apple_push.cc \
 	lpi_ares.cc \
 	lpi_badbaidu.cc \
+	lpi_baofeng_tcp.cc \
 	lpi_bitcoin.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
@@ -39,6 +41,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_dns.cc \
 	lpi_dogecoin.cc \
 	lpi_douyu.cc \
+	lpi_douyu_chat.cc \
 	lpi_duelingnetwork.cc \
 	lpi_dvrns.cc \
 	lpi_dxp.cc \
@@ -47,8 +50,10 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_eye.cc \
 	lpi_facebook_turn.cc \
 	lpi_fb_message.cc \
+	lpi_fbcdn_ssl.cc \
 	lpi_ffxiv.cc \
 	lpi_flash.cc \
+	lpi_fliggy.cc \
 	lpi_fring.cc \
 	lpi_ftpcontrol.cc \
 	lpi_ftpdata.cc \
@@ -88,6 +93,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_irc.cc \
 	lpi_java.cc \
 	lpi_jedi.cc \
+	lpi_jx3online.cc \
 	lpi_kakao.cc \
 	lpi_kankan_tcp.cc \
 	lpi_kaseya.cc \
@@ -97,6 +103,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ldap.cc \
 	lpi_lifeforge.cc \
 	lpi_line.cc \
+	lpi_litecoin.cc \
 	lpi_llp2p.cc \
 	lpi_maplestory_china.cc \
 	lpi_maxicloud.cc \
@@ -162,12 +169,14 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_rtsp.cc \
 	lpi_runescape.cc \
 	lpi_s7comm.cc \
+	lpi_saprouter.cc \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
 	lpi_silkroadonline.cc \
 	lpi_sip.cc \
 	lpi_skype_tcp.cc \
 	lpi_smb.cc \
+	lpi_smite_tcp.cc \
 	lpi_smtp.cc \
 	lpi_smtps.cc \
 	lpi_socks4.cc \
@@ -179,9 +188,11 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ssh.cc \
 	lpi_ssl.cc \
 	lpi_steam.cc \
+	lpi_stratum.cc \
 	lpi_stun.cc \
 	lpi_supl.cc \
 	lpi_svn.cc \
+	lpi_talesrunner.cc \
 	lpi_tankix.cc \
 	lpi_taobao.cc \
 	lpi_tds.cc \
@@ -191,6 +202,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_telnet.cc \
 	lpi_telnet_exploit.cc \
 	lpi_tencent_games.cc \
+	lpi_tenfivecoin.cc \
 	lpi_tensafe.cc \
 	lpi_tera.cc \
 	lpi_tetrisonline.cc \
@@ -206,7 +218,10 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_twitch_irc.cc \
 	lpi_vainglory.cc \
 	lpi_viber.cc \
+	lpi_vmware.cc \
 	lpi_vodlocker.cc \
+	lpi_vpnrobot_tcp.cc \
+	lpi_vpnunlimited_tcp.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
 	lpi_weblogic.cc \
@@ -216,6 +231,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_whatsapp.cc \
 	lpi_whois.cc \
 	lpi_winmx.cc \
+	lpi_wizard101.cc \
 	lpi_wns.cc \
 	lpi_wow.cc \
 	lpi_wuala.cc \

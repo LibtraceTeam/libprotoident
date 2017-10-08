@@ -60,6 +60,24 @@ static inline bool match_quake_ping(lpi_data_t *data) {
 }
 
 
+static inline bool match_qlive_challenge(uint32_t payload, uint32_t len) {
+
+        /* Not sure whether this length can vary or not? */
+        if (len == 259)
+                return true;
+        return false;
+
+}
+
+static inline bool match_qlive_response(uint32_t payload, uint32_t len) {
+
+        /* Not sure whether this length can vary or not? */
+        if (len == 33 || len == 32 || len == 31)
+                return true;
+        return false;
+
+}
+
 static inline bool match_quake(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Trying to match generic Quake engine games - typically use port 
@@ -92,6 +110,16 @@ static inline bool match_quake(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 }
         }
 	
+
+        if (match_qlive_challenge(data->payload[0], data->payload_len[0])) {
+                if (match_qlive_response(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_qlive_challenge(data->payload[1], data->payload_len[1])) {
+                if (match_qlive_response(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
 	return false;
 }
