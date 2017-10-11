@@ -48,6 +48,8 @@ static inline bool match_rtp_payload(uint32_t payload, uint32_t len,
 		return true;
 	if (MATCH(payload, 0x90, ANY, ANY, ANY))
 		return true;
+	if (MATCH(payload, 0x91, ANY, ANY, ANY))
+		return true;
 
 	return false;
 
@@ -75,6 +77,8 @@ static inline bool match_stun_response(uint32_t payload, uint32_t len) {
         /* Facebook-specific STUN? Message type 0x003 is not defined in
          * any official STUN documentation */
         if (len == 126 && MATCH(payload, 0x00, 0x03, 0x00, 0x6a))
+                return true;
+        if (len == 94 && MATCH(payload, 0x00, 0x03, 0x00, 0x4a))
                 return true;
 
 	return false;
