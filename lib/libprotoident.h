@@ -367,6 +367,9 @@ typedef enum {
         LPI_PROTO_LITECOIN,
         LPI_PROTO_STRATUM,
         LPI_PROTO_WIZARD101,
+        LPI_PROTO_KINGOFGLORY,
+        LPI_PROTO_SAS_ZOMBIE_ASSAULT_4,
+        LPI_PROTO_DNF,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -580,6 +583,9 @@ typedef enum {
         LPI_PROTO_UDP_COMBATARMS_P2P,
         LPI_PROTO_UDP_PANIPANI,
         LPI_PROTO_UDP_FEITWO,
+        LPI_PROTO_UDP_MOONHUNTERS,
+        LPI_PROTO_UDP_HELIBORNE,
+        LPI_PROTO_UDP_KINGOFGLORY,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

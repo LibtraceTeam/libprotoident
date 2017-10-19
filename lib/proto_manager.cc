@@ -105,6 +105,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_diablo3(mod_map);
 	register_dianping_tcp(mod_map);
 	register_directconnect(mod_map);
+	register_dnf(mod_map);
 	register_dns_tcp(mod_map);
 	register_dogecoin(mod_map);
 	register_douyu(mod_map);
@@ -166,6 +167,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_kaseya(mod_map);
 	register_kaspersky(mod_map);
 	register_kik(mod_map);
+	register_kingofglory_tcp(mod_map);
 	register_kuaibo(mod_map);
 	register_ldap(mod_map);
 	register_lifeforge(mod_map);
@@ -237,6 +239,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_runescape(mod_map);
 	register_s7comm(mod_map);
 	register_saprouter(mod_map);
+	register_saszombieassault4(mod_map);
 	register_second_life(mod_map);
 	register_shoutcast(mod_map);
 	register_silkroadonline(mod_map);
@@ -402,6 +405,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_halflife(mod_map);
 	register_haloonline(mod_map);
 	register_hamachi_udp(mod_map);
+	register_heliborne(mod_map);
 	register_heroes_generals(mod_map);
 	register_hots(mod_map);
 	register_icp(mod_map);
@@ -415,6 +419,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_kankan(mod_map);
 	register_kaspersky_udp(mod_map);
 	register_kazaa(mod_map);
+	register_kingofglory_udp(mod_map);
 	register_kugou(mod_map);
 	register_l2tp(mod_map);
 	register_lansync_udp(mod_map);
@@ -425,6 +430,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_mdns(mod_map);
 	register_merakicloud(mod_map);
 	register_moh(mod_map);
+	register_moonhunters(mod_map);
 	register_mp2p_udp(mod_map);
 	register_msn_cache(mod_map);
 	register_msn_video(mod_map);

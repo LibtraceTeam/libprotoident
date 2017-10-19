@@ -80,6 +80,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_haloonline.cc \
 	lpi_hamachi.cc \
 	lpi_heroes_generals.cc \
+	lpi_heliborne.cc \
 	lpi_hots.cc \
 	lpi_icp.cc \
 	lpi_imesh.cc \
@@ -92,6 +93,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_kankan.cc \
 	lpi_kaspersky.cc \
 	lpi_kazaa.cc \
+	lpi_kingofglory_udp.cc \
 	lpi_kuguo.cc \
 	lpi_l2tp.cc \
 	lpi_lansync.cc \
@@ -102,6 +104,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_mdns.cc \
 	lpi_merakicloud.cc \
 	lpi_moh.cc \
+	lpi_moonhunters.cc \
 	lpi_mp2p.cc \
 	lpi_msn_cache.cc \
 	lpi_msn_video.cc \

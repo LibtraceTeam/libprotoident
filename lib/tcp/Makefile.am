@@ -38,6 +38,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_diablo3.cc \
 	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
+	lpi_dnf.cc \
 	lpi_dns.cc \
 	lpi_dogecoin.cc \
 	lpi_douyu.cc \
@@ -99,6 +100,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
 	lpi_kik.cc \
+	lpi_kingofglory_tcp.cc \
 	lpi_kuaibo.cc \
 	lpi_ldap.cc \
 	lpi_lifeforge.cc \
@@ -170,6 +172,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_runescape.cc \
 	lpi_s7comm.cc \
 	lpi_saprouter.cc \
+	lpi_saszombieassault4.cc \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
 	lpi_silkroadonline.cc \
