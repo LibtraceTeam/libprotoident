@@ -36,7 +36,7 @@
 
 static inline bool match_douyu_req(uint32_t payload, uint32_t len) {
 
-        uint32_t plen = ntohl(payload);
+        uint32_t plen = bswap_le_to_host32(payload);
 
         /* Packet usually contains a username and a password so
          * can probably vary quite a bit in size */
@@ -50,7 +50,7 @@ static inline bool match_douyu_req(uint32_t payload, uint32_t len) {
 
 static inline bool match_douyu_reply(uint32_t payload, uint32_t len) {
 
-        uint32_t plen = ntohl(payload);
+        uint32_t plen = bswap_le_to_host32(payload);
 
         /* Response packets seem like they will vary a lot less in
          * size -- could be wrong though */
