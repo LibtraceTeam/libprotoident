@@ -87,6 +87,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_blackdesert(mod_map);
 	register_blizzard(mod_map);
 	register_btsync(mod_map);
+	register_bwsyncandshare(mod_map);
 	register_cacaoweb(mod_map);
 	register_cgp(mod_map);
 	register_chatango(mod_map);
@@ -128,6 +129,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_fuckcoin(mod_map);
 	register_funshion_tcp(mod_map);
 	register_gamespy_tcp(mod_map);
+	register_gcafe_updater(mod_map);
 	register_giop(mod_map);
 	register_git(mod_map);
 	register_glupteba(mod_map);

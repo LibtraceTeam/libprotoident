@@ -20,6 +20,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_blackdesert.cc \
 	lpi_blizzard.cc \
 	lpi_btsync.cc \
+	lpi_bwsyncandshare.cc \
 	lpi_cacaoweb.cc \
 	lpi_cgp.cc \
 	lpi_chatango.cc \
@@ -61,6 +62,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fuckcoin.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_gcafe_updater.cc \
 	lpi_giop.cc \
 	lpi_git.cc \
 	lpi_glupteba.cc \

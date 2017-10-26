@@ -372,6 +372,8 @@ typedef enum {
         LPI_PROTO_DNF,
         LPI_PROTO_IHEXIN,
         LPI_PROTO_NAVER_P2P,
+        LPI_PROTO_GCAFE_UPDATER,
+        LPI_PROTO_BWSYNC,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
