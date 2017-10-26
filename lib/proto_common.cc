@@ -725,6 +725,8 @@ static inline bool match_kaspersky_ke(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 'K', 'E', 0x00, 0x00))
                 return true;
+        if (MATCH(payload, 'K', 'E', 0x00, 0x02))
+                return true;
         return false;
 }
 

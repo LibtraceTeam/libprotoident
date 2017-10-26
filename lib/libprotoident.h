@@ -370,6 +370,8 @@ typedef enum {
         LPI_PROTO_KINGOFGLORY,
         LPI_PROTO_SAS_ZOMBIE_ASSAULT_4,
         LPI_PROTO_DNF,
+        LPI_PROTO_IHEXIN,
+        LPI_PROTO_NAVER_P2P,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

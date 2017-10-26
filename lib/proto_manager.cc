@@ -148,6 +148,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ica(mod_map);
 	register_id(mod_map);
 	register_idrivesync(mod_map);
+	register_ihexin(mod_map);
 	register_imap(mod_map);
 	register_imaps(mod_map);
 	register_imesh(mod_map);
@@ -196,6 +197,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	//register_mystery_rxxf(mod_map);
 	//register_mystery_symantec(mod_map);
 	register_mzinga(mod_map);
+	register_naverp2p(mod_map);
 	register_ncsoft(mod_map);
 	register_ndt_tput(mod_map);
 	register_netbios(mod_map);

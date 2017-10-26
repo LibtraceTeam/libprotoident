@@ -81,6 +81,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ica.cc \
 	lpi_id.cc \
 	lpi_idrivesync.cc \
+	lpi_ihexin.cc \
 	lpi_imap.cc \
 	lpi_imaps.cc \
 	lpi_imesh.cc \
@@ -129,6 +130,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_mystery_rxxf.cc \
 	lpi_mystery_symantec.cc \
 	lpi_mzinga.cc \
+	lpi_naverp2p.cc \
 	lpi_ncsoft.cc \
 	lpi_ndt_tput.cc \
 	lpi_netbios.cc \
