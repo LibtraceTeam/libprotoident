@@ -34,6 +34,8 @@ static inline bool match_cf_25(uint32_t payload, uint32_t len) {
 
         if (len == 25 && MATCH(payload, 0xc7, 0xd9, 0x19, 0x99))
                 return true;
+        if (len == 35 && MATCH(payload, 0xc7, 0xd9, 0x19, 0x99))
+                return true;
         return false;
 
 }

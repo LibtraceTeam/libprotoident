@@ -72,7 +72,7 @@ static inline bool match_qlive_challenge(uint32_t payload, uint32_t len) {
 static inline bool match_qlive_response(uint32_t payload, uint32_t len) {
 
         /* Not sure whether this length can vary or not? */
-        if (len == 33 || len == 32 || len == 31)
+        if (len == 33 || len == 32 || len == 31 || len == 30)
                 return true;
         return false;
 

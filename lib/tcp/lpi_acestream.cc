@@ -38,11 +38,25 @@ static inline bool match_ace_greet(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_ace_66(uint32_t payload, uint32_t len) {
+
+        if (len == 0)
+                return true;
+        if (len == 66 && MATCH(payload, 0x11, 'A', 'c', 'e'))
+                return true;
+        return false;
+
+}
+
 static inline bool match_acestream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_ace_greet(data->payload[0], data->payload_len[0])) {
-                if (match_ace_greet(data->payload[1], data->payload_len[1]))
+                if (match_ace_greet(data->payload[1], data->payload_len[1])) {
                         return true;
+                }
+                if (match_ace_66(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
         }
 
 	return false;

@@ -41,7 +41,7 @@ static inline bool match_douyu_req(uint32_t payload, uint32_t len) {
         /* Packet usually contains a username and a password so
          * can probably vary quite a bit in size */
         if (plen == len - 4) {
-                if (len < 128)
+                if (len <= 255)
                         return true;
         }
 
