@@ -44,6 +44,11 @@ static inline bool match_ff_csgo(lpi_data_t *data) {
         if (data->payload_len[1] == 33 && data->payload_len[0] == 18)
                 return true;
 
+        if (data->payload_len[0] == 23 && data->payload_len[1] == 65)
+                return true;
+        if (data->payload_len[1] == 23 && data->payload_len[0] == 65)
+                return true;
+
 	return false;
 }
 
