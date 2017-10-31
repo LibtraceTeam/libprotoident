@@ -56,7 +56,13 @@ static inline bool match_sc_remaster_01(uint32_t payload, uint32_t len) {
         /* New protocol that has been implemented as part of the
          * remaster.
          */
+	if (len == 0)
+		return true;
         if (len < 50 && MATCH(payload, 0x08, 0x01, 0x12, 0x14))
+                return true;
+        if (len < 50 && MATCH(payload, 0x08, 0x01, 0x12, 0x10))
+                return true;
+        if (len < 50 && MATCH(payload, 0x08, 0x01, 0x12, 0x11))
                 return true;
         return false;
 
