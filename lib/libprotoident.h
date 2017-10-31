@@ -374,6 +374,7 @@ typedef enum {
         LPI_PROTO_NAVER_P2P,
         LPI_PROTO_GCAFE_UPDATER,
         LPI_PROTO_BWSYNC,
+        LPI_PROTO_TANKIONLINE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -590,6 +591,8 @@ typedef enum {
         LPI_PROTO_UDP_MOONHUNTERS,
         LPI_PROTO_UDP_HELIBORNE,
         LPI_PROTO_UDP_KINGOFGLORY,
+        LPI_PROTO_UDP_ASSETTO_CORSA,
+        LPI_PROTO_UDP_CACAOWEB,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

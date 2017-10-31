@@ -228,6 +228,7 @@ void register_stun_tcp(LPIModuleMap *mod_map);
 void register_supl(LPIModuleMap *mod_map);
 void register_svn(LPIModuleMap *mod_map);
 void register_talesrunner(LPIModuleMap *mod_map);
+void register_tankionline(LPIModuleMap *mod_map);
 void register_tankix(LPIModuleMap *mod_map);
 void register_taobao(LPIModuleMap *mod_map);
 void register_tds(LPIModuleMap *mod_map);

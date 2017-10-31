@@ -267,6 +267,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_supl(mod_map);
 	register_svn(mod_map);
 	register_talesrunner(mod_map);
+	register_tankionline(mod_map);
 	register_tankix(mod_map);
 	register_taobao(mod_map);
 	register_tds(mod_map);
@@ -342,6 +343,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_arksurvival(mod_map);
 	register_arma_server(mod_map);
 	register_arma3_server(mod_map);
+	register_assettocorsa(mod_map);
 	register_avast_secure_dns(mod_map);
 	register_bacnet(mod_map);
 	register_backweb(mod_map);
@@ -351,6 +353,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_bjnp(mod_map);
 	register_bmdp(mod_map);
 	register_btsync_udp(mod_map);
+	register_cacaoweb_udp(mod_map);
 	register_canon_mfnp(mod_map);
 	register_callofduty(mod_map);
 	register_checkpoint_rdp(mod_map);

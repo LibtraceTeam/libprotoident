@@ -200,6 +200,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_supl.cc \
 	lpi_svn.cc \
 	lpi_talesrunner.cc \
+	lpi_tankionline.cc \
 	lpi_tankix.cc \
 	lpi_taobao.cc \
 	lpi_tds.cc \

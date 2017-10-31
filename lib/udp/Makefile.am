@@ -12,6 +12,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ark.cc \
 	lpi_arma_server.cc \
 	lpi_arma3_server.cc \
+	lpi_assettocorsa.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
         lpi_bacnet.cc \
@@ -21,6 +22,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_bjnp.cc \
 	lpi_bmdp.cc \
 	lpi_btsync.cc \
+	lpi_cacaoweb_udp.cc \
 	lpi_canon_mfnp.cc \
 	lpi_checkpoint_rdp.cc \
 	lpi_chivalry.cc \
