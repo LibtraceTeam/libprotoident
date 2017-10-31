@@ -52,11 +52,44 @@ static inline bool match_sc_message(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_sc_remaster_01(uint32_t payload, uint32_t len) {
+        /* New protocol that has been implemented as part of the
+         * remaster.
+         */
+        if (len < 50 && MATCH(payload, 0x08, 0x01, 0x12, 0x14))
+                return true;
+        return false;
+
+}
+
+static inline bool match_sc_remaster_02(uint32_t payload, uint32_t len) {
+        /* New protocol that has been implemented as part of the
+         * remaster.
+         */
+        if (len < 50 && MATCH(payload, 0x08, 0x02, 0x12, 0x18))
+                return true;
+        return false;
+
+}
 
 static inline bool match_starcraft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (data->server_port != 6112 && data->client_port != 6112)
                 return false;
+
+        if (match_sc_remaster_01(data->payload[0], data->payload_len[0])) {
+                if (match_sc_remaster_01(data->payload[1], data->payload_len[1]))
+                        return true;
+                if (match_sc_remaster_02(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_sc_remaster_01(data->payload[1], data->payload_len[1])) {
+                if (match_sc_remaster_01(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_sc_remaster_02(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
 
         if (!match_sc_message(data->payload[0], data->payload_len[0]))
                 return false;
