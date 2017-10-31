@@ -43,7 +43,7 @@ static inline bool match_cacao_smalla(uint32_t payload, uint32_t len) {
 static inline bool match_cacao_other(uint32_t payload, uint32_t opp) {
 
         uint32_t firsta = ntohl(payload) >> 24;
-        uint32_t lastb = ntohl(payload) & 0xff;
+        uint32_t lastb = ntohl(opp) & 0xff;
 
         if (firsta == lastb && firsta != 0)
                 return true;
