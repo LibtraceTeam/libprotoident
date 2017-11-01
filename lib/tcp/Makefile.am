@@ -164,6 +164,7 @@ libprotoident_tcp_la_SOURCES = \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
+	lpi_realmofthemadgod.cc \
 	lpi_realvnc.cc \
 	lpi_rejection.cc \
 	lpi_relay.cc \

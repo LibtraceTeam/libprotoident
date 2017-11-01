@@ -192,6 +192,7 @@ void register_qvod(LPIModuleMap *mod_map);
 void register_razor(LPIModuleMap *mod_map);
 void register_rbls(LPIModuleMap *mod_map);
 void register_rdp(LPIModuleMap *mod_map);
+void register_realmofthemadgod(LPIModuleMap *mod_map);
 void register_realvnc(LPIModuleMap *mod_map);
 void register_rejection(LPIModuleMap *mod_map);
 void register_relay(LPIModuleMap *mod_map);

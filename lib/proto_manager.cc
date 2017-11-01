@@ -231,6 +231,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
         register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
+	register_realmofthemadgod(mod_map);
 	register_realvnc(mod_map);
 	register_rejection(mod_map);
 	register_relay(mod_map);

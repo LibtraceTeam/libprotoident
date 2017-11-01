@@ -375,6 +375,7 @@ typedef enum {
         LPI_PROTO_GCAFE_UPDATER,
         LPI_PROTO_BWSYNC,
         LPI_PROTO_TANKIONLINE,
+        LPI_PROTO_REALMOFTHEMADGOD,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
