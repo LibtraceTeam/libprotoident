@@ -471,6 +471,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_openvpn_udp(mod_map);
 	register_orbit_udp(mod_map);
 	register_overwatch(mod_map);
+	register_paladins(mod_map);
 	register_pando_udp(mod_map);
 	register_panipani(mod_map);
 	register_planetside2(mod_map);
@@ -557,6 +558,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
 	register_yy_udp(mod_map);
+	register_zalo_call(mod_map);
 	register_zeroaccess_udp(mod_map);
 	register_zoom(mod_map);
 	return 0;

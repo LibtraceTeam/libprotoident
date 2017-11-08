@@ -594,6 +594,8 @@ typedef enum {
         LPI_PROTO_UDP_KINGOFGLORY,
         LPI_PROTO_UDP_ASSETTO_CORSA,
         LPI_PROTO_UDP_CACAOWEB,
+        LPI_PROTO_UDP_ZALO_CALL,
+        LPI_PROTO_UDP_PALADINS,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

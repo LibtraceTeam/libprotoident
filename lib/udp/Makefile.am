@@ -140,6 +140,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
 	lpi_overwatch.cc \
+	lpi_paladins.cc \
 	lpi_pando.cc \
 	lpi_panipani.cc \
 	lpi_planetside2.cc \
@@ -225,6 +226,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
 	lpi_yy_udp.cc \
+	lpi_zalo_call.cc \
 	lpi_zeroaccess_udp.cc \
 	lpi_zoom.cc
 

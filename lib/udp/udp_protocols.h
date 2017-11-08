@@ -169,6 +169,7 @@ void register_opaserv(LPIModuleMap *mod_map);
 void register_openvpn_udp(LPIModuleMap *mod_map);
 void register_orbit_udp(LPIModuleMap *mod_map);
 void register_overwatch(LPIModuleMap *mod_map);
+void register_paladins(LPIModuleMap *mod_map);
 void register_pando_udp(LPIModuleMap *mod_map);
 void register_panipani(LPIModuleMap *mod_map);
 void register_planetside2(LPIModuleMap *mod_map);
@@ -255,6 +256,7 @@ void register_xunyou(LPIModuleMap *mod_map);
 void register_youdao_dict(LPIModuleMap *mod_map);
 void register_youku_udp(LPIModuleMap *mod_map);
 void register_yy_udp(LPIModuleMap *mod_map);
+void register_zalo_call(LPIModuleMap *mod_map);
 void register_zeroaccess_udp(LPIModuleMap *mod_map);
 void register_zoom(LPIModuleMap *mod_map);
 #endif
