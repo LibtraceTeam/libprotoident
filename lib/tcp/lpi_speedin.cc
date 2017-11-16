@@ -57,6 +57,8 @@ static inline bool match_port(uint16_t server, uint16_t client) {
 
         if (server == 11100 || client == 11100)
                 return true;
+        if (server == 11000 || client == 11000)
+                return true;
 
         return false;
 }
