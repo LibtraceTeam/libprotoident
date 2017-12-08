@@ -217,6 +217,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_paltalk(mod_map);
 	register_pandatv(mod_map);
 	register_pando(mod_map);
+	register_pathofexile(mod_map);
 	register_pdbox(mod_map);
 	register_pop3(mod_map);
 	register_pop3s(mod_map);
@@ -261,6 +262,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_speedtest(mod_map);
 	register_spotify(mod_map);
 	register_ssh(mod_map);
+	register_ssjj(mod_map);
 	register_ssl(mod_map);
 	register_steam(mod_map);
 	register_stratum(mod_map);

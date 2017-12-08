@@ -150,6 +150,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_paltalk.cc \
 	lpi_pandatv.cc \
 	lpi_pando.cc \
+	lpi_pathofexile.cc \
 	lpi_pdbox.cc \
 	lpi_pop3.cc \
 	lpi_pop3s.cc \
@@ -194,6 +195,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_speedtest.cc \
 	lpi_spotify.cc \
 	lpi_ssh.cc \
+	lpi_ssjj.cc \
 	lpi_ssl.cc \
 	lpi_steam.cc \
 	lpi_stratum.cc \
