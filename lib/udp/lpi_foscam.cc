@@ -56,6 +56,12 @@ static inline bool match_fcam_4(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_fcam_70(uint32_t payload, uint32_t len) {
+        if (len == 4 && MATCH(payload, 0xf1, 0x70, 0x00, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_fcam_32(uint32_t payload, uint32_t len) {
 
         if (len == 32 && MATCH(payload, 0xf1, 0x83, 0x00, 0x1c))
@@ -68,10 +74,14 @@ static inline bool match_foscam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_fcam_4(data->payload[0], data->payload_len[0])) {
                 if (match_fcam_32(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_fcam_70(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
         if (match_fcam_4(data->payload[1], data->payload_len[1])) {
                 if (match_fcam_32(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_fcam_70(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

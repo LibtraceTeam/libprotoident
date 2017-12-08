@@ -51,6 +51,18 @@ static inline bool match_cacao_other(uint32_t payload, uint32_t opp) {
 
 }
 
+static inline bool match_cacao_c0_12(uint32_t payload, uint32_t len) {
+        if (len == 12 && MATCH(payload, 0xc0, ANY, ANY, ANY))
+                return true;
+        return false;
+}
+
+static inline bool match_cacao_c0_14(uint32_t payload, uint32_t len) {
+        if (len == 14 && MATCH(payload, 0xc0, ANY, ANY, ANY))
+                return true;
+        return false;
+}
+
 static inline bool match_cacaoweb_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_cacao_smalla(data->payload[0], data->payload_len[0])) {
@@ -63,6 +75,16 @@ static inline bool match_cacaoweb_udp(lpi_data_t *data, lpi_module_t *mod UNUSED
                 if (match_cacao_other(data->payload[0], data->payload[1])) {
                         return true;
                 }
+        }
+
+        if (match_cacao_c0_12(data->payload[0], data->payload_len[0])) {
+                if (match_cacao_c0_14(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_cacao_c0_12(data->payload[1], data->payload_len[1])) {
+                if (match_cacao_c0_14(data->payload[0], data->payload_len[0]))
+                        return true;
         }
 
 

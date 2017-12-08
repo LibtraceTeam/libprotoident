@@ -89,6 +89,15 @@ static inline bool match_china_wow(uint32_t payload, uint32_t len) {
                 if (MATCH(payload, 0x05, 0x01, 0x93, 0x01))
                         return true;
         }
+
+        /* New alternative -- clearly a length field, rest of packet
+         * is mostly JSON */
+        if (len == 112 && MATCH(payload, 0x00, 0x00, 0x00, 0x6c))
+                return true;
+        if (len == 113 && MATCH(payload, 0x00, 0x00, 0x00, 0x6d))
+                return true;
+        if (len == 114 && MATCH(payload, 0x00, 0x00, 0x00, 0x6e))
+                return true;
         return false;
 
 }
@@ -99,6 +108,8 @@ static inline bool chinese_wow_port(lpi_data_t *data) {
         if (data->client_port >= 8000 && data->client_port <= 8002)
                 return true;
         if (data->server_port == 443 || data->client_port == 443)
+                return true;
+        if (data->server_port == 2082 || data->client_port == 2082)
                 return true;
         return false;
 }

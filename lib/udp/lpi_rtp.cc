@@ -64,6 +64,15 @@ static inline bool match_rtp_806d(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_rtcp_report(uint32_t payload, uint32_t len) {
+        if (len == 16 && MATCH(payload, 0x81, 0xcd, 0x00, 0x03))
+                return true;
+        if (len == 32 && MATCH(payload, 0x81, 0xc9, 0x00, 0x07))
+                return true;
+        return false;
+}
+
+
 static inline bool match_stun_response(uint32_t payload, uint32_t len) {
 
 	/* Many VOIP phones use STUN for NAT traversal, so the response to
