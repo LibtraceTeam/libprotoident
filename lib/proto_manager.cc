@@ -204,6 +204,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_norton_backup(mod_map);
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
+	register_tcp_no_firstpkt(mod_map);
 	register_omegle(mod_map);
 	register_openvpn(mod_map);
 	register_ourworld(mod_map);
