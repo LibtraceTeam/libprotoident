@@ -165,6 +165,7 @@ void register_nntps(LPIModuleMap *mod_map);
 void register_norton_backup(LPIModuleMap *mod_map);
 void register_notes_rpc(LPIModuleMap *mod_map);
 void register_tcp_no_payload(LPIModuleMap *mod_map);
+void register_tcp_no_firstpkt(LPIModuleMap *mod_map);
 void register_omegle(LPIModuleMap *mod_map);
 void register_openvpn(LPIModuleMap *mod_map);
 void register_ourworld(LPIModuleMap *mod_map);
