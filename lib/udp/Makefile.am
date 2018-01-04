@@ -24,6 +24,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_btsync.cc \
 	lpi_cacaoweb_udp.cc \
 	lpi_canon_mfnp.cc \
+	lpi_chargen_exploit.cc \
 	lpi_checkpoint_rdp.cc \
 	lpi_chivalry.cc \
 	lpi_cirn.cc \

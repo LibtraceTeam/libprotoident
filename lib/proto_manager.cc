@@ -359,6 +359,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cacaoweb_udp(mod_map);
 	register_canon_mfnp(mod_map);
 	register_callofduty(mod_map);
+	register_chargen_exploit(mod_map);
 	register_checkpoint_rdp(mod_map);
 	register_chivalry(mod_map);
 	register_cirn(mod_map);

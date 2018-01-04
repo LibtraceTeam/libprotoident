@@ -598,6 +598,7 @@ typedef enum {
         LPI_PROTO_UDP_CACAOWEB,
         LPI_PROTO_UDP_ZALO_CALL,
         LPI_PROTO_UDP_PALADINS,
+        LPI_PROTO_UDP_CHARGEN_EXPLOIT,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

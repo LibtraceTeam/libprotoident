@@ -55,6 +55,7 @@ void register_btsync_udp(LPIModuleMap *mod_map);
 void register_cacaoweb_udp(LPIModuleMap *mod_map);
 void register_callofduty(LPIModuleMap *mod_map);
 void register_canon_mfnp(LPIModuleMap *mod_map);
+void register_chargen_exploit(LPIModuleMap *mod_map);
 void register_checkpoint_rdp(LPIModuleMap *mod_map);
 void register_chivalry(LPIModuleMap *mod_map);
 void register_cirn(LPIModuleMap *mod_map);
