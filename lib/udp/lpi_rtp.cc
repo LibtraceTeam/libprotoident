@@ -64,6 +64,12 @@ static inline bool match_rtp_806d(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_rtp_80c9(uint32_t payload, uint32_t len) {
+        if (len == 94 && MATCH(0x80, 0xc9, 0x00, 0x01))
+                return true;
+        return false;
+}
+
 static inline bool match_rtcp_report(uint32_t payload, uint32_t len) {
         if (len == 16 && MATCH(payload, 0x81, 0xcd, 0x00, 0x03))
                 return true;
@@ -75,10 +81,11 @@ static inline bool match_rtcp_report(uint32_t payload, uint32_t len) {
 
 static inline bool match_stun_response(uint32_t payload, uint32_t len) {
 
+        uint32_t plen = ntohl(payload) & 0xffff;
 	/* Many VOIP phones use STUN for NAT traversal, so the response to
 	 * outgoing RTP is often a STUN packet */
 
-	if (len == 28 && MATCH(payload, 0x00, 0x01, 0x00, 0x08))
+	if (len - 20 == plen && MATCH(payload, 0x00, 0x01, 0x00, ANY))
 		return true;
         if (len == 12 && MATCH(payload, 0x00, 0x11, 0x00, 0x00))
                 return true;
@@ -114,6 +121,16 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        if (match_rtp_80c9(data->payload[0], data->payload_len[0])) {
+                if (match_stun_response(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_rtp_80c9(data->payload[1], data->payload_len[1])) {
+                if (match_stun_response(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
 
 	if (match_rtp_payload(data->payload[0], data->payload_len[0], 
 			data->payload_len[1])) {
@@ -139,6 +156,17 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 		if (data->payload_len[0] == 0)
 			return true;
 	}
+
+        if (match_rtcp_report(data->payload[0], data->payload_len[0])) {
+                if (match_rtp_payload(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_rtcp_report(data->payload[1], data->payload_len[1])) {
+                if (match_rtp_payload(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
 	return false;
 }
 
