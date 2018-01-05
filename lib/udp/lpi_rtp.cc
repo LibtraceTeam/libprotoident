@@ -65,7 +65,7 @@ static inline bool match_rtp_806d(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_rtp_80c9(uint32_t payload, uint32_t len) {
-        if (len == 94 && MATCH(0x80, 0xc9, 0x00, 0x01))
+        if (len == 94 && MATCH(payload, 0x80, 0xc9, 0x00, 0x01))
                 return true;
         return false;
 }
@@ -158,12 +158,14 @@ static inline bool match_rtp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	}
 
         if (match_rtcp_report(data->payload[0], data->payload_len[0])) {
-                if (match_rtp_payload(data->payload[1], data->payload_len[1]))
+                if (match_rtp_payload(data->payload[1], data->payload_len[1],
+                                data->payload_len[0]))
                         return true;
         }
 
         if (match_rtcp_report(data->payload[1], data->payload_len[1])) {
-                if (match_rtp_payload(data->payload[0], data->payload_len[0]))
+                if (match_rtp_payload(data->payload[0], data->payload_len[0],
+                                data->payload_len[1]))
                         return true;
         }
 
