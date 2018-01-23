@@ -61,6 +61,8 @@ static inline bool match_sdping(uint32_t payload) {
 static inline bool match_sdpong(uint32_t payload) {
         if (MATCH(payload, 0x02, 0x12, 'T', 'l'))
                 return true;
+        if (MATCH(payload, 0x02, 0x12, 'T', 'd'))
+                return true;
         return false;
 }
 
