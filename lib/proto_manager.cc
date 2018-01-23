@@ -533,6 +533,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_thecrew(mod_map);
 	register_thq(mod_map);
 	register_torchlight2(mod_map);
+	register_tox(mod_map);
 	register_traceroute(mod_map);
 	register_tremulous(mod_map);
 	register_turbovpn(mod_map);

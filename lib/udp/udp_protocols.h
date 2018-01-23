@@ -229,6 +229,7 @@ void register_tftp(LPIModuleMap *mod_map);
 void register_thecrew(LPIModuleMap *mod_map);
 void register_thq(LPIModuleMap *mod_map);
 void register_torchlight2(LPIModuleMap *mod_map);
+void register_tox(LPIModuleMap *mod_map);
 void register_traceroute(LPIModuleMap *mod_map);
 void register_tremulous(LPIModuleMap *mod_map);
 void register_turbovpn(LPIModuleMap *mod_map);
