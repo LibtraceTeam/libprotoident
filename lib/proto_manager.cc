@@ -258,6 +258,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_socks4(mod_map);
 	register_socks5(mod_map);
 	register_spdy(mod_map);
+	register_speedify(mod_map);
 	register_speedin(mod_map);
 	register_speedtest(mod_map);
 	register_spotify(mod_map);
@@ -418,6 +419,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_hamachi_udp(mod_map);
 	register_heliborne(mod_map);
 	register_heroes_generals(mod_map);
+	register_hollachat(mod_map);
 	register_hots(mod_map);
 	register_icp(mod_map);
 	register_imesh_udp(mod_map);

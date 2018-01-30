@@ -114,6 +114,7 @@ void register_haloonline(LPIModuleMap *mod_map);
 void register_hamachi_udp(LPIModuleMap *mod_map);
 void register_heliborne(LPIModuleMap *mod_map);
 void register_heroes_generals(LPIModuleMap *mod_map);
+void register_hollachat(LPIModuleMap *mod_map);
 void register_hots(LPIModuleMap *mod_map);
 void register_icp(LPIModuleMap *mod_map);
 void register_imesh_udp(LPIModuleMap *mod_map);

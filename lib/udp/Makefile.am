@@ -84,6 +84,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_hamachi.cc \
 	lpi_heroes_generals.cc \
 	lpi_heliborne.cc \
+	lpi_hollachat.cc \
 	lpi_hots.cc \
 	lpi_icp.cc \
 	lpi_imesh.cc \

@@ -378,6 +378,7 @@ typedef enum {
         LPI_PROTO_REALMOFTHEMADGOD,
         LPI_PROTO_PATHOFEXILE,
         LPI_PROTO_SSJJ,
+        LPI_PROTO_SPEEDIFY,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -600,6 +601,7 @@ typedef enum {
         LPI_PROTO_UDP_PALADINS,
         LPI_PROTO_UDP_CHARGEN_EXPLOIT,
         LPI_PROTO_UDP_TOX,
+        LPI_PROTO_UDP_HOLLA,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

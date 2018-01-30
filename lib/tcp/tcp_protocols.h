@@ -219,6 +219,7 @@ void register_smtps(LPIModuleMap *mod_map);
 void register_socks4(LPIModuleMap *mod_map);
 void register_socks5(LPIModuleMap *mod_map);
 void register_spdy(LPIModuleMap *mod_map);
+void register_speedify(LPIModuleMap *mod_map);
 void register_speedin(LPIModuleMap *mod_map);
 void register_speedtest(LPIModuleMap *mod_map);
 void register_spotify(LPIModuleMap *mod_map);
