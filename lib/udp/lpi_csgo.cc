@@ -63,6 +63,8 @@ static inline bool match_sdpong(uint32_t payload) {
                 return true;
         if (MATCH(payload, 0x02, 0x12, 'T', 'd'))
                 return true;
+        if (MATCH(payload, 0x02, 0x12, 'X', 'd'))
+                return true;
         return false;
 }
 
