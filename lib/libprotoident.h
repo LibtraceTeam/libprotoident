@@ -106,6 +106,7 @@ typedef enum {
                                            other category */
     LPI_CATEGORY_ICS,           /* Industrial control system protocols */
         LPI_CATEGORY_IPCAMERAS,         /* IP Surveillance Camera protocols */
+        LPI_CATEGORY_MESSAGE_QUEUE,     /* Message queuing protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -379,6 +380,8 @@ typedef enum {
         LPI_PROTO_PATHOFEXILE,
         LPI_PROTO_SSJJ,
         LPI_PROTO_SPEEDIFY,
+        LPI_PROTO_NSQ,
+        LPI_PROTO_SKYFORGE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -602,6 +605,7 @@ typedef enum {
         LPI_PROTO_UDP_CHARGEN_EXPLOIT,
         LPI_PROTO_UDP_TOX,
         LPI_PROTO_UDP_HOLLA,
+        LPI_PROTO_UDP_RRSHARE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

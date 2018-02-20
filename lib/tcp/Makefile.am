@@ -143,6 +143,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_nopayload.cc \
 	lpi_norton_backup.cc \
 	lpi_notes_rpc.cc \
+	lpi_nsq.cc \
 	lpi_omegle.cc \
 	lpi_openvpn.cc \
 	lpi_ourworld.cc \
@@ -183,6 +184,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_shoutcast.cc \
 	lpi_silkroadonline.cc \
 	lpi_sip.cc \
+	lpi_skyforge.cc \
 	lpi_skype_tcp.cc \
 	lpi_smb.cc \
 	lpi_smite_tcp.cc \

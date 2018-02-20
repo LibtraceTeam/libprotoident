@@ -210,6 +210,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_norton_backup(mod_map);
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
+	register_nsq(mod_map);
 	register_omegle(mod_map);
 	register_openvpn(mod_map);
 	register_ourworld(mod_map);
@@ -250,6 +251,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_shoutcast(mod_map);
 	register_silkroadonline(mod_map);
 	register_sip(mod_map);
+	register_skyforge(mod_map);
 	register_skype_tcp(mod_map);
 	register_smb(mod_map);
 	register_smite_tcp(mod_map);
@@ -500,6 +502,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_risingstorm(mod_map);
 	register_roblox(mod_map);
 	register_robocraft(mod_map);
+	register_rrshare(mod_map);
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
 	register_rtp(mod_map);
