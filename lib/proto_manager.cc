@@ -142,6 +142,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_harveys(mod_map);
 	register_hearthstone(mod_map);
 	register_hola(mod_map);
+	register_hots_tcp(mod_map);
 	register_http_badport(mod_map);
 	register_http(mod_map);
 	register_http_nonstandard(mod_map);
@@ -207,6 +208,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_netmfp(mod_map);
 	register_nntp(mod_map);
 	register_nntps(mod_map);
+	register_nomachine(mod_map);
 	register_norton_backup(mod_map);
 	register_notes_rpc(mod_map);
 	register_tcp_no_payload(mod_map);
@@ -229,6 +231,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_qq_tcp(mod_map);
 	register_qqdownload(mod_map);
 	register_qqlive_tcp(mod_map);
+	register_qqspeedmobile_tcp(mod_map);
 	register_qvod(mod_map);
         register_razor(mod_map);
 	register_rbls(mod_map);
@@ -493,6 +496,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_qq(mod_map);
 	register_qqlive(mod_map);
 	register_qqpcmgr(mod_map);
+	register_qqspeedmobile_udp(mod_map);
 	register_quake(mod_map);
 	register_quic(mod_map);
 	register_radius(mod_map);

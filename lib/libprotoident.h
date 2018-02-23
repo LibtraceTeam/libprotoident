@@ -382,6 +382,9 @@ typedef enum {
         LPI_PROTO_SPEEDIFY,
         LPI_PROTO_NSQ,
         LPI_PROTO_SKYFORGE,
+        LPI_PROTO_HOTS,
+        LPI_PROTO_NOMACHINE,
+        LPI_PROTO_QQSPEEDMOBILE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -606,6 +609,7 @@ typedef enum {
         LPI_PROTO_UDP_TOX,
         LPI_PROTO_UDP_HOLLA,
         LPI_PROTO_UDP_RRSHARE,
+        LPI_PROTO_UDP_QQSPEEDMOBILE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

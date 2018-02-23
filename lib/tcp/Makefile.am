@@ -75,6 +75,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_harveys.cc \
 	lpi_hearthstone.cc \
 	lpi_hola.cc \
+	lpi_hots_tcp.cc \
 	lpi_http_badport.cc \
 	lpi_http.cc \
 	lpi_http_nonstandard.cc \
@@ -140,6 +141,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_netmfp.cc \
 	lpi_nntp.cc \
 	lpi_nntps.cc \
+	lpi_nomachine.cc \
 	lpi_nopayload.cc \
 	lpi_norton_backup.cc \
 	lpi_notes_rpc.cc \
@@ -162,6 +164,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_qq_tcp.cc \
 	lpi_qqdownload.cc \
 	lpi_qqlive_tcp.cc \
+	lpi_qqspeedmobile_tcp.cc \
 	lpi_qvod.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
