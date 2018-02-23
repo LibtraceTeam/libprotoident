@@ -41,6 +41,8 @@ static inline bool match_fbturn_request(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 122 && MATCH(payload, 0x00, 0x78, 0x00, 0x01))
                 return true;
+        if (len == 126 && MATCH(payload, 0x00, 0x7c, 0x00, 0x01))
+                return true;
         return false;
 }
 
