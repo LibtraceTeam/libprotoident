@@ -44,6 +44,8 @@ static inline bool match_warthunder_req(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x14"))
                 return true;
+        if (len == 52 && MATCHSTR(payload, "\xcf\xff\x00\x03"))
+                return true;
         return false;
 
 }

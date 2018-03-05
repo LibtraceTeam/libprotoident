@@ -52,6 +52,8 @@ static inline bool match_rrshare(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_rr_short(data->payload[0], data->payload_len[0])) {
                 if (match_rr_long(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_rr_short(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
         if (match_rr_short(data->payload[1], data->payload_len[1])) {
