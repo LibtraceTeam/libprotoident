@@ -610,6 +610,7 @@ typedef enum {
         LPI_PROTO_UDP_HOLLA,
         LPI_PROTO_UDP_RRSHARE,
         LPI_PROTO_UDP_QQSPEEDMOBILE,
+        LPI_PROTO_UDP_LOADOUT,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

@@ -444,6 +444,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ldap_ad(mod_map);
 	register_line_udp(mod_map);
 	register_linkproof(mod_map);
+	register_loadout(mod_map);
 	register_lol(mod_map);
 	register_mdns(mod_map);
 	register_merakicloud(mod_map);

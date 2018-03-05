@@ -104,6 +104,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ldap_ad.cc \
 	lpi_line_udp.cc \
 	lpi_linkproof.cc \
+	lpi_loadout.cc \
 	lpi_lol.cc \
 	lpi_mdns.cc \
 	lpi_merakicloud.cc \
