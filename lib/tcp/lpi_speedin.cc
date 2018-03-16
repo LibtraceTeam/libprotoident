@@ -41,7 +41,7 @@ static inline bool match_speedin_3byte(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_speedin_other(uint32_t payload, uint32_t len) {
-        if (len <= 75 || len >= 115)
+        if (len <= 75 || len >= 120)
                 return false;
 
         if (MATCH(payload, 0x23, 0x00, ANY, ANY))
