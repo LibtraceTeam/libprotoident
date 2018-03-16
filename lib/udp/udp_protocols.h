@@ -99,6 +99,7 @@ void register_foscam(LPIModuleMap *mod_map);
 void register_freechal(LPIModuleMap *mod_map);
 void register_funshion_udp(LPIModuleMap *mod_map);
 void register_gamespy(LPIModuleMap *mod_map);
+void register_ganglia(LPIModuleMap *mod_map);
 void register_gangsofspace(LPIModuleMap *mod_map);
 void register_garena(LPIModuleMap *mod_map);
 void register_gearsofwar(LPIModuleMap *mod_map);

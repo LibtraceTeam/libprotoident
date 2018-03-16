@@ -33,6 +33,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_crossfire_tcp.cc \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
+	lpi_dahua_tcp.cc \
 	lpi_dash.cc \
 	lpi_dell_backup.cc \
 	lpi_destiny.cc \

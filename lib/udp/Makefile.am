@@ -69,6 +69,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_freechal.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_ganglia.cc \
 	lpi_gangsofspace.cc \
 	lpi_garena.cc \
 	lpi_gearsofwar.cc \

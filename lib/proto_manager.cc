@@ -100,6 +100,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_crossfire_tcp(mod_map);
 	register_cryptic(mod_map);
 	register_cvs(mod_map);
+	register_dahua_tcp(mod_map);
 	register_dash(mod_map);
 	register_dell_backup(mod_map);
 	register_destiny(mod_map);
@@ -409,6 +410,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_freechal(mod_map);
 	register_funshion_udp(mod_map);
 	register_gamespy(mod_map);
+	register_ganglia(mod_map);
 	register_gangsofspace(mod_map);
 	register_garena(mod_map);
 	register_gearsofwar(mod_map);
