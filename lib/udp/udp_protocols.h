@@ -226,6 +226,7 @@ void register_steam_udp(LPIModuleMap *mod_map);
 void register_storm_worm(LPIModuleMap *mod_map);
 void register_stun(LPIModuleMap *mod_map);
 void register_syslog(LPIModuleMap *mod_map);
+void register_talesrunner_udp(LPIModuleMap *mod_map);
 void register_teamspeak(LPIModuleMap *mod_map);
 void register_teamviewer_udp(LPIModuleMap *mod_map);
 void register_teredo(LPIModuleMap *mod_map);

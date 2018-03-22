@@ -234,6 +234,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_trojan_zeroaccess.cc \
 	lpi_twitcasting.cc \
 	lpi_twitch_irc.cc \
+	lpi_utherverse.cc \
 	lpi_vainglory.cc \
 	lpi_viber.cc \
 	lpi_vmware.cc \

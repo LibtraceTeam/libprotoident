@@ -197,6 +197,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_storm_worm.cc \
 	lpi_stun.cc \
 	lpi_syslog.cc \
+	lpi_talesrunner_udp.cc \
 	lpi_teamspeak.cc \
 	lpi_teamviewer.cc \
 	lpi_teredo.cc \

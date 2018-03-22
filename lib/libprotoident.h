@@ -386,6 +386,7 @@ typedef enum {
         LPI_PROTO_NOMACHINE,
         LPI_PROTO_QQSPEEDMOBILE,
         LPI_PROTO_DAHUA,
+        LPI_PROTO_UTHERVERSE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -613,6 +614,7 @@ typedef enum {
         LPI_PROTO_UDP_QQSPEEDMOBILE,
         LPI_PROTO_UDP_LOADOUT,
         LPI_PROTO_UDP_GANGLIA,
+        LPI_PROTO_UDP_TALESRUNNER,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

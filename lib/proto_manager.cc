@@ -258,7 +258,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_skyforge(mod_map);
 	register_skype_tcp(mod_map);
 	register_smb(mod_map);
-	register_smite_tcp(mod_map);
+        register_smite_tcp(mod_map);
 	register_smtp(mod_map);
 	register_smtps(mod_map);
 	register_socks4(mod_map);
@@ -301,6 +301,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_trojan_zeroaccess(mod_map);
 	register_twitcasting(mod_map);
 	register_twitch_irc(mod_map);
+	register_utherverse(mod_map);
 	register_vainglory(mod_map);
 	register_viber(mod_map);
 	register_vmware(mod_map);
@@ -519,7 +520,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_sip_udp(mod_map);
 	register_skype(mod_map);
 	register_slp(mod_map);
-	register_smite(mod_map);
+        register_smite(mod_map);
 	register_snapvpn(mod_map);
 	register_snmp(mod_map);
 	register_sopcast(mod_map);
@@ -537,6 +538,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_storm_worm(mod_map);
 	register_stun(mod_map);
 	register_syslog(mod_map);
+	register_talesrunner_udp(mod_map);
 	register_teamspeak(mod_map);
 	register_teamviewer_udp(mod_map);
 	register_teredo(mod_map);
