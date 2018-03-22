@@ -36,6 +36,8 @@
 static inline bool match_rr_short(uint32_t payload, uint32_t len) {
         if (len == 43 && MATCH(payload, 0x00, 0x00, 0x00, ANY))
                 return true;
+        if (len == 43 && MATCH(payload, 0x15, 0x00, 0x00, ANY))
+                return true;
         return false;
 }
 
@@ -46,9 +48,22 @@ static inline bool match_rr_long(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_rr_05(uint32_t payload, uint32_t len) {
+        if (len == 0) {
+                return true;
+        }
+        if (MATCH(payload, 0x05, 0x00, 0x00, ANY) && len == 1129)
+                return true;
+        return false;
+}
+
 static inline bool match_rrshare(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         /* default port 21524 */
+        if (data->server_port != 21524 && data->client_port != 21524) {
+                return false;
+        }
+
         if (match_rr_short(data->payload[0], data->payload_len[0])) {
                 if (match_rr_long(data->payload[1], data->payload_len[1]))
                         return true;
@@ -58,6 +73,16 @@ static inline bool match_rrshare(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_rr_short(data->payload[1], data->payload_len[1])) {
                 if (match_rr_long(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
+        if (match_rr_long(data->payload[0], data->payload_len[0])) {
+                if (match_rr_05(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_rr_long(data->payload[1], data->payload_len[1])) {
+                if (match_rr_05(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

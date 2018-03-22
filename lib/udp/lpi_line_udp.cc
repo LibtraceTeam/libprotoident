@@ -74,6 +74,8 @@ static inline bool match_line_43(uint32_t payload, uint32_t len) {
 
         if (len == 43 && MATCH(payload, 0xb6, 0x13, 0x00, 0x27))
                 return true;
+        if (len == 43 && MATCH(payload, 0xb6, 0x14, 0x00, 0x27))
+                return true;
         return false;
 
 }
