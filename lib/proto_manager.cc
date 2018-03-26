@@ -67,6 +67,7 @@ void free_protocols(LPIModuleMap *mod_map) {
 
 int register_tcp_protocols(LPIModuleMap *mod_map) {
 
+	register_300heroes(mod_map);
 	register_360safeguard(mod_map);
 	register_4d(mod_map);
 	register_acestream(mod_map);

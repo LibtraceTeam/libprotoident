@@ -387,6 +387,7 @@ typedef enum {
         LPI_PROTO_QQSPEEDMOBILE,
         LPI_PROTO_DAHUA,
         LPI_PROTO_UTHERVERSE,
+        LPI_PROTO_300_HEROES,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
