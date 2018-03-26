@@ -43,6 +43,8 @@ static inline bool match_bdo_request(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 277 && MATCH(payload, 0x15, 0x01, 0x01, ANY))
                 return true;
+        if (len == 433 && MATCH(payload, 0xb1, 0x01, 0x01, ANY))
+                return true;
         return false;
 
 }

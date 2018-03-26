@@ -40,6 +40,8 @@ static inline bool match_hb_76(uint32_t payload, uint32_t len) {
 
         if (len == 76 && MATCH(payload, 0x00, 0x00, 0x00, 0x02))
                 return true;
+        if (len == 80 && MATCH(payload, 0x00, 0x00, 0xcc, 0x02))
+                return true;
         return false;
 }
 

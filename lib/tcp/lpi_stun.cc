@@ -30,6 +30,29 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_stun_payload(uint32_t payload, uint32_t len) {
+        /* Bytes 3 and 4 are the Message Length - the STUN header */
+        if ((ntohl(payload) & 0x0000ffff) != len - 20)
+                return false;
+
+        if (MATCH(payload, 0x00, 0x01, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x01, 0x01, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x01, 0x11, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x00, 0x03, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x01, 0x03, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x01, 0x13, ANY, ANY))
+                return true;
+
+        return false;
+
+}
+
+
 static inline bool match_stun_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* Wouldn't have expected to see STUN over TCP, but sure we can 
@@ -37,6 +60,18 @@ static inline bool match_stun_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_str_either(data, "RSP/"))
 		return true;
+
+        /* We can also see more conventional STUN payloads over TCP as well :/
+         */
+        if (data->server_port == 3478 || data->client_port == 3478) {
+                if (match_stun_payload(data->payload[0], data->payload_len[0]))
+                {
+                        if (match_stun_payload(data->payload[1],
+                                                data->payload_len[1])) {
+                                return true;
+                        }
+                }
+        }
 
 	return false;
 }

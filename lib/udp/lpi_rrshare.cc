@@ -52,7 +52,7 @@ static inline bool match_rr_05(uint32_t payload, uint32_t len) {
         if (len == 0) {
                 return true;
         }
-        if (MATCH(payload, 0x05, 0x00, 0x00, ANY) && len == 1129)
+        if (MATCH(payload, 0x05, 0x00, 0x00, ANY))
                 return true;
         return false;
 }
