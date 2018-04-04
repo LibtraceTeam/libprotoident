@@ -123,6 +123,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_fb_message(mod_map);
 	register_fbcdn_ssl(mod_map);
 	register_ffxiv(mod_map);
+	register_filenori(mod_map);
 	register_flash(mod_map);
 	register_fliggy(mod_map);
 	register_fring(mod_map);
@@ -193,7 +194,6 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_msnv(mod_map);
 	register_munin(mod_map);
 	register_mysql(mod_map);
-	//register_mystery_100_star(mod_map);
 	//register_mystery_8000(mod_map);
 	//register_mystery_9000(mod_map);
 	//register_mystery_conn(mod_map);

@@ -56,6 +56,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fb_message.cc \
 	lpi_fbcdn_ssl.cc \
 	lpi_ffxiv.cc \
+	lpi_filenori.cc \
 	lpi_flash.cc \
 	lpi_fliggy.cc \
 	lpi_fring.cc \
@@ -126,7 +127,6 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_msnv.cc \
 	lpi_munin.cc \
 	lpi_mysql.cc \
-	lpi_mystery_100_star.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_9000.cc \
 	lpi_mystery_conn.cc \

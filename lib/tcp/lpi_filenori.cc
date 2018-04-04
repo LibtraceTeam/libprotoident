@@ -30,12 +30,9 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* What I do know about this protocol:
- * 	all remote hosts appear to be Korean
- * 	download volumes can be very large, so must be some form of media
- *	due to variety of remote hosts, probably P2P
- * 	does not appear to be Afreeca, Fileguri, Gorealra
- * 	no common port number
+/* Filenori is the most likely candidate for this -- hard to test because
+ * you need to pay money to download anything and probably not a good look
+ * for me to be paying money for this kind of service...
  */
 
 static inline bool match_100(uint32_t payload, uint32_t len) {
@@ -61,7 +58,7 @@ static inline bool match_command(uint32_t payload, uint32_t len) {
 
 }
 
-static inline bool match_mystery_100_star(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_filenori(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_100(data->payload[0], data->payload_len[0])) {
 		if (match_command(data->payload[1], data->payload_len[1]))
@@ -75,15 +72,15 @@ static inline bool match_mystery_100_star(lpi_data_t *data, lpi_module_t *mod UN
 	return false;
 }
 
-static lpi_module_t lpi_mystery_100_star = {
-	LPI_PROTO_MYSTERY_100_STAR,
-	LPI_CATEGORY_NO_CATEGORY,
-	"Mystery_100_STAR",
-	250,
-	match_mystery_100_star
+static lpi_module_t lpi_filenori = {
+	LPI_PROTO_FILENORI,
+	LPI_CATEGORY_P2P,
+	"Filenori",
+	15,
+	match_filenori
 };
 
-void register_mystery_100_star(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_mystery_100_star, mod_map);
+void register_filenori(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_filenori, mod_map);
 }
 
