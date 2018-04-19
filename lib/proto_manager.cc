@@ -410,6 +410,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_fortinet(mod_map);
 	register_foscam(mod_map);
 	register_freechal(mod_map);
+	register_freefire(mod_map);
 	register_funshion_udp(mod_map);
 	register_gamespy(mod_map);
 	register_ganglia(mod_map);
@@ -427,6 +428,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_haloonline(mod_map);
 	register_hamachi_udp(mod_map);
 	register_heliborne(mod_map);
+	register_heroesevolved(mod_map);
 	register_heroes_generals(mod_map);
 	register_hollachat(mod_map);
 	register_hots(mod_map);

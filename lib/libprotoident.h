@@ -617,6 +617,8 @@ typedef enum {
         LPI_PROTO_UDP_LOADOUT,
         LPI_PROTO_UDP_GANGLIA,
         LPI_PROTO_UDP_TALESRUNNER,
+        LPI_PROTO_UDP_FREEFIRE,
+        LPI_PROTO_UDP_HEROES_EVOLVED,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

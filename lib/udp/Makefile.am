@@ -67,6 +67,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_fortinet.cc \
 	lpi_foscam.cc \
 	lpi_freechal.cc \
+	lpi_freefire.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
 	lpi_ganglia.cc \
@@ -83,6 +84,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_halflife.cc \
 	lpi_haloonline.cc \
 	lpi_hamachi.cc \
+	lpi_heroesevolved.cc \
 	lpi_heroes_generals.cc \
 	lpi_heliborne.cc \
 	lpi_hollachat.cc \
