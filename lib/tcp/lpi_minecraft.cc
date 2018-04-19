@@ -137,6 +137,8 @@ static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 29 && MATCH(payload, 0x1c, 0x00, 0xd2, 0x01))
                 return true;
+        if (len == 30 && MATCH(payload, 0x1d, 0x00, 0xd4, 0x02))
+                return true;
 
         if (len == 4) {
                 if (MATCH(payload, 0x03, 0x03, 0x80, 0x02))

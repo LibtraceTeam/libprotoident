@@ -60,6 +60,10 @@ static inline bool match_port(uint16_t server, uint16_t client) {
         if (server == 11000 || client == 11000)
                 return true;
 
+        /* Starting to see this on port 443 now :( */
+        if (server == 443 || client == 443)
+                return true;
+
         return false;
 }
 

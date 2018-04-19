@@ -88,6 +88,8 @@ static inline bool match_china_wow(uint32_t payload, uint32_t len) {
         if (len == 57 || len == 59) {
                 if (MATCH(payload, 0x05, 0x01, 0x93, 0x01))
                         return true;
+                if (MATCH(payload, 0x05, 0x01, 0x99, 0x01))
+                        return true;
         }
 
         /* New alternative -- clearly a length field, rest of packet
@@ -100,6 +102,32 @@ static inline bool match_china_wow(uint32_t payload, uint32_t len) {
                 return true;
         return false;
 
+}
+
+static inline bool match_china_wow512(uint32_t payload, uint32_t len) {
+        if (len == 512 && MATCH(payload, 0x00, 0x01, 0x00, 0x25))
+                return true;
+        return false;
+}
+
+static inline bool match_china_wow03(uint32_t payload, uint32_t len) {
+
+        uint32_t hdrlen;
+        uint32_t swapped;
+
+        if (!MATCH(payload, 0x03, 0x00, ANY, ANY)) {
+                return false;
+        }
+
+        /* bytes 3 and 4 are a length field, but in little endian */
+        hdrlen = ntohl(payload);
+        swapped = ((hdrlen & 0xff) << 8) + ((hdrlen & 0xff00) >> 8);
+
+        if (swapped == len) {
+                return true;
+        }
+
+        return false;
 }
 
 static inline bool chinese_wow_port(lpi_data_t *data) {
@@ -152,6 +180,20 @@ static inline bool match_wow(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
                 if (match_wow_2016(data->payload[1], data->payload_len[1])) {
                         if (match_china_wow(data->payload[0], data->payload_len[0]))
+                                return true;
+                }
+
+                if (match_china_wow(data->payload[0], data->payload_len[0])) {
+                        if (match_china_wow03(data->payload[1], data->payload_len[1]))
+                                return true;
+                        if (match_china_wow512(data->payload[1], data->payload_len[1]))
+                                return true;
+                }
+
+                if (match_china_wow(data->payload[1], data->payload_len[1])) {
+                        if (match_china_wow03(data->payload[0], data->payload_len[0]))
+                                return true;
+                        if (match_china_wow512(data->payload[0], data->payload_len[0]))
                                 return true;
                 }
         }

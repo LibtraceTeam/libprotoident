@@ -36,6 +36,12 @@ static inline bool match_tr_1b(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_tr_1e(uint32_t payload, uint32_t len) {
+        if (len == 8 && MATCH(payload, 0x1e, 0x00, 0x6b, 0x51))
+                return true;
+        return false;
+}
+
 static inline bool match_talesrunner_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (MATCH(data->payload[0], 0x1d, 0x00, 0x67, 0x01)) {
@@ -51,6 +57,12 @@ static inline bool match_talesrunner_udp(lpi_data_t *data, lpi_module_t *mod UNU
 
         if (match_tr_1b(data->payload[0], data->payload_len[0])) {
                 if (match_tr_1b(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+
+        if (match_tr_1e(data->payload[0], data->payload_len[0])) {
+                if (match_tr_1e(data->payload[1], data->payload_len[1]))
                         return true;
         }
 
