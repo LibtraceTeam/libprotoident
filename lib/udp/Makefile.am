@@ -175,6 +175,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_rtcp.cc \
 	lpi_rtmfp.cc \
 	lpi_rtp.cc \
+	lpi_rulesofsurvival.cc \
 	lpi_sanandreas_mp.cc \
 	lpi_second_life.cc \
 	lpi_serialnumberd.cc \

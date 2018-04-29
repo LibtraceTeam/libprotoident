@@ -204,6 +204,7 @@ void register_rrshare(LPIModuleMap *mod_map);
 void register_rtcp(LPIModuleMap *mod_map);
 void register_rtmfp(LPIModuleMap *mod_map);
 void register_rtp(LPIModuleMap *mod_map);
+void register_rulesofsurvival(LPIModuleMap *mod_map);
 void register_sanandreas_mp(LPIModuleMap *mod_map);
 void register_second_life_udp(LPIModuleMap *mod_map);
 void register_serialnumberd(LPIModuleMap *mod_map);

@@ -517,6 +517,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
 	register_rtp(mod_map);
+	register_rulesofsurvival(mod_map);
 	register_sanandreas_mp(mod_map);
 	register_second_life_udp(mod_map);
 	register_serialnumberd(mod_map);
