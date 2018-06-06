@@ -163,6 +163,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_invalid_http(mod_map);
 	register_invalid_pop(mod_map);
 	register_invalid_smtp(mod_map);
+	register_ipfs(mod_map);
 	register_ipop(mod_map);
 	register_ipsharkk(mod_map);
 	register_irc(mod_map);

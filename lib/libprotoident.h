@@ -389,6 +389,7 @@ typedef enum {
         LPI_PROTO_UTHERVERSE,
         LPI_PROTO_300_HEROES,
         LPI_PROTO_FILENORI,
+        LPI_PROTO_IPFS,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

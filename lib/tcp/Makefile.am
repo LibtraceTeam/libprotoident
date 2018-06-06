@@ -96,6 +96,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid_http.cc \
 	lpi_invalid_pop.cc \
 	lpi_invalid_smtp.cc \
+	lpi_ipfs.cc \
 	lpi_ipop.cc \
 	lpi_ipsharkk.cc \
 	lpi_irc.cc \
