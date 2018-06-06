@@ -30,6 +30,12 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_cf_05(uint32_t payload, uint32_t len) {
+        if (len == 65 && MATCH(payload, 0x05, 0x01, 0x99, 0x01))
+                return true;
+        return false;
+}
+
 static inline bool match_cf_tcp(uint32_t payload, uint32_t len) {
 
         uint32_t hlen = bswap_le_to_host32(payload & 0xffff00) >> 8;
@@ -49,6 +55,14 @@ static inline bool match_crossfire_tcp(lpi_data_t *data, lpi_module_t *mod UNUSE
                 if (match_cf_tcp(data->payload[1], data->payload_len[1])) {
                         return true;
                 }
+                if (match_cf_05(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_cf_05(data->payload[0], data->payload_len[0])) {
+                if (match_cf_tcp(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
 	return false;
