@@ -119,14 +119,8 @@ static inline bool match_quic_port(lpi_data_t *data) {
         return false;
 }
 
-static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (!match_quic_port(data))
-                return false;
-
-        /* Spec says that packets must not be larger than 1350 bytes */
-        if (data->payload_len[0] > 1350 || data->payload_len[1] > 1350)
-                return false;
+/* Match old Google QUIC versions */
+static inline bool match_old_gquic(lpi_data_t *data) {
 
         if (match_quic_version(data->payload[0])) {
                 if (match_quic_response(data->payload[1], data->payload[0]))
@@ -169,7 +163,62 @@ static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
         }
 
+        return false;
+}
 
+static inline bool match_req_q044(uint32_t payload, uint32_t len) {
+
+        if (MATCHSTR(payload, "\xffQ04") && len == 1350) {
+                return true;
+        }
+        return false;
+}
+
+static inline bool match_reply_q044(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0xfd, 'Q', '0', '4')) {
+                return true;
+        }
+        if (MATCH(payload, 0xfc, 'Q', '0', '4')) {
+                return true;
+        }
+        return false;
+}
+
+/* IETF QUIC version 44, starting to be deployed by Google */
+static inline bool match_quic_044(lpi_data_t *data) {
+
+        if (match_req_q044(data->payload[0], data->payload_len[0])) {
+                if (match_reply_q044(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_req_q044(data->payload[1], data->payload_len[1])) {
+                if (match_reply_q044(data->payload[0], data->payload_len[0])) {
+                        return true;
+                }
+        }
+
+        return false;
+}
+
+static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (!match_quic_port(data))
+                return false;
+
+        /* Spec says that packets must not be larger than 1350 bytes */
+        if (data->payload_len[0] > 1350 || data->payload_len[1] > 1350)
+                return false;
+
+        if (match_quic_044(data)) {
+                return true;
+        }
+
+        if (match_old_gquic(data)) {
+                return true;
+        }
 
 	return false;
 }
