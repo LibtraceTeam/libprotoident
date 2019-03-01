@@ -176,6 +176,9 @@ static inline bool match_req_q044(uint32_t payload, uint32_t len) {
 
 static inline bool match_reply_q044(uint32_t payload, uint32_t len) {
 
+        if (MATCH(payload, 0xff, 'Q', '0', '4')) {
+                return true;
+        }
         if (MATCH(payload, 0xfd, 'Q', '0', '4')) {
                 return true;
         }
