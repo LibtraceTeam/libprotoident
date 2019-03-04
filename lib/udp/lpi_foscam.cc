@@ -69,6 +69,26 @@ static inline bool match_fcam_32(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_fcam_p2p_ping(uint32_t payload, uint32_t len) {
+        if (len != 60 && len != 288) {
+                return false;
+        }
+        if (MATCH(payload, 0x3e, 0x2f, 0x8d, 0xcc)) {
+                return true;
+        }
+        return false;
+}
+
+static inline bool match_fcam_p2p_pong(uint32_t payload, uint32_t len) {
+        if (len != 60 && len != 288) {
+                return false;
+        }
+        if (MATCH(payload, 0x7e, 0x2a, 0x9d, 0xec)) {
+                return true;
+        }
+        return false;
+}
+
 static inline bool match_foscam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_fcam_4(data->payload[0], data->payload_len[0])) {
@@ -94,6 +114,25 @@ static inline bool match_foscam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_fcam_probereply(data->payload[0], data->payload_len[0]))
                         return true;
         }
+
+        /* Periodic pings and replies seemingly sent by Foscam cameras to
+         * servers on the internet (port 10001)
+         * More info:
+         * http://foscam.us/forum/foscam-dialing-out-to-suspect-hosts-t17699.html */
+        if (data->payload_len[0] == data->payload_len[1] &&
+                        (data->server_port == 10001 ||
+                         data->client_port == 10001)) {
+                if (match_fcam_p2p_ping(data->payload[0], data->payload_len[0])) {
+                        if (match_fcam_p2p_pong(data->payload[1], data->payload_len[1]))
+                                return true;
+                }
+
+                if (match_fcam_p2p_ping(data->payload[1], data->payload_len[1])) {
+                        if (match_fcam_p2p_pong(data->payload[0], data->payload_len[0]))
+                                return true;
+                }
+        }
+
 
 	return false;
 }
