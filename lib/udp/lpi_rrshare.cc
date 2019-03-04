@@ -57,23 +57,7 @@ static inline bool match_rr_05(uint32_t payload, uint32_t len) {
         return false;
 }
 
-static inline bool is_rrport(uint16_t sport, uint16_t cport) {
-
-        /* default port 21524 */
-        if (sport == 21524 || cport == 21524) {
-                return true;
-        }
-        if (sport == 21419 || cport == 21419) {
-                return true;
-        }
-        return false;
-}
-
 static inline bool match_rrshare(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (!is_rrport(data->server_port, data->client_port)) {
-                return false;
-        }
 
         if (match_rr_short(data->payload[0], data->payload_len[0])) {
                 if (match_rr_long(data->payload[1], data->payload_len[1]))
