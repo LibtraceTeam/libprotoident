@@ -106,6 +106,27 @@ static inline bool match_8480_ppstream(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_8580_ppstream(uint32_t payload, uint32_t len) {
+
+
+        if (len == 133 && MATCH(payload, 0x85, 0x80, 0xc1, 0xd0))
+                return true;
+
+        return false;
+}
+
+static inline bool match_8580_reply(uint32_t payload, uint32_t len) {
+
+        if (len < 139 || len > 151) {
+                return false;
+        }
+
+        if (MATCH(payload, ANY, 0x80, ANY, ANY)) {
+                return true;
+        }
+
+        return false;
+}
 
 static inline bool match_80_ppstream(uint32_t payload, uint32_t len) {
 
@@ -174,6 +195,16 @@ static inline bool match_ppstream(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_any80(data->payload[0], data->payload_len[0])) {
                 if (match_any84(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_8580_ppstream(data->payload[0], data->payload_len[0])) {
+                if (match_8580_reply(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_8580_ppstream(data->payload[1], data->payload_len[1])) {
+                if (match_8580_reply(data->payload[0], data->payload_len[0]))
                         return true;
         }
 
