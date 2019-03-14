@@ -51,6 +51,8 @@ static inline bool match_ipfs(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_ipfs_mu(data->payload[0], data->payload_len[0])) {
                 if (match_ipfs_single(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_ipfs_mu(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
         if (match_ipfs_mu(data->payload[1], data->payload_len[1])) {
