@@ -621,6 +621,7 @@ typedef enum {
         LPI_PROTO_UDP_FREEFIRE,
         LPI_PROTO_UDP_HEROES_EVOLVED,
         LPI_PROTO_UDP_RULES_OF_SURVIVAL,
+        LPI_PROTO_UDP_CONTRACT_WARS,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

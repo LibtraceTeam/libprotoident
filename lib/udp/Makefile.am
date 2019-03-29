@@ -33,6 +33,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cod.cc \
 	lpi_combatarms.cc \
 	lpi_combatarms_p2p.cc \
+	lpi_contract_wars.cc \
 	lpi_crossfire.cc \
 	lpi_crossout.cc \
 	lpi_csgo.cc \
