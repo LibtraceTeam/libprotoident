@@ -1,0 +1,82 @@
+stages:
+  - build
+  - upload
+
+build-debian-jessie:
+  stage: build
+  image: debian:jessie
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/jessie/
+    - mv ../*.deb built-packages/jessie/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
+build-debian-stretch:
+  stage: build
+  image: debian:stretch
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/stretch/
+    - mv ../*.deb built-packages/stretch/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
+build-ubuntu-xenial:
+  stage: build
+  image: ubuntu:xenial
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/xenial/
+    - mv ../*.deb built-packages/xenial/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
+build-ubuntu-cosmic:
+  stage: build
+  image: ubuntu:cosmic
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/cosmic/
+    - mv ../*.deb built-packages/cosmic/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
+build-ubuntu-bionic:
+  stage: build
+  image: ubuntu:bionic
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/bionic/
+    - mv ../*.deb built-packages/bionic/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
+upload-packages:
+  stage: upload
+  image: ubuntu:bionic
+  script:
+    - ./bintray-upload.sh
+  only:
+    - tags
+
