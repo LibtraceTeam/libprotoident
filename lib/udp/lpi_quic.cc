@@ -171,6 +171,11 @@ static inline bool match_req_q044(uint32_t payload, uint32_t len) {
         if (MATCHSTR(payload, "\xffQ04") && len == 1350) {
                 return true;
         }
+
+        /* IPv6 */
+        if (MATCHSTR(payload, "\xffQ04") && len == 1330) {
+                return true;
+        }
         if (MATCH(payload, 0xc3, 'Q', '0', '4') && len == 1350) {
                 return true;
         }
