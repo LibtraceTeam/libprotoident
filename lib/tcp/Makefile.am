@@ -146,6 +146,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_nntps.cc \
 	lpi_nomachine.cc \
 	lpi_nopayload.cc \
+	lpi_nofirstpkt.cc \
 	lpi_norton_backup.cc \
 	lpi_notes_rpc.cc \
 	lpi_nsq.cc \

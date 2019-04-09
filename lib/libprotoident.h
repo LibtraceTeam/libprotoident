@@ -647,6 +647,7 @@ typedef enum {
 
         LPI_PROTO_INVALID,     /* No single valid protocol */
 	LPI_PROTO_NO_PAYLOAD,
+	LPI_PROTO_NO_FIRSTPKT,
 	LPI_PROTO_UNSUPPORTED,
         LPI_PROTO_UNKNOWN,
 	LPI_PROTO_LAST		/** ALWAYS have this as the last value */

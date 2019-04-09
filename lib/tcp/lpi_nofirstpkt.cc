@@ -30,22 +30,23 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-bool match_no_payload(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+bool match_no_firstpkt(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (data->observed[0] == 0 && data->observed[1] == 0)
-		return true;
+    if ( (data->observed[0] != 0 || data->observed[1] != 0) &&
+        (data->payload_len[0] == 0 && data->payload_len[1] == 0) )
+            return true;
 
 	return false;
 }
 
-static lpi_module_t lpi_no_payload = {
-	LPI_PROTO_NO_PAYLOAD,
+static lpi_module_t lpi_no_firstpkt = {
+	LPI_PROTO_NO_FIRSTPKT,
 	LPI_CATEGORY_NOPAYLOAD,
-	"No_Payload",
+	"No_FirstPkt",
 	0,	/* Must supercede all other protocols */
-	match_no_payload
+	match_no_firstpkt
 };
 
-void register_tcp_no_payload(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_no_payload, mod_map);
+void register_tcp_no_firstpkt(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_no_firstpkt, mod_map);
 }
