@@ -266,6 +266,10 @@ static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return true;
         }
 
+        if (match_fb_quic(data)) {
+                return true;
+        }
+
         if (match_old_gquic(data)) {
                 return true;
         }
