@@ -1,0 +1,60 @@
+.TH LPI_ARFF "1" "April 2019" "libprotoident" "User Commands"
+.SH NAME
+lpi_arff \- output the application protocol of all network flows in a trace using the ARFF format
+.SH SYNOPSIS
+.B lpi_arff
+inputuri
+
+.SH DESCRIPTION
+This tool attempts to identify each individual flow within the provided
+network packet trace, using libprotoident to attempt to determine the
+application protocol being used by each flow. The output of this tool
+is written to standard output using the ARFF format so that it can be
+analysed easily using the Weka machine learning software.
+Note that identification only occurs when the flow has concluded or expired due
+to inactivity, so it is not very effective for real-time use cases.
+.PP
+The \fBinputuri\fR argument must be a valid libtrace URI.
+
+.SH OUTPUT FORMAT
+The output begins with a series of lines describing each feature that
+will be used to describe each flow. Following that, for each flow in the input
+trace, a single line is printed to stdout describing the flow. The line
+contains the following comma-separated fields (in order):
+
+.nf
+ * Application protocol (as reported by libprotoident)
+ * ID number for the application protocol
+ * Total number of packets sent from first endpoint to second endpoint
+ * Total number of bytes sent from first endpoint to second endpoint
+ * Total number of packets sent from second endpoint to first endpoint
+ * Total number of bytes sent from second endpoint to first endpoint
+ * Minimum payload size sent from first endpoint to second endpoint
+ * Mean payload size sent from first endpoint to second endpoint
+ * Maximum payload size sent from first endpoint to second endpoint
+ * Standard deviation of payload size sent from first endpoint to second endpoint
+ * Minimum payload size sent from second endpoint to first endpoint
+ * Mean payload size sent from second endpoint to first endpoint
+ * Maximum payload size sent from second endpoint to first endpoint
+ * Standard deviation of payload size sent from second endpoint to first endpoint
+ * Minimum packet interarrival time for packets sent from first endpoint to second endpoint
+ * Mean packet interarrival time for packets sent from first endpoint to second endpoint
+ * Maximum packet interarrival time for packets sent from first endpoint to second endpoint
+ * Standard deviation of packet interarrival time for packets sent from first endpoint to second endpoint
+ * Minimum packet interarrival time for packets sent from second endpoint to first endpoint
+ * Mean packet interarrival time for packets sent from second endpoint to first endpoint
+ * Maximum packet interarrival time for packets sent from second endpoint to first endpoint
+ * Standard deviation of packet interarrival time for packets sent from second endpoint to first endpoint
+ * Flow duration (in microseconds)
+ * Flow start time (as a Unix timestamp)
+.fi
+
+.SH LINKS
+More details about libprotoident, the protocols it supports and how it
+works can be found at https://github.com/wanduow/libprotoident/wiki
+
+.SH SEE ALSO
+lpi_find_unknown(1), lpi_protoident(1)
+
+.SH AUTHORS
+Shane Alcock <shane.alcock@waikato.ac.nz>

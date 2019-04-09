@@ -1,0 +1,50 @@
+.TH LPI_FIND_UNKNOWN "1" "April 2019" "libprotoident" "User Commands"
+.SH NAME
+lpi_find_unknown \- list all network flows in a trace that libprotoident cannot identify
+.SH SYNOPSIS
+.B lpi_find_unknown
+inputuri
+
+.SH DESCRIPTION
+This tool attempts to identify each individual flow within the provided
+network packet trace that libprotoident is unable to provide a positive
+classification result for. This is mainly useful in situations where one
+is looking to add support for new protocols to libprotoident, but the tool
+has been made available nonetheless.
+Note that identification only occurs when the flow has concluded or expired due
+to inactivity, so it is not very effective for real-time use cases.
+.PP
+The \fBinputuri\fR argument must be a valid libtrace URI.
+
+.SH OUTPUT FORMAT
+For each flow discovered in the input trace which libprotoident is unable
+to identify, a single line is printed to stdout describing the flow. The line
+contains the following whitespace separated field (in order):
+
+.nf
+* IP address of the first endpoint
+* IP address of the second endpoint
+* Port used by the first endpoint
+* Port used by the second endpoint
+* Transport protocol (6 = TCP, 17 = UDP)
+* Unix timestamp when the flow began
+* Unix timestamp when the flow ended
+* Total bytes sent from first endpoint to second endpoint
+* Total bytes sent from second endpoint to first endpoint
+* First four bytes of payload sent from first endpoint (in hex)
+* First four bytes of payload sent from first endpoint (ASCII)
+* Size of first payload-bearing packet sent from first endpoint
+* First four bytes of payload sent from second endpoint (in hex)
+* First four bytes of payload sent from second endpoint (ASCII)
+* Size of first payload-bearing packet sent from second endpoint
+.fi
+
+.SH LINKS
+More details about libprotoident, the protocols it supports and how it
+works can be found at https://github.com/wanduow/libprotoident/wiki
+
+.SH SEE ALSO
+lpi_arff(1), lpi_protoident(1)
+
+.SH AUTHORS
+Shane Alcock <shane.alcock@waikato.ac.nz>
