@@ -1,7 +1,7 @@
-libprotoident 2.0.12
+libprotoident 2.0.13
 
 ---------------------------------------------------------------------------
-Copyright (c) 2011-2017 The University of Waikato, Hamilton, New Zealand.
+Copyright (c) 2011-2019 The University of Waikato, Hamilton, New Zealand.
 All rights reserved.
 
 This code has been developed by the University of Waikato WAND
@@ -26,6 +26,7 @@ With contributions from:
     Fabian Weisshaar <elnappo@nerdpol.io>
     Jeroen Roovers
     Jiri Havranek
+    Romain Fontugne
 
 Introduction
 ============
@@ -78,7 +79,7 @@ POP3 and IMAP are part of the Mail category.
 
 Tools
 =====
-There are currently four tools included with libprotoident.
+There are three tools included with libprotoident.
 
  * lpi_protoident
  
@@ -209,60 +210,6 @@ There are currently four tools included with libprotoident.
          * Flow duration (in microseconds)
          * Flow start time (as a Unix timestamp)
 
- * lpi_live   (DEPRECATED)
-
-   Description:
-   	This tool reports byte and packet counts (both inbound and outbound)
-	for each identified protocol in real-time. Identification of a flow
-	occurs as soon as possible, so that the statistics reported are as
-	up-to-date as possible.
-
-        lpi_live has been deprecated and will not be built by default. The code
-        is still available in our git repository, but we will not update or
-        support this tool anymore. Instead, please use the lpicollector
-        (https://github.com/wanduow/lpicollector) for real-time flow analysis
-        with libprotoident.
-
-        In combination with the included lpi.py example client, lpicollector
-        can produce output similar to that produced by lpi_live.
-
-   Usage:
-   	lpi_live <options> <input URI>
-
-	The input URI must be a valid libtrace URI.
-
-   Options:
-        -f <filterstring> : Specifies a BPF filter to be applied to the input.
-	-R : Ignore traffic to or from RFC1918 private addresses.
-	-i <secs>: Specifies the reporting interval (in seconds).
-	-T : Use trace direction tags to determine direction.
-	-l <mac> : Determine direction based on the given mac address. The mac
-		   should represent the 'inside' or 'local' side of the network.
-	-m <id>	: Use the given id string to identify the monitor rather than
-		  $HOSTNAME.
-
-   Output:
-
-   	IMPORTANT: lpi_live output has changed significantly in version 2.0.5!
-
-	Reports are written to stdout. Each line of output is a series of comma
-	separated values representing a single measurement.
-
-	The values are (in order):
-	 * The monitor id
-	 * The Unix timestamp for the beginning of the measurement period
-	 * The length of the measurement period
-	 * The statistic being reported - this is one of the following:
-	 	- in_pkts = inbound packets
-		- out_pkts = outbound packets
-		- in_bytes = inbound bytes (based on wire length)
-		- out_bytes = outbound bytes (based on wire length)
-		- in_new_flows = new inbound flows
-		- out_new_flows = new outbound flows
-		- in_curr_flows = inbound flows active at the period end
-		- out_curr_flows = outbound flows active at the period end
-	* The application protocol being measured
-	* The value for the measured statistic
 
 API
 ===
