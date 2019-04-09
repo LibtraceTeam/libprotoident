@@ -42,6 +42,9 @@ static inline bool match_hangout_req(uint32_t payload, uint32_t len) {
                         return true;
         }
 
+        if (len == 110 && MATCH(payload, 0x00, 0x6c, 0x00, 0x01))
+                return true;
+
         return false;
 }
 
@@ -56,6 +59,9 @@ static inline bool match_hangout_resp(uint32_t payload, uint32_t len) {
                 if (MATCH(payload, 0x00, 0x74, 0x01, 0x01))
                         return true;
         }
+
+        if (len == 94 && MATCH(payload, 0x00, 0x5c, 0x01, 0x01))
+                return true;
 
         return false;
 }

@@ -37,6 +37,10 @@ static inline bool match_mysql(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (data->payload_len[0] == 0 && data->payload_len[1] == 0)
                 return false;
 
+        /* Need to enforce some sort of port checking here */
+        if (data->server_port != 3306 && data->client_port != 3306)
+                return false;
+
         stated_len = (data->payload[0] & 0xffffff);
         if (data->payload_len[0] > 0 && stated_len != data->payload_len[0] - 4)
                 return false;
@@ -53,9 +57,6 @@ static inline bool match_mysql(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         MATCH(data->payload[0], ANY, ANY, ANY, 0x01))
                 return true;
 
-        /* Need to enforce some sort of port checking here */
-        if (data->server_port != 3306 && data->client_port != 3306)
-                return false;
 
         if (MATCH(data->payload[0], ANY, ANY, ANY, 0x00) &&
                 data->payload_len[1] == 0)

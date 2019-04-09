@@ -106,6 +106,7 @@ typedef enum {
                                            other category */
     LPI_CATEGORY_ICS,           /* Industrial control system protocols */
         LPI_CATEGORY_IPCAMERAS,         /* IP Surveillance Camera protocols */
+        LPI_CATEGORY_MESSAGE_QUEUE,     /* Message queuing protocols */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -367,6 +368,28 @@ typedef enum {
         LPI_PROTO_LITECOIN,
         LPI_PROTO_STRATUM,
         LPI_PROTO_WIZARD101,
+        LPI_PROTO_KINGOFGLORY,
+        LPI_PROTO_SAS_ZOMBIE_ASSAULT_4,
+        LPI_PROTO_DNF,
+        LPI_PROTO_IHEXIN,
+        LPI_PROTO_NAVER_P2P,
+        LPI_PROTO_GCAFE_UPDATER,
+        LPI_PROTO_BWSYNC,
+        LPI_PROTO_TANKIONLINE,
+        LPI_PROTO_REALMOFTHEMADGOD,
+        LPI_PROTO_PATHOFEXILE,
+        LPI_PROTO_SSJJ,
+        LPI_PROTO_SPEEDIFY,
+        LPI_PROTO_NSQ,
+        LPI_PROTO_SKYFORGE,
+        LPI_PROTO_HOTS,
+        LPI_PROTO_NOMACHINE,
+        LPI_PROTO_QQSPEEDMOBILE,
+        LPI_PROTO_DAHUA,
+        LPI_PROTO_UTHERVERSE,
+        LPI_PROTO_300_HEROES,
+        LPI_PROTO_FILENORI,
+        LPI_PROTO_IPFS,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -579,6 +602,26 @@ typedef enum {
         LPI_PROTO_UDP_COMBATARMS,
         LPI_PROTO_UDP_COMBATARMS_P2P,
         LPI_PROTO_UDP_PANIPANI,
+        LPI_PROTO_UDP_FEITWO,
+        LPI_PROTO_UDP_MOONHUNTERS,
+        LPI_PROTO_UDP_HELIBORNE,
+        LPI_PROTO_UDP_KINGOFGLORY,
+        LPI_PROTO_UDP_ASSETTO_CORSA,
+        LPI_PROTO_UDP_CACAOWEB,
+        LPI_PROTO_UDP_ZALO_CALL,
+        LPI_PROTO_UDP_PALADINS,
+        LPI_PROTO_UDP_CHARGEN_EXPLOIT,
+        LPI_PROTO_UDP_TOX,
+        LPI_PROTO_UDP_HOLLA,
+        LPI_PROTO_UDP_RRSHARE,
+        LPI_PROTO_UDP_QQSPEEDMOBILE,
+        LPI_PROTO_UDP_LOADOUT,
+        LPI_PROTO_UDP_GANGLIA,
+        LPI_PROTO_UDP_TALESRUNNER,
+        LPI_PROTO_UDP_FREEFIRE,
+        LPI_PROTO_UDP_HEROES_EVOLVED,
+        LPI_PROTO_UDP_RULES_OF_SURVIVAL,
+        LPI_PROTO_UDP_CONTRACT_WARS,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -589,7 +632,6 @@ typedef enum {
 	LPI_PROTO_MYSTERY_CONN,
 	LPI_PROTO_MYSTERY_SYMANTEC,
 	LPI_PROTO_MYSTERY_RXXF,
-	LPI_PROTO_MYSTERY_100_STAR,
 	
 	LPI_PROTO_UDP_MYSTERY_0D,	
 	LPI_PROTO_UDP_MYSTERY_99,
@@ -605,6 +647,7 @@ typedef enum {
 
         LPI_PROTO_INVALID,     /* No single valid protocol */
 	LPI_PROTO_NO_PAYLOAD,
+	LPI_PROTO_NO_FIRSTPKT,
 	LPI_PROTO_UNSUPPORTED,
         LPI_PROTO_UNKNOWN,
 	LPI_PROTO_LAST		/** ALWAYS have this as the last value */

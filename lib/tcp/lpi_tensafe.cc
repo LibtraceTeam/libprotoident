@@ -53,21 +53,31 @@ static inline bool match_tensafe_resp(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool is_tensafe_port(uint16_t server, uint16_t client) {
+        if (server == 8080 || server == 80 || server == 443)
+                return true;
+        if (server == 10012)
+                return true;
+        if (client == 8080 || client == 80 || client == 443)
+                return true;
+        if (client == 10012)
+                return true;
+        return false;
+}
 
 static inline bool match_tensafe(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port == 8080 || data->server_port == 80 || 
-                        data->client_port == 8080 || data->client_port == 80)
-        {
-                if (match_tensafe_req(data->payload[0], data->payload_len[0])) {
-                        if (match_tensafe_resp(data->payload[1], data->payload_len[1]))
-                                return true;
-                }
+        if (!is_tensafe_port(data->server_port, data->client_port))
+                return false;
 
-                if (match_tensafe_req(data->payload[1], data->payload_len[1])) {
-                        if (match_tensafe_resp(data->payload[0], data->payload_len[0]))
-                                return true;
-                }
+        if (match_tensafe_req(data->payload[0], data->payload_len[0])) {
+                if (match_tensafe_resp(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
+
+        if (match_tensafe_req(data->payload[1], data->payload_len[1])) {
+                if (match_tensafe_resp(data->payload[0], data->payload_len[0]))
+                        return true;
         }
 
 	return false;

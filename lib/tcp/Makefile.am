@@ -1,5 +1,6 @@
 noinst_LTLIBRARIES = libprotoident_tcp.la
 libprotoident_tcp_la_SOURCES = \
+	lpi_300heroes.cc \
 	lpi_360safeguard.cc \
 	lpi_4d.cc \
 	lpi_acestream.cc \
@@ -20,6 +21,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_blackdesert.cc \
 	lpi_blizzard.cc \
 	lpi_btsync.cc \
+	lpi_bwsyncandshare.cc \
 	lpi_cacaoweb.cc \
 	lpi_cgp.cc \
 	lpi_chatango.cc \
@@ -32,12 +34,14 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_crossfire_tcp.cc \
 	lpi_cryptic.cc \
 	lpi_cvs.cc \
+	lpi_dahua_tcp.cc \
 	lpi_dash.cc \
 	lpi_dell_backup.cc \
 	lpi_destiny.cc \
 	lpi_diablo3.cc \
 	lpi_dianping_tcp.cc \
 	lpi_directconnect.cc \
+	lpi_dnf.cc \
 	lpi_dns.cc \
 	lpi_dogecoin.cc \
 	lpi_douyu.cc \
@@ -52,6 +56,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fb_message.cc \
 	lpi_fbcdn_ssl.cc \
 	lpi_ffxiv.cc \
+	lpi_filenori.cc \
 	lpi_flash.cc \
 	lpi_fliggy.cc \
 	lpi_fring.cc \
@@ -60,6 +65,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_fuckcoin.cc \
 	lpi_funshion.cc \
 	lpi_gamespy.cc \
+	lpi_gcafe_updater.cc \
 	lpi_giop.cc \
 	lpi_git.cc \
 	lpi_glupteba.cc \
@@ -72,6 +78,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_harveys.cc \
 	lpi_hearthstone.cc \
 	lpi_hola.cc \
+	lpi_hots_tcp.cc \
 	lpi_http_badport.cc \
 	lpi_http.cc \
 	lpi_http_nonstandard.cc \
@@ -80,6 +87,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ica.cc \
 	lpi_id.cc \
 	lpi_idrivesync.cc \
+	lpi_ihexin.cc \
 	lpi_imap.cc \
 	lpi_imaps.cc \
 	lpi_imesh.cc \
@@ -88,6 +96,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_invalid_http.cc \
 	lpi_invalid_pop.cc \
 	lpi_invalid_smtp.cc \
+	lpi_ipfs.cc \
 	lpi_ipop.cc \
 	lpi_ipsharkk.cc \
 	lpi_irc.cc \
@@ -99,6 +108,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
 	lpi_kik.cc \
+	lpi_kingofglory_tcp.cc \
 	lpi_kuaibo.cc \
 	lpi_ldap.cc \
 	lpi_lifeforge.cc \
@@ -118,7 +128,6 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_msnv.cc \
 	lpi_munin.cc \
 	lpi_mysql.cc \
-	lpi_mystery_100_star.cc \
 	lpi_mystery_8000.cc \
 	lpi_mystery_9000.cc \
 	lpi_mystery_conn.cc \
@@ -127,6 +136,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_mystery_rxxf.cc \
 	lpi_mystery_symantec.cc \
 	lpi_mzinga.cc \
+	lpi_naverp2p.cc \
 	lpi_ncsoft.cc \
 	lpi_ndt_tput.cc \
 	lpi_netbios.cc \
@@ -134,9 +144,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_netmfp.cc \
 	lpi_nntp.cc \
 	lpi_nntps.cc \
+	lpi_nomachine.cc \
 	lpi_nopayload.cc \
+	lpi_nofirstpkt.cc \
 	lpi_norton_backup.cc \
 	lpi_notes_rpc.cc \
+	lpi_nsq.cc \
 	lpi_omegle.cc \
 	lpi_openvpn.cc \
 	lpi_ourworld.cc \
@@ -144,6 +157,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_paltalk.cc \
 	lpi_pandatv.cc \
 	lpi_pando.cc \
+	lpi_pathofexile.cc \
 	lpi_pdbox.cc \
 	lpi_pop3.cc \
 	lpi_pop3s.cc \
@@ -154,10 +168,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_qq_tcp.cc \
 	lpi_qqdownload.cc \
 	lpi_qqlive_tcp.cc \
+	lpi_qqspeedmobile_tcp.cc \
 	lpi_qvod.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
+	lpi_realmofthemadgod.cc \
 	lpi_realvnc.cc \
 	lpi_rejection.cc \
 	lpi_relay.cc \
@@ -170,10 +186,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_runescape.cc \
 	lpi_s7comm.cc \
 	lpi_saprouter.cc \
+	lpi_saszombieassault4.cc \
 	lpi_second_life.cc \
 	lpi_shoutcast.cc \
 	lpi_silkroadonline.cc \
 	lpi_sip.cc \
+	lpi_skyforge.cc \
 	lpi_skype_tcp.cc \
 	lpi_smb.cc \
 	lpi_smite_tcp.cc \
@@ -182,10 +200,12 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_socks4.cc \
 	lpi_socks5.cc \
 	lpi_spdy.cc \
+	lpi_speedify.cc \
 	lpi_speedin.cc \
 	lpi_speedtest.cc \
 	lpi_spotify.cc \
 	lpi_ssh.cc \
+	lpi_ssjj.cc \
 	lpi_ssl.cc \
 	lpi_steam.cc \
 	lpi_stratum.cc \
@@ -193,6 +213,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_supl.cc \
 	lpi_svn.cc \
 	lpi_talesrunner.cc \
+	lpi_tankionline.cc \
 	lpi_tankix.cc \
 	lpi_taobao.cc \
 	lpi_tds.cc \
@@ -216,6 +237,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_trojan_zeroaccess.cc \
 	lpi_twitcasting.cc \
 	lpi_twitch_irc.cc \
+	lpi_utherverse.cc \
 	lpi_vainglory.cc \
 	lpi_viber.cc \
 	lpi_vmware.cc \

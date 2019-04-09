@@ -32,7 +32,7 @@
 
 static inline bool match_4d_5f(uint32_t payload, uint32_t len) {
 
-        if (len == 4 && MATCH(payload, 0x5d, 0x11, 0x00, 0x00))
+        if (len == 4 && MATCH(payload, 0x5f, 0x11, 0x00, 0x00))
                 return true;
         return false;
 

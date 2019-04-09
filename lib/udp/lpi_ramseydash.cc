@@ -42,7 +42,7 @@ static inline bool match_rdash_56da(uint32_t payload, uint32_t len) {
 
 static inline bool match_rdash_da57(uint32_t payload, uint32_t len) {
 
-        if (len >= 140 && len <= 230 && MATCH(payload, 0xda, 0x57, ANY, ANY))
+        if (len >= 120 && len <= 320 && MATCH(payload, 0xda, 0x57, ANY, ANY))
                 return true;
         return false;
 

@@ -1,4 +1,4 @@
-AC_INIT(libprotoident, 2.0.12, contact@wand.net.nz)
+AC_INIT(libprotoident, 2.0.13, contact@wand.net.nz)
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR(lib/libprotoident.cc)

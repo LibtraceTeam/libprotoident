@@ -48,6 +48,8 @@ static inline bool match_flash(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (match_str_either(data, "<?xm")) {
 		if (match_str_either(data, "<pol"))
 			return true;
+		if (match_str_either(data, "<msg"))
+			return true;
 	}
 
 	return false;

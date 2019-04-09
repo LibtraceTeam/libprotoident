@@ -39,6 +39,12 @@ static inline bool match_bdo_request(uint32_t payload, uint32_t len) {
 
         if (len == 111 && MATCH(payload, 0x6f, 0x00, 0x01, 0x9d))
                 return true;
+        if (len == 111 && MATCH(payload, 0x6f, 0x00, 0x01, 0x46))
+                return true;
+        if (len == 277 && MATCH(payload, 0x15, 0x01, 0x01, ANY))
+                return true;
+        if (len == 433 && MATCH(payload, 0xb1, 0x01, 0x01, ANY))
+                return true;
         return false;
 
 }
@@ -48,6 +54,8 @@ static inline bool match_bdo_reply(uint32_t payload, uint32_t len) {
         if (len == 112 && MATCH(payload, 0x70, 0x00, 0x01, ANY))
                 return true;
         if (len == 113 && MATCH(payload, 0x71, 0x00, 0x01, ANY))
+                return true;
+        if (len == 119 && MATCH(payload, 0x77, 0x00, 0x01, 0x46))
                 return true;
 
         return false;

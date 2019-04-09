@@ -35,9 +35,6 @@ bool match_no_payload(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (data->observed[0] == 0 && data->observed[1] == 0)
 		return true;
 
-        if (data->payload_len[0] == 0 && data->payload_len[1] == 0)
-                return true;
-
 	return false;
 }
 

@@ -87,6 +87,8 @@ static inline bool match_mc_handshake(uint32_t payload, uint32_t len) {
         /* Some handshakes seem to be undersized? */
         if (len == 187 && MATCH(payload, 0xb9, 0x01, 0x01, 0x0e))
                 return true;
+        if (len == 188 && MATCH(payload, 0xba, 0x01, 0x01, 0x0f))
+                return true;
         if (len == 189 && MATCH(payload, 0xbb, 0x01, 0x01, 0x10))
                 return true;
         if (len == 190 && MATCH(payload, 0xbc, 0x01, 0x01, 0x11))
@@ -131,7 +133,13 @@ static inline bool match_mc_handshake_reply(uint32_t payload, uint32_t len) {
                         return true;
         }
 
+        if (len == 22 && MATCH(payload, 0x15, 0x00, 0xd4, 0x02))
+                return true;
         if (len == 24 && MATCH(payload, 0x17, 0x00, 0xcf, 0x02))
+                return true;
+        if (len == 29 && MATCH(payload, 0x1c, 0x00, 0xd2, 0x01))
+                return true;
+        if (len == 30 && MATCH(payload, 0x1d, 0x00, 0xd4, 0x02))
                 return true;
 
         if (len == 4) {
@@ -161,11 +169,17 @@ static inline bool match_minecraft(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_mc_handshake_reply(data->payload[1],
                                 data->payload_len[1]))
                         return true;
+                /* apparently we can have handshake reqs in both dirs? */
+                if (match_mc_handshake(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
         if (match_mc_handshake(data->payload[1], data->payload_len[1])) {
                 if (match_mc_handshake_reply(data->payload[0],
                                 data->payload_len[0]))
+                        return true;
+                /* apparently we can have handshake reqs in both dirs? */
+                if (match_mc_handshake(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

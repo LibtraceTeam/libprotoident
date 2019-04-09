@@ -49,7 +49,7 @@ static inline bool match_smite_tcp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_smite_tcp = {
 	LPI_PROTO_SMITE,
 	LPI_CATEGORY_GAMING,
-	"Smite",
+	"SmiteTCP",
 	55,
 	match_smite_tcp
 };

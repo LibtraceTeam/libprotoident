@@ -44,6 +44,10 @@ static inline bool match_fliggy_req(uint32_t payload, uint32_t len) {
                 if (len >= 1300 && hlen > len)
                         return true;
         }
+
+        if (MATCH(payload, 0xd5, 0x00, 0x01, 0x16) && len >= 282) {
+                return true;
+        }
         return false;
 }
 
@@ -52,10 +56,11 @@ static inline bool match_fliggy_resp(uint32_t payload, uint32_t len) {
         /* Usually, but not always 174 bytes -- I'm guessing sometimes
          * messages get merged?
          */
-        if (MATCH(payload, 0xd3, 0x00, 0x00, 0xaa))
+        if (MATCH(payload, 0xd3, 0x00, 0x00, 0xaa) && len >= 174)
                 return true;
 
-        if (len == 58 && MATCH(payload, 0xd3, 0x00, 0x00, 0x36))
+        /* Same for this one, usually 58 but not always */
+        if (MATCH(payload, 0xd3, 0x00, 0x00, 0x36) && len >= 58)
                 return true;
         return false;
 
@@ -79,7 +84,7 @@ static inline bool match_fliggy(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 }
 
 static lpi_module_t lpi_fliggy = {
-	LPI_PROTO_HEARTHSTONE,
+	LPI_PROTO_FLIGGY,
 	LPI_CATEGORY_ECOMMERCE,
 	"Fliggy",
 	30,

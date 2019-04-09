@@ -54,9 +54,9 @@ static inline bool match_dota2_30(uint32_t payload, uint32_t len) {
 
 static inline bool match_dota2_0100(uint32_t payload, uint32_t len) {
 
-        if (len != 216)
-                return false;
-        if (MATCH(payload, 0x01, 0x00, 0x73, 0x64))
+        if (len == 216 && MATCH(payload, 0x01, 0x00, 0x73, 0x64))
+                return true;
+        if (len == 416 && MATCH(payload, 0x01, 0x00, 0x73, 0x64))
                 return true;
         return false;
 

@@ -150,7 +150,7 @@ static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
 	if (rem < sizeof(libtrace_tcp_t))
 		return 0;
 	if (tcp->rst)
-		return 1;
+		return 0;
 	
 	if (data->server_port == 0) {
 		data->server_port = ntohs(tcp->dest);

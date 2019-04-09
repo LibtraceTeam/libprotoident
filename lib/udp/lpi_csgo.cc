@@ -44,6 +44,13 @@ static inline bool match_ff_csgo(lpi_data_t *data) {
         if (data->payload_len[1] == 33 && data->payload_len[0] == 18)
                 return true;
 
+        if (data->payload_len[0] == 23 && data->payload_len[1] >= 61 &&
+                        data->payload_len[1] <= 66)
+                return true;
+        if (data->payload_len[1] == 23 && data->payload_len[0] >= 61 &&
+                        data->payload_len[0] <= 66)
+                return true;
+
 	return false;
 }
 
@@ -55,6 +62,10 @@ static inline bool match_sdping(uint32_t payload) {
 
 static inline bool match_sdpong(uint32_t payload) {
         if (MATCH(payload, 0x02, 0x12, 'T', 'l'))
+                return true;
+        if (MATCH(payload, 0x02, 0x12, 'T', 'd'))
+                return true;
+        if (MATCH(payload, 0x02, 0x12, 'X', 'd'))
                 return true;
         return false;
 }

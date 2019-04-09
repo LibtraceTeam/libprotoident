@@ -53,13 +53,18 @@ static inline bool match_thedivision(lpi_data_t *data, lpi_module_t *mod UNUSED)
                         return true;
         }
 
+        if (match_div_36(data->payload[1], data->payload_len[1])) {
+                if (match_div_8(data->payload[0], data->payload_len[0]))
+                        return true;
+        }
+
 	return false;
 }
 
 static lpi_module_t lpi_thedivision = {
 	LPI_PROTO_THE_DIVISION,
 	LPI_CATEGORY_GAMING,
-	"Hearthstone",
+	"TheDivision",
 	5,
 	match_thedivision
 };

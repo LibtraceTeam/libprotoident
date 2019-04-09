@@ -65,6 +65,12 @@ static inline bool match_dtls(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 
+        /* This is probably Google Duo  -- consider separate protocol? */
+        if (MATCHSTR(data->payload[0], "\x17\xfe\xfd\x00")) {
+                if (MATCHSTR(data->payload[1], "\x17\xfe\xfd\x00"))
+                        return true;
+        }
+
 	return false;
 }
 

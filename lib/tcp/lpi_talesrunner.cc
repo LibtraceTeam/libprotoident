@@ -48,7 +48,7 @@ static inline bool match_0f(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 61 && MATCH(payload, 0x3d, 0x00, 0x0f, 0x08))
                 return true;
-        if (len == 61 && MATCH(payload, 0x3c, 0x00, 0x0f, 0x07))
+        if (len == 60 && MATCH(payload, 0x3c, 0x00, 0x0f, 0x07))
                 return true;
         return false;
 }

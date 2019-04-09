@@ -34,6 +34,8 @@
 
 static inline bool match_vg_req(uint32_t payload, uint32_t len) {
 
+        if (MATCH(payload, 0x00, 0x86, 0x00, 0x05) && len == 136)
+                return true;
         if (MATCH(payload, 0x00, 0x86, 0x00, 0x06) && len == 136)
                 return true;
         return false;
@@ -43,6 +45,8 @@ static inline bool match_vg_req(uint32_t payload, uint32_t len) {
 static inline bool match_vg_resp(uint32_t payload, uint32_t len) {
 
         if (MATCH(payload, 0x00, 0x03, 0x00, 0x07) && len == 5)
+                return true;
+        if (MATCH(payload, 0x00, 0x03, 0x00, 0x06) && len == 5)
                 return true;
         return false;
 

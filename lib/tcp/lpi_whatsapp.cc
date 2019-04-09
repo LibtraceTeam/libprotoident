@@ -84,6 +84,13 @@ static inline bool match_wa_second_20(uint32_t payload, uint32_t len) {
 	return false;
 }
 
+static inline bool match_wa_fixed_second(uint32_t payload) {
+        if (MATCH(payload, 0x00, 0x00, 0x36, 0x1a)) {
+                return true;
+        }
+        return false;
+}
+
 static inline bool match_whatsapp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	/* WhatsApp uses a modified form of XMPP and typically runs on
@@ -113,10 +120,14 @@ static inline bool match_whatsapp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (match_ed_first(data->payload[0], data->payload_len[0])) {
 		if (match_wa_second_20(data->payload[1], data->payload_len[1]))
 			return true;
+		if (match_wa_fixed_second(data->payload[1]))
+			return true;
 	}
 
         if (match_ed_first(data->payload[1], data->payload_len[1])) {
 		if (match_wa_second_20(data->payload[0], data->payload_len[0]))
+			return true;
+		if (match_wa_fixed_second(data->payload[0]))
 			return true;
 	}
 

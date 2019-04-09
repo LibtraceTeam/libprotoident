@@ -43,6 +43,8 @@ static inline bool match_portmap_rpc(lpi_data_t *data, lpi_module_t *mod UNUSED)
 
         if (data->payload_len[0] == 46 || data->payload_len[1] == 46)
                 return true;
+        if (data->payload_len[0] == 40 || data->payload_len[1] == 40)
+                return true;
 
 	return false;
 }

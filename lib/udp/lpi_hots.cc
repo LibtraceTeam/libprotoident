@@ -94,7 +94,7 @@ static inline bool match_hots(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_hots = {
 	LPI_PROTO_UDP_HOTS,
 	LPI_CATEGORY_GAMING,
-	"Hearthstone",
+	"HeroesOfTheStorm",
 	101,
 	match_hots
 };

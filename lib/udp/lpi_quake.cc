@@ -72,7 +72,7 @@ static inline bool match_qlive_challenge(uint32_t payload, uint32_t len) {
 static inline bool match_qlive_response(uint32_t payload, uint32_t len) {
 
         /* Not sure whether this length can vary or not? */
-        if (len == 33 || len == 32 || len == 31)
+        if (len == 33 || len == 32 || len == 31 || len == 30)
                 return true;
         return false;
 
@@ -91,7 +91,7 @@ static inline bool match_quake(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (data->payload_len[0] == 16) {
                 if (data->payload_len[1] >= 51 && data->payload_len[1] <= 54)
                         return true;
-		if (data->payload_len[1] == 33)
+		if (data->payload_len[1] >= 30 && data->payload_len[1] <= 33)
 			return true;
                 if (data->server_port == 27960 || data->client_port == 27960) {
                         if (data->payload_len[1] >= 800 && data->payload_len[1] <= 812)
@@ -102,7 +102,7 @@ static inline bool match_quake(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         if (data->payload_len[1] == 16) {
                 if (data->payload_len[0] >= 51 && data->payload_len[0] <= 54)
                         return true;
-		if (data->payload_len[0] == 33)
+		if (data->payload_len[0] >= 30 && data->payload_len[0] <= 33)
 			return true;
                 if (data->server_port == 27960 || data->client_port == 27960) {
                         if (data->payload_len[0] >= 800 && data->payload_len[0] <= 812)

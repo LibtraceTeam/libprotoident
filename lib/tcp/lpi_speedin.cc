@@ -41,7 +41,7 @@ static inline bool match_speedin_3byte(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_speedin_other(uint32_t payload, uint32_t len) {
-        if (len <= 75 || len >= 115)
+        if (len <= 75 || len >= 135)
                 return false;
 
         if (MATCH(payload, 0x23, 0x00, ANY, ANY))
@@ -56,6 +56,12 @@ static inline bool match_port(uint16_t server, uint16_t client) {
                 return true;
 
         if (server == 11100 || client == 11100)
+                return true;
+        if (server == 11000 || client == 11000)
+                return true;
+
+        /* Starting to see this on port 443 now :( */
+        if (server == 443 || client == 443)
                 return true;
 
         return false;

@@ -51,6 +51,18 @@ static inline bool match_teamviewer_alt(uint32_t payload, uint32_t len) {
         return true;
 }
 
+static inline bool match_teamviewer_37(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x11, 0x30, 0x37, 0x00 && len == 32))
+                return true;
+        return false;
+}
+
+static inline bool match_teamviewer_38(uint32_t payload) {
+        if (MATCH(payload, 0x11, 0x30, 0x38, 0x00))
+                return true;
+        return false;
+}
+
 static inline bool match_teamviewer(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
 	if (match_teamviewer_payload(data->payload[0], data->payload_len[0])) {
@@ -67,6 +79,16 @@ static inline bool match_teamviewer(lpi_data_t *data, lpi_module_t *mod UNUSED) 
                 if (match_teamviewer_alt(data->payload[0], data->payload_len[0]))
                         return true;
 
+        }
+
+        if (match_teamviewer_37(data->payload[0], data->payload_len[0])) {
+                if (match_teamviewer_38(data->payload[1]))
+                        return true;
+        }
+
+        if (match_teamviewer_37(data->payload[1], data->payload_len[1])) {
+                if (match_teamviewer_38(data->payload[0]))
+                        return true;
         }
 
 	return false;

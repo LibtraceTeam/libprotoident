@@ -70,12 +70,15 @@ static inline bool match_wc_ab_big02(uint32_t payload, uint32_t len) {
         /* again 0xab followed by length, except this time the length is
          * for the entire flow.
          */
-        if (len <= 255)
+        if (len < 255)
                 return false;
 
         /* Flows are unlikely to need a full 4 bytes for length so I'm
-         * going to stick 0x00 in the top byte for now */
+         * going to stick 0x00 or 0x01 in the top byte for now */
         if (MATCH(payload, 0xab, 0x00, ANY, ANY)) {
+                return true;
+        }
+        if (MATCH(payload, 0xab, 0x01, ANY, ANY)) {
                 return true;
         }
         return false;
