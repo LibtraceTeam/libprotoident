@@ -1,0 +1,3 @@
+usr/include/libprotoident*.h
+usr/lib/libprotoident*.so
+usr/lib/libprotoident*.a
