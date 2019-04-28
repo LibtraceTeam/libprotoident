@@ -1,0 +1,6 @@
+[submodule "libflowmanager"]
+	path = libflowmanager
+	url = https://github.com/wanduow/libflowmanager
+[submodule "libtrace"]
+	path = libtrace
+	url = https://github.com/LibtraceTeam/libtrace
