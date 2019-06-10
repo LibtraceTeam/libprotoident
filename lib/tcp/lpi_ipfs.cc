@@ -36,6 +36,9 @@ static inline bool match_ipfs_mu(uint32_t payload, uint32_t len) {
         if (len == 20 && MATCH(payload, 0x13, 0x2f, 'm', 'u')) {
                 return true;
         }
+        if (len == 34 && MATCH(payload, 0x13, 0x2f, 'm', 'u')) {
+                return true;
+        }
         return false;
 }
 

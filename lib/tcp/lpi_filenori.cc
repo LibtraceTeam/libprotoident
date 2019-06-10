@@ -47,7 +47,7 @@ static inline bool match_100(uint32_t payload, uint32_t len) {
 static inline bool match_command(uint32_t payload, uint32_t len) {
 
 	/* Probably short for START */
-	if (len == 20 && MATCHSTR(payload, "STAR"))
+	if ((len == 20 || len == 19) && MATCHSTR(payload, "STAR"))
 		return true;
 
 	/* DOWNLOAD ? */
