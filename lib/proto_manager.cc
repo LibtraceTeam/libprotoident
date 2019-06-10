@@ -244,9 +244,11 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_realvnc(mod_map);
 	register_rejection(mod_map);
 	register_relay(mod_map);
+	register_remote_manipulator(mod_map);
 	register_revolver_nblbt(mod_map);
 	register_rfb(mod_map);
 	register_rpcscan(mod_map);
+	register_rrtv(mod_map);
 	register_rsync(mod_map);
 	register_rtmp(mod_map);
 	register_rtsp(mod_map);
@@ -313,6 +315,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_vpnunlimited_tcp(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
+	register_webex_stun(mod_map);
 	register_weblogic(mod_map);
 	register_wechat(mod_map);
 	register_weibo(mod_map);
@@ -353,6 +356,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_akamai_transfer(mod_map);
 	register_amanda(mod_map);
 	register_apple_facetime_init(mod_map);
+	register_ard(mod_map);
 	register_ares_udp(mod_map);
 	register_arksurvival(mod_map);
 	register_arma_server(mod_map);

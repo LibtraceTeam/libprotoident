@@ -8,6 +8,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_akamai_transfer.cc \
 	lpi_amanda.cc \
 	lpi_apple_facetime_init.cc \
+	lpi_ard.cc \
 	lpi_ares.cc \
 	lpi_ark.cc \
 	lpi_arma_server.cc \

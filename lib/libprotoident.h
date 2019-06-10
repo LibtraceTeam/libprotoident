@@ -390,6 +390,9 @@ typedef enum {
         LPI_PROTO_300_HEROES,
         LPI_PROTO_FILENORI,
         LPI_PROTO_IPFS,
+        LPI_PROTO_REMOTE_MANIPULATOR,
+        LPI_PROTO_WEBEX_STUN,
+        LPI_PROTO_RRTV,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -622,6 +625,7 @@ typedef enum {
         LPI_PROTO_UDP_HEROES_EVOLVED,
         LPI_PROTO_UDP_RULES_OF_SURVIVAL,
         LPI_PROTO_UDP_CONTRACT_WARS,
+        LPI_PROTO_UDP_ARD,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

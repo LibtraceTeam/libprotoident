@@ -177,9 +177,11 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_realvnc.cc \
 	lpi_rejection.cc \
 	lpi_relay.cc \
+	lpi_remote_manipulator.cc \
 	lpi_revolver_nblbt.cc \
 	lpi_rfb.cc \
 	lpi_rpcscan.cc \
+	lpi_rrtv.cc \
 	lpi_rsync.cc \
 	lpi_rtmp.cc \
 	lpi_rtsp.cc \
@@ -246,6 +248,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_vpnunlimited_tcp.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
+	lpi_webex_stun.cc \
 	lpi_weblogic.cc \
 	lpi_wechat.cc \
 	lpi_weibo.cc \
