@@ -513,6 +513,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_qqspeedmobile_udp(mod_map);
 	register_quake(mod_map);
 	register_quic(mod_map);
+	register_qvod_udp(mod_map);
 	register_radius(mod_map);
 	register_ramsey_dash(mod_map);
 	register_rdp_udp(mod_map);

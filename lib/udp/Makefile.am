@@ -166,6 +166,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_qqspeedmobile_udp.cc \
 	lpi_quake.cc \
 	lpi_quic.cc \
+	lpi_qvod_udp.cc \
 	lpi_radius.cc \
 	lpi_ramseydash.cc \
 	lpi_rdp_udp.cc \

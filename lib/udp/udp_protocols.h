@@ -195,6 +195,7 @@ void register_qqpcmgr(LPIModuleMap *mod_map);
 void register_qqspeedmobile_udp(LPIModuleMap *mod_map);
 void register_quake(LPIModuleMap *mod_map);
 void register_quic(LPIModuleMap *mod_map);
+void register_qvod_udp(LPIModuleMap *mod_map);
 void register_radius(LPIModuleMap *mod_map);
 void register_ramsey_dash(LPIModuleMap *mod_map);
 void register_rdp_udp(LPIModuleMap *mod_map);
