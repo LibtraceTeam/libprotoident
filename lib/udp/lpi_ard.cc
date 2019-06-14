@@ -49,6 +49,13 @@ static inline bool match_ard_tiny_req(uint32_t payload, uint32_t len) {
 
 static inline bool match_ard_large_resp(uint32_t payload, uint32_t len) {
 
+        /* Match the case where the client doesn't reply (i.e. participate
+         * in the amplification attack).
+         */
+        if (len == 0) {
+                return true;
+        }
+
         /* All my examples were 1006 bytes, but that's just from one
          * specific machine */
         if (len < 1000) {
