@@ -75,6 +75,8 @@ static inline bool match_rtcp_report(uint32_t payload, uint32_t len) {
                 return true;
         if (len == 32 && MATCH(payload, 0x81, 0xc9, 0x00, 0x07))
                 return true;
+        if (len == 36 && MATCH(payload, 0x81, 0xc9, 0x00, 0x07))
+                return true;
         return false;
 }
 
