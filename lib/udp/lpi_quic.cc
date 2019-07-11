@@ -200,6 +200,9 @@ static inline bool match_reply_q044(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0xd3, 'Q', '0', '4')) {
                 return true;
         }
+        if (MATCH(payload, 0xe3, 'Q', '0', '4')) {
+                return true;
+        }
         return false;
 }
 
