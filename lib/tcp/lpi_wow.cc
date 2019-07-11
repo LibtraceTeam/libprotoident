@@ -75,7 +75,7 @@ static inline bool match_wow_s2c(uint32_t payload, uint32_t len) {
 
 
 static inline bool match_wow_2016(uint32_t payload, uint32_t len) {
-        if (len == 47 || len == 48) {
+        if (len == 47 || len == 48 || len == 52) {
                 if (MATCHSTR(payload, "WORL"))
                         return true;
         }
