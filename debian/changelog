@@ -1,4 +1,5 @@
-libprotoident (2.0.13) UNRELEASED; urgency=low
+libprotoident (2.0.13) unstable; urgency=low
 
+  * New upstream release
 
  -- Shane Alcock <shane.alcock@waikato.ac.nz>  Tue, 09 Apr 2019 13:49:25 +1200
