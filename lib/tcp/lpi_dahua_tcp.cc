@@ -32,6 +32,17 @@
 
 /* Chinese IP surveillance Cameras */
 
+static inline bool match_dahua_ports(uint16_t sport, uint16_t cport) {
+        if (sport == 8888 || cport == 8888) {
+                return true;
+        }
+
+        if (sport == 37777 || cport == 37777) {
+                return true;
+        }
+        return false;
+}
+
 static inline bool match_f4_186(uint32_t payload, uint32_t len) {
         if (len == 186 && MATCH(payload, 0xf4, 0x00, 0x00, 0x00))
                 return true;
@@ -40,7 +51,7 @@ static inline bool match_f4_186(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_f4_208(uint32_t payload, uint32_t len) {
-        if (len == 186 && MATCH(payload, 0xf4, 0x00, 0x00, 0x58))
+        if (len >= 206 && len <= 208 && MATCH(payload, 0xf4, 0x00, 0x00, 0x58))
                 return true;
         return false;
 
@@ -48,7 +59,7 @@ static inline bool match_f4_208(uint32_t payload, uint32_t len) {
 
 static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 8888 && data->client_port != 8888) {
+        if (!match_dahua_ports(data->server_port, data->client_port)) {
                 return false;
         }
 

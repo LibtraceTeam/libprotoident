@@ -73,6 +73,8 @@ static inline bool match_rtp_80c9(uint32_t payload, uint32_t len) {
 static inline bool match_rtcp_report(uint32_t payload, uint32_t len) {
         if (len == 16 && MATCH(payload, 0x81, 0xcd, 0x00, 0x03))
                 return true;
+        if (len == 20 && MATCH(payload, 0x81, 0xcd, 0x00, 0x03))
+                return true;
         if (len == 32 && MATCH(payload, 0x81, 0xc9, 0x00, 0x07))
                 return true;
         if (len == 36 && MATCH(payload, 0x81, 0xc9, 0x00, 0x07))

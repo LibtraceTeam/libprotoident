@@ -54,6 +54,7 @@ static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED)
 		if (MATCH(data->payload[1], ANY, 0x00, 0x00, 0x00)) {
 			if (data->payload_len[1] < 15)
 				return false;
+                        return true;
 		}
 	}
 
@@ -63,6 +64,7 @@ static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED)
 		if (MATCH(data->payload[0], ANY, 0x00, 0x00, 0x00)) {
 			if (data->payload_len[0] < 15)
 				return false;
+                        return true;
 		}
 	}
 	return false;

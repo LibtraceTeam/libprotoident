@@ -133,7 +133,7 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	 * This is not unique to WeChat though, so we need to be careful.
 	 */
 
-	/* Only observed on port 80, 443, 14000 or 8080. Because the payload
+	/* Only observed on port 80, 443, 14000, 10001 or 8080. Because the payload
 	 * signature is not entirely unique to WeChat, let's restrict matches
 	 * to flows using those ports unless it shows up on other ports.
 	 */
@@ -144,6 +144,8 @@ static inline bool match_wechat(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	if (data->server_port == 443 || data->client_port == 443)
 		valid_port = true;
 	if (data->server_port == 14000 || data->client_port == 14000)
+		valid_port = true;
+	if (data->server_port == 10001 || data->client_port == 10001)
 		valid_port = true;
 
 	if (!valid_port)

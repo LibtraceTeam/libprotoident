@@ -48,6 +48,12 @@ static inline bool match_qvod_13(uint32_t payload, uint32_t len) {
 
 static inline bool match_qvod_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+        if (match_qvod_13(data->payload[0], data->payload_len[0])) {
+                if (match_qvod_13(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
         if (match_qvod_1(data->payload[0], data->payload_len[0])) {
                 if (match_qvod_13(data->payload[1], data->payload_len[1])) {
                         return true;

@@ -32,7 +32,7 @@
 
 static inline bool match_xmip_header(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x12, 0x20, 0xd0, 0x07)) {
-                if (len == 112 || len == 120 || len == 184)
+                if (len == 112 || len == 120 || len == 184 || len == 148)
                         return true;
         }
         return false;
