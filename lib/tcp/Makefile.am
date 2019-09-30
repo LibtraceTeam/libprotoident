@@ -170,6 +170,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_qqlive_tcp.cc \
 	lpi_qqspeedmobile_tcp.cc \
 	lpi_qvod.cc \
+        lpi_rabbitmq.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \

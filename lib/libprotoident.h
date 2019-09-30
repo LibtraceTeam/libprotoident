@@ -393,6 +393,7 @@ typedef enum {
         LPI_PROTO_REMOTE_MANIPULATOR,
         LPI_PROTO_WEBEX_STUN,
         LPI_PROTO_RRTV,
+        LPI_PROTO_RABBITMQ,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -627,6 +628,10 @@ typedef enum {
         LPI_PROTO_UDP_CONTRACT_WARS,
         LPI_PROTO_UDP_ARD,
         LPI_PROTO_UDP_QVOD,
+        LPI_PROTO_UDP_YUANFUDAO,
+        LPI_PROTO_UDP_ROCKET_LEAGUE,
+        LPI_PROTO_UDP_CLOUDFLARE_WARP,
+        LPI_PROTO_UDP_WIREGUARD,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

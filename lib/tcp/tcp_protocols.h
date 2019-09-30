@@ -198,6 +198,7 @@ void register_qqdownload(LPIModuleMap *mod_map);
 void register_qqlive_tcp(LPIModuleMap *mod_map);
 void register_qqspeedmobile_tcp(LPIModuleMap *mod_map);
 void register_qvod(LPIModuleMap *mod_map);
+void register_rabbitmq(LPIModuleMap *mod_map);
 void register_razor(LPIModuleMap *mod_map);
 void register_rbls(LPIModuleMap *mod_map);
 void register_rdp(LPIModuleMap *mod_map);

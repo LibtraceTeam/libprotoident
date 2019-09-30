@@ -31,6 +31,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
+	lpi_cloudflare_warp.cc \
 	lpi_cod.cc \
 	lpi_combatarms.cc \
 	lpi_combatarms_p2p.cc \
@@ -174,6 +175,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_risingstorm.cc \
 	lpi_roblox.cc \
 	lpi_robocraft.cc \
+	lpi_rocket_league.cc \
 	lpi_rrshare.cc \
 	lpi_rtcp.cc \
 	lpi_rtmfp.cc \
@@ -230,6 +232,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_webex.cc \
 	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
+	lpi_wireguard.cc \
 	lpi_wolfet.cc \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
@@ -239,6 +242,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xunyou.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
+	lpi_yuanfudao.cc \
 	lpi_yy_udp.cc \
 	lpi_zalo_call.cc \
 	lpi_zeroaccess_udp.cc \

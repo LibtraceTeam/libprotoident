@@ -237,6 +237,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_qqlive_tcp(mod_map);
 	register_qqspeedmobile_tcp(mod_map);
 	register_qvod(mod_map);
+        register_rabbitmq(mod_map);
         register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
@@ -380,6 +381,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
+	register_cloudflare_warp(mod_map);
 	register_combatarms(mod_map);
 	register_combatarms_p2p(mod_map);
 	register_contract_wars(mod_map);
@@ -521,6 +523,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_risingstorm(mod_map);
 	register_roblox(mod_map);
 	register_robocraft(mod_map);
+	register_rocket_league(mod_map);
 	register_rrshare(mod_map);
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
@@ -578,6 +581,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_webex(mod_map);
 	register_wechat_udp(mod_map);
 	register_winmessage(mod_map);
+	register_wireguard(mod_map);
 	register_wolfet(mod_map);
 	register_worm_22105(mod_map);
 	register_xfire_p2p(mod_map);
@@ -587,6 +591,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_xunyou(mod_map);
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
+	register_yuanfudao(mod_map);
 	register_yy_udp(mod_map);
 	register_zalo_call(mod_map);
 	register_zeroaccess_udp(mod_map);
