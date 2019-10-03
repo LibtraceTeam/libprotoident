@@ -632,6 +632,7 @@ typedef enum {
         LPI_PROTO_UDP_ROCKET_LEAGUE,
         LPI_PROTO_UDP_CLOUDFLARE_WARP,
         LPI_PROTO_UDP_WIREGUARD,
+        LPI_PROTO_UDP_COD_MOBILE,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

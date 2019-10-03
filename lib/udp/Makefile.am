@@ -33,6 +33,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cisco_sslvpn.cc \
 	lpi_cloudflare_warp.cc \
 	lpi_cod.cc \
+	lpi_codmobile.cc \
 	lpi_combatarms.cc \
 	lpi_combatarms_p2p.cc \
 	lpi_contract_wars.cc \
