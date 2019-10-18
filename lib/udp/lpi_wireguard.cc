@@ -45,10 +45,25 @@ static inline bool match_wg_second(uint32_t payload, uint32_t len) {
 }
 
 
+static inline bool match_wg_midsession(uint32_t payload, uint32_t len) {
+        /* Not a very strong rule, but should only matter if the initial
+         * packets go missing.
+         */
+        if (MATCH(payload, 0x04, 0x00, 0x00, 0x00)) {
+                if (len >= 92 && len <= 512) {
+                        return true;
+                }
+        }
+}
+
 static inline bool match_wireguard(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_wg_first(data->payload[0], data->payload_len[0])) {
                 if (match_wg_second(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+                if (match_wg_midsession(data->payload[1],
+                                data->payload_len[1])) {
                         return true;
                 }
         }
@@ -57,8 +72,30 @@ static inline bool match_wireguard(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 if (match_wg_second(data->payload[0], data->payload_len[0])) {
                         return true;
                 }
+                if (match_wg_midsession(data->payload[0],
+                                data->payload_len[0])) {
+                        return true;
+                }
         }
 
+        if (match_wg_second(data->payload[0], data->payload_len[0])) {
+                if (match_wg_midsession(data->payload[1],
+                                data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_wg_second(data->payload[1], data->payload_len[1])) {
+                if (match_wg_midsession(data->payload[0],
+                                data->payload_len[0])) {
+                        return true;
+                }
+        }
+
+        if (match_wg_midsession(data->payload[0], data->payload_len[0])) {
+                if (match_wg_midsession(data->payload[1], data->payload_len[1]))
+                        return true;
+        }
 
 	return false;
 }

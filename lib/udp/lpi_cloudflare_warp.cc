@@ -74,9 +74,23 @@ static inline bool match_warp_04(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool is_cf_warp_port(lpi_data_t *data) {
+        if (data->server_port == 2408 || data->client_port == 2408) {
+                return true;
+        }
+        if (data->server_port == 1701 || data->client_port == 1701) {
+                return true;
+        }
+        if (data->server_port == 500 || data->client_port == 500) {
+                return true;
+        }
+        return false;
+}
+
+
 static inline bool match_cloudflare_warp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-        if (data->server_port != 2408 && data->client_port != 2408) {
+        if (!is_cf_warp_port(data)) {
                 return false;
         }
 
