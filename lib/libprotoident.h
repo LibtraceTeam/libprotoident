@@ -394,6 +394,8 @@ typedef enum {
         LPI_PROTO_WEBEX_STUN,
         LPI_PROTO_RRTV,
         LPI_PROTO_RABBITMQ,
+        LPI_PROTO_ICEP,
+        LPI_PROTO_BEAM,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

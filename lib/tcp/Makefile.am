@@ -15,6 +15,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ares.cc \
 	lpi_badbaidu.cc \
 	lpi_baofeng_tcp.cc \
+	lpi_beam.cc \
 	lpi_bitcoin.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
@@ -85,6 +86,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_https.cc \
 	lpi_http_tunnel.cc \
 	lpi_ica.cc \
+	lpi_icep.cc \
 	lpi_id.cc \
 	lpi_idrivesync.cc \
 	lpi_ihexin.cc \

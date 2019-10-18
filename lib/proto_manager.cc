@@ -82,6 +82,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ares(mod_map);
 	register_badbaidu(mod_map);
 	register_baofeng_tcp(mod_map);
+	register_beam(mod_map);
 	register_bitcoin(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
@@ -152,6 +153,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_https(mod_map);
 	register_http_tunnel(mod_map);
 	register_ica(mod_map);
+	register_icep(mod_map);
 	register_id(mod_map);
 	register_idrivesync(mod_map);
 	register_ihexin(mod_map);
