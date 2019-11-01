@@ -244,6 +244,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_twitch_irc.cc \
 	lpi_utherverse.cc \
 	lpi_vainglory.cc \
+	lpi_vhdp2p.cc \
 	lpi_viber.cc \
 	lpi_vmware.cc \
 	lpi_vodlocker.cc \

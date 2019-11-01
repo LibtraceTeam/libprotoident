@@ -311,6 +311,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_twitch_irc(mod_map);
 	register_utherverse(mod_map);
 	register_vainglory(mod_map);
+	register_vhdp2p(mod_map);
 	register_viber(mod_map);
 	register_vmware(mod_map);
 	register_vodlocker(mod_map);
@@ -496,6 +497,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ntp(mod_map);
 	register_ntp_reflect(mod_map);
 	register_nwn(mod_map);
+	register_nvidia_gamestream(mod_map);
 	register_opaserv(mod_map);
 	register_openvpn_udp(mod_map);
 	register_orbit_udp(mod_map);

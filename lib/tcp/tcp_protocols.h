@@ -272,6 +272,7 @@ void register_twitcasting(LPIModuleMap *mod_map);
 void register_twitch_irc(LPIModuleMap *mod_map);
 void register_utherverse(LPIModuleMap *mod_map);
 void register_vainglory(LPIModuleMap *mod_map);
+void register_vhdp2p(LPIModuleMap *mod_map);
 void register_viber(LPIModuleMap *mod_map);
 void register_vmware(LPIModuleMap *mod_map);
 void register_vodlocker(LPIModuleMap *mod_map);

@@ -175,6 +175,7 @@ void register_norton(LPIModuleMap *mod_map);
 void register_ntp(LPIModuleMap *mod_map);
 void register_ntp_reflect(LPIModuleMap *mod_map);
 void register_nwn(LPIModuleMap *mod_map);
+void register_nvidia_gamestream(LPIModuleMap *mod_map);
 void register_opaserv(LPIModuleMap *mod_map);
 void register_openvpn_udp(LPIModuleMap *mod_map);
 void register_orbit_udp(LPIModuleMap *mod_map);

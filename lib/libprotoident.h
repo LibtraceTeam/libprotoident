@@ -396,6 +396,7 @@ typedef enum {
         LPI_PROTO_RABBITMQ,
         LPI_PROTO_ICEP,
         LPI_PROTO_BEAM,
+        LPI_PROTO_VHDP2P,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -635,6 +636,7 @@ typedef enum {
         LPI_PROTO_UDP_CLOUDFLARE_WARP,
         LPI_PROTO_UDP_WIREGUARD,
         LPI_PROTO_UDP_COD_MOBILE,
+        LPI_PROTO_UDP_NVIDIA_GAMESTREAM,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

@@ -146,6 +146,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ntp.cc \
 	lpi_ntp_reflect.cc \
 	lpi_nwn.cc \
+	lpi_nvidia_gamestream.cc \
 	lpi_opaserv.cc \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
