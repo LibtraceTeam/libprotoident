@@ -40,7 +40,7 @@
 static inline bool match_rrtv_header(uint32_t payload, uint32_t len) {
 
         /* broad estimate based on what I've seen so far */
-        if (len < 380 || len > 700) {
+        if (len < 380 || len > 900) {
                 return false;
         }
 
