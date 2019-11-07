@@ -54,6 +54,7 @@ static inline bool match_wg_midsession(uint32_t payload, uint32_t len) {
                         return true;
                 }
         }
+        return false;
 }
 
 static inline bool match_wireguard(lpi_data_t *data, lpi_module_t *mod UNUSED) {
