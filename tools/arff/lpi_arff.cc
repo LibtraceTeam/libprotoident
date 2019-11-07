@@ -258,7 +258,7 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts)
 	f->id.get_server_ip_str(s_ip);
 	f->id.get_client_ip_str(c_ip);
 
-        str = (char *)malloc(750);
+        str = (char *)malloc(1000);
 
         dump_len_stats(&ident->out, len_stats_out, 200);
         dump_len_stats(&ident->in, len_stats_in, 200);
@@ -266,7 +266,7 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts)
         dump_iat_stats(&ident->in, iat_stats_in, 200);
 
 	/* basic statistics */
-	snprintf(str, 749,
+	snprintf(str, 999,
                 "%s,%d,%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
                 "%s%s%s%s,%.0f,%f\n",
 		proto->name, f->id.get_protocol(),
