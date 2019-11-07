@@ -107,6 +107,8 @@ typedef enum {
     LPI_CATEGORY_ICS,           /* Industrial control system protocols */
         LPI_CATEGORY_IPCAMERAS,         /* IP Surveillance Camera protocols */
         LPI_CATEGORY_MESSAGE_QUEUE,     /* Message queuing protocols */
+        LPI_CATEGORY_EDUCATIONAL,     /* Educational applications, e.g. virtual
+                                         classrooms */
 	LPI_CATEGORY_ICMP,		/* ICMP */
 	LPI_CATEGORY_MIXED,		/* Different protos in each direction */
 	LPI_CATEGORY_NOPAYLOAD,		/* No payload observed */
@@ -390,6 +392,14 @@ typedef enum {
         LPI_PROTO_300_HEROES,
         LPI_PROTO_FILENORI,
         LPI_PROTO_IPFS,
+        LPI_PROTO_REMOTE_MANIPULATOR,
+        LPI_PROTO_WEBEX_STUN,
+        LPI_PROTO_RRTV,
+        LPI_PROTO_RABBITMQ,
+        LPI_PROTO_ICEP,
+        LPI_PROTO_BEAM,
+        LPI_PROTO_VHDP2P,
+        LPI_PROTO_CLASSIN,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -622,6 +632,15 @@ typedef enum {
         LPI_PROTO_UDP_HEROES_EVOLVED,
         LPI_PROTO_UDP_RULES_OF_SURVIVAL,
         LPI_PROTO_UDP_CONTRACT_WARS,
+        LPI_PROTO_UDP_ARD,
+        LPI_PROTO_UDP_QVOD,
+        LPI_PROTO_UDP_YUANFUDAO,
+        LPI_PROTO_UDP_ROCKET_LEAGUE,
+        LPI_PROTO_UDP_CLOUDFLARE_WARP,
+        LPI_PROTO_UDP_WIREGUARD,
+        LPI_PROTO_UDP_COD_MOBILE,
+        LPI_PROTO_UDP_NVIDIA_GAMESTREAM,
+        LPI_PROTO_UDP_CLASSIN,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

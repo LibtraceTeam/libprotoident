@@ -30,55 +30,50 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_second_life_req(uint32_t payload, uint32_t len) {
+/* Not confirmed -- RL costs too much money -- but pretty certain */
 
-	if (len != 46 && len != 54)
-		return false;
-	if (!MATCH(payload, 0x40, 0x00, 0x00, 0x00))
-		return false;
-	return true;
+static inline bool match_rl_1d(uint32_t payload, uint32_t len) {
 
+        if (len == 115 && MATCH(payload, 0x1d, 0x01, 0x00, 0x00)) {
+                return true;
+        }
+        return false;
 }
 
-static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_rl_1c(uint32_t payload, uint32_t len) {
 
-	/* Haven't actually seen any legit 2-way SecondLife exchanges, so
-	 * only speculating based on my interpretation of the specs
-	 *
-	 * http://wiki.secondlife.com/wiki/Packet_Layout
-	 */
+        if (len == 93 && MATCH(payload, 0x1c, 0x01, 0x00, 0x00)) {
+                return true;
+        }
+        return false;
+}
 
-	if (match_second_life_req(data->payload[0], data->payload_len[0])) {
-		if (data->payload_len[1] == 0)
-			return true;
-		if (MATCH(data->payload[1], ANY, 0x00, 0x00, 0x00)) {
-			if (data->payload_len[1] < 15)
-				return false;
+static inline bool match_rocket_league(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_rl_1d(data->payload[0], data->payload_len[0])) {
+                if (match_rl_1c(data->payload[1], data->payload_len[1])) {
                         return true;
-		}
-	}
+                }
+        }
 
-	if (match_second_life_req(data->payload[1], data->payload_len[1])) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (MATCH(data->payload[0], ANY, 0x00, 0x00, 0x00)) {
-			if (data->payload_len[0] < 15)
-				return false;
+        if (match_rl_1c(data->payload[0], data->payload_len[0])) {
+                if (match_rl_1d(data->payload[1], data->payload_len[1])) {
                         return true;
-		}
-	}
+                }
+        }
+
 	return false;
 }
 
-static lpi_module_t lpi_second_life = {
-	LPI_PROTO_UDP_SECONDLIFE,
+static lpi_module_t lpi_rocket_league = {
+	LPI_PROTO_UDP_ROCKET_LEAGUE,
 	LPI_CATEGORY_GAMING,
-	"SecondLife_UDP",
-	6,
-	match_second_life
+	"RocketLeague",
+	175,
+	match_rocket_league
 };
 
-void register_second_life_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_second_life, mod_map);
+void register_rocket_league(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rocket_league, mod_map);
 }
 

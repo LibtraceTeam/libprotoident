@@ -30,35 +30,33 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_xmip_header(uint32_t payload, uint32_t len) {
-        if (MATCH(payload, 0x12, 0x20, 0xd0, 0x07)) {
-                if (len == 112 || len == 120 || len == 184 || len == 148)
-                        return true;
+static inline bool match_vhd(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x13, 'v', 'h', 'd') && len < 150) {
+                return true;
         }
         return false;
 }
 
-static inline bool match_netcat_cctv_udp(lpi_data_t *data,
-                lpi_module_t *mod UNUSED) {
+static inline bool match_vhdp2p(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-        if (match_xmip_header(data->payload[0], data->payload_len[0])) {
-                if (match_xmip_header(data->payload[1], data->payload_len[1]))
+        if (match_vhd(data->payload[0], data->payload_len[0])) {
+                if (match_vhd(data->payload[1], data->payload_len[1])) {
                         return true;
+                }
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_netcat_cctv_udp = {
-	LPI_PROTO_UDP_NETCAT_CCTV,
-	LPI_CATEGORY_IPCAMERAS,
-	"NetcatCCTV_UDP",
-	22,
-	match_netcat_cctv_udp
+static lpi_module_t lpi_vhdp2p = {
+	LPI_PROTO_VHDP2P,
+	LPI_CATEGORY_P2P,
+	"VHD_P2P",
+	7,
+	match_vhdp2p
 };
 
-void register_netcat_cctv_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_netcat_cctv_udp, mod_map);
+void register_vhdp2p(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_vhdp2p, mod_map);
 }
 

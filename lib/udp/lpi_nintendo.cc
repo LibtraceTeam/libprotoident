@@ -34,8 +34,7 @@
 static inline bool match_nintendo_magic(uint32_t payload, uint32_t len) {
         /* https://github.com/Shragei/SplatNet/blob/master/NinMainTiming.txt */
 
-        /* Only seen 64 byte packets so far */
-        if (len == 64 && MATCH(payload, 0x32, 0xab, 0x98, 0x64))
+        if ((len == 64 || len == 84) && MATCH(payload, 0x32, 0xab, 0x98, 0x64))
                 return true;
         return false;
 }

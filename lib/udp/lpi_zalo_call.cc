@@ -44,12 +44,42 @@ static inline bool match_zalo_pat(uint32_t payload, uint32_t len) {
 
 }
 
+static inline bool match_zalo_185(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x01, 0x01, 0x00, 0x00)) {
+                if (len >= 180 && len <= 185) {
+                        return true;
+                }
+        }
+        return false;
+}
+
+static inline bool match_zalo_56(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x02, 0x01, 0x00, 0x00)) {
+                if (len >= 52 && len <= 56) {
+                        return true;
+                }
+        }
+        return false;
+}
+
 static inline bool match_zalo_call(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_zalo_pat(data->payload[0], data->payload_len[0])) {
                 if (match_zalo_pat(data->payload[1], data->payload_len[1])) {
                         if (data->payload_len[0] == data->payload_len[1])
                                 return true;
+                }
+        }
+
+        if (match_zalo_185(data->payload[0], data->payload_len[0])) {
+                if (match_zalo_56(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_zalo_185(data->payload[1], data->payload_len[1])) {
+                if (match_zalo_56(data->payload[0], data->payload_len[0])) {
+                        return true;
                 }
         }
 

@@ -30,35 +30,51 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_xmip_header(uint32_t payload, uint32_t len) {
-        if (MATCH(payload, 0x12, 0x20, 0xd0, 0x07)) {
-                if (len == 112 || len == 120 || len == 184 || len == 148)
-                        return true;
+/* rr.tv -- P2P TV/video streaming from China */
+
+/* XXX mobile only, need to test the app properly but the initial
+ * packets literally include URLs referring to rr.tv so I'm pretty
+ * confident.
+ */
+
+static inline bool match_rrtv_header(uint32_t payload, uint32_t len) {
+
+        /* broad estimate based on what I've seen so far */
+        if (len < 380 || len > 900) {
+                return false;
         }
+
+        if ((ntohl(payload) & 0x0000ffff) != len - 4) {
+                return false;
+        }
+
+        if (MATCH(payload, 0x01, 0x10, ANY, ANY)) {
+                return true;
+        }
+
         return false;
 }
 
-static inline bool match_netcat_cctv_udp(lpi_data_t *data,
-                lpi_module_t *mod UNUSED) {
+static inline bool match_rrtv(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-
-        if (match_xmip_header(data->payload[0], data->payload_len[0])) {
-                if (match_xmip_header(data->payload[1], data->payload_len[1]))
+        if (match_rrtv_header(data->payload[0], data->payload_len[0])) {
+                if (match_rrtv_header(data->payload[1], data->payload_len[1])) {
                         return true;
+                }
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_netcat_cctv_udp = {
-	LPI_PROTO_UDP_NETCAT_CCTV,
-	LPI_CATEGORY_IPCAMERAS,
-	"NetcatCCTV_UDP",
-	22,
-	match_netcat_cctv_udp
+static lpi_module_t lpi_rrtv = {
+	LPI_PROTO_RRTV,
+	LPI_CATEGORY_P2PTV,
+	"RR.tv",
+	120,
+	match_rrtv
 };
 
-void register_netcat_cctv_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_netcat_cctv_udp, mod_map);
+void register_rrtv(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_rrtv, mod_map);
 }
 

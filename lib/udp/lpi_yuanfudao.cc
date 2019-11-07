@@ -30,35 +30,50 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_xmip_header(uint32_t payload, uint32_t len) {
-        if (MATCH(payload, 0x12, 0x20, 0xd0, 0x07)) {
-                if (len == 112 || len == 120 || len == 184 || len == 148)
-                        return true;
+/* Unable to confirm because yuanfudao requires a Chinese mobile number */
+
+static inline bool match_yuan_7b(uint32_t payload, uint32_t len) {
+        if (len == 33 && MATCH(payload, 0x80, 0x7b, 0x00, 0x00)) {
+                return true;
         }
         return false;
 }
 
-static inline bool match_netcat_cctv_udp(lpi_data_t *data,
-                lpi_module_t *mod UNUSED) {
-
-
-        if (match_xmip_header(data->payload[0], data->payload_len[0])) {
-                if (match_xmip_header(data->payload[1], data->payload_len[1]))
+static inline bool match_yuan_7c(uint32_t payload, uint32_t len) {
+        if (len == 32 || len == 48 || len == 60) {
+                if (MATCH(payload, 0x80, 0x7c, 0x00, 0x00)) {
                         return true;
+                }
+        }
+        return false;
+}
+
+static inline bool match_yuanfudao(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_yuan_7b(data->payload[0], data->payload_len[0])) {
+                if (match_yuan_7c(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_yuan_7b(data->payload[1], data->payload_len[1])) {
+                if (match_yuan_7c(data->payload[0], data->payload_len[0])) {
+                        return true;
+                }
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_netcat_cctv_udp = {
-	LPI_PROTO_UDP_NETCAT_CCTV,
-	LPI_CATEGORY_IPCAMERAS,
-	"NetcatCCTV_UDP",
-	22,
-	match_netcat_cctv_udp
+static lpi_module_t lpi_yuanfudao = {
+	LPI_PROTO_UDP_YUANFUDAO,
+	LPI_CATEGORY_STREAMING,
+	"Yuanfudao",
+	79,
+	match_yuanfudao
 };
 
-void register_netcat_cctv_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_netcat_cctv_udp, mod_map);
+void register_yuanfudao(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_yuanfudao, mod_map);
 }
 

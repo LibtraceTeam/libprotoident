@@ -50,6 +50,11 @@ static inline bool match_openvpn_handshake(uint32_t pl_a, uint32_t pl_b) {
 			return true;
 	}
 
+	if (MATCH(pl_a, 0x49, ANY, ANY, ANY)) {
+		if (MATCH(pl_b, 0x49, ANY, ANY, ANY))
+			return true;
+	}
+
 	return false;
 
 }

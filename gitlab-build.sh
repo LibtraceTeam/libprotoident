@@ -14,6 +14,7 @@ apt-get install -y equivs devscripts dpkg-dev quilt curl apt-transport-https \
 
 echo "deb https://dl.bintray.com/wand/general $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/wand.list
 echo "deb https://dl.bintray.com/wand/libtrace $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/wand.list
+echo "deb https://dl.bintray.com/wand/libflowmanager $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/wand.list
 curl --silent "https://bintray.com/user/downloadSubjectPublicKey?username=wand"\
  | apt-key add -
 

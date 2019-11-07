@@ -30,55 +30,48 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_second_life_req(uint32_t payload, uint32_t len) {
+/* Internet Communications Engine Protocol */
 
-	if (len != 46 && len != 54)
-		return false;
-	if (!MATCH(payload, 0x40, 0x00, 0x00, 0x00))
-		return false;
-	return true;
-
+static inline bool match_icep_validate(uint32_t payload, uint32_t len) {
+        if (len == 14 && MATCHSTR(payload, "IceP")) {
+                return true;
+        }
+        return false;
 }
 
-static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_icep_req(uint32_t payload, uint32_t len) {
+        if (MATCHSTR(payload, "IceP") && len >= 30) {
+                return true;
+        }
+        return false;
+}
 
-	/* Haven't actually seen any legit 2-way SecondLife exchanges, so
-	 * only speculating based on my interpretation of the specs
-	 *
-	 * http://wiki.secondlife.com/wiki/Packet_Layout
-	 */
+static inline bool match_icep(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_second_life_req(data->payload[0], data->payload_len[0])) {
-		if (data->payload_len[1] == 0)
-			return true;
-		if (MATCH(data->payload[1], ANY, 0x00, 0x00, 0x00)) {
-			if (data->payload_len[1] < 15)
-				return false;
+        if (match_icep_validate(data->payload[0], data->payload_len[0])) {
+                if (match_icep_req(data->payload[1], data->payload_len[1])) {
                         return true;
-		}
-	}
+                }
+        }
 
-	if (match_second_life_req(data->payload[1], data->payload_len[1])) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (MATCH(data->payload[0], ANY, 0x00, 0x00, 0x00)) {
-			if (data->payload_len[0] < 15)
-				return false;
+        if (match_icep_validate(data->payload[1], data->payload_len[1])) {
+                if (match_icep_req(data->payload[0], data->payload_len[0])) {
                         return true;
-		}
-	}
+                }
+        }
+
 	return false;
 }
 
-static lpi_module_t lpi_second_life = {
-	LPI_PROTO_UDP_SECONDLIFE,
-	LPI_CATEGORY_GAMING,
-	"SecondLife_UDP",
-	6,
-	match_second_life
+static lpi_module_t lpi_icep = {
+	LPI_PROTO_ICEP,
+	LPI_CATEGORY_NAT,     /* unsure about this one */
+	"IceP",
+	8,
+	match_icep
 };
 
-void register_second_life_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_second_life, mod_map);
+void register_icep(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_icep, mod_map);
 }
 

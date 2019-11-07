@@ -176,7 +176,8 @@ static inline bool match_req_q044(uint32_t payload, uint32_t len) {
         if (MATCHSTR(payload, "\xffQ04") && len == 1330) {
                 return true;
         }
-        if (MATCH(payload, 0xc3, 'Q', '0', '4') && len == 1350) {
+        if (MATCH(payload, 0xc3, 'Q', '0', '4') &&
+                        (len == 1350 || len == 1330)) {
                 return true;
         }
         return false;
@@ -194,6 +195,12 @@ static inline bool match_reply_q044(uint32_t payload, uint32_t len) {
                 return true;
         }
         if (MATCH(payload, 0xc3, 'Q', '0', '4')) {
+                return true;
+        }
+        if (MATCH(payload, 0xd3, 'Q', '0', '4')) {
+                return true;
+        }
+        if (MATCH(payload, 0xe3, 'Q', '0', '4')) {
                 return true;
         }
         return false;

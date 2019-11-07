@@ -30,35 +30,37 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_xmip_header(uint32_t payload, uint32_t len) {
-        if (MATCH(payload, 0x12, 0x20, 0xd0, 0x07)) {
-                if (len == 112 || len == 120 || len == 184 || len == 148)
-                        return true;
+static inline bool match_bm(uint32_t payload, uint32_t len) {
+        if (len == 40 && MATCH(payload, 'B', 'm', 0x0a, 0x04)) {
+                return true;
         }
         return false;
 }
 
-static inline bool match_netcat_cctv_udp(lpi_data_t *data,
-                lpi_module_t *mod UNUSED) {
+static inline bool match_beam(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
+        if (data->server_port != 8100 && data->client_port != 8100) {
+                return false;
+        }
 
-        if (match_xmip_header(data->payload[0], data->payload_len[0])) {
-                if (match_xmip_header(data->payload[1], data->payload_len[1]))
+        if (match_bm(data->payload[0], data->payload_len[0])) {
+                if (match_bm(data->payload[1], data->payload_len[1])) {
                         return true;
+                }
         }
 
 	return false;
 }
 
-static lpi_module_t lpi_netcat_cctv_udp = {
-	LPI_PROTO_UDP_NETCAT_CCTV,
-	LPI_CATEGORY_IPCAMERAS,
-	"NetcatCCTV_UDP",
-	22,
-	match_netcat_cctv_udp
+static lpi_module_t lpi_beam = {
+	LPI_PROTO_BEAM,
+	LPI_CATEGORY_ECOMMERCE,
+	"Beam",
+	25,
+	match_beam
 };
 
-void register_netcat_cctv_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_netcat_cctv_udp, mod_map);
+void register_beam(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_beam, mod_map);
 }
 

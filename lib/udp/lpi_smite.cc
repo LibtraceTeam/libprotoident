@@ -36,8 +36,7 @@ static inline bool match_smite(lpi_data_t *data, lpi_module_t *mod UNUSED) {
         
         if (MATCH(data->payload[0], 0x01, 0x14, 0x00, 0x00)) {
                 if (MATCH(data->payload[1], 0x01, 0x14, 0x00, 0x00)) {
-                        if (data->payload_len[0] < 100 && data->payload_len[1] < 100)
-                               return true;
+                       return true;
                 }
         }
 

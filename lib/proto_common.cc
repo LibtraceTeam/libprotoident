@@ -327,6 +327,10 @@ bool match_file_header(uint32_t payload) {
         if (MATCH(payload, 't', 't', 'c', 'f'))
                 return true;
 
+        /* RIR delegation files... */
+        if (MATCH(payload, '2', '.', '3', '|'))
+                return true;
+
         /* REBASE -- restriction enzyme database
          * A bit niche, but might be fairly common at universities? */
         if (MATCH(payload, 0x20, 0x0a, 'R', 'E'))

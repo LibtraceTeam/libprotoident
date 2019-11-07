@@ -1,5 +1,10 @@
 libprotoident (2.0.13) unstable; urgency=low
 
   * New upstream release
+  * Fixed bug where RST payload was used for classification purposes.
+  * Fixed errors in 4D, Heroes of the Storm and The Division rules.
+  * Added new protocol category for message queuing applications.
+  * Added 43 new application protocols.
+  * Improved rules for a further 35 application protocols.
 
  -- Shane Alcock <shane.alcock@waikato.ac.nz>  Tue, 09 Apr 2019 13:49:25 +1200
