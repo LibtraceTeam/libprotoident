@@ -28,6 +28,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \
 	lpi_clashofclans.cc \
+	lpi_classin_tcp.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \

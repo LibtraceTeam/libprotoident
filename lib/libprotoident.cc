@@ -439,6 +439,10 @@ const char *lpi_print_category(lpi_category_t category) {
 			return "Mobile App";
 		case LPI_CATEGORY_IPCAMERAS:
 			return "IP Cameras";
+		case LPI_CATEGORY_EDUCATIONAL:
+			return "Educational";
+                case LPI_CATEGORY_MESSAGE_QUEUE:
+                        return "Message_Queuing";
 		case LPI_CATEGORY_ICMP:
 			return "ICMP";
 		case LPI_CATEGORY_MIXED:

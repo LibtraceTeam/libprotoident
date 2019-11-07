@@ -62,6 +62,7 @@ void register_chivalry(LPIModuleMap *mod_map);
 void register_cirn(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
 void register_cisco_sslvpn(LPIModuleMap *mod_map);
+void register_classin_udp(LPIModuleMap *mod_map);
 void register_cloudflare_warp(LPIModuleMap *mod_map);
 void register_codmobile(LPIModuleMap *mod_map);
 void register_combatarms(LPIModuleMap *mod_map);

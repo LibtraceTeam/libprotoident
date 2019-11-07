@@ -31,6 +31,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
+	lpi_classin_udp.cc \
 	lpi_cloudflare_warp.cc \
 	lpi_cod.cc \
 	lpi_codmobile.cc \

@@ -95,6 +95,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_chatango(mod_map);
 	register_cisco_vpn(mod_map);
 	register_clashofclans(mod_map);
+	register_classin_tcp(mod_map);
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
 	register_conquer(mod_map);
@@ -384,6 +385,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
+	register_classin_udp(mod_map);
 	register_cloudflare_warp(mod_map);
 	register_codmobile(mod_map);
 	register_combatarms(mod_map);

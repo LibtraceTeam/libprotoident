@@ -56,6 +56,7 @@ void register_cgp(LPIModuleMap *mod_map);
 void register_chatango(LPIModuleMap *mod_map);
 void register_cisco_vpn(LPIModuleMap *mod_map);
 void register_clashofclans(LPIModuleMap *mod_map);
+void register_classin_tcp(LPIModuleMap *mod_map);
 void register_clubbox(LPIModuleMap *mod_map);
 void register_cod_waw(LPIModuleMap *mod_map);
 void register_conquer(LPIModuleMap *mod_map);
