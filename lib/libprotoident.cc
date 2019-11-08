@@ -35,6 +35,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 
 #include "libprotoident.h"
 #include "proto_manager.h"
@@ -475,6 +476,23 @@ const char *lpi_print(lpi_protocol_t proto) {
 	return (it->second);
 	
 }
+
+lpi_protocol_t lpi_get_protocol(char *name) {
+
+    LPINameMap::iterator it;
+
+    for (it = lpi_names.begin(); it != lpi_names.end(); it++) {
+
+        if (strcmp(it->second, name) == 0) {
+            return it->first;
+        }
+
+    }
+
+    return LPI_PROTO_LAST;
+}
+
+
 
 bool lpi_is_protocol_inactive(lpi_protocol_t proto) {
 
