@@ -794,7 +794,7 @@ lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
  *
  * @returns The LPI protocol for the supplied name.
  */
-lpi_protocol_t lpi_get_protocol(char *name);
+lpi_protocol_t lpi_get_protocol_by_name(char *name);
 
 /** Determines whether the protocol matching a given protocol number is no
  *  longer supported by libprotoident.

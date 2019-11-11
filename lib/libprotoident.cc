@@ -35,7 +35,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <string.h>
 
 #include "libprotoident.h"
 #include "proto_manager.h"
@@ -51,6 +50,7 @@ lpi_module_t *lpi_unknown_tcp = NULL;
 lpi_module_t *lpi_unknown_udp = NULL;
 
 static LPINameMap lpi_names;
+static LPIProtocolMap lpi_protocols;
 
 static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
@@ -79,10 +79,10 @@ int lpi_init_library() {
 	if (register_udp_protocols(&UDP_protocols) == -1) 
 		return -1;
 
-	init_other_protocols(&lpi_names);
+	init_other_protocols(&lpi_names, &lpi_protocols);
 
-	register_names(&TCP_protocols, &lpi_names);
-	register_names(&UDP_protocols, &lpi_names);
+	register_names(&TCP_protocols, &lpi_names, &lpi_protocols);
+	register_names(&UDP_protocols, &lpi_names, &lpi_protocols);
 
 	init_called = true;
 
@@ -477,19 +477,17 @@ const char *lpi_print(lpi_protocol_t proto) {
 	
 }
 
-lpi_protocol_t lpi_get_protocol(char *name) {
+lpi_protocol_t lpi_get_protocol_by_name(char *name) {
 
-    LPINameMap::iterator it;
+	LPIProtocolMap::iterator it;
 
-    for (it = lpi_names.begin(); it != lpi_names.end(); it++) {
+	it = lpi_protocols.find(name);
 
-        if (strcmp(it->second, name) == 0) {
-            return it->first;
-        }
+	if (it == lpi_protocols.end()) {
+		return LPI_PROTO_LAST;
+	}
 
-    }
-
-    return LPI_PROTO_LAST;
+	return (it->second);
 }
 
 
