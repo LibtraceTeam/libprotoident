@@ -788,6 +788,14 @@ const char *lpi_print_category(lpi_category_t category);
  */
 lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
 
+/** Given the protocol name, returns the lpi protcol it matches.
+ *
+ * @param name The protocol name
+ *
+ * @returns The LPI protocol for the supplied name.
+ */
+lpi_protocol_t lpi_get_protocol_by_name(char *name);
+
 /** Determines whether the protocol matching a given protocol number is no
  *  longer supported by libprotoident.
  *
