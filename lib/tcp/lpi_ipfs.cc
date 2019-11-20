@@ -36,12 +36,25 @@ static inline bool match_ipfs_mu(uint32_t payload, uint32_t len) {
         if (len == 20 && MATCH(payload, 0x13, 0x2f, 'm', 'u')) {
                 return true;
         }
+        if (len == 34 && MATCH(payload, 0x13, 0x2f, 'm', 'u')) {
+                return true;
+        }
         return false;
 }
 
 static inline bool match_ipfs_single(uint32_t payload, uint32_t len) {
         if (len == 1 && MATCH(payload, 0x13, 0x00, 0x00, 0x00))
                 return true;
+        return false;
+}
+
+static inline bool match_ipfs_length(uint32_t payload, uint32_t len) {
+        uint32_t plen = ntohl(payload);
+
+        /* Starting to see IPFS replies with a four byte length field */
+        if (plen + 4 == len) {
+                return true;
+        }
         return false;
 }
 
@@ -53,10 +66,14 @@ static inline bool match_ipfs(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                         return true;
                 if (match_ipfs_mu(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_ipfs_length(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
         if (match_ipfs_mu(data->payload[1], data->payload_len[1])) {
                 if (match_ipfs_single(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_ipfs_length(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

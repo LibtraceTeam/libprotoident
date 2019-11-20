@@ -8,6 +8,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_akamai_transfer.cc \
 	lpi_amanda.cc \
 	lpi_apple_facetime_init.cc \
+	lpi_ard.cc \
 	lpi_ares.cc \
 	lpi_ark.cc \
 	lpi_arma_server.cc \
@@ -30,7 +31,10 @@ libprotoident_udp_la_SOURCES = \
 	lpi_cirn.cc \
 	lpi_cisco_ipsec.cc \
 	lpi_cisco_sslvpn.cc \
+	lpi_classin_udp.cc \
+	lpi_cloudflare_warp.cc \
 	lpi_cod.cc \
+	lpi_codmobile.cc \
 	lpi_combatarms.cc \
 	lpi_combatarms_p2p.cc \
 	lpi_contract_wars.cc \
@@ -143,6 +147,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ntp.cc \
 	lpi_ntp_reflect.cc \
 	lpi_nwn.cc \
+	lpi_nvidia_gamestream.cc \
 	lpi_opaserv.cc \
 	lpi_openvpn.cc \
 	lpi_orbit.cc \
@@ -165,13 +170,15 @@ libprotoident_udp_la_SOURCES = \
 	lpi_qqspeedmobile_udp.cc \
 	lpi_quake.cc \
 	lpi_quic.cc \
+	lpi_qvod_udp.cc \
 	lpi_radius.cc \
 	lpi_ramseydash.cc \
 	lpi_rdp_udp.cc \
 	lpi_real.cc \
 	lpi_risingstorm.cc \
-	lpi_roblox.cc \
+	lpi_raknet.cc \
 	lpi_robocraft.cc \
+	lpi_rocket_league.cc \
 	lpi_rrshare.cc \
 	lpi_rtcp.cc \
 	lpi_rtmfp.cc \
@@ -228,6 +235,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_webex.cc \
 	lpi_wechat_udp.cc \
 	lpi_winmessage.cc \
+	lpi_wireguard.cc \
 	lpi_wolfet.cc \
 	lpi_worm_22105.cc \
 	lpi_xfire_p2p.cc \
@@ -237,6 +245,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_xunyou.cc \
 	lpi_youdao_dict.cc \
 	lpi_youku.cc \
+	lpi_yuanfudao.cc \
 	lpi_yy_udp.cc \
 	lpi_zalo_call.cc \
 	lpi_zeroaccess_udp.cc \

@@ -65,6 +65,19 @@ static inline bool match_dtls(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 			return true;
 	}
 
+        /* DTLS 1.2 */
+        if (MATCHSTR(data->payload[0], "\x16\xfe\xfd\x00")) {
+                if (data->payload_len[1] == 0)
+                        return true;
+                if (MATCHSTR(data->payload[1], "\x16\xfe\xfd\x00"))
+                        return true;
+        }
+
+	if (MATCHSTR(data->payload[1], "\x16\xfe\xfd\x00")) {
+		if (data->payload_len[0] == 0)
+			return true;
+	}
+
         /* This is probably Google Duo  -- consider separate protocol? */
         if (MATCHSTR(data->payload[0], "\x17\xfe\xfd\x00")) {
                 if (MATCHSTR(data->payload[1], "\x17\xfe\xfd\x00"))

@@ -1,4 +1,4 @@
-libprotoident 2.0.13
+libprotoident 2.0.14
 
 ---------------------------------------------------------------------------
 Copyright (c) 2011-2019 The University of Waikato, Hamilton, New Zealand.
@@ -27,6 +27,7 @@ With contributions from:
     Jeroen Roovers
     Jiri Havranek
     Romain Fontugne
+    Jacob van Walraven
 
 Introduction
 ============
@@ -65,7 +66,7 @@ The libprotoident tools are built by default - this can be changed by using the
 Protocols Supported
 ===================
 A full list of supported protocols can be found at 
-http://wand.net.nz/trac/libprotoident/wiki/SupportedProtocols
+https://github.com/wanduow/libprotoident/wiki/SupportedProtocols
 
 Libprotoident also currently has rules for several "mystery" protocols. These
 are patterns that commonly occur in our trace sets that we cannot tie to an
@@ -93,6 +94,9 @@ There are three tools included with libprotoident.
 	lpi_protoident <input trace URI>
 
 	The input trace must be a valid libtrace URI.
+        See https://github.com/LibtraceTeam/libtrace/wiki/Supported-Trace-Formats
+        to learn more about libtrace URIs. Note that a URI may be a live
+        source, such as a network interface.
 
    Output:
    	For each flow in the input trace, a single line is printed to stdout
@@ -132,6 +136,9 @@ There are three tools included with libprotoident.
 	lpi_find_unknown <input trace URI>
 
 	The input trace must be a valid libtrace URI.
+        See https://github.com/LibtraceTeam/libtrace/wiki/Supported-Trace-Formats
+        to learn more about libtrace URIs. Note that a URI may be a live
+        source, such as a network interface.
 
    Output:
    	For each unknown flow in the input trace, a single line is printed to 
@@ -167,6 +174,9 @@ There are three tools included with libprotoident.
         lpi_arff <input trace URI>
 
 	The input trace must be a valid libtrace URI.
+        See https://github.com/LibtraceTeam/libtrace/wiki/Supported-Trace-Formats
+        to learn more about libtrace URIs. Note that a URI may be a live
+        source, such as a network interface.
 
    Output:
         The output begins with a series of lines describing each feature that

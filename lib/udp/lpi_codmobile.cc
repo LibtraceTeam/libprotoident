@@ -30,55 +30,46 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_second_life_req(uint32_t payload, uint32_t len) {
-
-	if (len != 46 && len != 54)
-		return false;
-	if (!MATCH(payload, 0x40, 0x00, 0x00, 0x00))
-		return false;
-	return true;
-
+static inline bool match_cod_mob84(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x43, 0x01, 0xc0, 0x12) && len == 84) {
+                return true;
+        }
+        return false;
 }
 
-static inline bool match_second_life(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+static inline bool match_cod_mob12(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x43, 0x02, 0xc0, 0x00) && len == 12) {
+                return true;
+        }
+        return false;
+}
 
-	/* Haven't actually seen any legit 2-way SecondLife exchanges, so
-	 * only speculating based on my interpretation of the specs
-	 *
-	 * http://wiki.secondlife.com/wiki/Packet_Layout
-	 */
+static inline bool match_codmobile(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (match_second_life_req(data->payload[0], data->payload_len[0])) {
-		if (data->payload_len[1] == 0)
-			return true;
-		if (MATCH(data->payload[1], ANY, 0x00, 0x00, 0x00)) {
-			if (data->payload_len[1] < 15)
-				return false;
+        if (match_cod_mob84(data->payload[0], data->payload_len[0])) {
+                if (match_cod_mob12(data->payload[1], data->payload_len[1])) {
                         return true;
-		}
-	}
+                }
+        }
 
-	if (match_second_life_req(data->payload[1], data->payload_len[1])) {
-		if (data->payload_len[0] == 0)
-			return true;
-		if (MATCH(data->payload[0], ANY, 0x00, 0x00, 0x00)) {
-			if (data->payload_len[0] < 15)
-				return false;
+        if (match_cod_mob84(data->payload[1], data->payload_len[1])) {
+                if (match_cod_mob12(data->payload[0], data->payload_len[0])) {
                         return true;
-		}
-	}
+                }
+        }
+
 	return false;
 }
 
-static lpi_module_t lpi_second_life = {
-	LPI_PROTO_UDP_SECONDLIFE,
+static lpi_module_t lpi_codmobile = {
+	LPI_PROTO_UDP_COD_MOBILE,
 	LPI_CATEGORY_GAMING,
-	"SecondLife_UDP",
-	6,
-	match_second_life
+	"CallOfDuty_Mobile",
+	15,
+	match_codmobile
 };
 
-void register_second_life_udp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_second_life, mod_map);
+void register_codmobile(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_codmobile, mod_map);
 }
 

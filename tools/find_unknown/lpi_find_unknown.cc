@@ -167,7 +167,7 @@ void dump_payload(lpi_data_t lpi, uint8_t dir, char *space, int spacelen) {
 		if (*pl > 32 && *pl < 126) {
 			snprintf(ascii[i], 5, "%c", *pl);
 		} else {
-			snprintf(ascii[i], 5, ".", NULL);
+			snprintf(ascii[i], 5, ".");
 		}
 		pl ++;
 	}

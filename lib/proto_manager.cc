@@ -82,6 +82,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_ares(mod_map);
 	register_badbaidu(mod_map);
 	register_baofeng_tcp(mod_map);
+	register_beam(mod_map);
 	register_bitcoin(mod_map);
 	register_bitextend(mod_map);
 	register_bittorrent(mod_map);
@@ -94,6 +95,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_chatango(mod_map);
 	register_cisco_vpn(mod_map);
 	register_clashofclans(mod_map);
+	register_classin_tcp(mod_map);
 	register_clubbox(mod_map);
 	register_cod_waw(mod_map);
 	register_conquer(mod_map);
@@ -152,6 +154,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_https(mod_map);
 	register_http_tunnel(mod_map);
 	register_ica(mod_map);
+	register_icep(mod_map);
 	register_id(mod_map);
 	register_idrivesync(mod_map);
 	register_ihexin(mod_map);
@@ -237,6 +240,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_qqlive_tcp(mod_map);
 	register_qqspeedmobile_tcp(mod_map);
 	register_qvod(mod_map);
+        register_rabbitmq(mod_map);
         register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
@@ -244,9 +248,11 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_realvnc(mod_map);
 	register_rejection(mod_map);
 	register_relay(mod_map);
+	register_remote_manipulator(mod_map);
 	register_revolver_nblbt(mod_map);
 	register_rfb(mod_map);
 	register_rpcscan(mod_map);
+	register_rrtv(mod_map);
 	register_rsync(mod_map);
 	register_rtmp(mod_map);
 	register_rtsp(mod_map);
@@ -306,6 +312,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_twitch_irc(mod_map);
 	register_utherverse(mod_map);
 	register_vainglory(mod_map);
+	register_vhdp2p(mod_map);
 	register_viber(mod_map);
 	register_vmware(mod_map);
 	register_vodlocker(mod_map);
@@ -313,6 +320,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_vpnunlimited_tcp(mod_map);
 	register_warcraft3(mod_map);
 	register_web_junk(mod_map);
+	register_webex_stun(mod_map);
 	register_weblogic(mod_map);
 	register_wechat(mod_map);
 	register_weibo(mod_map);
@@ -353,6 +361,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_akamai_transfer(mod_map);
 	register_amanda(mod_map);
 	register_apple_facetime_init(mod_map);
+	register_ard(mod_map);
 	register_ares_udp(mod_map);
 	register_arksurvival(mod_map);
 	register_arma_server(mod_map);
@@ -376,6 +385,9 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);
+	register_classin_udp(mod_map);
+	register_cloudflare_warp(mod_map);
+	register_codmobile(mod_map);
 	register_combatarms(mod_map);
 	register_combatarms_p2p(mod_map);
 	register_contract_wars(mod_map);
@@ -487,6 +499,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_ntp(mod_map);
 	register_ntp_reflect(mod_map);
 	register_nwn(mod_map);
+	register_nvidia_gamestream(mod_map);
 	register_opaserv(mod_map);
 	register_openvpn_udp(mod_map);
 	register_orbit_udp(mod_map);
@@ -509,13 +522,15 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_qqspeedmobile_udp(mod_map);
 	register_quake(mod_map);
 	register_quic(mod_map);
+	register_qvod_udp(mod_map);
 	register_radius(mod_map);
 	register_ramsey_dash(mod_map);
 	register_rdp_udp(mod_map);
 	register_real(mod_map);
 	register_risingstorm(mod_map);
-	register_roblox(mod_map);
+	register_raknet(mod_map);
 	register_robocraft(mod_map);
+	register_rocket_league(mod_map);
 	register_rrshare(mod_map);
 	register_rtcp(mod_map);
 	register_rtmfp(mod_map);
@@ -573,6 +588,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_webex(mod_map);
 	register_wechat_udp(mod_map);
 	register_winmessage(mod_map);
+	register_wireguard(mod_map);
 	register_wolfet(mod_map);
 	register_worm_22105(mod_map);
 	register_xfire_p2p(mod_map);
@@ -582,6 +598,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_xunyou(mod_map);
 	register_youdao_dict(mod_map);
 	register_youku_udp(mod_map);
+	register_yuanfudao(mod_map);
 	register_yy_udp(mod_map);
 	register_zalo_call(mod_map);
 	register_zeroaccess_udp(mod_map);
@@ -589,28 +606,29 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	return 0;
 }
 
-static void register_list_names(LPIModuleList *ml, LPINameMap *names) {
+static void register_list_names(LPIModuleList *ml, LPINameMap *names, LPIProtocolMap *protos) {
 	LPIModuleList::iterator it; 
 
 	for (it = ml->begin(); it != ml->end(); it ++) {
 		lpi_module_t *mod = *it;
 
 		(*names)[mod->protocol] = mod->name;
+                (*protos)[std::string(mod->name)] = mod->protocol;
 	}
 
 }
 
-void register_names(LPIModuleMap *mods, LPINameMap *names) {
+void register_names(LPIModuleMap *mods, LPINameMap *names, LPIProtocolMap *protocols) {
 
 	LPIModuleMap::iterator it;
 
 	for (it = mods->begin(); it != mods->end(); it ++) {
-		register_list_names(it->second, names);
+		register_list_names(it->second, names, protocols);
 	}
 
 }
 
-void init_other_protocols(LPINameMap *name_map) {
+void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map) {
 
 	lpi_icmp = new lpi_module_t;
 
@@ -620,6 +638,7 @@ void init_other_protocols(LPINameMap *name_map) {
 	lpi_icmp->priority = 255;
 	lpi_icmp->lpi_callback = NULL;
 	(*name_map)[lpi_icmp->protocol] = lpi_icmp->name;
+        (*proto_map)[std::string(lpi_icmp->name)] = lpi_icmp->protocol;
 
 	lpi_unknown_tcp = new lpi_module_t;
 
@@ -629,7 +648,8 @@ void init_other_protocols(LPINameMap *name_map) {
 	lpi_unknown_tcp->priority = 255;
 	lpi_unknown_tcp->lpi_callback = NULL;
 	(*name_map)[lpi_unknown_tcp->protocol] = lpi_unknown_tcp->name;
-	
+	(*proto_map)[std::string(lpi_unknown_tcp->name)] = lpi_unknown_tcp->protocol;
+
 	lpi_unknown_udp = new lpi_module_t;
 
 	lpi_unknown_udp->protocol = LPI_PROTO_UDP;
@@ -638,6 +658,7 @@ void init_other_protocols(LPINameMap *name_map) {
 	lpi_unknown_udp->priority = 255;
 	lpi_unknown_udp->lpi_callback = NULL;
 	(*name_map)[lpi_unknown_udp->protocol] = lpi_unknown_udp->name;
+        (*proto_map)[std::string(lpi_unknown_udp->name)] = lpi_unknown_udp->protocol;
 
 	lpi_unsupported = new lpi_module_t;
 
@@ -647,6 +668,6 @@ void init_other_protocols(LPINameMap *name_map) {
 	lpi_unsupported->priority = 255;
 	lpi_unsupported->lpi_callback = NULL;
 	(*name_map)[lpi_unsupported->protocol] = lpi_unsupported->name;
-
+        (*proto_map)[std::string(lpi_unsupported->name)] = lpi_unsupported->protocol;
 }
 

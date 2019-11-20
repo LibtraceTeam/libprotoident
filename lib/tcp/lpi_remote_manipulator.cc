@@ -30,47 +30,38 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Chinese IP surveillance Cameras */
+/* Remote Manipulator System a.k.a Remote Utilities
+ *
+ * Russian RDP-style software, sometimes used in malware for remote control.
+ */
 
-static inline bool match_dahua_ports(uint16_t sport, uint16_t cport) {
-        if (sport == 8888 || cport == 8888) {
+static inline bool match_rms_9504(uint32_t payload, uint32_t len) {
+        if (len == 1338 && MATCH(payload, 0x95, 0x04, 0x00, 0x00)) {
                 return true;
         }
+        return false;
+}
 
-        if (sport == 37777 || cport == 37777) {
+static inline bool match_rms_d90d(uint32_t payload, uint32_t len) {
+        if (len == 8 && MATCH(payload, 0xd9, 0x0d, 0x00, 0x00)) {
                 return true;
         }
         return false;
 }
 
-static inline bool match_f4_186(uint32_t payload, uint32_t len) {
-        if (len == 186 && MATCH(payload, 0xf4, 0x00, 0x00, 0x00))
-                return true;
-        return false;
+static inline bool match_remote_manipulator(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-}
-
-static inline bool match_f4_208(uint32_t payload, uint32_t len) {
-        if (len >= 206 && len <= 208 && MATCH(payload, 0xf4, 0x00, 0x00, 0x58))
-                return true;
-        return false;
-
-}
-
-static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (!match_dahua_ports(data->server_port, data->client_port)) {
+        if (data->server_port != 5655 && data->client_port != 5655)
                 return false;
-        }
 
-        if (match_f4_186(data->payload[0], data->payload_len[0])) {
-                if (match_f4_208(data->payload[1], data->payload_len[1])) {
+        if (match_rms_9504(data->payload[0], data->payload_len[0])) {
+                if (match_rms_d90d(data->payload[1], data->payload_len[1])) {
                         return true;
                 }
         }
 
-        if (match_f4_186(data->payload[1], data->payload_len[1])) {
-                if (match_f4_208(data->payload[0], data->payload_len[0])) {
+        if (match_rms_9504(data->payload[1], data->payload_len[1])) {
+                if (match_rms_d90d(data->payload[0], data->payload_len[0])) {
                         return true;
                 }
         }
@@ -78,15 +69,15 @@ static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-static lpi_module_t lpi_dahua_tcp = {
-	LPI_PROTO_DAHUA,
-	LPI_CATEGORY_IPCAMERAS,
-	"DahuaTCP",
-	13,
-	match_dahua
+static lpi_module_t lpi_remote_manipulator = {
+	LPI_PROTO_REMOTE_MANIPULATOR,
+	LPI_CATEGORY_REMOTE,
+	"RemoteManipulator",
+	100,
+	match_remote_manipulator
 };
 
-void register_dahua_tcp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dahua_tcp, mod_map);
+void register_remote_manipulator(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_remote_manipulator, mod_map);
 }
 

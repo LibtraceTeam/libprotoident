@@ -44,16 +44,26 @@ static inline bool match_forti_vpn(uint32_t payload, uint32_t len) {
         return false;
 }
 
+static inline bool match_forti_fd_99(uint32_t payload, uint32_t len) {
+        if (len == 99 && MATCHSTR(payload, "\x16\xfe\xfd\x00"))
+                return true;
+        return false;
+}
+
 
 static inline bool match_forticlient_sslvpn(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
         if (match_forti_vpn_48(data->payload[0], data->payload_len[0])) {
                 if (match_forti_vpn(data->payload[1], data->payload_len[1]))
                         return true;
+                if (match_forti_fd_99(data->payload[1], data->payload_len[1]))
+                        return true;
         }
 
         if (match_forti_vpn_48(data->payload[1], data->payload_len[1])) {
                 if (match_forti_vpn(data->payload[0], data->payload_len[0]))
+                        return true;
+                if (match_forti_fd_99(data->payload[0], data->payload_len[0]))
                         return true;
         }
 

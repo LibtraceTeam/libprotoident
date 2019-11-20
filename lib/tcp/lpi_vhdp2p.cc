@@ -30,47 +30,33 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_roblox_out(uint32_t payload, uint32_t len) {
-
-	if (MATCHSTR(payload, "\x05\x00\xff\xff"))
-		return true;
-	return false;
-
+static inline bool match_vhd(uint32_t payload, uint32_t len) {
+        if (MATCH(payload, 0x13, 'v', 'h', 'd') && len < 150) {
+                return true;
+        }
+        return false;
 }
 
-static inline bool match_roblox_in(uint32_t payload, uint32_t len) {
+static inline bool match_vhdp2p(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (len != 28)
-		return false;
-	if (MATCHSTR(payload, "\x06\x00\xff\xff"))
-		return true;
-	return false;
-
-}
-
-static inline bool match_roblox(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-	if (match_roblox_out(data->payload[0], data->payload_len[0])) {
-		if (match_roblox_in(data->payload[1], data->payload_len[1]))
-			return true;
-	}
-	if (match_roblox_out(data->payload[1], data->payload_len[1])) {
-		if (match_roblox_in(data->payload[0], data->payload_len[0]))
-			return true;
-	}
+        if (match_vhd(data->payload[0], data->payload_len[0])) {
+                if (match_vhd(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_roblox = {
-	LPI_PROTO_UDP_ROBLOX,
-	LPI_CATEGORY_GAMING,
-	"Roblox",
+static lpi_module_t lpi_vhdp2p = {
+	LPI_PROTO_VHDP2P,
+	LPI_CATEGORY_P2P,
+	"VHD_P2P",
 	7,
-	match_roblox
+	match_vhdp2p
 };
 
-void register_roblox(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_roblox, mod_map);
+void register_vhdp2p(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_vhdp2p, mod_map);
 }
 

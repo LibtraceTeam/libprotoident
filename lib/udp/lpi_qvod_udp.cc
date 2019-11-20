@@ -30,47 +30,38 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Chinese IP surveillance Cameras */
+static inline bool match_qvod_1(uint32_t payload, uint32_t len) {
 
-static inline bool match_dahua_ports(uint16_t sport, uint16_t cport) {
-        if (sport == 8888 || cport == 8888) {
-                return true;
-        }
-
-        if (sport == 37777 || cport == 37777) {
+        if (len == 1 && MATCH(payload, 0x30, 0x00, 0x00, 0x00)) {
                 return true;
         }
         return false;
 }
 
-static inline bool match_f4_186(uint32_t payload, uint32_t len) {
-        if (len == 186 && MATCH(payload, 0xf4, 0x00, 0x00, 0x00))
+static inline bool match_qvod_13(uint32_t payload, uint32_t len) {
+
+        if (len == 13 && MATCH(payload, 0x00, 0x00, 0x00, 0x0d)) {
                 return true;
-        return false;
-
-}
-
-static inline bool match_f4_208(uint32_t payload, uint32_t len) {
-        if (len >= 206 && len <= 208 && MATCH(payload, 0xf4, 0x00, 0x00, 0x58))
-                return true;
-        return false;
-
-}
-
-static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (!match_dahua_ports(data->server_port, data->client_port)) {
-                return false;
         }
+        return false;
+}
 
-        if (match_f4_186(data->payload[0], data->payload_len[0])) {
-                if (match_f4_208(data->payload[1], data->payload_len[1])) {
+static inline bool match_qvod_udp(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (match_qvod_13(data->payload[0], data->payload_len[0])) {
+                if (match_qvod_13(data->payload[1], data->payload_len[1])) {
                         return true;
                 }
         }
 
-        if (match_f4_186(data->payload[1], data->payload_len[1])) {
-                if (match_f4_208(data->payload[0], data->payload_len[0])) {
+        if (match_qvod_1(data->payload[0], data->payload_len[0])) {
+                if (match_qvod_13(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_qvod_1(data->payload[1], data->payload_len[1])) {
+                if (match_qvod_13(data->payload[0], data->payload_len[0])) {
                         return true;
                 }
         }
@@ -78,15 +69,15 @@ static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 	return false;
 }
 
-static lpi_module_t lpi_dahua_tcp = {
-	LPI_PROTO_DAHUA,
-	LPI_CATEGORY_IPCAMERAS,
-	"DahuaTCP",
-	13,
-	match_dahua
+static lpi_module_t lpi_qvod_udp = {
+	LPI_PROTO_UDP_QVOD,
+	LPI_CATEGORY_P2P,
+	"QVOD_UDP",
+	201,
+	match_qvod_udp
 };
 
-void register_dahua_tcp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dahua_tcp, mod_map);
+void register_qvod_udp(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_qvod_udp, mod_map);
 }
 

@@ -15,6 +15,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_ares.cc \
 	lpi_badbaidu.cc \
 	lpi_baofeng_tcp.cc \
+	lpi_beam.cc \
 	lpi_bitcoin.cc \
 	lpi_bitextend.cc \
 	lpi_bittorrent.cc \
@@ -27,6 +28,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_chatango.cc \
 	lpi_cisco_vpn.cc \
 	lpi_clashofclans.cc \
+	lpi_classin_tcp.cc \
 	lpi_clubbox.cc \
 	lpi_cod_waw.cc \
 	lpi_conquer.cc \
@@ -85,6 +87,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_https.cc \
 	lpi_http_tunnel.cc \
 	lpi_ica.cc \
+	lpi_icep.cc \
 	lpi_id.cc \
 	lpi_idrivesync.cc \
 	lpi_ihexin.cc \
@@ -170,6 +173,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_qqlive_tcp.cc \
 	lpi_qqspeedmobile_tcp.cc \
 	lpi_qvod.cc \
+        lpi_rabbitmq.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
@@ -177,9 +181,11 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_realvnc.cc \
 	lpi_rejection.cc \
 	lpi_relay.cc \
+	lpi_remote_manipulator.cc \
 	lpi_revolver_nblbt.cc \
 	lpi_rfb.cc \
 	lpi_rpcscan.cc \
+	lpi_rrtv.cc \
 	lpi_rsync.cc \
 	lpi_rtmp.cc \
 	lpi_rtsp.cc \
@@ -239,6 +245,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_twitch_irc.cc \
 	lpi_utherverse.cc \
 	lpi_vainglory.cc \
+	lpi_vhdp2p.cc \
 	lpi_viber.cc \
 	lpi_vmware.cc \
 	lpi_vodlocker.cc \
@@ -246,6 +253,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_vpnunlimited_tcp.cc \
 	lpi_warcraft3.cc \
 	lpi_web_junk.cc \
+	lpi_webex_stun.cc \
 	lpi_weblogic.cc \
 	lpi_wechat.cc \
 	lpi_weibo.cc \

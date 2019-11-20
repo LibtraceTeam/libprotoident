@@ -32,7 +32,7 @@
 
 static inline bool match_poe_40(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x00, 0x03, 0x00, 0x00)) {
-                if (len == 40 || len == 54) {
+                if (len == 40 || len == 54 || len == 20 || len == 66) {
                         return true;
                 }
         }

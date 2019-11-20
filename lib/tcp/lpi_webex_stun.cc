@@ -30,63 +30,58 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-/* Chinese IP surveillance Cameras */
+/* Bastardization of the STUN protocol used by Cisco Webex */
 
-static inline bool match_dahua_ports(uint16_t sport, uint16_t cport) {
-        if (sport == 8888 || cport == 8888) {
+static inline bool match_webex_req(uint32_t payload, uint32_t len) {
+
+        if (len == 28 && MATCH(payload, 0x00, 0x03, 0x00, 0x08)) {
                 return true;
         }
 
-        if (sport == 37777 || cport == 37777) {
-                return true;
+        return false;
+}
+
+static inline bool match_webex_resp(uint32_t payload, uint32_t len) {
+
+        if (MATCH(payload, 0x01, 0x13, 0x00, ANY)) {
+                if ((ntohl(payload) & 0x0000ffff) == len - 20)
+                        return true;
         }
+
         return false;
 }
 
-static inline bool match_f4_186(uint32_t payload, uint32_t len) {
-        if (len == 186 && MATCH(payload, 0xf4, 0x00, 0x00, 0x00))
-                return true;
-        return false;
+static inline bool match_webex_stun(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-}
-
-static inline bool match_f4_208(uint32_t payload, uint32_t len) {
-        if (len >= 206 && len <= 208 && MATCH(payload, 0xf4, 0x00, 0x00, 0x58))
-                return true;
-        return false;
-
-}
-
-static inline bool match_dahua(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (!match_dahua_ports(data->server_port, data->client_port)) {
+        if (data->server_port != 80 && data->client_port != 80) {
                 return false;
         }
 
-        if (match_f4_186(data->payload[0], data->payload_len[0])) {
-                if (match_f4_208(data->payload[1], data->payload_len[1])) {
+        if (match_webex_req(data->payload[0], data->payload_len[0])) {
+                if (match_webex_resp(data->payload[1], data->payload_len[1])) {
                         return true;
                 }
         }
 
-        if (match_f4_186(data->payload[1], data->payload_len[1])) {
-                if (match_f4_208(data->payload[0], data->payload_len[0])) {
+        if (match_webex_req(data->payload[1], data->payload_len[1])) {
+                if (match_webex_resp(data->payload[0], data->payload_len[0])) {
                         return true;
                 }
         }
+
 
 	return false;
 }
 
-static lpi_module_t lpi_dahua_tcp = {
-	LPI_PROTO_DAHUA,
-	LPI_CATEGORY_IPCAMERAS,
-	"DahuaTCP",
-	13,
-	match_dahua
+static lpi_module_t lpi_webex_stun = {
+	LPI_PROTO_WEBEX_STUN,
+	LPI_CATEGORY_TUNNELLING,
+	"WebexSTUN",
+	140,
+	match_webex_stun
 };
 
-void register_dahua_tcp(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_dahua_tcp, mod_map);
+void register_webex_stun(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_webex_stun, mod_map);
 }
 
