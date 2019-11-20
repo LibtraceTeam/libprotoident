@@ -86,6 +86,34 @@ build-ubuntu-bionic:
   only:
     - tags
 
+build-ubuntu-disco:
+  stage: build
+  image: ubuntu:disco
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/disco/
+    - mv ../*.deb built-packages/disco/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
+build-ubuntu-eoan:
+  stage: build
+  image: ubuntu:eoan
+  script:
+    - ./gitlab-build.sh
+    - mkdir -p built-packages/eoan/
+    - mv ../*.deb built-packages/eoan/
+  artifacts:
+    paths:
+      - built-packages/*
+    expire_in: 1 day
+  only:
+    - tags
+
 upload-packages:
   stage: upload
   image: ubuntu:bionic
