@@ -10,5 +10,5 @@ libprotoident_la_SOURCES=libprotoident.h libprotoident.cc \
 INCLUDES=@ADD_INCLS@
 libprotoident_la_LIBADD = @ADD_LIBS@ tcp/libprotoident_tcp.la \
 	udp/libprotoident_udp.la
-libprotoident_la_LDFLAGS = @ADD_LDFLAGS@ -version-info 2:13:0
+libprotoident_la_LDFLAGS = @ADD_LDFLAGS@ -version-info 3:0:1
 libprotoident_la_CPPFLAGS = -Werror

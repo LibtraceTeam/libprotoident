@@ -1,4 +1,4 @@
-libprotoident 2.0.13
+libprotoident 2.0.14
 
 ---------------------------------------------------------------------------
 Copyright (c) 2011-2019 The University of Waikato, Hamilton, New Zealand.
@@ -27,6 +27,7 @@ With contributions from:
     Jeroen Roovers
     Jiri Havranek
     Romain Fontugne
+    Jacob van Walraven
 
 Introduction
 ============

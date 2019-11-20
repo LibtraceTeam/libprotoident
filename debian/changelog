@@ -1,3 +1,17 @@
+libprotoident (2.0.14-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added new API method: lpi_get_protocol_by_name().
+  * Fixed bug where lpi_print_category() would fail for the message
+    queuing category.
+  * Renamed "Roblox" to "Raknet" to better reflect the real underlying
+    protocol.
+  * Added new protocol category for educational applications.
+  * Added 17 new application protocols.
+  * Improved rules for a further 17 application protocols.
+
+ -- Shane Alcock <shane.alcock@waikato.ac.nz>  Wed, 20 Nov 2019 14:11:21 +1300
+
 libprotoident (2.0.13) unstable; urgency=low
 
   * New upstream release
