@@ -176,7 +176,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_rdp_udp.cc \
 	lpi_real.cc \
 	lpi_risingstorm.cc \
-	lpi_roblox.cc \
+	lpi_raknet.cc \
 	lpi_robocraft.cc \
 	lpi_rocket_league.cc \
 	lpi_rrshare.cc \

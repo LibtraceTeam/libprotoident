@@ -205,7 +205,7 @@ void register_ramsey_dash(LPIModuleMap *mod_map);
 void register_rdp_udp(LPIModuleMap *mod_map);
 void register_real(LPIModuleMap *mod_map);
 void register_risingstorm(LPIModuleMap *mod_map);
-void register_roblox(LPIModuleMap *mod_map);
+void register_raknet(LPIModuleMap *mod_map);
 void register_robocraft(LPIModuleMap *mod_map);
 void register_rocket_league(LPIModuleMap *mod_map);
 void register_rrshare(LPIModuleMap *mod_map);
