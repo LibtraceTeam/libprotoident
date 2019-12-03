@@ -793,8 +793,27 @@ lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
  * @param name The protocol name
  *
  * @returns The LPI protocol for the supplied name.
+ *          LPI_PROTO_UNKNOWN if the name is not found.
  */
 lpi_protocol_t lpi_get_protocol_by_name(char *name);
+
+/* Give the category name, returns the lpi category it matches.
+ *
+ * @param name The protocol name
+ *
+ * @returns the LPI category for the supplied name on success.
+ *          LPI_CATEGORY_UNKNOWN if the name is not found.
+ */
+lpi_category_t lpi_get_category_by_name(char *name);
+
+/* Given the lpi protocol, returns the lpi category it matches.
+ *
+ * @param protocol The lpi protocol
+ *
+ * @returns the lpi category for the supplied lpi protocol.
+ *          LPI_CATEGORY_UNKNOWN if the category is not found.
+ */
+lpi_category_t lpi_get_category_by_protocol(lpi_protocol_t protocol);
 
 /** Determines whether the protocol matching a given protocol number is no
  *  longer supported by libprotoident.
