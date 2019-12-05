@@ -51,6 +51,8 @@ lpi_module_t *lpi_unknown_udp = NULL;
 
 static LPINameMap lpi_names;
 static LPIProtocolMap lpi_protocols;
+static LPICategoryMap lpi_categories;
+static LPICategoryProtocolMap lpi_category_protocols;
 
 static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
@@ -79,10 +81,12 @@ int lpi_init_library() {
 	if (register_udp_protocols(&UDP_protocols) == -1) 
 		return -1;
 
-	init_other_protocols(&lpi_names, &lpi_protocols);
+	init_other_protocols(&lpi_names, &lpi_protocols, &lpi_category_protocols);
 
-	register_names(&TCP_protocols, &lpi_names, &lpi_protocols);
-	register_names(&UDP_protocols, &lpi_names, &lpi_protocols);
+	register_names(&TCP_protocols, &lpi_names, &lpi_protocols, &lpi_category_protocols);
+	register_names(&UDP_protocols, &lpi_names, &lpi_protocols, &lpi_category_protocols);
+
+	register_category_names(&lpi_categories);
 
 	init_called = true;
 
@@ -484,13 +488,37 @@ lpi_protocol_t lpi_get_protocol_by_name(char *name) {
 	it = lpi_protocols.find(name);
 
 	if (it == lpi_protocols.end()) {
-		return LPI_PROTO_LAST;
+		return LPI_PROTO_UNKNOWN;
 	}
 
 	return (it->second);
 }
 
+lpi_category_t lpi_get_category_by_name(char *name) {
 
+	LPICategoryMap::iterator it;
+
+	it = lpi_categories.find(name);
+
+	if (it == lpi_categories.end()) {
+		return LPI_CATEGORY_UNKNOWN;
+	}
+
+	return (it->second);
+}
+
+lpi_category_t lpi_get_category_by_protocol(lpi_protocol_t protocol) {
+
+	LPICategoryProtocolMap::iterator it;
+
+	it = lpi_category_protocols.find(protocol);
+
+	if (it == lpi_category_protocols.end()) {
+		return LPI_CATEGORY_UNKNOWN;
+	}
+
+	return (it->second);
+}
 
 bool lpi_is_protocol_inactive(lpi_protocol_t proto) {
 
