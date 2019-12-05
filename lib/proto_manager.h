@@ -39,12 +39,17 @@ typedef std::list<lpi_module_t *> LPIModuleList;
 typedef std::map<uint8_t, LPIModuleList *> LPIModuleMap;
 typedef std::map<lpi_protocol_t, const char *> LPINameMap;
 typedef std::map<std::string, lpi_protocol_t> LPIProtocolMap;
+typedef std::map<std::string, lpi_category_t> LPICategoryMap;
+typedef std::map<lpi_protocol_t, lpi_category_t> LPICategoryProtocolMap;
 
 void register_protocol(lpi_module_t *mod, LPIModuleMap *mod_map);
 int register_tcp_protocols(LPIModuleMap *mod_map);
 int register_udp_protocols(LPIModuleMap *mod_map);
-void register_names(LPIModuleMap *mod_map, LPINameMap *name_map, LPIProtocolMap *proto_map);
-void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map);
+void register_names(LPIModuleMap *mod_map, LPINameMap *name_map, LPIProtocolMap *proto_map,
+	LPICategoryProtocolMap *category_protocols);
+void register_category_names(LPICategoryMap *categories);
+void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map,
+	LPICategoryProtocolMap *category_protocols);
 void free_protocols(LPIModuleMap *mod_map);
 
 

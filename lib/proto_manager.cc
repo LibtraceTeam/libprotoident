@@ -606,7 +606,8 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	return 0;
 }
 
-static void register_list_names(LPIModuleList *ml, LPINameMap *names, LPIProtocolMap *protos) {
+static void register_list_names(LPIModuleList *ml, LPINameMap *names, LPIProtocolMap *protos,
+	LPICategoryProtocolMap *category_protocols) {
 	LPIModuleList::iterator it; 
 
 	for (it = ml->begin(); it != ml->end(); it ++) {
@@ -614,21 +615,33 @@ static void register_list_names(LPIModuleList *ml, LPINameMap *names, LPIProtoco
 
 		(*names)[mod->protocol] = mod->name;
                 (*protos)[std::string(mod->name)] = mod->protocol;
+		(*category_protocols)[mod->protocol] = mod->category;
 	}
 
 }
 
-void register_names(LPIModuleMap *mods, LPINameMap *names, LPIProtocolMap *protocols) {
+void register_names(LPIModuleMap *mods, LPINameMap *names, LPIProtocolMap *protocols,
+	LPICategoryProtocolMap *category_protocols) {
 
 	LPIModuleMap::iterator it;
 
 	for (it = mods->begin(); it != mods->end(); it ++) {
-		register_list_names(it->second, names, protocols);
+		register_list_names(it->second, names, protocols, category_protocols);
 	}
 
 }
 
-void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map) {
+void register_category_names(LPICategoryMap *categories) {
+
+	int i;
+
+	for (i = 0; i < LPI_CATEGORY_LAST; i++) {
+		(*categories)[std::string(lpi_print_category((lpi_category_t)i))] = (lpi_category_t)i;
+	}
+}
+
+void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map,
+	LPICategoryProtocolMap *category_protocols) {
 
 	lpi_icmp = new lpi_module_t;
 
@@ -639,6 +652,7 @@ void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map) {
 	lpi_icmp->lpi_callback = NULL;
 	(*name_map)[lpi_icmp->protocol] = lpi_icmp->name;
         (*proto_map)[std::string(lpi_icmp->name)] = lpi_icmp->protocol;
+	(*category_protocols)[lpi_icmp->protocol] = lpi_icmp->category;
 
 	lpi_unknown_tcp = new lpi_module_t;
 
@@ -649,6 +663,7 @@ void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map) {
 	lpi_unknown_tcp->lpi_callback = NULL;
 	(*name_map)[lpi_unknown_tcp->protocol] = lpi_unknown_tcp->name;
 	(*proto_map)[std::string(lpi_unknown_tcp->name)] = lpi_unknown_tcp->protocol;
+	(*category_protocols)[lpi_unknown_tcp->protocol] = lpi_unknown_tcp->category;
 
 	lpi_unknown_udp = new lpi_module_t;
 
@@ -659,6 +674,7 @@ void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map) {
 	lpi_unknown_udp->lpi_callback = NULL;
 	(*name_map)[lpi_unknown_udp->protocol] = lpi_unknown_udp->name;
         (*proto_map)[std::string(lpi_unknown_udp->name)] = lpi_unknown_udp->protocol;
+	(*category_protocols)[lpi_unknown_udp->protocol] = lpi_unknown_udp->category;
 
 	lpi_unsupported = new lpi_module_t;
 
@@ -669,5 +685,6 @@ void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map) {
 	lpi_unsupported->lpi_callback = NULL;
 	(*name_map)[lpi_unsupported->protocol] = lpi_unsupported->name;
         (*proto_map)[std::string(lpi_unsupported->name)] = lpi_unsupported->protocol;
+	(*category_protocols)[lpi_unsupported->protocol] = lpi_unsupported->category;
 }
 
