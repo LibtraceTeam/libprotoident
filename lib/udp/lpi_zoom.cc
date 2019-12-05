@@ -36,6 +36,11 @@ static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
                 if (len == 107 || len == 109 || len == 169)
                         return true;
         }
+        if (MATCH(payload, 0x01, 0x00, 0x03, ANY)) {
+                if (len == 187) {
+                        return true;
+                }
+        }
         if (MATCH(payload, 0x01, 0x00, 0x6c, 0x00) && len == 111)
                 return true;
         return false;
@@ -45,6 +50,8 @@ static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
 static inline bool match_zoom_02(uint32_t payload, uint32_t len) {
 
         if (MATCH(payload, 0x02, 0x00, 0x01, ANY) && len == 35)
+                return true;
+        if (MATCH(payload, 0x02, 0x00, 0x03, ANY) && len == 105)
                 return true;
         if (MATCH(payload, 0x02, 0x00, 0x22, 0x00) && len == 37)
                 return true;
