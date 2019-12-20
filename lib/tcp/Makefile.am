@@ -238,6 +238,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_tor.cc \
 	lpi_tpkt.cc \
 	lpi_trackmania.cc \
+	lpi_transocks.cc \
 	lpi_trion.cc \
 	lpi_trojan_win32_generic_sb.cc \
 	lpi_trojan_zeroaccess.cc \

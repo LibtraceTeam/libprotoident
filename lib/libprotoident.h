@@ -400,6 +400,7 @@ typedef enum {
         LPI_PROTO_BEAM,
         LPI_PROTO_VHDP2P,
         LPI_PROTO_CLASSIN,
+        LPI_PROTO_TRANSOCKS,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

@@ -305,6 +305,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_tor(mod_map);
 	register_tpkt_generic(mod_map);
 	register_trackmania(mod_map);
+	register_transocks(mod_map);
 	register_trion(mod_map);
 	register_trojan_win32_generic_sb(mod_map);
 	register_trojan_zeroaccess(mod_map);
