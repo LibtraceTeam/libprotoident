@@ -225,7 +225,7 @@ static inline bool match_quic_044(lpi_data_t *data) {
 }
 
 static inline bool match_reply_fbquic(uint32_t payload, uint32_t len) {
-        if (len >= 45 && len <= 50) {
+        if (len >= 39 && len <= 50) {
                 if ((ntohl(payload) & 0xf0000000) != 0xc0000000) {
                         return false;
                 }

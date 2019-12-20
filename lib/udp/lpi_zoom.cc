@@ -66,6 +66,8 @@ static inline bool match_zoom_05(uint32_t payload) {
                 return true;
         if (MATCH(payload, 0x05, 0x0f, 0x01, 0x00))
                 return true;
+        if (MATCH(payload, 0x05, 0x15, 0x01, 0x00))
+                return true;
         return false;
 
 }
