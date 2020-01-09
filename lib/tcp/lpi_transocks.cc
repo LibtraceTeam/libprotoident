@@ -54,6 +54,11 @@ static inline bool match_ts_reply(uint32_t payload, uint32_t len) {
         if (len == 1460) {
                 return true;
         }
+
+        /* 503 is also a common length? also seen 501 and 507 occasionally.. */
+        if (len == 503) {
+                return true;
+        }
         return false;
 
 }
