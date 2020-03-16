@@ -241,6 +241,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_qqspeedmobile_tcp(mod_map);
 	register_qvod(mod_map);
         register_rabbitmq(mod_map);
+        register_ragnarokonline(mod_map);
         register_razor(mod_map);
 	register_rbls(mod_map);
 	register_rdp(mod_map);
@@ -367,6 +368,7 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_arksurvival(mod_map);
 	register_arma_server(mod_map);
 	register_arma3_server(mod_map);
+	register_artcp(mod_map);
 	register_assettocorsa(mod_map);
 	register_avast_secure_dns(mod_map);
 	register_bacnet(mod_map);

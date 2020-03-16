@@ -401,6 +401,7 @@ typedef enum {
         LPI_PROTO_VHDP2P,
         LPI_PROTO_CLASSIN,
         LPI_PROTO_TRANSOCKS,
+        LPI_PROTO_RAGNAROK_ONLINE,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -642,6 +643,7 @@ typedef enum {
         LPI_PROTO_UDP_COD_MOBILE,
         LPI_PROTO_UDP_NVIDIA_GAMESTREAM,
         LPI_PROTO_UDP_CLASSIN,
+        LPI_PROTO_UDP_ARTCP,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */

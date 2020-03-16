@@ -43,6 +43,7 @@ void register_ares_udp(LPIModuleMap *mod_map);
 void register_arksurvival(LPIModuleMap *mod_map);
 void register_arma_server(LPIModuleMap *mod_map);
 void register_arma3_server(LPIModuleMap *mod_map);
+void register_artcp(LPIModuleMap *mod_map);
 void register_assettocorsa(LPIModuleMap *mod_map);
 void register_avast_secure_dns(LPIModuleMap *mod_map);
 void register_backweb(LPIModuleMap *mod_map);

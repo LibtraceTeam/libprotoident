@@ -13,6 +13,7 @@ libprotoident_udp_la_SOURCES = \
 	lpi_ark.cc \
 	lpi_arma_server.cc \
 	lpi_arma3_server.cc \
+	lpi_artcp.cc \
 	lpi_assettocorsa.cc \
 	lpi_avast_secure_dns.cc \
         lpi_backweb.cc \
