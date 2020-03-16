@@ -74,8 +74,8 @@ static inline bool match_zoom_05(uint32_t payload) {
 
 static inline bool match_zoom_stream_hello(uint32_t payload, uint32_t len) {
 
-        /* Seen 85 and 86 so far */
-        if (len >= 80 && len <= 90) {
+        /* Seen 72, 85 and 86 so far */
+        if (len >= 72 && len <= 90) {
                 if (MATCH(payload, 0x1f, 0x01, 0x01, 0x00))
                         return true;
         }

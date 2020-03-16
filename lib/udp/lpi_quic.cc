@@ -177,7 +177,7 @@ static inline bool match_req_q044(uint32_t payload, uint32_t len) {
                 return true;
         }
         if (MATCH(payload, 0xc3, 'Q', '0', '4') &&
-                        (len == 1350 || len == 1330)) {
+                        (len == 36 || len == 1350 || len == 1330)) {
                 return true;
         }
         return false;
@@ -225,7 +225,7 @@ static inline bool match_quic_044(lpi_data_t *data) {
 }
 
 static inline bool match_reply_fbquic(uint32_t payload, uint32_t len) {
-        if (len >= 39 && len <= 50) {
+        if (len >= 38 && len <= 50) {
                 if ((ntohl(payload) & 0xf0000000) != 0xc0000000) {
                         return false;
                 }
@@ -237,7 +237,7 @@ static inline bool match_reply_fbquic(uint32_t payload, uint32_t len) {
 }
 
 static inline bool match_req_fbquic(uint32_t payload, uint32_t len) {
-        if (len == 1235) {
+        if (len == 1232 || len == 1235) {
                 if ((ntohl(payload) & 0xf0000000) != 0xc0000000) {
                         return false;
                 }

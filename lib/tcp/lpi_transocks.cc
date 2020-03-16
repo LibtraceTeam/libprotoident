@@ -51,7 +51,7 @@ static inline bool match_ts_reply(uint32_t payload, uint32_t len) {
         /* Lower path MTUs would affect this number, but let's concentrate
          * on getting the lowest hanging fruit for now.
          */
-        if (len == 1460) {
+        if (len == 1460 || len == 1406 || len == 1356) {
                 return true;
         }
 
@@ -59,6 +59,12 @@ static inline bool match_ts_reply(uint32_t payload, uint32_t len) {
         if (len == 503) {
                 return true;
         }
+
+        /* Starting to see a bit of variation in reply sizes now :/ */
+        if (len >= 678 && len <= 688) {
+                return true;
+        }
+
         return false;
 
 }

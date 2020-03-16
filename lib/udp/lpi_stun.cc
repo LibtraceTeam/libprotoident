@@ -40,6 +40,8 @@ static bool match_facetime_stun_request(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x0f, 0xe1, ANY, ANY))
                 return true;
+        if (MATCH(payload, 0x0f, 0xe4, ANY, ANY))
+                return true;
         return false;
 
 }
@@ -53,6 +55,8 @@ static bool match_facetime_stun_response(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x0e, 0xe0, ANY, ANY))
                 return true;
         if (MATCH(payload, 0x0e, 0xe1, ANY, ANY))
+                return true;
+        if (MATCH(payload, 0x0e, 0xe4, ANY, ANY))
                 return true;
         return false;
 
