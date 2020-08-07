@@ -37,7 +37,7 @@ static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
                         return true;
         }
         if (MATCH(payload, 0x01, 0x00, 0x03, ANY)) {
-                if (len == 187) {
+                if (len == 187 || len == 185) {
                         return true;
                 }
         }
