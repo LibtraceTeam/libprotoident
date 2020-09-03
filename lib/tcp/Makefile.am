@@ -53,6 +53,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_dxp.cc \
 	lpi_ea_games.cc \
 	lpi_emule.cc \
+	lpi_ethernetip.cc \
 	lpi_eye.cc \
 	lpi_facebook_turn.cc \
 	lpi_fb_message.cc \
