@@ -53,7 +53,7 @@ static lpi_module_t lpi_cip_io = {
 	LPI_PROTO_UDP_CIP_IO,
 	LPI_CATEGORY_ICS,
 	"CIP I/O",
-	10,
+	2,
 	match_cip_io
 };
 

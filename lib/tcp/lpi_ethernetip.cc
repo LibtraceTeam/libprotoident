@@ -87,7 +87,7 @@ static lpi_module_t lpi_ethernetip = {
 	LPI_PROTO_ETHERNETIP,
 	LPI_CATEGORY_ICS,
 	"EtherNet/IP",
-	10,
+	2,
 	match_ethernetip
 };
 
