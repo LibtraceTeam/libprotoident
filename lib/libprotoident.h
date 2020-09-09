@@ -420,6 +420,7 @@ typedef enum {
         LPI_PROTO_UDP_EMULE,
         LPI_PROTO_UDP_EYE,
         LPI_PROTO_UDP_RTP,
+        LPI_PROTO_UDP_ETHERNETIP,
 	LPI_PROTO_UDP_CIP_IO, /* Common industrial protocol IO */
         LPI_PROTO_UDP_MSN_VIDEO,
         LPI_PROTO_UDP_COD,     /* Call of Duty game protocol */

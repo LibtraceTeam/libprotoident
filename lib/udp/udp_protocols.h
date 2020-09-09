@@ -60,6 +60,7 @@ void register_canon_mfnp(LPIModuleMap *mod_map);
 void register_chargen_exploit(LPIModuleMap *mod_map);
 void register_checkpoint_rdp(LPIModuleMap *mod_map);
 void register_chivalry(LPIModuleMap *mod_map);
+void register_ethernetip_udp(LPIModuleMap *mod_map);
 void register_cip_io(LPIModuleMap *mod_map);
 void register_cirn(LPIModuleMap *mod_map);
 void register_cisco_ipsec(LPIModuleMap *mod_map);
