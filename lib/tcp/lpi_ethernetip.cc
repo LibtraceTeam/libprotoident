@@ -74,7 +74,7 @@ static inline bool match_ethernetip(lpi_data_t *data, lpi_module_t *mod UNUSED) 
 	if (data->payload_len[0] < 24 || data->payload_len[1] < 24)
 		return false;
 
-	if (data->server_port != 44818)
+	if (data->server_port != 44818 && data->client_port != 44818)
 		return false;
 
 	if (match_command(data->payload[0]) && match_command(data->payload[1]))
@@ -87,7 +87,7 @@ static lpi_module_t lpi_ethernetip = {
 	LPI_PROTO_ETHERNETIP,
 	LPI_CATEGORY_ICS,
 	"EtherNet/IP",
-	2,
+	100,
 	match_ethernetip
 };
 

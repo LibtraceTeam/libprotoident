@@ -58,8 +58,8 @@ static inline bool match_cip_io(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 static lpi_module_t lpi_cip_io = {
 	LPI_PROTO_UDP_CIP_IO,
 	LPI_CATEGORY_ICS,
-	"CIP I/O",
-	2,
+	"CIP_I/O",
+	100,
 	match_cip_io
 };
 

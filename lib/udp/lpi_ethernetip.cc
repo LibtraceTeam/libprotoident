@@ -93,8 +93,8 @@ static inline bool match_ethernetip_udp(lpi_data_t *data, lpi_module_t *mod UNUS
 static lpi_module_t lpi_ethernetip_udp = {
 	LPI_PROTO_UDP_ETHERNETIP,
 	LPI_CATEGORY_ICS,
-	"EtherNet/IP UDP",
-	2,
+	"EtherNet/IP_UDP",
+	100,
 	match_ethernetip_udp
 };
 
