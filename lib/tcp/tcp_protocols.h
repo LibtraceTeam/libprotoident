@@ -81,6 +81,7 @@ void register_dvrns(LPIModuleMap *mod_map);
 void register_dxp(LPIModuleMap *mod_map);
 void register_ea_games(LPIModuleMap *mod_map);
 void register_emule(LPIModuleMap *mod_map);
+void register_ethernetip(LPIModuleMap *mod_map);
 void register_eye(LPIModuleMap *mod_map);
 void register_facebook_turn(LPIModuleMap *mod_map);
 void register_fb_message(LPIModuleMap *mod_map);

@@ -120,6 +120,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_dxp(mod_map);
 	register_ea_games(mod_map);
 	register_emule(mod_map);
+	register_ethernetip(mod_map);
 	register_eye(mod_map);
 	register_facebook_turn(mod_map);
 	register_fb_message(mod_map);
@@ -385,6 +386,8 @@ int register_udp_protocols(LPIModuleMap *mod_map) {
 	register_chargen_exploit(mod_map);
 	register_checkpoint_rdp(mod_map);
 	register_chivalry(mod_map);
+        register_ethernetip_udp(mod_map);
+	register_cip_io(mod_map);
 	register_cirn(mod_map);
 	register_cisco_ipsec(mod_map);
 	register_cisco_sslvpn(mod_map);

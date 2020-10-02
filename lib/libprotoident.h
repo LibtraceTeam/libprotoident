@@ -402,6 +402,7 @@ typedef enum {
         LPI_PROTO_CLASSIN,
         LPI_PROTO_TRANSOCKS,
         LPI_PROTO_RAGNAROK_ONLINE,
+	LPI_PROTO_ETHERNETIP,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -419,6 +420,8 @@ typedef enum {
         LPI_PROTO_UDP_EMULE,
         LPI_PROTO_UDP_EYE,
         LPI_PROTO_UDP_RTP,
+        LPI_PROTO_UDP_ETHERNETIP,
+	LPI_PROTO_UDP_CIP_IO, /* Common industrial protocol IO */
         LPI_PROTO_UDP_MSN_VIDEO,
         LPI_PROTO_UDP_COD,     /* Call of Duty game protocol */
         LPI_PROTO_UDP_NTP,
