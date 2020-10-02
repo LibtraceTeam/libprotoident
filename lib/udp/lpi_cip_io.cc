@@ -46,7 +46,7 @@ static inline bool match_cip(lpi_data_t *data) {
 
 static inline bool match_cip_io(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (data->server_port != 2222 && data->client_port != 2222)
+	if (data->server_port != 2222 || data->client_port != 2222)
 		return false;
 
 	if (match_cip(data))
