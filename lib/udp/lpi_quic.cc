@@ -166,6 +166,64 @@ static inline bool match_old_gquic(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_05X_req(uint32_t payload, uint32_t len) {
+
+        if ((ntohl(payload) & 0xf0000000) != 0xc0000000) {
+                return false;
+        }
+        if (MATCH(payload, ANY, 0x51, 0x30, 0x35)) {
+                if (len == 42) {
+                        return true;
+                }
+
+                if (len == 1350 || len == 1330) {
+                        return true;
+                }
+        }
+
+        if (MATCH(payload, ANY, 0x54, 0x30, 0x35)) {
+                if (len == 1350 || len == 1330) {
+                        return true;
+                }
+        }
+
+        return false;
+}
+
+static inline bool match_05X_reply(uint32_t payload, uint32_t len,
+                uint32_t other) {
+
+        if ((ntohl(payload) & 0x00ff0000) != (ntohl(other) & 0x00ff0000)) {
+                return false;
+        }
+
+        if ((ntohl(payload) & 0xf0000000) == 0xc0000000) {
+                if (MATCH(payload, ANY, 0x51, 0x30, 0x35)) {
+                        if (len == 1350 || len == 1330) {
+                                return true;
+                        }
+                }
+
+                if (MATCH(payload, ANY, 0x54, 0x30, 0x35)) {
+                        if (len == 1350 || len == 1330) {
+                                return true;
+                        }
+                }
+        }
+
+        if ((ntohl(payload) & 0xff000000) == 0xd5000000) {
+                if (!MATCH(payload, ANY, 0x51, 0x30, 0x35)) {
+                        return false;
+                }
+
+                if (len == 1350 || len == 1330) {
+                        return true;
+                }
+        }
+
+        return false;
+}
+
 static inline bool match_req_q044(uint32_t payload, uint32_t len) {
 
         if (MATCHSTR(payload, "\xffQ04") && len == 1350) {
@@ -206,6 +264,8 @@ static inline bool match_reply_q044(uint32_t payload, uint32_t len) {
         return false;
 }
 
+
+
 /* IETF QUIC version 44, starting to be deployed by Google */
 static inline bool match_quic_044(lpi_data_t *data) {
 
@@ -224,8 +284,25 @@ static inline bool match_quic_044(lpi_data_t *data) {
         return false;
 }
 
+static inline bool match_quic_05X(lpi_data_t *data) {
+        if (match_05X_req(data->payload[0], data->payload_len[0])) {
+                if (match_05X_reply(data->payload[1], data->payload_len[1],
+                                data->payload[0])) {
+                        return true;
+                }
+        }
+
+        if (match_05X_req(data->payload[1], data->payload_len[1])) {
+                if (match_05X_reply(data->payload[0], data->payload_len[0],
+                                data->payload[1])) {
+                        return true;
+                }
+        }
+        return false;
+}
+
 static inline bool match_reply_fbquic(uint32_t payload, uint32_t len) {
-        if (len >= 38 && len <= 50) {
+        if ((len >= 38 && len <= 50) || len == 1252 || len == 1232) {
                 if ((ntohl(payload) & 0xf0000000) != 0xc0000000) {
                         return false;
                 }
@@ -270,6 +347,10 @@ static inline bool match_quic(lpi_data_t *data, lpi_module_t *mod UNUSED) {
                 return false;
 
         if (match_quic_044(data)) {
+                return true;
+        }
+
+        if (match_quic_05X(data)) {
                 return true;
         }
 
