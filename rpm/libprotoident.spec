@@ -66,7 +66,6 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %files devel
 %{_includedir}/libprotoident*
 %{_libdir}/libprotoident.so
-%{_libdir}/libprotoident.a
 
 %files tools
 %{_bindir}/*
