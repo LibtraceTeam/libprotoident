@@ -1,3 +1,11 @@
+libprotoident (2.0.15-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added new API methods: lpi_get_category_by_protocol() and
+    lpi_get_category_by_name().
+  * Improved rules for 6 protocols, including QUIC and Zoom
+  * Added 5 new protocols.
+
 libprotoident (2.0.14-1) unstable; urgency=low
 
   * New upstream release.
