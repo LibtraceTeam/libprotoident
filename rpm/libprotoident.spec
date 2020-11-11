@@ -35,7 +35,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %package        tools
-Summary         Example software utilities for %{name}
+Summary:        Example software utilities for %{name}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description tools
