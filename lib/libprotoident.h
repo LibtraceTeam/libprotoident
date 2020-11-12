@@ -400,6 +400,9 @@ typedef enum {
         LPI_PROTO_BEAM,
         LPI_PROTO_VHDP2P,
         LPI_PROTO_CLASSIN,
+        LPI_PROTO_TRANSOCKS,
+        LPI_PROTO_RAGNAROK_ONLINE,
+	LPI_PROTO_ETHERNETIP,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,
@@ -417,6 +420,8 @@ typedef enum {
         LPI_PROTO_UDP_EMULE,
         LPI_PROTO_UDP_EYE,
         LPI_PROTO_UDP_RTP,
+        LPI_PROTO_UDP_ETHERNETIP,
+	LPI_PROTO_UDP_CIP_IO, /* Common industrial protocol IO */
         LPI_PROTO_UDP_MSN_VIDEO,
         LPI_PROTO_UDP_COD,     /* Call of Duty game protocol */
         LPI_PROTO_UDP_NTP,
@@ -641,6 +646,7 @@ typedef enum {
         LPI_PROTO_UDP_COD_MOBILE,
         LPI_PROTO_UDP_NVIDIA_GAMESTREAM,
         LPI_PROTO_UDP_CLASSIN,
+        LPI_PROTO_UDP_ARTCP,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -793,8 +799,27 @@ lpi_module_t *lpi_guess_protocol(lpi_data_t *data);
  * @param name The protocol name
  *
  * @returns The LPI protocol for the supplied name.
+ *          LPI_PROTO_UNKNOWN if the name is not found.
  */
 lpi_protocol_t lpi_get_protocol_by_name(char *name);
+
+/* Give the category name, returns the lpi category it matches.
+ *
+ * @param name The protocol name
+ *
+ * @returns the LPI category for the supplied name on success.
+ *          LPI_CATEGORY_UNKNOWN if the name is not found.
+ */
+lpi_category_t lpi_get_category_by_name(char *name);
+
+/* Given the lpi protocol, returns the lpi category it matches.
+ *
+ * @param protocol The lpi protocol
+ *
+ * @returns the lpi category for the supplied lpi protocol.
+ *          LPI_CATEGORY_UNKNOWN if the category is not found.
+ */
+lpi_category_t lpi_get_category_by_protocol(lpi_protocol_t protocol);
 
 /** Determines whether the protocol matching a given protocol number is no
  *  longer supported by libprotoident.

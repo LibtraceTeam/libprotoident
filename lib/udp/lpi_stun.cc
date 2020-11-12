@@ -40,6 +40,8 @@ static bool match_facetime_stun_request(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x0f, 0xe1, ANY, ANY))
                 return true;
+        if (MATCH(payload, 0x0f, 0xe4, ANY, ANY))
+                return true;
         return false;
 
 }
@@ -54,6 +56,22 @@ static bool match_facetime_stun_response(uint32_t payload, uint32_t len) {
                 return true;
         if (MATCH(payload, 0x0e, 0xe1, ANY, ANY))
                 return true;
+        if (MATCH(payload, 0x0e, 0xe4, ANY, ANY))
+                return true;
+        return false;
+
+}
+
+static bool match_skype_stun_request(uint32_t payload, uint32_t len) {
+
+        /* Bytes 3 and 4 are the Message Length - the STUN header */
+        if ((ntohl(payload) & 0x0000ffff) != len - 20)
+                return false;
+
+        /* These flows start with an Allocate Request */
+        if (MATCH(payload, 0x00, 0x03, ANY, ANY))
+                return true;
+
         return false;
 
 }
@@ -78,6 +96,10 @@ static bool match_stun_payload(uint32_t payload, uint32_t len) {
         if (MATCH(payload, 0x01, 0x03, ANY, ANY))
                 return true;
         if (MATCH(payload, 0x01, 0x13, ANY, ANY))
+                return true;
+
+        /* Data Indication message (used by Skype) */
+        if (MATCH(payload, 0x01, 0x15, ANY, ANY))
                 return true;
 
         return false;

@@ -1,0 +1,45 @@
+name: Packaging for Centos and Fedora
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - amd64
+        target:
+          - "centos:7"
+          - "centos:8"
+          - "fedora:33"
+          - "fedora:32"
+
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Install prereq packages
+        run: ./rpmpkg-setup.sh ${{ matrix.target }}
+      - name: Build packages
+        run: ./rpmpkg-build.sh ${{ matrix.target }}
+      - name: Store packages
+        run: |
+          export DIRNAME=`echo ${{ matrix.target }} | tr ':' '_'`
+          mkdir -p packages/${DIRNAME}
+          cp ~/rpmbuild/RPMS/x86_64/*.rpm packages/${DIRNAME}/
+      - name: Publish packages to cloudsmith
+        uses: wanduow/action-cloudsmith-upload-packages@v1
+        with:
+          path: packages/
+          repo: ${{ secrets.CLOUDSMITH_OWNER }}/libprotoident
+          username: salcock
+          api_key: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+

@@ -53,6 +53,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_dxp.cc \
 	lpi_ea_games.cc \
 	lpi_emule.cc \
+	lpi_ethernetip.cc \
 	lpi_eye.cc \
 	lpi_facebook_turn.cc \
 	lpi_fb_message.cc \
@@ -174,6 +175,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_qqspeedmobile_tcp.cc \
 	lpi_qvod.cc \
         lpi_rabbitmq.cc \
+        lpi_ragnarokonline.cc \
         lpi_razor.cc \
 	lpi_rbls.cc \
 	lpi_rdp.cc \
@@ -238,6 +240,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_tor.cc \
 	lpi_tpkt.cc \
 	lpi_trackmania.cc \
+	lpi_transocks.cc \
 	lpi_trion.cc \
 	lpi_trojan_win32_generic_sb.cc \
 	lpi_trojan_zeroaccess.cc \

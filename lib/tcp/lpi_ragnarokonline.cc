@@ -30,70 +30,58 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
+static inline bool match_ro_0204(uint32_t payload, uint32_t len) {
 
-static inline bool match_monlist(uint32_t payload, uint32_t len) {
-
-        if (len == 0)
-                return true;
-
-        if (MATCH(payload, 0x17, 0x00, 0x03, 0x2a))
-                return true;
-        return false;
-
-}
-
-static inline bool match_monlist_reply(uint32_t payload, uint32_t len) {
-
-        /* Hopefully nobody replies :) */
-        if (len == 0)
-                return true;
-
-        /* NTPv2 reply */
-        if (MATCH(payload, 0x97, 0x00, 0x03, 0x2a))
-                return true;
-        if (MATCH(payload, 0xd7, ANY, 0x03, 0x2a))
-                return true;
-
-        /* NTPv3 reply */
-        if (MATCH(payload, 0x9f, 0x00, 0x03, 0x2a))
-                return true;
-        if (MATCH(payload, 0xdf, 0x00, 0x03, 0x2a))
-                return true;
-
-
-
-        return false;
-
-}
-
-static inline bool match_ntp_reflect(lpi_data_t *data, lpi_module_t *mod UNUSED) {
-
-        if (data->server_port != 123 && data->client_port != 123)
+        if (len < 11) {
                 return false;
-
-        if (match_monlist(data->payload[0], data->payload_len[0])) {
-                if (match_monlist_reply(data->payload[1], data->payload_len[1]))
-                        return true;
         }
 
-        if (match_monlist(data->payload[1], data->payload_len[1])) {
-                if (match_monlist_reply(data->payload[0], data->payload_len[0]))
-                        return true;
+        if (MATCH(payload, 0x02, 0x04, 0x00, 0x21)) {
+                return true;
+        }
+        return false;
+}
+
+static inline bool match_ro_reply(uint32_t payload, uint32_t len) {
+        if (len == 53 && MATCH(payload, 0x00, 0x32, 0x00, 0x01)) {
+                return true;
+        }
+        if (len == 57 && MATCH(payload, 0x00, 0x36, 0x00, 0x01)) {
+                return true;
+        }
+        return false;
+}
+
+static inline bool match_ragnarokonline(lpi_data_t *data, lpi_module_t *mod UNUSED) {
+
+        if (data->server_port != 5222 && data->client_port != 5222) {
+                return false;
         }
 
+        if (match_ro_0204(data->payload[0], data->payload_len[0])) {
+                if (match_ro_reply(data->payload[1], data->payload_len[1])) {
+                        return true;
+                }
+        }
+
+        if (match_ro_0204(data->payload[1], data->payload_len[1])) {
+                if (match_ro_reply(data->payload[0], data->payload_len[0])) {
+                        return true;
+                }
+        }
 
 	return false;
 }
 
-static lpi_module_t lpi_ntp_reflect = {
-	LPI_PROTO_UDP_NTP_REFLECT,
-	LPI_CATEGORY_MALWARE,
-	"NTPReflection",
-	50,
-	match_ntp_reflect
+static lpi_module_t lpi_ragnarokonline = {
+	LPI_PROTO_RAGNAROK_ONLINE,
+	LPI_CATEGORY_GAMING,
+	"RagnarokOnline",
+	80,
+	match_ragnarokonline
 };
 
-void register_ntp_reflect(LPIModuleMap *mod_map) {
-	register_protocol(&lpi_ntp_reflect, mod_map);
+void register_ragnarokonline(LPIModuleMap *mod_map) {
+	register_protocol(&lpi_ragnarokonline, mod_map);
 }
 

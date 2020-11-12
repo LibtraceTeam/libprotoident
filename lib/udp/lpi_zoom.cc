@@ -36,6 +36,11 @@ static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
                 if (len == 107 || len == 109 || len == 169)
                         return true;
         }
+        if (MATCH(payload, 0x01, 0x00, 0x03, ANY)) {
+                if (len == 187 || len == 185 || len == 123 || len == 125) {
+                        return true;
+                }
+        }
         if (MATCH(payload, 0x01, 0x00, 0x6c, 0x00) && len == 111)
                 return true;
         return false;
@@ -45,6 +50,10 @@ static inline bool match_zoom_01(uint32_t payload, uint32_t len) {
 static inline bool match_zoom_02(uint32_t payload, uint32_t len) {
 
         if (MATCH(payload, 0x02, 0x00, 0x01, ANY) && len == 35)
+                return true;
+        if (MATCH(payload, 0x02, 0x00, 0x03, ANY) && len == 105)
+                return true;
+        if (MATCH(payload, 0x02, 0x00, 0x03, ANY) && len == 43)
                 return true;
         if (MATCH(payload, 0x02, 0x00, 0x22, 0x00) && len == 37)
                 return true;
@@ -59,14 +68,16 @@ static inline bool match_zoom_05(uint32_t payload) {
                 return true;
         if (MATCH(payload, 0x05, 0x0f, 0x01, 0x00))
                 return true;
+        if (MATCH(payload, 0x05, 0x15, 0x01, 0x00))
+                return true;
         return false;
 
 }
 
 static inline bool match_zoom_stream_hello(uint32_t payload, uint32_t len) {
 
-        /* Seen 85 and 86 so far */
-        if (len >= 80 && len <= 90) {
+        /* Seen 72, 85 and 86 so far */
+        if (len >= 72 && len <= 90) {
                 if (MATCH(payload, 0x1f, 0x01, 0x01, 0x00))
                         return true;
         }
