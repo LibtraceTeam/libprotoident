@@ -150,8 +150,6 @@ static inline bool match_digit_last(uint32_t payload) {
 
 static inline bool match_ipv4_text(uint32_t payload) {
 
-	bool seen_dot = false;
-
 	/* Gotta start with a digit */
 	if (!match_digit_first(payload))
 		return false;

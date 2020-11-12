@@ -50,9 +50,7 @@ static bool match_length_single(uint32_t payload, uint32_t len) {
 
 static bool match_dns_tcp_length(lpi_data_t *data) {
 
-        uint16_t length;
         uint32_t id0, id1;
-	void *ptr;
 
         if (data->payload_len[0] == 0 || data->payload_len[1] == 0)
                 return false;
