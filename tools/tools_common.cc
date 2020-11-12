@@ -97,10 +97,12 @@ int port_get_direction(libtrace_packet_t *packet) {
 		ip = (libtrace_ip_t *)l3;
 		proto = ip->ip_p;
 	}
-	if (ethertype == TRACE_ETHERTYPE_IPV6 && rem >= sizeof(libtrace_ip6_t)) 	{
+	else if (ethertype == TRACE_ETHERTYPE_IPV6 && rem >= sizeof(libtrace_ip6_t)) 	{
 		ip6 = (libtrace_ip6_t *)l3;
 		proto = ip6->nxt;
-	}
+	} else {
+                return -1;
+        }
 
 
         if (src_port == dst_port) {

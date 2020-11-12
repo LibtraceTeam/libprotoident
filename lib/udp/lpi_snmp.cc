@@ -35,7 +35,6 @@ static inline bool match_snmp_payload(uint32_t payload, uint32_t len) {
         /* SNMP is BER encoded, which is an ass to decode */
         uint8_t snmplen = 0;
         uint8_t *byte;
-        int i;
 
 	if (len == 0)
 		return true;

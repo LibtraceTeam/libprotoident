@@ -31,7 +31,6 @@
 #include "proto_common.h"
 
 static inline bool check_length(uint32_t payload, uint32_t len) {
-	uint16_t *lenptr;
 	uint32_t swap;
 	
 	uint32_t length;

@@ -132,7 +132,6 @@ typedef struct ident {
 static void *start_processing(libtrace_t *trace, libtrace_thread_t *thread,
                 void *global) {
 
-        bool opt_true = true;
         bool opt_false = false;
         struct globalopts *opts = (struct globalopts *)global;
 
@@ -239,8 +238,6 @@ char *display_ident(Flow *f, IdentFlow *ident, struct globalopts *opts)
         char iat_stats_in[200];
         char *str;
         lpi_module_t *proto;
-	struct ident_stats *is;
-	int i;
 
 	if (opts->only_dir0 && ident->init_dir == 1)
 		return NULL;
@@ -290,7 +287,6 @@ void expire_ident_flows(libtrace_t *trace, libtrace_thread_t *thread,
                 double ts, bool exp_flag)
 {
 	Flow *expired;
-	lpi_module_t *proto;
         char *result = NULL;
         libtrace_generic_t gen;
 
@@ -402,7 +398,7 @@ static libtrace_packet_t *per_packet(libtrace_t *trace,
                 libtrace_packet_t *packet) {
 	Flow *f;
 	IdentFlow *ident = NULL;
-	uint8_t dir;
+	uint8_t dir = 255;
 	bool is_new = false;
 
 	libtrace_tcp_t *tcp = NULL;
@@ -505,22 +501,16 @@ static void usage(char *prog)
 
 int main(int argc, char *argv[])
 {
-	libtrace_t *trace;
-	libtrace_packet_t *packet;
 	libtrace_filter_t *filter = NULL;
 	struct sigaction sigact;
         struct globalopts opts;
         int threads = 1;
         int bufferresults = 10;
 
-	bool opt_true = true;
-	bool opt_false = false;
-
 	int i, opt;
 	double ts;
 	char *filterstring = NULL;
 	int dir;
-	bool ignore_rfc1918 = false;
 
         libtrace_callback_set_t *processing, *reporter;
 

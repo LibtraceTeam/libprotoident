@@ -91,7 +91,6 @@ typedef struct ident {
 static void *start_processing(libtrace_t *trace, libtrace_thread_t *thread,
                 void *global) {
 
-	bool opt_true = true;
         bool opt_false = false;
         struct globalopts *opts = (struct globalopts *)global;
 
@@ -159,7 +158,6 @@ void dump_payload(lpi_data_t lpi, uint8_t dir, char *space, int spacelen) {
 
 	int i;
 	uint8_t *pl = (uint8_t *)(&(lpi.payload[dir]));
-	uint32_t len = lpi.payload_len[dir];
 
         char ascii[4][5];
 
@@ -167,7 +165,7 @@ void dump_payload(lpi_data_t lpi, uint8_t dir, char *space, int spacelen) {
 		if (*pl > 32 && *pl < 126) {
 			snprintf(ascii[i], 5, "%c", *pl);
 		} else {
-			snprintf(ascii[i], 5, ".", NULL);
+			snprintf(ascii[i], 5, ".");
 		}
 		pl ++;
 	}
@@ -235,7 +233,6 @@ void expire_ident_flows(libtrace_t *trace, libtrace_thread_t *thread,
                 struct globalopts *opts, FlowManager *fm, double ts,
                 bool exp_flag) {
         Flow *expired;
-	lpi_module_t *proto;
         char *result = NULL;
         libtrace_generic_t gen;
 
@@ -290,14 +287,14 @@ static libtrace_packet_t *per_packet(libtrace_t *trace,
 
         Flow *f;
         IdentFlow *ident = NULL;
-        uint8_t dir;
+        uint8_t dir = 255;
         bool is_new = false;
 
         libtrace_tcp_t *tcp = NULL;
         void *l3;
 	double ts;
 
-        uint16_t l3_type;
+        uint16_t l3_type = 0;
         struct globalopts *opts = (struct globalopts *)global;
         struct threadlocal *tl = (struct threadlocal *)tls;
 
@@ -405,7 +402,6 @@ int main(int argc, char *argv[]) {
 	struct sigaction sigact; 
         struct globalopts opts;
         int i, opt;
-        double ts;
 	char *filterstring = NULL;
 	int dir;
         int threads = 1;
