@@ -649,6 +649,17 @@ void register_category_names(LPICategoryMap *categories) {
 void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map,
 	LPICategoryProtocolMap *category_protocols) {
 
+	lpi_icmp6 = new lpi_module_t;
+
+	lpi_icmp6->protocol = LPI_PROTO_ICMP6;
+	lpi_icmp6->category = LPI_CATEGORY_ICMP;
+	lpi_icmp6->name = "ICMPv6";
+	lpi_icmp6->priority = 255;
+	lpi_icmp6->lpi_callback = NULL;
+	(*name_map)[lpi_icmp6->protocol] = lpi_icmp6->name;
+	(*proto_map)[std::string(lpi_icmp6->name)] = lpi_icmp6->protocol;
+	(*category_protocols)[lpi_icmp6->protocol] = lpi_icmp6->category;
+
 	lpi_icmp = new lpi_module_t;
 
 	lpi_icmp->protocol = LPI_PROTO_ICMP;

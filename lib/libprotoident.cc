@@ -45,6 +45,7 @@ LPIModuleMap TCP_protocols;
 LPIModuleMap UDP_protocols;
 
 lpi_module_t *lpi_icmp = NULL;
+lpi_module_t *lpi_icmp6 = NULL;
 lpi_module_t *lpi_unsupported = NULL;
 lpi_module_t *lpi_unknown_tcp = NULL;
 lpi_module_t *lpi_unknown_udp = NULL;
@@ -108,6 +109,11 @@ void lpi_free_library() {
    if (lpi_icmp != NULL) {
       delete lpi_icmp;
       lpi_icmp = NULL;
+   }
+
+   if (lpi_icmp6 != NULL) {
+	   delete lpi_icmp6;
+	   lpi_icmp6 = NULL;
    }
 
    if (lpi_unsupported != NULL) {
@@ -335,6 +341,8 @@ lpi_module_t *lpi_guess_protocol(lpi_data_t *data) {
 	}
 
 	switch(data->trans_proto) {
+		case TRACE_IPPROTO_ICMPV6:
+			return lpi_icmp6;
 		case TRACE_IPPROTO_ICMP:
 			return lpi_icmp;
 		case TRACE_IPPROTO_TCP:
