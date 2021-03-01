@@ -53,6 +53,7 @@ void init_other_protocols(LPINameMap *name_map, LPIProtocolMap *proto_map,
 void free_protocols(LPIModuleMap *mod_map);
 
 
+extern lpi_module_t *lpi_icmp6;
 extern lpi_module_t *lpi_icmp;
 extern lpi_module_t *lpi_unknown_tcp;
 extern lpi_module_t *lpi_unknown_udp;

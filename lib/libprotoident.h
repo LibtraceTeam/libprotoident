@@ -669,6 +669,7 @@ typedef enum {
 	LPI_PROTO_UDP_MYSTERY_05,
 
 	LPI_PROTO_ICMP,
+        LPI_PROTO_ICMP6,
 
         LPI_PROTO_INVALID,     /* No single valid protocol */
 	LPI_PROTO_NO_PAYLOAD,
