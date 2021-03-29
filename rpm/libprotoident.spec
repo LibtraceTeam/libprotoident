@@ -1,6 +1,6 @@
 Name:           libprotoident
 Version:        2.0.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        C/C++ Library for performing lightweight traffic classification
 
 License:        LGPLv3
@@ -72,5 +72,8 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 %{_mandir}/man1/*
 
 %changelog
+* Mon Mar 29 2021 Shane Alcock <shane.alcock@waikato.ac.nz> - 2.0.15-2
+- Rebuild package to be compatible with latest libtrace
+
 * Thu Nov 12 2020 Shane Alcock <shane.alcock@waikato.ac.nz> - 2.0.15-1
 - First libprotoident RPM package

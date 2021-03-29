@@ -1,3 +1,9 @@
+libprotoident (2.0.15-2) unstable; urgency=low
+
+  * Rebuild package so tool binaries are compatible with latest libtrace.
+
+ -- Shane Alcock <shane.alcock@waikato.ac.nz>  Mon, 29 Mar 2021 13:40:13 +1300
+
 libprotoident (2.0.15-1) unstable; urgency=low
 
   * New upstream release.

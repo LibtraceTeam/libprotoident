@@ -41,13 +41,4 @@ jobs:
           repo: ${{ secrets.CLOUDSMITH_OWNER }}/libprotoident
           username: salcock
           api_key: ${{ secrets.CLOUDSMITH_API_KEY }}
-      - name: Publish packages to bintray
-        uses: wanduow/action-bintray-upload-debian-packages@v1
-        with:
-          path: packages/
-          repo: ${{ secrets.BINTRAY_OWNER }}/libprotoident
-          license: LGPL-3.0
-          username: salcock
-          api_key: ${{ secrets.BINTRAY_API_KEY }}
-        
 
