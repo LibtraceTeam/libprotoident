@@ -647,6 +647,7 @@ typedef enum {
         LPI_PROTO_UDP_NVIDIA_GAMESTREAM,
         LPI_PROTO_UDP_CLASSIN,
         LPI_PROTO_UDP_ARTCP,
+        LPI_PROTO_UDP_LLMNR,
 
 	/* Patterns that we can match, but do not know the protocol */
 	LPI_PROTO_REJECTION,	/* All responses are 0x02 */
@@ -693,6 +694,7 @@ typedef struct lpi {
 	uint8_t trans_proto;
 	uint32_t payload_len[2];
 	uint32_t ips[2];
+        uint8_t macs[2][6];
 } lpi_data_t;
 
 typedef struct lpi_module lpi_module_t;
