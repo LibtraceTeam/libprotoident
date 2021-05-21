@@ -34,26 +34,30 @@
 static uint8_t IP6_LLMNR[6] = {0x33, 0x33, 0x00, 0x01, 0x00, 0x03};
 static uint8_t IP4_LLMNR[6] = {0x01, 0x00, 0x5E, 0x00, 0x00, 0xFC};
 
-static inline bool match_mac(uint8_t *first, uint8_t *second) {
-	return !memcmp(first, second, 6);
-}
+#define OPCODE(x) ((x & 0x7800) >> 11)
+#define SESSION_ID(x) (x & 0xFFFF0000)
+#define MATCH_MAC(x, y) (!memcmp(x, y, 6))
 
 static inline bool match_llmnr(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	/* We cannot match on the first 4bytes of payload, these are randomly generated
-	 * session IDs.
-	 */
-
 	if (data->server_port != 5355 && data->client_port != 5355)
+		return false;
+
+	/* session id should match between request/response */
+	if (SESSION_ID(data->payload[0]) != SESSION_ID(data->payload[1]))
+		return false;
+
+	/* the opcode should match between request/response */
+	if (OPCODE(data->payload[0]) != OPCODE(data->payload[1]))
 		return false;
 
 	if (data->trans_proto != TRACE_IPPROTO_UDP)
 		return false;
 
-	if (!match_mac(data->macs[0], IP4_LLMNR) &&
-		!match_mac(data->macs[0], IP6_LLMNR) &&
-		!match_mac(data->macs[1], IP4_LLMNR) &&
-		!match_mac(data->macs[1], IP6_LLMNR))
+	if (!MATCH_MAC(data->macs[0], IP4_LLMNR) &&
+		!MATCH_MAC(data->macs[0], IP6_LLMNR) &&
+		!MATCH_MAC(data->macs[1], IP4_LLMNR) &&
+		!MATCH_MAC(data->macs[1], IP6_LLMNR))
 
 		return false;
 
