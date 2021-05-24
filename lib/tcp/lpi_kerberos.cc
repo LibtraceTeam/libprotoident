@@ -30,7 +30,8 @@
 
 static inline bool match_kerberos(lpi_data_t *data, lpi_module_t *mod UNUSED) {    
 
-    /* Quite a weak rule, first 4 bytes of kerberos is the record length :/ */
+    /* Quite a weak rule, first 4 bytes of kerberos is the record length which
+     * is spread over multiple packets */
 
     if (data->server_port == 88)
         return true;
