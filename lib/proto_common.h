@@ -125,6 +125,7 @@ bool match_str_both(lpi_data_t *data, const char *string1,
         const char *string2);
 bool match_chars_either(lpi_data_t *data, char a, char b, char c,
         char d);
+bool match_chars_both(lpi_data_t *data, char a, char b, char c, char d);
 bool match_payload_length(uint32_t payload, uint32_t payload_len);
 bool match_ip_address_both(lpi_data_t *data);
 bool match_file_header(uint32_t payload);

@@ -178,6 +178,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_kankan_tcp(mod_map);
 	register_kaseya(mod_map);
 	register_kaspersky(mod_map);
+	register_kerberos(mod_map);
 	register_kik(mod_map);
 	register_kingofglory_tcp(mod_map);
 	register_kuaibo(mod_map);
@@ -253,6 +254,7 @@ int register_tcp_protocols(LPIModuleMap *mod_map) {
 	register_remote_manipulator(mod_map);
 	register_revolver_nblbt(mod_map);
 	register_rfb(mod_map);
+	register_rpc(mod_map);
 	register_rpcscan(mod_map);
 	register_rrtv(mod_map);
 	register_rsync(mod_map);
