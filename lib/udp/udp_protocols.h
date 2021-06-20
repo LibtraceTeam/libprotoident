@@ -145,6 +145,7 @@ void register_lansync_udp(LPIModuleMap *mod_map);
 void register_ldap_ad(LPIModuleMap *mod_map);
 void register_line_udp(LPIModuleMap *mod_map);
 void register_linkproof(LPIModuleMap *mod_map);
+void register_llmnr(LPIModuleMap *mod_map);
 void register_loadout(LPIModuleMap *mod_map);
 void register_lol(LPIModuleMap *mod_map);
 void register_mdns(LPIModuleMap *mod_map);

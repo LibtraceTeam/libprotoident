@@ -35,6 +35,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 
 #include "libprotoident.h"
 #include "proto_manager.h"
@@ -54,6 +55,14 @@ static LPINameMap lpi_names;
 static LPIProtocolMap lpi_protocols;
 static LPICategoryMap lpi_categories;
 static LPICategoryProtocolMap lpi_category_protocols;
+
+#define EMPTY_MAC(x) \
+	x[0] == 0 && \
+	x[1] == 0 && \
+	x[2] == 0 && \
+	x[3] == 0 && \
+	x[4] == 0 && \
+	x[5] == 0
 
 static int seq_cmp (uint32_t seq_a, uint32_t seq_b) {
 
@@ -135,7 +144,7 @@ void lpi_free_library() {
 }
 
 void lpi_init_data(lpi_data_t *data) {
-
+	int i = 0;
 	data->payload[0] = 0;
 	data->payload[1] = 0;
 	data->seen_syn[0] = false;
@@ -151,7 +160,10 @@ void lpi_init_data(lpi_data_t *data) {
 	data->payload_len[1] = 0;
 	data->ips[0] = 0;
 	data->ips[1] = 0;
-
+	for (i = 0; i < 6; i++) {
+		data->macs[0][i] = 0;
+		data->macs[1][i] = 0;
+	}
 }
 
 static int update_tcp_flow(lpi_data_t *data, libtrace_tcp_t *tcp, uint8_t dir,
@@ -215,6 +227,7 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 	void *transport;
 	uint32_t four_bytes;
 	libtrace_ip_t *ip = NULL;
+	uint8_t *mac;
 
 	//tcp = trace_get_tcp(packet);
 	psize = trace_get_payload_length(packet);
@@ -280,8 +293,21 @@ int lpi_update_data(libtrace_packet_t *packet, lpi_data_t *data, uint8_t dir) {
 		}
 	}
 
-	return 1;
+	if (EMPTY_MAC(data->macs[0])) {
+		if (dir == 0) {
+			if ((mac = trace_get_source_mac(packet)) != NULL)
+				memcpy(&data->macs[0], mac, 6);
+			if ((mac = trace_get_destination_mac(packet)) != NULL)
+				memcpy(&data->macs[1], mac, 6);
+		} else {
+			if ((mac = trace_get_source_mac(packet)) != NULL)
+				memcpy(&data->macs[1], mac, 6);
+			if ((mac = trace_get_destination_mac(packet)) != NULL)
+				memcpy(&data->macs[0], mac, 6);
+		}
+	}
 
+	return 1;
 }
 
 static lpi_module_t *test_protocol_list(LPIModuleList *ml, lpi_data_t *data) {
