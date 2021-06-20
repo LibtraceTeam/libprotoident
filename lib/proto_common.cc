@@ -74,6 +74,14 @@ bool match_chars_either(lpi_data_t *data, char a, char b, char c,
         return false;
 }
 
+bool match_chars_both(lpi_data_t *data, char a, char b, char c, char d) {
+        if (!MATCH(data->payload[0], a, b, c, d))
+                return false;
+        if (!MATCH(data->payload[1], a, b, c, d))
+                return false;
+        return true;
+}
+
 bool match_payload_length(uint32_t payload, uint32_t payload_len) {
 
         uint32_t header = 0;

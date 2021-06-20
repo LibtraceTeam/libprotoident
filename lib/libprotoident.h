@@ -403,6 +403,8 @@ typedef enum {
         LPI_PROTO_TRANSOCKS,
         LPI_PROTO_RAGNAROK_ONLINE,
 	LPI_PROTO_ETHERNETIP,
+        LPI_PROTO_KERBEROS,
+        LPI_PROTO_RPC,
 
         /* UDP Protocols */
         LPI_PROTO_UDP,

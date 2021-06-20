@@ -111,6 +111,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_kankan_tcp.cc \
 	lpi_kaseya.cc \
 	lpi_kaspersky.cc \
+	lpi_kerberos.cc \
 	lpi_kik.cc \
 	lpi_kingofglory_tcp.cc \
 	lpi_kuaibo.cc \
@@ -186,6 +187,7 @@ libprotoident_tcp_la_SOURCES = \
 	lpi_remote_manipulator.cc \
 	lpi_revolver_nblbt.cc \
 	lpi_rfb.cc \
+	lpi_rpc.cc \
 	lpi_rpcscan.cc \
 	lpi_rrtv.cc \
 	lpi_rsync.cc \

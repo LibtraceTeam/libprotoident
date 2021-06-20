@@ -30,7 +30,7 @@
 #include "proto_manager.h"
 #include "proto_common.h"
 
-static inline bool match_ldap_payload(uint32_t payload, uint32_t len) {
+static inline bool match_ldap_payload(uint32_t payload, uint32_t len, uint16_t server_port) {
 	
 	uint8_t *byte = ((uint8_t *)&payload);
 	uint16_t struct_len = 0;
@@ -40,9 +40,10 @@ static inline bool match_ldap_payload(uint32_t payload, uint32_t len) {
 
 	byte ++;
 	
+	// multibyte lengths?
 	if (((*byte) & 0x80) == 0x80) {
 		uint8_t bytes_required = ((*byte) & 0x7f);
-		if (bytes_required > 2 || bytes_required == 0)
+		if (bytes_required == 0)
 			return false;
 
 		if (bytes_required == 1) {
@@ -52,10 +53,15 @@ static inline bool match_ldap_payload(uint32_t payload, uint32_t len) {
 			struct_len = 3 + ((uint8_t)(*byte));
 			if (!MATCH(payload, 0x30, ANY, ANY, 0x02))
 				return false;
-		} else {
+		} else if (bytes_required == 2) {
 			struct_len = 4 + ntohs(*((uint16_t *)(byte + 1)));
 			if (!MATCH(payload, 0x30, ANY, ANY, ANY))
 				return false;
+		} else {
+			// the length is now past the first 4 bytes of payload so we are unable
+			// to check it, fallback to port in this case
+			if (server_port == 389)
+				return true;
 		}
 	} else {
 		if (!MATCH(payload, 0x30, ANY, 0x02, 0x01))
@@ -75,9 +81,9 @@ static inline bool match_ldap_payload(uint32_t payload, uint32_t len) {
 
 static inline bool match_ldap(lpi_data_t *data, lpi_module_t *mod UNUSED) {
 
-	if (!match_ldap_payload(data->payload[0], data->payload_len[0]))
+	if (!match_ldap_payload(data->payload[0], data->payload_len[0], data->server_port))
 		return false;
-	if (!match_ldap_payload(data->payload[1], data->payload_len[1]))
+	if (!match_ldap_payload(data->payload[1], data->payload_len[1], data->server_port))
 		return false;
 
 	return true;
