@@ -12,6 +12,8 @@ libprotoident (2.0.15-1) unstable; urgency=low
   * Improved rules for 6 protocols, including QUIC and Zoom
   * Added 5 new protocols.
 
+ -- Shane Alcock <shane.alcock@waikato.ac.nz>  Thu, 12 Nov 2019 12:00:00 +1300
+
 libprotoident (2.0.14-1) unstable; urgency=low
 
   * New upstream release.
